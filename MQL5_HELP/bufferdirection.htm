@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Indexing Direction in Arrays, Buffers and Timeseries</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="series.htm"> Timeseries and Indicators Access </a>/ Indexing Direction in Arrays, Buffers and Timeseries
+          </td>
+          <td width="70" align="right">
+          <a href="series.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="timeseries_access.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Indexing Direction in Arrays, Buffers and Timeseries</span></p>
+<p class="p_Text"><span class="f_Text">The default indexing of all arrays and indicator buffers is left to right. The index of the first element is always equal to zero. Thus, the very first element of an array or indicator buffer with index 0 is by default on the extreme left position, while the last element is on the extreme right position.</span></p>
+<p class="p_Text"><span class="f_Text">An indicator buffer is a <a href="dynamic_array.htm" class="topiclink">dynamic array</a> of type double, whose size is managed by the client terminals, so that it always corresponds to the number of bars the indicator is calculated on. A usual dynamic array of type double is assigned as an indicator buffer using the <a href="setindexbuffer.htm" class="topiclink">SetIndexBuffer()</a> function. Indicator buffers do not require setting of their size using function <a href="arrayresize.htm" class="topiclink">ArrayResize()</a> - this will be done by the executing system of the terminal.</span></p>
+<p class="p_Text"><span class="f_Text"><a href="series.htm" class="topiclink">Timeseries</a> are arrays with reverse indexing, i.e. the first element of a timeseries is in the extreme right position, and the last element is in the extreme left position. Timeseries being used for storing history price data and contain the time information, we can say that the newest data are placed in the extreme right position of the timeseries, while the oldest data are in the extreme left position. </span></p>
+<p class="p_Text"><span class="f_Text">So the timeseries element with index 0 contains the information about the latest quote of a symbol. If a timeseries contains data on a daily timeframe, data of the current yet uncompleted day are located on the zero position, and the position with index 1 contains yesterday data.</span></p>
+<p class="p_H3"><span class="f_H3">Changing the Indexing Direction</span></p>
+<p class="p_Text"><span class="f_Text">Function <a href="arraysetasseries.htm" class="topiclink">ArraySetAsSeries()</a> allows changing the method of accessing elements of a dynamic array; the physical order of data storing in the computer memory is not changed at that. This function simply changes the method of addressing array elements, so when copying one array to another using function <a href="arraycopy.htm" class="topiclink">ArrayCopy()</a>, the contents of the recipient array will not depend on the indexing direction in the source array.</span></p>
+<p class="p_Text"><span class="f_Text">Direction of indexing cannot be changed for statically distributed arrays. Even if an array was passed as a parameter to a function, attempts to change the indexing direction inside this function will bring no effect.</span></p>
+<p class="p_Text"><span class="f_Text">For indicator buffers, like for usual arrays, indexing direction can also be set as backward (like in timeseries), i.e. reference to the zero position in the indicator buffer will mean reference to the last value on the corresponding indicator buffer and this will correspond to the value of the indicator on the latest bar. Still, the physical location of indicator bars will be unchanged.</span></p>
+<p class="p_H3"><span class="f_H3">Receiving Price Data in Indicators</span></p>
+<p class="p_Text"><span class="f_Text">Each <a href="customind.htm" class="topiclink">custom indicator</a> must necessarily contain the <a href="oncalculate.htm" class="topiclink">OnCalculate()</a> function, to which price data required for calculating values in indicator buffers are passed. Indexing direction in these passed arrays can be found out using function <a href="arraygetasseries.htm" class="topiclink">ArrayGetAsSeries()</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Arrays <a href="parameterpass.htm" class="topiclink">passed to the function</a> reflect price data, i.e. these arrays have the sign of a timeseries and function <a href="arrayisseries.htm" class="topiclink">ArrayIsSeries()</a> will return true when checking these arrays. However, in any case indexing direction should be checked only by function <a href="arraygetasseries.htm" class="topiclink">ArrayGetAsSeries()</a>. </span></p>
+<p class="p_Text"><span class="f_Text">In order not to be dependent on default values, <a href="arraysetasseries.htm" class="topiclink">ArraySetAsSeries()</a> should be unconditionally called for the arrays you are going to work with, and set the required direction.</span></p>
+<p class="p_H3"><span class="f_H3">Receiving Price Data and Indicator Values</span></p>
+<p class="p_Text"><span class="f_Text">Default indexing direction of all arrays in Expert Advisors, indicators and scripts is left-to-right. If necessary, in any mql5 program you can request timeseries values on any symbol and timeframe, as well as values of indicators calculated on any symbol and timeframe.</span></p>
+<p class="p_Text"><span class="f_Text">Use functions Copy...() for these purposes:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li"><a href="copybuffer.htm" class="topiclink">CopyBuffer</a> – copy values of an indicator buffer to an array of double type;</span></li>
+<li class="p_li"><span class="f_li"><a href="copyrates.htm" class="topiclink">CopyRates</a> – copy price history to an array of structures <a href="mqlrates.htm" class="topiclink">MqlRates</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="copytime.htm" class="topiclink">CopyTime</a> – copy Time values to an array of datetime type;</span></li>
+<li class="p_li"><span class="f_li"><a href="copyopen.htm" class="topiclink">CopyOpen</a> – copy Open values to an array of double type;</span></li>
+<li class="p_li"><span class="f_li"><a href="copyhigh.htm" class="topiclink">CopyHigh</a> – copy High values to an array of double type;</span></li>
+<li class="p_li"><span class="f_li"><a href="copylow.htm" class="topiclink">CopyLow</a> – copy Low values to an array of double type;</span></li>
+<li class="p_li"><span class="f_li"><a href="copyclose.htm" class="topiclink">CopyClose</a> – copy Close values to an array of double type;</span></li>
+<li class="p_li"><span class="f_li"><a href="copytickvolume.htm" class="topiclink">CopyTickVolume</a> – copy tick volumes to an array of long type;</span></li>
+<li class="p_li"><span class="f_li"><a href="copyrealvolume.htm" class="topiclink">CopyRealVolume</a> – copy equity volumes to a long type array;</span></li>
+<li class="p_li"><span class="f_li"><a href="copyspread.htm" class="topiclink">CopySpread</a> – copy the spread history to an array of int type;</span></li>
+</ul>
+<p class="p_li"><span class="f_li">&nbsp;</span></p>
+<p class="p_li"><span class="f_Text">All these functions work in a similar way. Let's consider the data obtaining mechanism on the example of CopyBuffer(). It is implied that the indexing direction of requested data is that of timeseries, and the position with index 0 (zero) stores data of the current yet uncompleted bar. In order to get access to &nbsp;these data we need to copy the necessary volume of data into the recipient array, e.g. into array </span><span class="f_Text" style="font-style: italic;">buffer</span><span class="f_Text">. </span></p>
+<p class="p_li"><img class="help" alt="copyBuffer" width="656" height="214" style="margin:0;width:656px;height:214px;border:none" src="copybuffer.png"/></p>
+<p class="p_Text"><span class="f_Text">When copying we need to specify the starting position in the source array, starting from which data will be copied to the recipient array. In case of success, the specified number of elements will be copied to the recipient array from the source array (from the indicator buffer in this case). Irrespective of the indexing value set in the recipient array, copying is always performed as is shown in the above figure.</span></p>
+<p class="p_Text"><span class="f_FunctionRemark">If it is expected that price data will be handled in a loop with a large number of iterations, it is advisable that you check the fact of forced program termination using the <a href="isstopped.htm" class="topiclink">IsStopped()</a> function:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;copied=</span><span class="f_CodeExample" style="color: #0000ff;">CopyBuffer</span><span class="f_CodeExample">(ma_handle,</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Indicator&nbsp;handle</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;The&nbsp;index&nbsp;of&nbsp;the&nbsp;indicator&nbsp;buffer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Start&nbsp;position&nbsp;for&nbsp;copying</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number,&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Number&nbsp;of&nbsp;values&nbsp;to&nbsp;copy&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Buffer&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;The&nbsp;array&nbsp;that&nbsp;receives&nbsp;the&nbsp;values</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(copied&lt;0)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;k=0;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(k&lt;copied&nbsp;&amp;&amp;&nbsp;!</span><span class="f_CodeExample" style="color: #0000ff;">IsStopped</span><span class="f_CodeExample">())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Get&nbsp;the&nbsp;value&nbsp;for&nbsp;the&nbsp;k&nbsp;index</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;value=Buffer[k];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;work&nbsp;with&nbsp;value</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;k++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #c0504d;">per</span><span class="f_CodeExample">=10;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;period&nbsp;of&nbsp;the&nbsp;exponent</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;ma_handle;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;indicator&nbsp;handle</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;initialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;ma_handle=</span><span class="f_CodeExample" style="color: #0000ff;">iMA</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,0,</span><span class="f_CodeExample" style="color: #c0504d;">per</span><span class="f_CodeExample">,0,</span><span class="f_CodeExample" style="color: #0000ff;">MODE_EMA</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">PRICE_CLOSE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">INIT_SUCCEEDED</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;tick&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTick</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;ema[10];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;copied=</span><span class="f_CodeExample" style="color: #0000ff;">CopyBuffer</span><span class="f_CodeExample">(ma_handle,</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;indicator&nbsp;handle</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;index&nbsp;of&nbsp;the&nbsp;indicator&nbsp;buffer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;starting&nbsp;position&nbsp;to&nbsp;copy&nbsp;from</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;number&nbsp;of&nbsp;values&nbsp;for&nbsp;copying</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ema&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;value&nbsp;receiving&nbsp;array</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(copied&lt;0)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;....&nbsp;further&nbsp;code</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">See also</span></p>
+<p class="p_SeeAlso"><span class="f_SeeAlso"><a href="timeseries_access.htm" class="topiclink">Organizing Data Access</a></span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>SingularValueDecompositionBidiagDC</title>
+  <meta name="keywords" content="SingularValueDecompositionBidiagDC" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="matrix.htm"> Matrix and Vector Methods </a> / <a class="h_m" href="openblas.htm"> OpenBLAS </a> / <a class="h_m" href="singular_value_decomposition.htm"> Singular Value Decomposition </a>/ SingularValueDecompositionBidiagDC
+          </td>
+          <td width="70" align="right">
+          <a href="singularvaluedecompositionjl.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="singularvaluedecompositionbdbs.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">SingularValueDecompositionBidiagDC</span></p>
+<p class="p_Function"><span class="f_Function">Singular Value Decomposition, divide-and-conquer algorithm for bidiagonal matrices (LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/bdsdc.html" target="_blank" class="weblink">BDSDC</a>).</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">Computing for type matrix&lt;double&gt;</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_Keywords">bool&nbsp;&nbsp;matrix::</span><span class="f_Functions">SingularValueDecompositionBidiagDC</span><span class="f_CodeExample">(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">ENUM_SVDBIDIAG_Z&nbsp;&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Param">jobz</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;how&nbsp;to&nbsp;compute&nbsp;left&nbsp;vectors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">ENUM_BLAS_RANGE&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Param">range</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;subset&nbsp;of&nbsp;computed&nbsp;singular&nbsp;values</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">double&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">lower</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;lower&nbsp;limit&nbsp;of&nbsp;the&nbsp;subset</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">double&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">upper</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;upper&nbsp;limit&nbsp;of&nbsp;the&nbsp;subset</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">vector&amp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">S</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;vector&nbsp;of&nbsp;computed&nbsp;singular&nbsp;values</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">matrix&amp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">U</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;U&nbsp;matrix&nbsp;of&nbsp;computed&nbsp;left&nbsp;vectors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">matrix&amp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">VT&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;VT&nbsp;transposed&nbsp;matrix&nbsp;of&nbsp;right&nbsp;vectors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">Computing for type matrix&lt;float&gt;</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_Keywords">bool&nbsp;&nbsp;matrix::</span><span class="f_Functions">SingularValueDecompositionBidiagDC</span><span class="f_CodeExample">(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">ENUM_SVDBIDIAG_Z&nbsp;&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Param">jobz</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;how&nbsp;to&nbsp;compute&nbsp;left&nbsp;vectors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">ENUM_BLAS_RANGE&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Param">range</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;subset&nbsp;of&nbsp;computed&nbsp;singular&nbsp;values</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">double&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">lower</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;lower&nbsp;limit&nbsp;of&nbsp;the&nbsp;subset</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">double&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">upper</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;upper&nbsp;limit&nbsp;of&nbsp;the&nbsp;subset</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">vectorf&amp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">S</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;vector&nbsp;of&nbsp;computed&nbsp;singular&nbsp;values</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">matrixf&amp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">U</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;U&nbsp;matrix&nbsp;of&nbsp;computed&nbsp;left&nbsp;vectors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">matrixf&amp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">VT&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;VT&nbsp;transposed&nbsp;matrix&nbsp;of&nbsp;right&nbsp;vectors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">Parameters</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">jobz</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[in]  <a href="singularvaluedecompositiondddc.htm#enum_svdbidiag_z" class="topiclink">ENUM_SVDBIDIAG_Z</a> enumeration value that determines how the left singular vectors should be computed.</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">range</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[in]  <a href="singularvaluedecompositiondddc.htm#enum_blas_range" class="topiclink">ENUM_BLAS_RANGE</a> enumeration value that defines a subset of computable singular values and vectors.</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">lower</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[in] &nbsp;The lower limit of singular values subset; specified depending on the value of the range parameter.</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">upper</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[in] &nbsp;The upper limit of singular values subset; specified depending on the value of the range parameter.</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">S</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[out] Vector of singular values.</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">U</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[out] Matrix of left singular vectors.</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">V</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[out] Transposed matrix of right singular vectors.</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">Return Value</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">Return true if successful, otherwise false in case of an <a href="errorcodes.htm" class="topiclink">error</a>.</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">Note</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">Computation depends on the values of the jobz and range parameters.</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">When BLASRANGE_A is set, all singular values are computed, and the lower and upper parameters are ignored.</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">With the BLASRANGE_V value, only those singular values (and their vectors) that fall within the range of real values specified by the 'lower' and 'upper' parameters are computed.</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">With the BLASRANGE_I value, only those singular values (and their vectors) that fall within the range of integer indices specified by the 'lower' and 'upper' parameters are computed. For example, with lower=0 and upper=2, only the first three singular values are computed.</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">A bidiagonal matrix is a square matrix with non-zero main diagonal and one of the sub-diagonals.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Upper bidiagonal matrix</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #0080c0;">[x,&nbsp;x,&nbsp;0,&nbsp;0,&nbsp;0],</span>
+<br><span class="f_CodeExample" style="color: #0080c0;">&nbsp;[0,&nbsp;x,&nbsp;x,&nbsp;0,&nbsp;0],</span>
+<br><span class="f_CodeExample" style="color: #0080c0;">&nbsp;[0,&nbsp;0,&nbsp;x,&nbsp;x,&nbsp;0],</span>
+<br><span class="f_CodeExample" style="color: #0080c0;">&nbsp;[0,&nbsp;0,&nbsp;0,&nbsp;x,&nbsp;x],</span>
+<br><span class="f_CodeExample" style="color: #0080c0;">&nbsp;[0,&nbsp;0,&nbsp;0,&nbsp;0,&nbsp;x]</span><span class="f_CodeExample">]</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Lower bidiagonal matrix</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #0080c0;">[x,&nbsp;0,&nbsp;0,&nbsp;0,&nbsp;0],</span>
+<br><span class="f_CodeExample" style="color: #0080c0;">&nbsp;[x,&nbsp;x,&nbsp;0,&nbsp;0,&nbsp;0],</span>
+<br><span class="f_CodeExample" style="color: #0080c0;">&nbsp;[0,&nbsp;x,&nbsp;x,&nbsp;0,&nbsp;0],</span>
+<br><span class="f_CodeExample" style="color: #0080c0;">&nbsp;[0,&nbsp;0,&nbsp;x,&nbsp;x,&nbsp;0],</span>
+<br><span class="f_CodeExample" style="color: #0080c0;">&nbsp;[0,&nbsp;0,&nbsp;0,&nbsp;x,&nbsp;x]</span><span class="f_CodeExample">]</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">&nbsp;</span></p>
+<p class="p_Text"><a name="enum_svdbidiag_z" class="hmanchor"></a><span class="f_Text" style="font-weight: bold;">ENUM_SVDBIDIAG_Z</span></p>
+<p class="p_Text"><span class="f_Text">An enumeration defining how left singular vectors should be computed.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:200px;"><p class="p_EnumHeader"><span class="f_EnumHeader">ID</span></p>
+</th>
+<th class="EnumTable"><p class="p_EnumHeader"><span class="f_EnumHeader">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:200px;"><p class="p_fortable"><span class="f_fortable">SVDJOBZ_V</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute singular values and singular vectors.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:200px;"><p class="p_fortable"><span class="f_fortable">SVDJOBZ_N</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute singular values only.</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><a name="enum_blas_range" class="hmanchor"></a><span class="f_Text" style="font-weight: bold;">ENUM_BLAS_RANGE</span></p>
+<p class="p_Text"><span class="f_Text">An enumeration defining how right singular vectors should be computed.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:200px;"><p class="p_EnumHeader"><span class="f_EnumHeader">ID</span></p>
+</th>
+<th class="EnumTable"><p class="p_EnumHeader"><span class="f_EnumHeader">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:200px;"><p class="p_fortable"><span class="f_fortable">BLASRANGE_A</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">All singular or eigenvalues will be found.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:200px;"><p class="p_fortable"><span class="f_fortable">BLASRANGE_V</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">All singular or eigenvalues in the half-open interval (VL,VU] will be found.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:200px;"><p class="p_fortable"><span class="f_fortable">BLASRANGE_I</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">The IL-th through IU-th singular or eigenvalues will be found.</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">See also</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark"><a href="singularvaluedecompositiondc.htm" class="topiclink">SingularValueDecompositionDC</a>, <a href="singularvaluedecompositionqr.htm" class="topiclink">SingularValueDecompositionQR</a></span></p>
+
+</div>
+
+</body>
+</html>

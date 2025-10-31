@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Factored Calculations</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="matrix.htm"> Matrix and Vector Methods </a> / <a class="h_m" href="openblas.htm"> OpenBLAS </a>/ Factored Calculations
+          </td>
+          <td width="70" align="right">
+          <a href="factorizationldlraw.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="plulinearequationssolution.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Factored Calculations</span></p>
+<p class="p_Text"><span class="f_Text">&#1069;&#1090;&#1086;&#1090; &#1088;&#1072;&#1079;&#1076;&#1077;&#1083; &#1089;&#1087;&#1088;&#1072;&#1074;&#1082;&#1080; &#1086;&#1087;&#1080;&#1089;&#1099;&#1074;&#1072;&#1077;&#1090; &#1085;&#1072;&#1073;&#1086;&#1088; &#1092;&#1091;&#1085;&#1082;&#1094;&#1080;&#1081; &#1076;&#1083;&#1103; &#1095;&#1080;&#1089;&#1083;&#1077;&#1085;&#1085;&#1086;&#1075;&#1086; &#1088;&#1077;&#1096;&#1077;&#1085;&#1080;&#1103; &#1079;&#1072;&#1076;&#1072;&#1095; &#1083;&#1080;&#1085;&#1077;&#1081;&#1085;&#1086;&#1081; &#1072;&#1083;&#1075;&#1077;&#1073;&#1088;&#1099;, &#1086;&#1089;&#1085;&#1086;&#1074;&#1072;&#1085;&#1085;&#1099;&#1093; &#1085;&#1072; &#1092;&#1072;&#1082;&#1090;&#1086;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1103;&#1093; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094; &#1080; &#1084;&#1077;&#1090;&#1086;&#1076;&#1072;&#1093; &#1073;&#1080;&#1073;&#1083;&#1080;&#1086;&#1090;&#1077;&#1082;&#1080; LAPACK, &#1086;&#1073;&#1105;&#1088;&#1085;&#1091;&#1090;&#1099;&#1093; &#1074; &#1082;&#1083;&#1072;&#1089;&#1089;&#1099; matrix, matrixf, matrixc &#1080; matrixcf. </span></p>
+<p class="p_Text"><span class="f_Text">&#1060;&#1091;&#1085;&#1082;&#1094;&#1080;&#1080; &#1086;&#1088;&#1080;&#1077;&#1085;&#1090;&#1080;&#1088;&#1086;&#1074;&#1072;&#1085;&#1099; &#1085;&#1072; &#1074;&#1099;&#1089;&#1086;&#1082;&#1086;&#1101;&#1092;&#1092;&#1077;&#1082;&#1090;&#1080;&#1074;&#1085;&#1099;&#1077; &#1080; &#1085;&#1072;&#1076;&#1105;&#1078;&#1085;&#1099;&#1077; &#1074;&#1099;&#1095;&#1080;&#1089;&#1083;&#1077;&#1085;&#1080;&#1103;, &#1087;&#1088;&#1080;&#1084;&#1077;&#1085;&#1080;&#1084;&#1099;&#1077; &#1082; &#1088;&#1072;&#1079;&#1083;&#1080;&#1095;&#1085;&#1099;&#1084; &#1090;&#1080;&#1087;&#1072;&#1084; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;: &#1074;&#1077;&#1097;&#1077;&#1089;&#1090;&#1074;&#1077;&#1085;&#1085;&#1099;&#1084; &#1080; &#1082;&#1086;&#1084;&#1087;&#1083;&#1077;&#1082;&#1089;&#1085;&#1099;&#1084;, &#1086;&#1076;&#1080;&#1085;&#1072;&#1088;&#1085;&#1086;&#1081; &#1080; &#1076;&#1074;&#1086;&#1081;&#1085;&#1086;&#1081; &#1090;&#1086;&#1095;&#1085;&#1086;&#1089;&#1090;&#1080;. &#1054;&#1085;&#1080; &#1086;&#1093;&#1074;&#1072;&#1090;&#1099;&#1074;&#1072;&#1102;&#1090; &#1082;&#1083;&#1102;&#1095;&#1077;&#1074;&#1099;&#1077; &#1079;&#1072;&#1076;&#1072;&#1095;&#1080; &#1087;&#1088;&#1080;&#1082;&#1083;&#1072;&#1076;&#1085;&#1086;&#1081; &#1083;&#1080;&#1085;&#1077;&#1081;&#1085;&#1086;&#1081; &#1072;&#1083;&#1075;&#1077;&#1073;&#1088;&#1099;, &#1074;&#1082;&#1083;&#1102;&#1095;&#1072;&#1103;:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">&#1056;&#1077;&#1096;&#1077;&#1085;&#1080;&#1077; &#1089;&#1080;&#1089;&#1090;&#1077;&#1084; &#1083;&#1080;&#1085;&#1077;&#1081;&#1085;&#1099;&#1093; &#1091;&#1088;&#1072;&#1074;&#1085;&#1077;&#1085;&#1080;&#1081; (&#1057;&#1051;&#1040;&#1059;);</span></li>
+<li class="p_li"><span class="f_li">&#1054;&#1094;&#1077;&#1085;&#1082;&#1091; &#1095;&#1080;&#1089;&#1083;&#1072; &#1086;&#1073;&#1091;&#1089;&#1083;&#1086;&#1074;&#1083;&#1077;&#1085;&#1085;&#1086;&#1089;&#1090;&#1080; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1099;;</span></li>
+<li class="p_li"><span class="f_li">&#1054;&#1073;&#1088;&#1072;&#1090;&#1085;&#1099;&#1077; &#1087;&#1088;&#1077;&#1086;&#1073;&#1088;&#1072;&#1079;&#1086;&#1074;&#1072;&#1085;&#1080;&#1103; &#1080; &#1074;&#1099;&#1095;&#1080;&#1089;&#1083;&#1077;&#1085;&#1080;&#1077; &#1086;&#1073;&#1088;&#1072;&#1090;&#1085;&#1099;&#1093; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;;</span></li>
+<li class="p_li"><span class="f_li">&#1057;&#1087;&#1077;&#1094;&#1080;&#1072;&#1083;&#1100;&#1085;&#1099;&#1077; &#1087;&#1088;&#1080;&#1105;&#1084;&#1099; &#1085;&#1072; &#1086;&#1089;&#1085;&#1086;&#1074;&#1077; SVD &#1076;&#1083;&#1103; &#1087;&#1086;&#1083;&#1091;&#1095;&#1077;&#1085;&#1080;&#1103; &#1087;&#1089;&#1077;&#1074;&#1076;&#1086;&#1086;&#1073;&#1088;&#1072;&#1090;&#1085;&#1099;&#1093; &#1080; &#1087;&#1086;&#1083;&#1103;&#1088;&#1085;&#1099;&#1093; &#1088;&#1072;&#1079;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1081;.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">&#1060;&#1091;&#1085;&#1082;&#1094;&#1080;&#1080; &#1088;&#1072;&#1073;&#1086;&#1090;&#1072;&#1102;&#1090; &#1074; &#1089;&#1074;&#1103;&#1079;&#1082;&#1077; &#1089; &#1087;&#1088;&#1077;&#1076;&#1074;&#1072;&#1088;&#1080;&#1090;&#1077;&#1083;&#1100;&#1085;&#1099;&#1084;&#1080; &#1084;&#1072;&#1090;&#1088;&#1080;&#1095;&#1085;&#1099;&#1084;&#1080; &#1092;&#1072;&#1082;&#1090;&#1086;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1103;&#1084;&#1080;, &#1090;&#1072;&#1082;&#1080;&#1084;&#1080; &#1082;&#1072;&#1082; Cholesky, LDL, PLU &#1080; &#1076;&#1088;&#1091;&#1075;&#1080;&#1084;&#1080;, &#1088;&#1077;&#1072;&#1083;&#1080;&#1079;&#1086;&#1074;&#1072;&#1085;&#1085;&#1099;&#1084;&#1080; &#1074; &#1089;&#1086;&#1086;&#1090;&#1074;&#1077;&#1090;&#1089;&#1090;&#1074;&#1091;&#1102;&#1097;&#1080;&#1093; &#1084;&#1086;&#1076;&#1091;&#1083;&#1103;&#1093;. &#1048;&#1089;&#1087;&#1086;&#1083;&#1100;&#1079;&#1091;&#1077;&#1084;&#1099;&#1077; &#1072;&#1083;&#1075;&#1086;&#1088;&#1080;&#1090;&#1084;&#1099; &#1087;&#1086;&#1074;&#1090;&#1086;&#1088;&#1103;&#1102;&#1090; &#1087;&#1086;&#1074;&#1077;&#1076;&#1077;&#1085;&#1080;&#1077; LAPACK &#1080; &#1087;&#1086;&#1079;&#1074;&#1086;&#1083;&#1103;&#1102;&#1090; &#1101;&#1092;&#1092;&#1077;&#1082;&#1090;&#1080;&#1074;&#1085;&#1086; &#1086;&#1073;&#1088;&#1072;&#1073;&#1072;&#1090;&#1099;&#1074;&#1072;&#1090;&#1100; &#1082;&#1072;&#1082; &#1087;&#1083;&#1086;&#1090;&#1085;&#1099;&#1077;, &#1090;&#1072;&#1082; &#1080; &#1089;&#1087;&#1077;&#1094;&#1080;&#1072;&#1083;&#1080;&#1079;&#1080;&#1088;&#1086;&#1074;&#1072;&#1085;&#1085;&#1099;&#1077; &#1089;&#1090;&#1088;&#1091;&#1082;&#1090;&#1091;&#1088;&#1099; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094; (&#1085;&#1072;&#1087;&#1088;&#1080;&#1084;&#1077;&#1088;, &#1090;&#1088;&#1080;&#1076;&#1080;&#1072;&#1075;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1099;&#1077;).</span></p>
+<p class="p_Text"><span class="f_Text">&#1053;&#1080;&#1078;&#1077; &#1087;&#1088;&#1077;&#1076;&#1089;&#1090;&#1072;&#1074;&#1083;&#1077;&#1085;&#1099; &#1074;&#1089;&#1077; &#1076;&#1086;&#1089;&#1090;&#1091;&#1087;&#1085;&#1099;&#1077; &#1092;&#1091;&#1085;&#1082;&#1094;&#1080;&#1080;, &#1089;&#1075;&#1088;&#1091;&#1087;&#1087;&#1080;&#1088;&#1086;&#1074;&#1072;&#1085;&#1085;&#1099;&#1077; &#1087;&#1086; &#1080;&#1089;&#1087;&#1086;&#1083;&#1100;&#1079;&#1091;&#1077;&#1084;&#1086;&#1084;&#1091; &#1084;&#1077;&#1090;&#1086;&#1076;&#1091; &#1092;&#1072;&#1082;&#1090;&#1086;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1080;.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">&#1060;&#1091;&#1085;&#1082;&#1094;&#1080;&#1103;</span></p>
+</th>
+<th class="EnumTable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">&#1042;&#1099;&#1087;&#1086;&#1083;&#1085;&#1103;&#1077;&#1084;&#1086;&#1077; &#1076;&#1077;&#1081;&#1089;&#1090;&#1074;&#1080;&#1077;</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="plulinearequationssolution.htm" class="topiclink">PLULinearEquationsSolution</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Solves a system of linear equations &nbsp;A * X = B, &nbsp;A**T * X = B, or &nbsp;A**H * X = B with an LU-factored square coefficient matrix AF computed by <a href="factorizationpluraw.htm" class="topiclink">FactorizationPLURaw</a>, with multiple right-hand sides. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/getrs.html" target="_blank" class="weblink">GETRS</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="pluinverse.htm" class="topiclink">PLUInverse</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Computes the inverse of an LU-factored general matrix AF computed by <a href="factorizationpluraw.htm" class="topiclink">FactorizationPLURaw</a>. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/getri.html" target="_blank" class="weblink">GETRI</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="plucondnumreciprocal.htm" class="topiclink">PLUCondNumReciprocal</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Estimates the reciprocal of the condition number of a general matrix A in either the one-norm or infinity-norm, using the LU factorization computed by <a href="factorizationpluraw.htm" class="topiclink">FactorizationPLURaw</a>. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/gecon.html" target="_blank" class="weblink">GECON</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="pluqlinearequationssolution.htm" class="topiclink">PLUQLinearEquationsSolution</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Solves a system of linear equations A * X = scale * RHS with a general N-by-N matrix A using the LU-factoization with complete pivoting computed by <a href="factorizationpluqraw.htm" class="topiclink">FactorizationPLUQRaw</a>. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/gesc2.html" target="_blank" class="weblink">GESC2</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="plugetridlinearequations.htm" class="topiclink">PLUGeTridLinearEquationsSolution</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Solves a system of linear equations A * X = B, &nbsp;A**T * X = B, or &nbsp;A**H * X = B with a tridiagonal matrix A using the LU-factorization computed by <a href="factorizationplugetridraw.htm" class="topiclink">FactorizationPLUGeTridRaw</a>, with multiple right-hand sides. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/gttrs.html" target="_blank" class="weblink">GTTRS</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="plugetridcondnumreciprocal.htm" class="topiclink">PLUGeTridCondNumReciprocal</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Estimates the reciprocal of the condition number of a general tridiagonal matrix A in either the one-norm or infinity-norm, using the LU factorization computed by <a href="factorizationplugetridraw.htm" class="topiclink">FactorizationPLUGeTridRaw</a>. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/gtcon.html" target="_blank" class="weblink">GTCON</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="ldllinearequationssolution.htm" class="topiclink">LDLLinearEquationsSolution</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Solves a system of linear equations &nbsp;A * X = B &nbsp;with a real symmetric or complex Hermitian indefinite matrix using the factorization A = U**T * D * U or A = L * D * L**T computed by <a href="factorizationldlraw.htm" class="topiclink">FactorizationLDLRaw</a>, with multiple right-hand sides. LAPACK functions <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/sytrs.html" target="_blank" class="weblink">SYTRS</a>, <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/hetrs.html" target="_blank" class="weblink">HETRS</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="ldlinverse.htm" class="topiclink">LDLInverse</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Computes the inverse of a real symmetric or complex Hermitian indefinite matrix using the factorization A = U**T * D * U or A = L * D * L**T computed by <a href="factorizationldlraw.htm" class="topiclink">FactorizationLDLRaw</a>. LAPACK functions <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/sytri.html" target="_blank" class="weblink">SYTRI</a>, <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/hetri.html" target="_blank" class="weblink">HETRI</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="ldlcondnumreciprocal.htm" class="topiclink">LDLCondNumReciprocal</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Estimates the reciprocal of the condition number of a real symmetric or complex Hermitian indefinite matrix A, using the LDLT factorization computed by <a href="factorizationldlraw.htm" class="topiclink">FactorizationLDLRaw</a>. LAPACK functions <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/sycon.html" target="_blank" class="weblink">SYCON</a>, <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/hecon.html" target="_blank" class="weblink">HECON</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="ldlsytridpdlinearequations.htm" class="topiclink">LDLSyTridPDLinearEquationsSolution</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Solves a system of linear equations &nbsp;A * X = B &nbsp;with a real symmetric or complex Hermitian positive-definite tridiagonal matrix using the factorization A = L * D * L**T computed by <a href="factorizationldlsytridpd.htm" class="topiclink">FactorizationLDLSyTridPD</a>, with multiple right-hand sides. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/pttrs.html" target="_blank" class="weblink">PTTRS</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="ldlsytridpdcondnumreciprocal.htm" class="topiclink">LDLSyTridPDCondNumReciprocal</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Estimates the reciprocal of the condition number of a real symmetric or complex Hermitian positive-definite tridiagonal matrix A using the LDLT factorization computed by <a href="factorizationldlsytridpd.htm" class="topiclink">FactorizationLDLSyTridPD</a>. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/ptcon.html" target="_blank" class="weblink">PTCON</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="choleskylinearequations.htm" class="topiclink">CholeskyLinearEquationsSolution</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Solves a system of linear equations &nbsp;A * X = B &nbsp;with a real symmetric or complex Hermitian positive-definite matrix using the factorization A = L * L**T computed by <a href="factorizationcholesky.htm" class="topiclink">FactorizationCholesky</a>, with multiple right-hand sides. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/potrs.html" target="_blank" class="weblink">POTRS</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="choleskyinverse.htm" class="topiclink">CholeskyInverse</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Computes the inverse of a real symmetric or complex Hermitian positive-definite matrix using the LLT factorization computed by <a href="factorizationcholesky.htm" class="topiclink">FactorizationCholesky</a>. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/potri.html" target="_blank" class="weblink">POTRI</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="choleskycondnumreciprocal.htm" class="topiclink">CholeskyCondNumReciprocal</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Estimates the reciprocal of the condition number of a real symmetric or complex Hermitian positive-definite matrix A using the LDL factorization computed by <a href="factorizationcholesky.htm" class="topiclink">FactorizationCholesky</a>. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/pocon.html" target="_blank" class="weblink">POCON</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="sylvesterequationschur.htm" class="topiclink">SylvesterEquationSchur</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Solves Sylvester equation for real quasi-triangular or complex triangular matrices: A*X + X*B = C where &nbsp;A and B are both upper triangular. A is m-by-m and B is n-by-n; the right hand side C and the solution X are m-by-n. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/trsyl.html" target="_blank" class="weblink">TRSYL</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="sylvesterequationschurblocked.htm" class="topiclink">SylvesterEquationSchurBlocked</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Solves Sylvester equation for real quasi-triangular or complex triangular matrices: A*X + X*B = C where &nbsp;A and B are both upper triangular. A is m-by-m and B is n-by-n; the right hand side C and the solution X are m-by-n. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/trsyl3.html" target="_blank" class="weblink">TRSYL3</a>. This is the block (BLAS level 3) version of <a href="sylvesterequationtriangular.htm" class="topiclink">TRSYL</a>. Faster up to 5 times but not so accurate.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="pseudo_inverse.htm" class="topiclink">Pseudo Inverse</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">There is no special function in the OpenBLAS library to calculate the pseudo-inverse of a matrix. However, for this purpose can be used <a href="singular_value_decomposition.htm" class="topiclink">singular value decomposition</a> (SVD)</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="polar_decomposition.htm" class="topiclink">Polar Decomposition</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">There is no special function in the OpenBLAS library to calculate the polar decomposition of a matrix. However, for this purpose can be used <a href="singular_value_decomposition.htm" class="topiclink">singular value decomposition</a> (SVD)</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_Text">&#1060;&#1091;&#1085;&#1082;&#1094;&#1080;&#1080; &#1086;&#1073;&#1077;&#1089;&#1087;&#1077;&#1095;&#1080;&#1074;&#1072;&#1102;&#1090; &#1087;&#1086;&#1076;&#1076;&#1077;&#1088;&#1078;&#1082;&#1091; &#1088;&#1072;&#1079;&#1083;&#1080;&#1095;&#1085;&#1099;&#1093; &#1090;&#1080;&#1087;&#1086;&#1074; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094; (&#1074;&#1077;&#1097;&#1077;&#1089;&#1090;&#1074;&#1077;&#1085;&#1085;&#1099;&#1093;, &#1082;&#1086;&#1084;&#1087;&#1083;&#1077;&#1082;&#1089;&#1085;&#1099;&#1093;, &#1086;&#1076;&#1080;&#1085;&#1072;&#1088;&#1085;&#1086;&#1081; &#1080; &#1076;&#1074;&#1086;&#1081;&#1085;&#1086;&#1081; &#1090;&#1086;&#1095;&#1085;&#1086;&#1089;&#1090;&#1080;) &#1080; &#1086;&#1093;&#1074;&#1072;&#1090;&#1099;&#1074;&#1072;&#1102;&#1090; &#1089;&#1083;&#1077;&#1076;&#1091;&#1102;&#1097;&#1080;&#1077; &#1082;&#1083;&#1102;&#1095;&#1077;&#1074;&#1099;&#1077; &#1079;&#1072;&#1076;&#1072;&#1095;&#1080;.</span></p>
+<p class="p_H3"><span class="f_H3">&#1054;&#1094;&#1077;&#1085;&#1082;&#1072; &#1095;&#1080;&#1089;&#1083;&#1072; &#1086;&#1073;&#1091;&#1089;&#1083;&#1086;&#1074;&#1083;&#1077;&#1085;&#1085;&#1086;&#1089;&#1090;&#1080; (Condition Number Estimation)</span></p>
+<p class="p_Text"><span class="f_Text">&#1042; &#1086;&#1090;&#1083;&#1080;&#1095;&#1080;&#1077; &#1086;&#1090; &#1080;&#1089;&#1090;&#1080;&#1085;&#1085;&#1086;&#1075;&#1086; &#1095;&#1080;&#1089;&#1083;&#1072; &#1086;&#1073;&#1091;&#1089;&#1083;&#1086;&#1074;&#1083;&#1077;&#1085;&#1085;&#1086;&#1089;&#1090;&#1080;, &#1086;&#1094;&#1077;&#1085;&#1082;&#1072; &#1087;&#1088;&#1086;&#1080;&#1079;&#1074;&#1086;&#1076;&#1080;&#1090;&#1089;&#1103; &#1087;&#1088;&#1080;&#1073;&#1083;&#1080;&#1079;&#1080;&#1090;&#1077;&#1083;&#1100;&#1085;&#1086;, &#1085;&#1086; &#1075;&#1086;&#1088;&#1072;&#1079;&#1076;&#1086; &#1073;&#1099;&#1089;&#1090;&#1088;&#1077;&#1077;. &nbsp;&#1047;&#1076;&#1077;&#1089;&#1100; </span><span class="f_Text" style="font-style: italic;">CondNumReciprocal</span><span class="f_Text"> &#1086;&#1073;&#1086;&#1079;&#1085;&#1072;&#1095;&#1072;&#1077;&#1090; &#1086;&#1073;&#1088;&#1072;&#1090;&#1085;&#1086;&#1077; &#1080;&#1085;&#1074;&#1077;&#1088;&#1090;&#1080;&#1088;&#1086;&#1074;&#1072;&#1085;&#1085;&#1086;&#1077; &#1095;&#1080;&#1089;&#1083;&#1086; &#1086;&#1073;&#1091;&#1089;&#1083;&#1086;&#1074;&#1077;&#1085;&#1085;&#1086;&#1089;&#1090;&#1080; (&#1090;&#1086; &#1077;&#1089;&#1090;&#1100; 1/cond_number).</span></p>
+<p class="p_Text"><span class="f_Text">&#1060;&#1091;&#1085;&#1082;&#1094;&#1080;&#1080; &#1090;&#1080;&#1087;&#1072; *</span><span class="f_Text" style="font-style: italic;">CondNumReciprocal</span><span class="f_Text"> &#1087;&#1088;&#1077;&#1076;&#1085;&#1072;&#1079;&#1085;&#1072;&#1095;&#1077;&#1085;&#1099; &#1076;&#1083;&#1103; &#1086;&#1094;&#1077;&#1085;&#1082;&#1080; &#1086;&#1073;&#1088;&#1072;&#1090;&#1085;&#1086;&#1081; &#1074;&#1077;&#1083;&#1080;&#1095;&#1080;&#1085;&#1099; &#1095;&#1080;&#1089;&#1083;&#1072; &#1086;&#1073;&#1091;&#1089;&#1083;&#1086;&#1074;&#1083;&#1077;&#1085;&#1085;&#1086;&#1089;&#1090;&#1080; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1099;:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI"><a href="choleskycondnumreciprocal.htm" class="topiclink">CholeskyCondNumReciprocal</a> — &#1076;&#1083;&#1103; &#1087;&#1086;&#1083;&#1086;&#1078;&#1080;&#1090;&#1077;&#1083;&#1100;&#1085;&#1086; &#1086;&#1087;&#1088;&#1077;&#1076;&#1077;&#1083;&#1105;&#1085;&#1085;&#1099;&#1093; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094; &#1089; &#1092;&#1072;&#1082;&#1090;&#1086;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1077;&#1081; LLT;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI"><a href="ldlcondnumreciprocal.htm" class="topiclink">LDLCondNumReciprocal</a> — &#1076;&#1083;&#1103; &#1085;&#1077;&#1086;&#1087;&#1088;&#1077;&#1076;&#1077;&#1083;&#1105;&#1085;&#1085;&#1099;&#1093; &#1089;&#1080;&#1084;&#1084;&#1077;&#1090;&#1088;&#1080;&#1095;&#1085;&#1099;&#1093; &#1080;&#1083;&#1080; &#1101;&#1088;&#1084;&#1080;&#1090;&#1086;&#1074;&#1099;&#1093; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094; &#1089; &#1092;&#1072;&#1082;&#1090;&#1086;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1077;&#1081; LDL;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI"><a href="ldlsytridpdcondnumreciprocal.htm" class="topiclink">LDLSyTridPDCondNumReciprocal</a> — &#1076;&#1083;&#1103; &#1087;&#1086;&#1083;&#1086;&#1078;&#1080;&#1090;&#1077;&#1083;&#1100;&#1085;&#1086; &#1086;&#1087;&#1088;&#1077;&#1076;&#1077;&#1083;&#1105;&#1085;&#1085;&#1099;&#1093; &#1089;&#1080;&#1084;&#1084;&#1077;&#1090;&#1088;&#1080;&#1095;&#1085;&#1099;&#1093; &#1090;&#1088;&#1080;&#1076;&#1080;&#1072;&#1075;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1099;&#1093; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI"><a href="plucondnumreciprocal.htm" class="topiclink">PLUCondNumReciprocal</a>, <a href="plugetridcondnumreciprocal.htm" class="topiclink">PLUGeTridCondNumReciprocal</a> — &#1076;&#1083;&#1103; &#1086;&#1073;&#1086;&#1073;&#1097;&#1105;&#1085;&#1085;&#1099;&#1093; &#1080; &#1090;&#1088;&#1080;&#1076;&#1080;&#1072;&#1075;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1099;&#1093; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094; &#1089; LU-&#1092;&#1072;&#1082;&#1090;&#1086;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1077;&#1081;.</span></li>
+</ul>
+<p class="p_H3"><span class="f_H3">&#1054;&#1073;&#1088;&#1072;&#1090;&#1085;&#1099;&#1077; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1099; (Matrix Inverse)</span></p>
+<p class="p_Text"><span class="f_Text">&#1060;&#1091;&#1085;&#1082;&#1094;&#1080;&#1080; &#1090;&#1080;&#1087;&#1072; *</span><span class="f_Text" style="font-style: italic;">Inverse</span><span class="f_Text"> &#1074;&#1099;&#1095;&#1080;&#1089;&#1083;&#1103;&#1102;&#1090; &#1086;&#1073;&#1088;&#1072;&#1090;&#1085;&#1091;&#1102; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1091; &#1085;&#1072; &#1086;&#1089;&#1085;&#1086;&#1074;&#1077; &#1089;&#1086;&#1086;&#1090;&#1074;&#1077;&#1090;&#1089;&#1090;&#1074;&#1091;&#1102;&#1097;&#1077;&#1081; &#1092;&#1072;&#1082;&#1090;&#1086;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1080;:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI"><a href="choleskyinverse.htm" class="topiclink">CholeskyInverse</a>, <a href="ldlinverse.htm" class="topiclink">LDLInverse</a>, <a href="pluinverse.htm" class="topiclink">PLUInverse</a> — &#1076;&#1083;&#1103; &#1088;&#1072;&#1079;&#1083;&#1080;&#1095;&#1085;&#1099;&#1093; &#1092;&#1086;&#1088;&#1084; &#1092;&#1072;&#1082;&#1090;&#1086;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1081;;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">&#1080;&#1089;&#1087;&#1086;&#1083;&#1100;&#1079;&#1091;&#1102;&#1090; &#1084;&#1072;&#1089;&#1089;&#1080;&#1074; &#1080;&#1085;&#1076;&#1077;&#1082;&#1089;&#1086;&#1074; ipiv, &#1077;&#1089;&#1083;&#1080; &#1090;&#1088;&#1077;&#1073;&#1091;&#1077;&#1090;&#1089;&#1103; &#1080;&#1085;&#1092;&#1086;&#1088;&#1084;&#1072;&#1094;&#1080;&#1103; &#1086; &#1087;&#1077;&#1088;&#1077;&#1089;&#1090;&#1072;&#1085;&#1086;&#1074;&#1082;&#1072;&#1093;.</span></li>
+</ul>
+<p class="p_H3"><span class="f_H3">&#1056;&#1077;&#1096;&#1077;&#1085;&#1080;&#1077; &#1057;&#1051;&#1040;&#1059; (Linear System Solvers)</span></p>
+<p class="p_Text"><span class="f_Text">&#1060;&#1091;&#1085;&#1082;&#1094;&#1080;&#1080; *LinearEquationsSolution &#1088;&#1077;&#1096;&#1072;&#1102;&#1090; &#1057;&#1051;&#1040;&#1059; &#1074;&#1080;&#1076;&#1072; A * X = B:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">&#1055;&#1086;&#1076;&#1076;&#1077;&#1088;&#1078;&#1080;&#1074;&#1072;&#1102;&#1090;&#1089;&#1103; &#1082;&#1072;&#1082; &#1084;&#1072;&#1090;&#1088;&#1080;&#1095;&#1085;&#1099;&#1077;, &#1090;&#1072;&#1082; &#1080; &#1074;&#1077;&#1082;&#1090;&#1086;&#1088;&#1085;&#1099;&#1077; &#1087;&#1088;&#1072;&#1074;&#1099;&#1077; &#1095;&#1072;&#1089;&#1090;&#1080;;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">&#1059;&#1095;&#1080;&#1090;&#1099;&#1074;&#1072;&#1077;&#1090;&#1089;&#1103; &#1074;&#1086;&#1079;&#1084;&#1086;&#1078;&#1085;&#1086;&#1089;&#1090;&#1100; &#1090;&#1088;&#1072;&#1085;&#1089;&#1087;&#1086;&#1085;&#1080;&#1088;&#1086;&#1074;&#1072;&#1085;&#1080;&#1103; (&#1080;&#1083;&#1080; &#1101;&#1088;&#1084;&#1080;&#1090;&#1086;&#1074;&#1086;&#1075;&#1086; &#1089;&#1086;&#1087;&#1088;&#1103;&#1078;&#1077;&#1085;&#1080;&#1103;) &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1099; &#1082;&#1086;&#1101;&#1092;&#1092;&#1080;&#1094;&#1080;&#1077;&#1085;&#1090;&#1086;&#1074; &#1095;&#1077;&#1088;&#1077;&#1079; <a href="plulinearequationssolution.htm#enum_equations_form" class="topiclink">ENUM_EQUATIONS_FORM</a>;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">&#1054;&#1090;&#1076;&#1077;&#1083;&#1100;&#1085;&#1099;&#1077; &#1092;&#1091;&#1085;&#1082;&#1094;&#1080;&#1080; &#1087;&#1088;&#1077;&#1076;&#1091;&#1089;&#1084;&#1086;&#1090;&#1088;&#1077;&#1085;&#1099; &#1076;&#1083;&#1103; &#1090;&#1088;&#1080;&#1076;&#1080;&#1072;&#1075;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1099;&#1093; &#1080; &#1086;&#1073;&#1086;&#1073;&#1097;&#1105;&#1085;&#1085;&#1099;&#1093; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;.</span></li>
+</ul>
+<p class="p_H3"><span class="f_H3">&#1055;&#1086;&#1076;&#1076;&#1077;&#1088;&#1078;&#1082;&#1072; &#1088;&#1072;&#1089;&#1096;&#1080;&#1088;&#1077;&#1085;&#1085;&#1099;&#1093; LU-&#1092;&#1072;&#1082;&#1090;&#1086;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1081;</span></p>
+<p class="p_Text"><span class="f_Text">&#1060;&#1091;&#1085;&#1082;&#1094;&#1080;&#1103; <a href="pluqlinearequationssolution.htm" class="topiclink">PLUQLinearEquationsSolution</a> &#1088;&#1077;&#1096;&#1072;&#1077;&#1090; &#1089;&#1080;&#1089;&#1090;&#1077;&#1084;&#1091; &#1089; &#1084;&#1072;&#1089;&#1096;&#1090;&#1072;&#1073;&#1080;&#1088;&#1086;&#1074;&#1072;&#1085;&#1080;&#1077;&#1084;:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_Keywords">A&nbsp;*&nbsp;X&nbsp;=&nbsp;scale&nbsp;*&nbsp;B</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&#1085;&#1072; &#1086;&#1089;&#1085;&#1086;&#1074;&#1077; &#1087;&#1086;&#1083;&#1085;&#1086;&#1081; LU-&#1092;&#1072;&#1082;&#1090;&#1086;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1080; &#1089; &#1087;&#1077;&#1088;&#1077;&#1089;&#1090;&#1072;&#1085;&#1086;&#1074;&#1082;&#1072;&#1084;&#1080; &#1087;&#1086; &#1089;&#1090;&#1088;&#1086;&#1082;&#1072;&#1084; &#1080; &#1089;&#1090;&#1086;&#1083;&#1073;&#1094;&#1072;&#1084;.</span></p>
+<p class="p_H3"><span class="f_H3">&#1057;&#1087;&#1077;&#1094;&#1080;&#1072;&#1083;&#1100;&#1085;&#1099;&#1077; &#1084;&#1077;&#1090;&#1086;&#1076;&#1099; (&#1085;&#1072; &#1086;&#1089;&#1085;&#1086;&#1074;&#1077; SVD)</span></p>
+<p class="p_Text"><span class="f_Text">&#1061;&#1086;&#1090;&#1103; &#1092;&#1091;&#1085;&#1082;&#1094;&#1080;&#1080; &#1073;&#1080;&#1073;&#1083;&#1080;&#1086;&#1090;&#1077;&#1082;&#1080; &#1085;&#1072;&#1087;&#1088;&#1103;&#1084;&#1091;&#1102; &#1085;&#1077; &#1088;&#1077;&#1072;&#1083;&#1080;&#1079;&#1091;&#1102;&#1090; &#1087;&#1086;&#1083;&#1103;&#1088;&#1085;&#1086;&#1077; &#1088;&#1072;&#1079;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1077; &#1080;&#1083;&#1080; &#1087;&#1089;&#1077;&#1074;&#1076;&#1086;&#1086;&#1073;&#1088;&#1072;&#1090;&#1085;&#1091;&#1102; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1091;, &#1088;&#1072;&#1079;&#1076;&#1077;&#1083; &#1089;&#1086;&#1076;&#1077;&#1088;&#1078;&#1080;&#1090; &#1087;&#1088;&#1080;&#1084;&#1077;&#1088;&#1099; &#1088;&#1077;&#1072;&#1083;&#1080;&#1079;&#1072;&#1094;&#1080;&#1080; &#1085;&#1072; &#1073;&#1072;&#1079;&#1077; &#1089;&#1080;&#1085;&#1075;&#1091;&#1083;&#1103;&#1088;&#1085;&#1086;&#1075;&#1086; &#1088;&#1072;&#1079;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1103;:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI"><a href="polar_decomposition.htm" class="topiclink">PolarDecomposition</a> — &#1088;&#1072;&#1079;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1077; A = Q * P, &#1075;&#1076;&#1077; Q — &#1086;&#1088;&#1090;&#1086;&#1075;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1072;&#1103;, P — &#1089;&#1080;&#1084;&#1084;&#1077;&#1090;&#1088;&#1080;&#1095;&#1085;&#1072;&#1103; &#1087;&#1086;&#1083;&#1086;&#1078;&#1080;&#1090;&#1077;&#1083;&#1100;&#1085;&#1086; &#1086;&#1087;&#1088;&#1077;&#1076;&#1077;&#1083;&#1105;&#1085;&#1085;&#1072;&#1103; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1072;;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI"><a href="pseudo_inverse.htm" class="topiclink">PseudoInverse</a> — &#1074;&#1099;&#1095;&#1080;&#1089;&#1083;&#1077;&#1085;&#1080;&#1077; &#1087;&#1089;&#1077;&#1074;&#1076;&#1086;&#1086;&#1073;&#1088;&#1072;&#1090;&#1085;&#1086;&#1081; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1099; A+ = V * &#931;&#8314; * U&#7488;.</span></li>
+</ul>
+<p class="p_FunctionRemLI"><span class="f_FunctionRemLI">&nbsp;</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">&#1055;&#1088;&#1080;&#1084;&#1077;&#1095;&#1072;&#1085;&#1080;&#1103;</span></p>
+<ul style="list-style-type:disc">
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">&#1042;&#1089;&#1077; &#1092;&#1091;&#1085;&#1082;&#1094;&#1080;&#1080; &#1074;&#1086;&#1079;&#1074;&#1088;&#1072;&#1097;&#1072;&#1102;&#1090; true &#1087;&#1088;&#1080; &#1091;&#1089;&#1087;&#1077;&#1093;&#1077;, false &#1087;&#1088;&#1080; &#1086;&#1096;&#1080;&#1073;&#1082;&#1077;.</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">&#1053;&#1077;&#1086;&#1073;&#1093;&#1086;&#1076;&#1080;&#1084;&#1099;&#1084;&#1080; &#1087;&#1088;&#1077;&#1076;&#1087;&#1086;&#1089;&#1099;&#1083;&#1082;&#1072;&#1084;&#1080; &#1103;&#1074;&#1083;&#1103;&#1102;&#1090;&#1089;&#1103; &#1092;&#1072;&#1082;&#1090;&#1086;&#1088;&#1080;&#1079;&#1072;&#1094;&#1080;&#1080;, &#1074;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1085;&#1099;&#1077; &#1079;&#1072;&#1088;&#1072;&#1085;&#1077;&#1077; (FactorizationCholesky, FactorizationLDLRaw, GETRF &#1080; &#1090;.&#1076;.).</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">&#1056;&#1077;&#1079;&#1091;&#1083;&#1100;&#1090;&#1072;&#1090;&#1099; &#1074;&#1099;&#1095;&#1080;&#1089;&#1083;&#1077;&#1085;&#1080;&#1081; &#1084;&#1086;&#1075;&#1091;&#1090; &#1073;&#1099;&#1090;&#1100; &#1095;&#1091;&#1074;&#1089;&#1090;&#1074;&#1080;&#1090;&#1077;&#1083;&#1100;&#1085;&#1099; &#1082; &#1095;&#1080;&#1089;&#1083;&#1077;&#1085;&#1085;&#1086;&#1081; &#1089;&#1090;&#1072;&#1073;&#1080;&#1083;&#1100;&#1085;&#1086;&#1089;&#1090;&#1080;, &#1086;&#1089;&#1086;&#1073;&#1077;&#1085;&#1085;&#1086; &#1087;&#1088;&#1080; &#1084;&#1072;&#1083;&#1099;&#1093; &#1079;&#1085;&#1072;&#1095;&#1077;&#1085;&#1080;&#1103;&#1093; </span><span class="f_FunctionRemLI" style="font-style: italic;">rcond</span><span class="f_FunctionRemLI">.</span></li>
+</ul>
+
+</div>
+
+</body>
+</html>

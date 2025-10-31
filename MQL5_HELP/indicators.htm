@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Technical Indicators</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a>/ Technical Indicators
+          </td>
+          <td width="70" align="right">
+          <a href="textgetsize.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="iac.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Technical Indicator Functions</span></p>
+<p class="p_Text"><span class="f_Text">All functions like iMA, iAC, iMACD, iIchimoku etc. create a copy of the corresponding technical indicator in the global cache of the client terminal. If a copy of the indicator with such parameters already exists, the new copy is not created, and the counter of references to the existing copy increases.</span></p>
+<p class="p_Text"><span class="f_Text">These functions return the handle of the appropriate copy of the indicator. Further, using this handle, you can receive data calculated by the corresponding indicator. The corresponding buffer data (technical indicators contain calculated data in their internal buffers, which can vary from 1 to 5, depending on the indicator) can be copied to a mql5-program using the <a href="copybuffer.htm" class="topiclink">CopyBuffer()</a> function.</span></p>
+<p class="p_Text"><span class="f_Text">You can't refer to the indicator data right after it has been created, because calculation of indicator values requires some time, so it's better to create indicator handles in OnInit(). Function <a href="icustom.htm" class="topiclink">iCustom()</a> creates the corresponding custom indicator, and returns its handle in case it is successfully create. Custom indicators can contain up to 512 indicator buffers, the contents of which can also be obtained by the <a href="copybuffer.htm" class="topiclink">CopyBuffer()</a> function, using the obtained handle.</span></p>
+<p class="p_Text"><span class="f_Text">There is a universal method for creating any technical indicator using the <a href="indicatorcreate.htm" class="topiclink">IndicatorCreate()</a> function. This function accepts the following data as input parameters:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">symbol name;</span></li>
+<li class="p_li"><span class="f_li">timeframe;</span></li>
+<li class="p_li"><span class="f_li">type of the indicator to create;</span></li>
+<li class="p_li"><span class="f_li">number of input parameters of the indicator;</span></li>
+<li class="p_li"><span class="f_li">an array of <a href="mqlparam.htm" class="topiclink">MqlParam</a> type containing all the necessary input parameters.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The computer memory can be freed from an indicator that is no more utilized, using the <a href="indicatorrelease.htm" class="topiclink">IndicatorRelease()</a> function, to which the indicator handle is passed.</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Note</span><span class="f_Text">. Repeated call of the indicator function with the same parameters within one mql5-program does not lead to a multiple increase of the reference counter; the counter will be increased only once by 1. However, it's recommended to get the indicators handles in function <a href="oninit.htm" class="topiclink">OnInit()</a> or in the class constructor, and further use these handles in other functions. The reference counter decreases when a mql5-program is deinitialized.</span></p>
+<p class="p_Text"><span class="f_Text">All indicator functions have at least 2 parameters - symbol and period. The <a href="void.htm" class="topiclink">NULL</a> value of the symbol means the current symbol, the 0 value of the period means the current <a href="enum_timeframes.htm" class="topiclink">timeframe</a>.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Function</span></p>
+</th>
+<th class="EnumTable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Returns the handle of the indicator:</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iac.htm" class="topiclink">iAC</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Accelerator Oscillator</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iad.htm" class="topiclink">iAD</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Accumulation/Distribution</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iadx.htm" class="topiclink">iADX</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Average Directional Index</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iadxwilder.htm" class="topiclink">iADXWilder</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Average Directional Index by Welles Wilder</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="ialligator.htm" class="topiclink">iAlligator</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Alligator</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iama.htm" class="topiclink">iAMA</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Adaptive Moving Average</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iao.htm" class="topiclink">iAO</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Awesome Oscillator</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iatr.htm" class="topiclink">iATR</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Average True Range</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="ibearspower.htm" class="topiclink">iBearsPower</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Bears Power</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="ibands.htm" class="topiclink">iBands</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Bollinger Bands&reg;</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="ibullspower.htm" class="topiclink">iBullsPower</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Bulls Power</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="icci.htm" class="topiclink">iCCI</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Commodity Channel Index</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="ichaikin.htm" class="topiclink">iChaikin</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Chaikin Oscillator</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="icustom.htm" class="topiclink">iCustom</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Custom indicator </span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="idema.htm" class="topiclink">iDEMA</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Double Exponential Moving Average</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="idemarker.htm" class="topiclink">iDeMarker</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">DeMarker</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="ienvelopes.htm" class="topiclink">iEnvelopes</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Envelopes</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iforce.htm" class="topiclink">iForce</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Force Index</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="ifractals.htm" class="topiclink">iFractals</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Fractals</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iframa.htm" class="topiclink">iFrAMA</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Fractal Adaptive Moving Average</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="igator.htm" class="topiclink">iGator</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Gator Oscillator</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iichimoku.htm" class="topiclink">iIchimoku</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Ichimoku Kinko Hyo</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="ibwmfi.htm" class="topiclink">iBWMFI</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Market Facilitation Index by Bill Williams</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="imomentum.htm" class="topiclink">iMomentum</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Momentum</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="imfi.htm" class="topiclink">iMFI</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Money Flow Index</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="ima.htm" class="topiclink">iMA</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Moving Average</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iosma.htm" class="topiclink">iOsMA</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Moving Average of Oscillator (MACD histogram)</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="imacd.htm" class="topiclink">iMACD</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Moving Averages Convergence-Divergence</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iobv.htm" class="topiclink">iOBV</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">On Balance Volume</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="isar.htm" class="topiclink">iSAR</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Parabolic Stop And Reverse System</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="irsi.htm" class="topiclink">iRSI</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Relative Strength Index</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="irvi.htm" class="topiclink">iRVI</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Relative Vigor Index</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="istddev.htm" class="topiclink">iStdDev</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Standard Deviation</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="istochastic.htm" class="topiclink">iStochastic</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Stochastic Oscillator</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="itema.htm" class="topiclink">iTEMA</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Triple Exponential Moving Average</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="itrix.htm" class="topiclink">iTriX</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Triple Exponential Moving Averages Oscillator</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="iwpr.htm" class="topiclink">iWPR</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Williams' Percent Range</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="ividya.htm" class="topiclink">iVIDyA</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Variable Index Dynamic Average</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:126px;"><p class="p_fortable"><span class="f_fortable"><a href="ivolumes.htm" class="topiclink">iVolumes</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Volumes</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Call of Imported Functions</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="runtime.htm"> MQL5 programs </a>/ Call of Imported Functions
+          </td>
+          <td width="70" align="right">
+          <a href="resources.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="errors.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Call of Imported Functions</span></p>
+<p class="p_Text"><span class="f_Text">To import functions during the execution of a mql5-program, the client terminal uses early binding. This means that if a program has call of an imported function, the corresponding module (ex5 or dll) is loaded during the program load. MQL5 and DLL libraries are executed in the thread of a calling module.</span></p>
+<p class="p_Text"><span class="f_Text">It is not recommended to use the fully specified name of the module to be loaded like </span><span class="f_Text" style="font-style: italic;">Drive:\Directory\FileName.Ext</span><span class="f_Text">. The MQL5 libraries are loaded from the </span><span class="f_Text" style="font-style: italic;">terminal_dir\MQL5\Libraries </span><span class="f_Text">folder. If the library hasn't been found, then the client terminal performs an attempt to load it from </span><span class="f_Text" style="font-style: italic;">terminal_dir\experts </span><span class="f_Text">folder. </span></p>
+<p class="p_Text"><span class="f_Text">The system libraries (DLL) &nbsp;are loaded by the operating system rules. If the library is already loaded (for example, another Expert Advisor, and even from another client terminal, running in parallel), then it uses requests to the library already loaded. Otherwise, it performs a search in the following sequence:</span></p>
+<ol style="list-style-type:decimal">
+<li value="1" class="p_li"><span class="f_li">Directory, from which the module importing dll was started. The module here is an Expert Advisor, a script, an indicator or EX5 library;</span></li>
+<li value="2" class="p_li"><span class="f_li">Directory terminal_data_directory\MQL5\Libraries (<a href="terminalstatus.htm#enum_terminal_info_string" class="topiclink">TERMINAL_DATA_PATH</a>\MQL5\Libraries);</span></li>
+<li value="3" class="p_li"><span class="f_li">Directory, from which the MetaTrader 5 client terminal was started;</span></li>
+<li value="4" class="p_li"><span class="f_li">System directory;</span></li>
+<li value="5" class="p_li"><span class="f_li">Windows directory;</span></li>
+<li value="6" class="p_li"><span class="f_li">Current directory;</span></li>
+<li value="7" class="p_li"><span class="f_li">Directories listed in the PATH system variable.</span></li>
+</ol>
+<p class="p_Text"><span class="f_Text">If the DLL library uses another DLL in its work, the first one cannot be loaded in case when there is no second DLL.</span></p>
+<p class="p_Text"><span class="f_Text">Before an Expert Advisor (script, indicator) is loaded, a common list of all EX5 library modules is formed. It's going to be used both from a loaded Expert Advisor (script, indicator) and from libraries of this list. Thus the one-time loading of many times used EX5 library modules is needed. Libraries use <a href="predefined.htm" class="topiclink">predefined variables</a> of the Expert Advisor (script, indicator) they were called by.</span></p>
+<p class="p_Text"><span class="f_Text">The imported library EX5 is searched for in the following sequence:</span></p>
+<ol style="list-style-type:decimal">
+<li value="1" class="p_li"><span class="f_li">Directory, path to which is set relative to the directory of the Expert Advisor (script, indicator) that imports EX5;</span></li>
+<li value="2" class="p_li"><span class="f_li">Directory terminal_directory\MQL5\Libraries;</span></li>
+<li value="3" class="p_li"><span class="f_li">Directory MQL5\Libraries in the common directory of all MetaTrader 5 client terminals (Common\MQL5\Libraries).</span></li>
+</ol>
+<p class="p_Text"><span class="f_Text">Functions <a href="import.htm" class="topiclink">imported</a> DLL into a mql5-program must ensure the Windows API calls agreement. To ensure such an agreement, in the source text of programs written in C or C++, use the keyword __stdcall, which is specific to the Microsoft(r) compilers. This agreement is characterized by the following:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">caller (in our case it is a mq5-program) should &quot;see&quot; a prototype of a function called (imported from the DLL), in order to properly combine parameters to a stack; </span></li>
+<li class="p_li"><span class="f_li">caller (in our case it is a mql5-program) puts parameters to the stack in a reverse order, from right to left - in this order an imported function reads parameters passed to it; </span></li>
+<li class="p_li"><span class="f_li">parameters are passed by value, except those explicitly passed by reference (in our case strings)</span></li>
+<li class="p_li"><span class="f_li">an imported function cleans the stack independently by reading parameters passed to it. </span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">When describing the prototype of an imported function, default parameters can be used. </span></p>
+<p class="p_Text"><span class="f_Text">If the corresponding library is unable to load, or there is a prohibition on the DLL use, or the imported function is not found - the Expert Advisor stops its operation with the appropriate message &quot;Expert Advisor stopped&quot; in the Journal (log file). In this case the Expert Advisor will not run until it is reinitialized. An Expert Advisor can be reinitialized as a result of recompilation or after the table of its properties is opened and OK is pressed.</span></p>
+<p class="p_H2"><span class="f_H2">Passing Parameters</span></p>
+<p class="p_Text"><span class="f_Text">All parameters of <a href="types.htm#base_types" class="topiclink">simple types</a> are passed by values unless it is explicitly indicated that they are passed by reference. When a <a href="stringconst.htm" class="topiclink">string</a> is passed, the address of the buffer of the copied string is passed; if a string is passed by reference, the address of the buffer of this string without copying it is passed to the function imported from DLL.</span></p>
+<p class="p_Text"><span class="f_Text"><a href="classes.htm" class="topiclink">Structures</a> that contain dynamic arrays, strings, classes, other complex structures, as well as static or <a href="dynamic_array.htm" class="topiclink">dynamic arrays</a> of the enumerated objects, can't be passed as a parameter to an imported function.</span></p>
+<p class="p_Text"><span class="f_Text">When passing an array to DLL, the address of the beginning of the data buffer is always passed (irrespective of the <a href="arraygetasseries.htm" class="topiclink">AS_SERIES</a> flag). A function inside a DLL knows nothing about the AS_SERIES flag, the passed array is a static array of an undefined length; an additional parameter should be used for specifying the array size.</span></p>
+
+</div>
+
+</body>
+</html>

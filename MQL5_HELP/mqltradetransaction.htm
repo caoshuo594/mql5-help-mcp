@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Trade Transaction Structure</title>
+  <meta name="keywords" content="MqlTradeTransaction" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="constants.htm"> Constants, Enumerations and Structures </a> / <a class="h_m" href="structures.htm"> Data Structures </a>/ Trade Transaction Structure
+          </td>
+          <td width="70" align="right">
+          <a href="mqltraderesult.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="mqltick.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Structure of a Trade Transaction (MqlTradeTransaction)</span></p>
+<p class="p_Text"><span class="f_Text">When performing some definite actions on a trade account, its state changes. Such actions include:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Sending a trade request from any MQL5 application in the client terminal using <a href="ordersend.htm" class="topiclink">OrderSend</a> and <a href="ordersendasync.htm" class="topiclink">OrderSendAsync</a> functions and its further execution;</span></li>
+<li class="p_li"><span class="f_li">Sending a trade request via the terminal graphical interface and its further execution;</span></li>
+</ul>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Pending orders and stop orders activation on the server;</span></li>
+<li class="p_li"><span class="f_li">Performing operations on a trade server side.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The following trade transactions are performed as a result of these actions:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">handling a trade request;</span></li>
+<li class="p_li"><span class="f_li">changing open orders;</span></li>
+<li class="p_li"><span class="f_li">changing orders history;</span></li>
+<li class="p_li"><span class="f_li">changing deals history;</span></li>
+<li class="p_li"><span class="f_li">changing positions.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">For example, when sending a market buy order, it is handled, an appropriate buy order is created for the account, the order is then executed and removed from the list of the open ones, then it is added to the orders history, an appropriate deal is added to the history and a new position is created. All these actions are trade transactions.</span></p>
+<p class="p_Text"><span class="f_Text">Special <a href="ontradetransaction.htm" class="topiclink">OnTradeTransaction()</a> handler is provided in MQL5 to get trade transactions applied to an account. The first parameter of the handler gets MqlTradeTransaction structure describing <a href="enum_trade_transaction_type.htm" class="topiclink">trade transactions</a>.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">MqlTradeTransaction</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">deal</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Deal&nbsp;ticket</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">order</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Order&nbsp;ticket</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">symbol</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Trade&nbsp;symbol&nbsp;name</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ENUM_TRADE_TRANSACTION_TYPE</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Param">type</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Trade&nbsp;transaction&nbsp;type</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ENUM_ORDER_TYPE</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">order_type</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Order&nbsp;type</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ENUM_ORDER_STATE</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">order_state</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Order&nbsp;state</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ENUM_DEAL_TYPE</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">deal_type</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Deal&nbsp;type</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ENUM_ORDER_TYPE_TIME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">time_type</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Order&nbsp;type&nbsp;by&nbsp;action&nbsp;period</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">time_expiration</span><span class="f_CodeExample">;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Order&nbsp;expiration&nbsp;time</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">price</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Price&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">price_trigger</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Stop&nbsp;limit&nbsp;order&nbsp;activation&nbsp;price</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">price_sl</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Stop&nbsp;Loss&nbsp;level</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">price_tp</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Take&nbsp;Profit&nbsp;level</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">volume</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Volume&nbsp;in&nbsp;lots</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">position</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Position&nbsp;ticket</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Param">position_by</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Ticket&nbsp;of&nbsp;an&nbsp;opposite&nbsp;position</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Fields Description</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Field</span></p>
+</th>
+<th class="EnumTable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">deal</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Deal ticket.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">order</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Order ticket.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">symbol</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">The name of the trading symbol, for which transaction is performed.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">type</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Trade transaction type. The value can be one of <a href="enum_trade_transaction_type.htm" class="topiclink">ENUM_TRADE_TRANSACTION_TYPE</a> enumeration values.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">order_type</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Trade order type. The value can be one of <a href="orderproperties.htm#enum_order_type" class="topiclink">ENUM_ORDER_TYPE</a> enumeration values.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">order_state</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Trade order state. The value can be one of <a href="orderproperties.htm#enum_order_state" class="topiclink">ENUM_ORDER_STATE</a> enumeration values.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">deal_type</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Deal type. The value can be one of <a href="dealproperties.htm#enum_deal_type" class="topiclink">ENUM_DEAL_TYPE</a> enumeration values.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">time_type</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Order type upon expiration. The value can be one of </span><span class="f_ParameterDesrciption"><a href="orderproperties.htm#enum_order_type_time" class="topiclink">ENUM_ORDER_TYPE_TIME</a> values.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">time_expiration</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Pending order expiration term (for orders of </span><span class="f_ParameterDesrciption"><a href="orderproperties.htm#enum_order_type_time" class="topiclink">ORDER_TIME_SPECIFIED</a> and <a href="orderproperties.htm#enum_order_type_time" class="topiclink">ORDER_TIME_SPECIFIED_DAY</a></span><span class="f_fortable"> types).</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">price</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Price. Depending on a trade transaction type, it may be a price of an order, a deal or a position.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">price_trigger</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Stop limit order stop (activation) price (</span><span class="f_EnumID"><a href="orderproperties.htm#enum_order_type" class="topiclink">ORDER_TYPE_BUY_STOP_LIMIT</a> and <a href="orderproperties.htm#enum_order_type" class="topiclink">ORDER_TYPE_SELL_STOP_LIMIT</a>).</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">price_sl</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Stop Loss price. Depending on a trade transaction type, it may relate to an order, a deal or a position.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">price_tp</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Take Profit price. Depending on a trade transaction type, it may relate to an order, a deal or a position.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">volume</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Volume in lots. Depending on a trade transaction type, it may indicate the current volume of an order, a deal or a position.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">position</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">The ticket of the position affected by the transaction.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">position_by</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">The ticket of the opposite position. Used when closing a position by an opposite one, i.e. by a position of the same symbol that was opened in the opposite direction.</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The essential parameter for received transaction analysis is its type specified in </span><span class="f_Text" style="font-weight: bold;">type</span><span class="f_Text"> field. For example, if a transaction is of <a href="enum_trade_transaction_type.htm" class="topiclink">TRADE_TRANSACTION_REQUEST</a> type (a result of handling a trade request by the server has been received), the structure has only only one field that is filled completely - </span><span class="f_Text" style="font-weight: bold;">type</span><span class="f_Text">. Other fields are not analyzed. In this case, we may analyze two additional </span><span class="f_Text" style="font-weight: bold;">request</span><span class="f_Text"> and </span><span class="f_Text" style="font-weight: bold;">result</span><span class="f_Text"> parameters submitted to OnTradeTransaction() handler, as shown below.</span></p>
+<p class="p_Text"><span class="f_Text">Having data on a trading operation type, you can decide on the analysis of the current state of orders, positions and deals on a trading account. Remember that one trade request sent to the server from the terminal can generate several new transactions. The priority of their arrival at the terminal is not guaranteed.</span></p>
+<p class="p_Text"><span class="f_Text">MqlTradeTransaction structure is filled in different ways depending on a trade transaction type (<a href="enum_trade_transaction_type.htm" class="topiclink">ENUM_TRADE_TRANSACTION_TYPE</a>):</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">TRADE_TRANSACTION_ORDER_* and TRADE_TRANSACTION_HISTORY_*</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">The following fields in MqlTradeTransaction structure are filled for trade transactions related to open orders handling (TRADE_TRANSACTION_ORDER_ADD, TRADE_TRANSACTION_ORDER_UPDATE and TRADE_TRANSACTION_ORDER_DELETE) and orders history (TRADE_TRANSACTION_HISTORY_ADD, TRADE_TRANSACTION_HISTORY_UPDATE, TRADE_TRANSACTION_HISTORY_DELETE):</span></p>
+<ul style="list-style-type:disc">
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">order - order ticket;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">symbol - order symbol name;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">type - trade transaction type;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">order_type - order type;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">orders_state - order current state;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">time_type - order expiration type;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">time_expiration - order expiration time </span><span class="f_fortable">(for orders having </span><span class="f_ParameterDesrciption"><a href="orderproperties.htm#enum_order_type_time" class="topiclink">ORDER_TIME_SPECIFIED</a> and <a href="orderproperties.htm#enum_order_type_time" class="topiclink">ORDER_TIME_SPECIFIED_DAY</a></span><span class="f_fortable"> expiration types)</span><span class="f_FunctionRemLI">;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">price - order price specified by a client;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">price_trigger - stop limit order stop price (only for </span><span class="f_EnumID"><a href="orderproperties.htm#enum_order_type" class="topiclink">ORDER_TYPE_BUY_STOP_LIMIT</a> and <a href="orderproperties.htm#enum_order_type" class="topiclink">ORDER_TYPE_SELL_STOP_LIMIT</a>)</span><span class="f_FunctionRemLI">;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">price_sl - Stop Loss order price (filled, if specified in the order);</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">price_tp - Take Profit order price (filled, if specified in the order);</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">volume - order current volume (unfilled). Initial order volume can be found in the orders history using <a href="historyordergetticket.htm" class="topiclink">HistoryOrders*</a> function.</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">position - the ticket of the position that was opened, modified or closed as a result of order execution. It is only filled for market orders, not filled for TRADE_TRANSACTION_ORDER_ADD.</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">position_by - the ticket of the opposite position. It is only filled for the close by orders (to close a position by an opposite one).</span></li>
+</ul>
+<p class="p_BoldTitles"><span class="f_BoldTitles">TRADE_TRANSACTION_DEAL_*</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">The following fields in MqlTradeTransaction structure are filled for trade transactions related to deals handling (TRADE_TRANSACTION_DEAL_ADD, TRADE_TRANSACTION_DEAL_UPDATE and TRADE_TRANSACTION_DEAL_DELETE):</span></p>
+<ul style="list-style-type:disc">
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">deal - deal ticket;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">order - order ticket, based on which a deal has been performed;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">symbol - deal symbol name;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">type - trade transaction type;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">deal_type - deal type;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">price - deal price;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">price_sl - Stop Loss price (filled, if specified in the order, based on which a deal has been performed);</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">price_tp - Take Profit price (filled, if specified in the order, based on which a deal has been performed);</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">volume - deal volume in lots.</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">position - the ticket of the position that was opened, modified or closed as a result of deal execution.</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">position_by - the ticket of the opposite position. It is only filled for the out by deals (closing a position by an opposite one).</span></li>
+</ul>
+<p class="p_BoldTitles"><span class="f_BoldTitles">TRADE_TRANSACTION_POSITION</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">The following fields in MqlTradeTransaction structure are filled for trade transactions related to changing the positions not connected with deals execution (TRADE_TRANSACTION_POSITION):</span></p>
+<ul style="list-style-type:disc">
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">symbol - position symbol name;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">type - trade transaction type;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">deal_type - position type (<a href="dealproperties.htm#enum_deal_type" class="topiclink">DEAL_TYPE_BUY</a> or <a href="dealproperties.htm#enum_deal_type" class="topiclink">DEAL_TYPE_SELL</a></span><span class="f_EnumID">)</span><span class="f_FunctionRemLI">;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">price - weighted average position open price;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">price_sl - Stop Loss price;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">price_tp - Take Profit price;</span></li>
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">volume - position volume in lots, if it has been changed.</span></li>
+</ul>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 4px 30px;"><table class="attentable" cellspacing="0" cellpadding="8" border="1">
+<tr class="attentable">
+<td class="attentable"><p class="p_fortable"><span class="f_fortable">Position change (adding, changing or closing), as a result of a deal execution, does not lead to the occurrence of TRADE_TRANSACTION_POSITION transaction.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">TRADE_TRANSACTION_REQUEST</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">Only one field in MqlTradeTransaction structure is filled for trade transactions describing the fact that a trade request has been processed by a server and processing result has been received (TRADE_TRANSACTION_REQUEST):</span></p>
+<ul style="list-style-type:disc">
+<li class="p_FunctionRemLI"><span class="f_FunctionRemLI">type - trade transaction type;</span></li>
+</ul>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 4px 30px;"><table class="attentable" cellspacing="0" cellpadding="8" border="1">
+<tr class="attentable">
+<td class="attentable"><p class="p_fortable"><span class="f_fortable">Only type field (trade transaction type) must be analyzed for such transactions. The second and third parameters of <a href="ontradetransaction.htm" class="topiclink">OnTradeTransaction</a> function (request and result) must be analyzed for additional data.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #c0504d;">MagicNumber</span><span class="f_CodeExample">=1234567;</span><br>
+<span class="f_CodeExample">&nbsp;</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---&nbsp;enable&nbsp;CTrade&nbsp;trading&nbsp;class&nbsp;and&nbsp;declare&nbsp;the&nbsp;variable&nbsp;of&nbsp;this&nbsp;class</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;Trade\Trade.mqh&gt;</span>
+<br><span class="f_CodeExample">CTrade&nbsp;trade;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;flags&nbsp;for&nbsp;installing&nbsp;and&nbsp;deleting&nbsp;the&nbsp;pending&nbsp;order</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;pending_done=false;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;pending_deleted=false;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;pending&nbsp;order&nbsp;ticket&nbsp;will&nbsp;be&nbsp;stored&nbsp;here</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;order_ticket;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;initialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;set&nbsp;MagicNumber&nbsp;to&nbsp;mark&nbsp;all&nbsp;our&nbsp;orders</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;trade.SetExpertMagicNumber(</span><span class="f_CodeExample" style="color: #c0504d;">MagicNumber</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;trade&nbsp;requests&nbsp;will&nbsp;be&nbsp;sent&nbsp;in&nbsp;asynchronous&nbsp;mode&nbsp;using&nbsp;OrderSendAsync()&nbsp;function</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;trade.SetAsyncMode(</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;initialize&nbsp;the&nbsp;variable&nbsp;by&nbsp;zero</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;order_ticket=0;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">INIT_SUCCEEDED</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;tick&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTick</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---installing&nbsp;a&nbsp;pending&nbsp;order</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!pending_done)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;ask=</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff00ff;">_Symbol</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">SYMBOL_ASK</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;buy_stop_price=</span><span class="f_CodeExample" style="color: #0000ff;">NormalizeDouble</span><span class="f_CodeExample">(ask+1000*</span><span class="f_CodeExample" style="color: #ff00ff;">_Point</span><span class="f_CodeExample">,(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff00ff;">_Symbol</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">SYMBOL_DIGITS</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;res=trade.BuyStop(0.1,buy_stop_price,</span><span class="f_CodeExample" style="color: #ff00ff;">_Symbol</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;if&nbsp;BuyStop()&nbsp;function&nbsp;performed&nbsp;successfully&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(res)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pending_done=</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;get&nbsp;a&nbsp;result&nbsp;of&nbsp;the&nbsp;request&nbsp;sending&nbsp;from&nbsp;ctrade</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff00ff;">MqlTradeResult</span><span class="f_CodeExample">&nbsp;trade_result;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trade.Result(trade_result);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;get&nbsp;request_id&nbsp;for&nbsp;the&nbsp;sent&nbsp;request</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;request_id=trade_result.request_id;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Request&nbsp;has&nbsp;been&nbsp;sent&nbsp;to&nbsp;set&nbsp;a&nbsp;pending&nbsp;order.&nbsp;Request_ID=&quot;</span><span class="f_CodeExample">,request_id);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;storing&nbsp;the&nbsp;order&nbsp;ticket&nbsp;(will&nbsp;be&nbsp;zero&nbsp;if&nbsp;using&nbsp;the&nbsp;asynchronous&nbsp;mode&nbsp;of&nbsp;sending&nbsp;to&nbsp;CTrade)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;order_ticket=trade_result.order;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;all&nbsp;is&nbsp;done,&nbsp;early&nbsp;exit&nbsp;from&nbsp;OnTick()&nbsp;handler</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;delete&nbsp;the&nbsp;pending&nbsp;order</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!pending_deleted)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;additional&nbsp;check</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(pending_done&nbsp;&amp;&amp;&nbsp;(order_ticket!=0))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;trying&nbsp;to&nbsp;delete&nbsp;the&nbsp;pending&nbsp;order</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;res=trade.OrderDelete(order_ticket);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;OrderDelete=&quot;</span><span class="f_CodeExample">,res);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;when&nbsp;delete&nbsp;request&nbsp;is&nbsp;sent&nbsp;successfully</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(res)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pending_deleted=</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;get&nbsp;the&nbsp;request&nbsp;execution&nbsp;result</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff00ff;">MqlTradeResult</span><span class="f_CodeExample">&nbsp;trade_result;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trade.Result(trade_result);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;take&nbsp;request&nbsp;ID&nbsp;from&nbsp;the&nbsp;result</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;request_id=trade_result.request_id;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;display&nbsp;in&nbsp;Journal</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;The&nbsp;request&nbsp;has&nbsp;been&nbsp;sent&nbsp;to&nbsp;delete&nbsp;a&nbsp;pending&nbsp;order&nbsp;#&quot;</span><span class="f_CodeExample">,order_ticket,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;.&nbsp;Request_ID=&quot;</span><span class="f_CodeExample">,request_id,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;fix&nbsp;the&nbsp;order&nbsp;ticket&nbsp;from&nbsp;the&nbsp;request&nbsp;result</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;order_ticket=trade_result.order;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;TradeTransaction&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;OnTradeTransaction(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff00ff;">MqlTradeTransaction</span><span class="f_CodeExample">&nbsp;&amp;trans,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff00ff;">MqlTradeRequest</span><span class="f_CodeExample">&nbsp;&amp;request,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff00ff;">MqlTradeResult</span><span class="f_CodeExample">&nbsp;&amp;result)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;get&nbsp;transaction&nbsp;type&nbsp;as&nbsp;enumeration&nbsp;value&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ENUM_TRADE_TRANSACTION_TYPE</span><span class="f_CodeExample">&nbsp;type=(</span><span class="f_CodeExample" style="color: #0000ff;">ENUM_TRADE_TRANSACTION_TYPE</span><span class="f_CodeExample">)trans.type;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;if&nbsp;the&nbsp;transaction&nbsp;is&nbsp;the&nbsp;request&nbsp;handling&nbsp;result,&nbsp;only&nbsp;its&nbsp;name&nbsp;is&nbsp;displayed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(type==</span><span class="f_CodeExample" style="color: #0000ff;">TRADE_TRANSACTION_REQUEST</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(type));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;display&nbsp;the&nbsp;handled&nbsp;request&nbsp;string&nbsp;name</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;------------RequestDescription\r\n&quot;</span><span class="f_CodeExample">,RequestDescription(request));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;display&nbsp;request&nbsp;result&nbsp;description</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;------------ResultDescription\r\n&quot;</span><span class="f_CodeExample">,TradeResultDescription(result));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;store&nbsp;the&nbsp;order&nbsp;ticket&nbsp;for&nbsp;its&nbsp;deletion&nbsp;at&nbsp;the&nbsp;next&nbsp;handling&nbsp;in&nbsp;OnTick()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(result.order!=0)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;delete&nbsp;this&nbsp;order&nbsp;by&nbsp;its&nbsp;ticket&nbsp;at&nbsp;the&nbsp;next&nbsp;OnTick()&nbsp;call</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;order_ticket=result.order;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;Pending&nbsp;order&nbsp;ticket&nbsp;&quot;</span><span class="f_CodeExample">,order_ticket,</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;display&nbsp;the&nbsp;full&nbsp;description&nbsp;for&nbsp;transactions&nbsp;of&nbsp;another&nbsp;type</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;display&nbsp;description&nbsp;of&nbsp;the&nbsp;received&nbsp;transaction&nbsp;in&nbsp;the&nbsp;Journal</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;------------TransactionDescription\r\n&quot;</span><span class="f_CodeExample">,TransactionDescription(trans));</span><br>
+<span class="f_CodeExample">&nbsp;</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Returns&nbsp;transaction&nbsp;textual&nbsp;description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;TransactionDescription(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff00ff;">MqlTradeTransaction</span><span class="f_CodeExample">&nbsp;&amp;trans)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;desc=</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(trans.type)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Symbol:&nbsp;&quot;</span><span class="f_CodeExample">+trans.</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Deal&nbsp;ticket:&nbsp;&quot;</span><span class="f_CodeExample">+(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)trans.deal+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Deal&nbsp;type:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(trans.</span><span class="f_CodeExample" style="color: #0000ff;">deal_type</span><span class="f_CodeExample">)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Order&nbsp;ticket:&nbsp;&quot;</span><span class="f_CodeExample">+(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)trans.order+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Order&nbsp;type:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(trans.</span><span class="f_CodeExample" style="color: #0000ff;">order_type</span><span class="f_CodeExample">)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Order&nbsp;state:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(trans.</span><span class="f_CodeExample" style="color: #0000ff;">order_state</span><span class="f_CodeExample">)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Order&nbsp;time&nbsp;type:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(trans.time_type)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Order&nbsp;expiration:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(trans.time_expiration)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Price:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,trans.price)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Price&nbsp;trigger:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,trans.price_trigger)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Stop&nbsp;Loss:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,trans.price_sl)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Take&nbsp;Profit:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,trans.price_tp)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Volume:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,trans.volume)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Position:&nbsp;&quot;</span><span class="f_CodeExample">+(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)trans.position+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Position&nbsp;by:&nbsp;&quot;</span><span class="f_CodeExample">+(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)trans.position_by+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;return&nbsp;the&nbsp;obtained&nbsp;string</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;desc;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Returns&nbsp;the&nbsp;trade&nbsp;request&nbsp;textual&nbsp;description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;RequestDescription(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff00ff;">MqlTradeRequest</span><span class="f_CodeExample">&nbsp;&amp;request)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;desc=</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(request.action)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Symbol:&nbsp;&quot;</span><span class="f_CodeExample">+request.</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Magic&nbsp;Number:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&quot;</span><span class="f_CodeExample">,request.magic)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Order&nbsp;ticket:&nbsp;&quot;</span><span class="f_CodeExample">+(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)request.order+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Order&nbsp;type:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(request.type)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Order&nbsp;filling:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(request.type_filling)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Order&nbsp;time&nbsp;type:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(request.type_time)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Order&nbsp;expiration:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(request.expiration)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Price:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,request.price)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Deviation&nbsp;points:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,request.deviation)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Stop&nbsp;Loss:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,request.sl)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Take&nbsp;Profit:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,request.tp)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Stop&nbsp;Limit:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,request.stoplimit)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Volume:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,request.volume)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Comment:&nbsp;&quot;</span><span class="f_CodeExample">+request.</span><span class="f_CodeExample" style="color: #0000ff;">comment</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;return&nbsp;the&nbsp;obtained&nbsp;string</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;desc;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Returns&nbsp;the&nbsp;textual&nbsp;description&nbsp;of&nbsp;the&nbsp;request&nbsp;handling&nbsp;result&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;TradeResultDescription(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff00ff;">MqlTradeResult</span><span class="f_CodeExample">&nbsp;&amp;result)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;desc=</span><span class="f_CodeExample" style="color: #008080;">&quot;Retcode&nbsp;&quot;</span><span class="f_CodeExample">+(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)result.retcode+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Request&nbsp;ID:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&quot;</span><span class="f_CodeExample">,result.request_id)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Order&nbsp;ticket:&nbsp;&quot;</span><span class="f_CodeExample">+(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)result.order+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Deal&nbsp;ticket:&nbsp;&quot;</span><span class="f_CodeExample">+(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)result.deal+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Volume:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,result.volume)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Price:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,result.price)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Ask:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,result.ask)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Bid:&nbsp;&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%G&quot;</span><span class="f_CodeExample">,result.bid)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;desc+=</span><span class="f_CodeExample" style="color: #008080;">&quot;Comment:&nbsp;&quot;</span><span class="f_CodeExample">+result.</span><span class="f_CodeExample" style="color: #0000ff;">comment</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;return&nbsp;the&nbsp;obtained&nbsp;string</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;desc;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">See also</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark"><a href="enum_trade_transaction_type.htm" class="topiclink">Trade Transaction Types</a>, <a href="ontradetransaction.htm" class="topiclink">OnTradeTransaction()</a></span></p>
+
+</div>
+
+</body>
+</html>
