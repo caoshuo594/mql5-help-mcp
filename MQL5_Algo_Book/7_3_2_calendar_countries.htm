@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.3.2 Getting list and descriptions of available countries</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_3_calendar.htm"> 7.3 Economic calendar </a>/ 7.3.2 Getting the list and descriptions of available countries
+          </td>
+          <td width="70" align="right">
+          <a href="7_3_1_calendar_overview.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_3_3_calendar_event_kinds_by_country_currency.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.3.2 Getting the list and descriptions of available countries</span></p>
+<p class="p_Text"><span class="f_Text">You can get a complete list of countries for which events are broadcast on the calendar using the </span><span class="f_Text" style="font-style: italic;">CalendarCountries</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">int CalendarCountries(MqlCalendarCountry &amp;countries[])</span></p>
+<p class="p_Text"><span class="f_Text">The function fills the </span><span class="f_Text" style="font-style: italic;">countries</span><span class="f_Text"> array passed by reference with </span><span class="f_Text" style="font-style: italic;"><a href="7_3_1_calendar_overview.htm" class="topiclink">MqlCalendarCountry</a></span><span class="f_Text"> structures. The array can be dynamic or fixed, of sufficient size.</span></p>
+<p class="p_Text"><span class="f_Text">On success, the function returns the number of country descriptions received from the server or 0 on error. Among the possible error codes in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> we may find, in particular, 5401 (ERR_CALENDAR_TIMEOUT, request time limit exceeded) or 5400 (ERR_CALENDAR_MORE_DATA, if the size of the fixed array is insufficient to obtain descriptions of all countries). In the latter case, the system will copy only what fits.</span></p>
+<p class="p_Text"><span class="f_Text">Let's write a simple script </span><span class="f_Text" style="font-style: italic;">CalendarCountries.mq5</span><span class="f_Text">, which gets the full list of countries and logs it out.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlCalendarCountry</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">countries</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CalendarCountries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">countries</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">countries</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here is an example result.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">CalendarCountries(countries)=23&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[id]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[name]&nbsp;[code]&nbsp;[currency]&nbsp;[currency_symbol]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[url_name]&nbsp;[reserved]</span>
+<br><span class="f_CodeExample">[&nbsp;0]&nbsp;&nbsp;554&nbsp;&quot;New&nbsp;Zealand&quot;&nbsp;&nbsp;&nbsp;&nbsp;&quot;NZ&quot;&nbsp;&nbsp;&nbsp;&quot;NZD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;$&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;new-zealand&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[&nbsp;1]&nbsp;&nbsp;999&nbsp;&quot;European&nbsp;Union&quot;&nbsp;&quot;EU&quot;&nbsp;&nbsp;&nbsp;&quot;EUR&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;€&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;european-union&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[&nbsp;2]&nbsp;&nbsp;392&nbsp;&quot;Japan&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;JP&quot;&nbsp;&nbsp;&nbsp;&quot;JPY&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;&yen;&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;japan&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[&nbsp;3]&nbsp;&nbsp;124&nbsp;&quot;Canada&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;CA&quot;&nbsp;&nbsp;&nbsp;&quot;CAD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;$&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;canada&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[&nbsp;4]&nbsp;&nbsp;&nbsp;36&nbsp;&quot;Australia&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;AU&quot;&nbsp;&nbsp;&nbsp;&quot;AUD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;$&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;australia&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[&nbsp;5]&nbsp;&nbsp;156&nbsp;&quot;China&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;CN&quot;&nbsp;&nbsp;&nbsp;&quot;CNY&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;&yen;&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;china&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[&nbsp;6]&nbsp;&nbsp;380&nbsp;&quot;Italy&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;IT&quot;&nbsp;&nbsp;&nbsp;&quot;EUR&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;€&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;italy&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[&nbsp;7]&nbsp;&nbsp;702&nbsp;&quot;Singapore&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;SG&quot;&nbsp;&nbsp;&nbsp;&quot;SGD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;R$&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;singapore&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[&nbsp;8]&nbsp;&nbsp;276&nbsp;&quot;Germany&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;DE&quot;&nbsp;&nbsp;&nbsp;&quot;EUR&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;€&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;germany&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[&nbsp;9]&nbsp;&nbsp;250&nbsp;&quot;France&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;FR&quot;&nbsp;&nbsp;&nbsp;&quot;EUR&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;€&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;france&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[10]&nbsp;&nbsp;&nbsp;76&nbsp;&quot;Brazil&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;BR&quot;&nbsp;&nbsp;&nbsp;&quot;BRL&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;R$&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;brazil&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[11]&nbsp;&nbsp;484&nbsp;&quot;Mexico&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;MX&quot;&nbsp;&nbsp;&nbsp;&quot;MXN&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Mex$&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;mexico&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[12]&nbsp;&nbsp;710&nbsp;&quot;South&nbsp;Africa&quot;&nbsp;&nbsp;&nbsp;&quot;ZA&quot;&nbsp;&nbsp;&nbsp;&quot;ZAR&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;R&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;south-africa&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[13]&nbsp;&nbsp;344&nbsp;&quot;Hong&nbsp;Kong&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;HK&quot;&nbsp;&nbsp;&nbsp;&quot;HKD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;HK$&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;hong-kong&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[14]&nbsp;&nbsp;356&nbsp;&quot;India&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;IN&quot;&nbsp;&nbsp;&nbsp;&quot;INR&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;&#8377;&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;india&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[15]&nbsp;&nbsp;578&nbsp;&quot;Norway&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;NO&quot;&nbsp;&nbsp;&nbsp;&quot;NOK&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Kr&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;norway&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[16]&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&quot;Worldwide&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;WW&quot;&nbsp;&nbsp;&nbsp;&quot;ALL&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;worldwide&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[17]&nbsp;&nbsp;840&nbsp;&quot;United&nbsp;States&quot;&nbsp;&nbsp;&quot;US&quot;&nbsp;&nbsp;&nbsp;&quot;USD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;$&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;united-states&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[18]&nbsp;&nbsp;826&nbsp;&quot;United&nbsp;Kingdom&quot;&nbsp;&quot;GB&quot;&nbsp;&nbsp;&nbsp;&quot;GBP&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;&pound;&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;united-kingdom&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[19]&nbsp;&nbsp;756&nbsp;&quot;Switzerland&quot;&nbsp;&nbsp;&nbsp;&nbsp;&quot;CH&quot;&nbsp;&nbsp;&nbsp;&quot;CHF&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;&#8355;&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;switzerland&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[20]&nbsp;&nbsp;410&nbsp;&quot;South&nbsp;Korea&quot;&nbsp;&nbsp;&nbsp;&nbsp;&quot;KR&quot;&nbsp;&nbsp;&nbsp;&quot;KRW&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;&#8361;&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;south-korea&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[21]&nbsp;&nbsp;724&nbsp;&quot;Spain&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;ES&quot;&nbsp;&nbsp;&nbsp;&quot;EUR&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;€&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;spain&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[22]&nbsp;&nbsp;752&nbsp;&quot;Sweden&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;SE&quot;&nbsp;&nbsp;&nbsp;&quot;SEK&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Kr&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;sweden&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It is important to note that the identifier 0 (code &quot;WW&quot; and pseudo-currency &quot;ALL&quot;) corresponds to global events (concerning many countries, for example, the G7, G20 meetings), and the currency &quot;EUR&quot; is associated with several EU countries available in the calendar (as you can see, not the entire Eurozone is presented). Also, the European Union itself has a generic identifier 999.</span></p>
+<p class="p_Text"><span class="f_Text">If you are interested in a particular country, you can check its availability by a numerical code according to the ISO 3166-1 standard. In particular, in the log above, these codes are displayed in the first column (field </span><span class="f_Text" style="font-style: italic;">id</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">To get a description of one country by its ID specified in the </span><span class="f_Text" style="font-style: italic;">id</span><span class="f_Text"> parameter, you can use the </span><span class="f_Text" style="font-style: italic;">CalendarCountryById</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">bool CalendarCountryById(const long id, MqlCalendarCountry &amp;country)</span></p>
+<p class="p_Text"><span class="f_Text">If successful, the function will return </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> and fill in the fields of the </span><span class="f_Text" style="font-style: italic;">country</span><span class="f_Text"> structure.</span></p>
+<p class="p_Text"><span class="f_Text">If the country is not found, we get </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">, and in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> we will get an error code 5402 (ERR_CALENDAR_NO_DATA).</span></p>
+<p class="p_Text"><span class="f_Text">For an example of using this function, see <a href="7_3_5_calendar_records_by_country_currency.htm" class="topiclink">Getting event records by country or currency</a>.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.5.1 Handles and counters of indicator owners</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_5_indicators_use.htm"> 5.5 Using ready-made indicators from MQL programs </a>/ 5.5.1 Handles and counters of indicator owners
+          </td>
+          <td width="70" align="right">
+          <a href="5_5_indicators_use.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_5_2_indicators_icustom.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.5.1 Handles and counters of indicator owners</span></p>
+<p class="p_Text"><span class="f_Text">Programmatic work with indicators requires operating with handles. A parallel can be drawn here with file descriptors (see the section <a href="4_5_3_files_open_close.htm" class="topiclink">Opening and closing files</a>): there we used the </span><span class="f_Text" style="font-style: italic;">File Open</span><span class="f_Text"> function to inform the system about the file name and opening modes, after which the descriptor served as a &quot;pass&quot; to all other file functions.</span></p>
+<p class="p_Text"><span class="f_Text">The indicator descriptor system serves several purposes.</span></p>
+<p class="p_Text"><span class="f_Text">It allows to tell the terminal in advance which indicator to launch and which timeseries to calculate. Since some time is required to download initial historical data and to calculate the indicator (at least during the initial request), along with the allocation of resources (memory, graphics), the points when the indicator is created and when it is ready are different. The descriptor is a link between them. This is a kind of link to the internal terminal object storing the set of properties that we set when creating the indicator and its current state.</span></p>
+<p class="p_Text"><span class="f_Text">Of course, in order to work with descriptors, the terminal needs to maintain a certain table of all the requested indicators and their properties. However, the terminal does not provide information on the real number in the general table: instead, each program forms its own private list of indicators requested from it. The entries in this list refer to the elements of the general table, and the descriptor is just a number in the list.</span></p>
+<p class="p_Text"><span class="f_Text">Therefore, there can be completely different indicators behind the same descriptors in different programs. So, it makes no sense to transfer the values of descriptors between programs.</span></p>
+<p class="p_Text"><span class="f_Text">Descriptors are part of the terminal resource management system as they exclude duplication of indicator instances with the same characteristics, when possible. In other words, all built-in and custom indicators created programmatically, manually, or from tpl templates are cached. &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">Before creating a new indicator instance, the terminal checks if there is an identical indicator among those in the cache. The following criteria apply when checking for a copy:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Matching character and period</span></li>
+<li class="p_li"><span class="f_li">Matching parameters</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">For custom indicators, the following must additionally match:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">The path on disk (as a string, without normalization to absolute form)</span></li>
+<li class="p_li"><span class="f_li">The chart on which the indicator is running (when creating an indicator from an MQL program, the indicator being created inherits the chart from the program that creates it)</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Built-in indicators are cached per symbol and therefore their instances can be allocated for separate use on different charts (with the same symbol/timeframe).</span></p>
+<p class="p_Text"><span class="f_Text">Note that </span><span class="f_li">you cannot create two identical indicators on the same chart manually. Different program instances can request the same indicator, in which case only one copy of it will be created and provided to both programs.</span></p>
+<p class="p_Text"><span class="f_Text">For each unique combination of conditions, the terminal keeps a counter: after the first request to create a specific indicator, its counter is equal to 1, and on subsequent ones, it increases by 1 (a copy of the indicator is not created). When an indicator is released, its counter is decreased by 1. The indicator is unloaded only when the counter is reset, i.e., when all its owners explicitly refuse to use it.</span></p>
+<p class="p_Text"><span class="f_Text">It should be noted that multiple calls to the indicator builder function with the same parameters (including symbol/timeframe) within the same MQL program do not lead to multiple increases in the reference counter – the counter will be increased only once. As a consequence, for each value of the handle, one call of the release function is enough (</span><span class="f_Text" style="font-style: italic;"><a href="5_5_13_indicators_indicatorrelease.htm" class="topiclink">IndicatorRelease</a></span><span class="f_Text">). All further calls are superfluous and return an error because they have nothing to free.</span></p>
+<p class="p_Text"><span class="f_Text">In addition to creating indicators using </span><span class="f_Text" style="font-style: italic;"><a href="5_5_2_indicators_icustom.htm" class="topiclink">iCustom</a></span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;"><a href="5_5_8_indicators_indicatorcreate.htm" class="topiclink">IndicatorCreate</a></span><span class="f_Text"> in MQL5, it is possible to get a handle of a third-party (already existing) indicator. This can be done by using the </span><span class="f_Text" style="font-style: italic;">ChartIndicatorGet</span><span class="f_Text"> function which we will study in the chapter on <a href="5_7_charts.htm" class="topiclink">charts</a>. It's important to note here that acquiring a handle in this way will also increase its reference count and prevent unloading unless the handle is then released.</span></p>
+<p class="p_Text"><span class="f_Text">If the program created subordinate indicators, their handles will be automatically released (the counter decreases by 1) when this program is unloaded, even if the </span><span class="f_Text" style="font-style: italic;">IndicatorRelease</span><span class="f_Text"> function is not called.</span></p>
+
+</div>
+
+</body>
+</html>

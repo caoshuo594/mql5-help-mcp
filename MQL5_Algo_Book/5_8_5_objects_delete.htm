@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.8.5 Deleting objects</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_8_objects.htm"> 5.8 Graphical objects </a>/ 5.8.5 Deleting objects
+          </td>
+          <td width="70" align="right">
+          <a href="5_8_4_objects_create.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_8_6_objects_find.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.8.5 Deleting objects</span></p>
+<p class="p_Text"><span class="f_Text">The MQL5 API offers two functions for deleting objects. For bulk deletion of objects that meet the conditions for a prefix in the name, type, or subwindow number, use </span><span class="f_Text" style="font-style: italic;">ObjectsDeleteAll</span><span class="f_Text">. If you need to select the objects to be deleted by some other criteria (for example, by an outdated date and time coordinate), or if this is a single object, use the </span><span class="f_Text" style="font-style: italic;">ObjectDelete</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">ObjectsDeleteAll</span><span class="f_Text"> function has two forms: with a parameter for the name prefix and without it.</span></p>
+<p class="p_H4"><span class="f_H4">int ObjectsDeleteAll(long chartId, int window = -1, int type = -1)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">int ObjectsDeleteAll(long chartId, const string prefix, int window = -1, int type = -1)</span></p>
+<p class="p_Text"><span class="f_Text">The function deletes all objects on the chart with the specified </span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text">, taking into account the subwindow, type, and initial substring in the name.</span></p>
+<p class="p_Text"><span class="f_Text">Value 0 in the </span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text"> parameter represents the current chart, as usual.</span></p>
+<p class="p_Text"><span class="f_Text">Default values (-1) in the </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> parameters define all subwindows and all types of objects, respectively.</span></p>
+<p class="p_Text"><span class="f_Text">If the prefix is empty, objects with any name will be deleted.</span></p>
+<p class="p_Text"><span class="f_Text">The function is executed synchronously, that is, it blocks the calling MQL program until its completion and returns the number of deleted objects. Since the function waits for the execution of all commands that were in the chart queue before calling it, the action may take some time.</span></p>
+<p class="p_H4"><span class="f_H4">bool ObjectDelete(long chartId, const string name)</span></p>
+<p class="p_Text"><span class="f_Text">The function deletes an object with the specified name on the chart with </span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Unlike </span><span class="f_Text" style="font-style: italic;">ObjectsDeleteAll</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">ObjectDelete</span><span class="f_Text"> is executed asynchronously, that is, it sends a command to the graphics to delete the object and immediately returns control to the MQL program. The result of </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> indicates the successful placement of the command in the queue. To check the result of execution, you can use the </span><span class="f_Text" style="font-style: italic;"><a href="5_8_6_objects_find.htm" class="topiclink">ObjectFind</a></span><span class="f_Text"> function or any </span><span class="f_Text" style="font-style: italic;"><a href="5_8_7_objects_properties_get_set.htm" class="topiclink">ObjectGet</a></span><span class="f_Text"><a href="5_8_7_objects_properties_get_set.htm" class="topiclink"> functions</a>, which query the properties of an object.</span></p>
+<p class="p_Text"><span class="f_Text">As an example, consider the </span><span class="f_Text" style="font-style: italic;">ObjectCleanup1.mq5</span><span class="f_Text"> script. Its task is to remove objects with &quot;our&quot; prefix, which are generated by the </span><span class="f_Text" style="font-style: italic;">ObjectSimpleShowcase.mq5</span><span class="f_Text"> script from the previous section.</span></p>
+<p class="p_Text"><span class="f_Text">In the simplest case, we could write this:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ObjectPrefix.mqh&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectsDeleteAll</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ObjNamePrefix</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&nbsp;objects&nbsp;deleted&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">But to add variety, we can also provide the option to delete objects using the </span><span class="f_Text" style="font-style: italic;">ObjectDelete</span><span class="f_Text"> function through multiple calls. Of course, this approach does not make sense when </span><span class="f_Text" style="font-style: italic;">ObjectsDeleteAll</span><span class="f_Text"> meets all requirements. However, this is not always the case: when objects need to be selected according to special conditions, that is, not only by prefix and type, </span><span class="f_Text" style="font-style: italic;">ObjectsDeleteAll</span><span class="f_Text"> won't help anymore.</span></p>
+<p class="p_Text"><span class="f_Text">Later, when we get acquainted with the functions of reading the properties of objects, we will complete the example. In the meantime, we will introduce only an input variable for switching to the &quot;advanced&quot; delete mode (</span><span class="f_Text" style="font-style: italic;">UseCustomDeleteAll</span><span class="f_Text">).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">script_show_inputs</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UseCustomDeleteAll</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function depending on the selected mode, we will call the standard </span><span class="f_Text" style="font-style: italic;">ObjectsDeleteAll</span><span class="f_Text">, or our own implementation </span><span class="f_Text" style="font-style: italic;">CustomDeleteAllObjects</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UseCustomDeleteAll</span><span class="f_CodeExample">&nbsp;?</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CustomDeleteAllObjects</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ObjNamePrefix</span><span class="f_CodeExample">)&nbsp;:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectsDeleteAll</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ObjNamePrefix</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&nbsp;objects&nbsp;deleted&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's sketch this function first, and then refine it.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CustomDeleteAllObjects</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">chart</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prefix</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">window</span><span class="f_CodeExample">&nbsp;=&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectsTotal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">chart</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">window</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;NB:&nbsp;cycle&nbsp;through&nbsp;objects&nbsp;in&nbsp;reverse&nbsp;order&nbsp;of&nbsp;the&nbsp;internal&nbsp;chart&nbsp;list</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;to&nbsp;keep&nbsp;numbering&nbsp;as&nbsp;we&nbsp;move&nbsp;away&nbsp;from&nbsp;the&nbsp;tail</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&gt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;--</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">chart</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">window</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">prefix</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;||&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringFind</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prefix</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;additional&nbsp;checks&nbsp;that&nbsp;ObjectsDeleteAll&nbsp;does&nbsp;not&nbsp;provide,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;for&nbsp;example,&nbsp;by&nbsp;coordinates,&nbsp;color&nbsp;or&nbsp;anchor&nbsp;point</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;send&nbsp;a&nbsp;command&nbsp;to&nbsp;delete&nbsp;a&nbsp;specific&nbsp;object</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectDelete</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">chart</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here we see several new features that will be described in the <a href="5_8_6_objects_find.htm" class="topiclink">next section</a> (</span><span class="f_Text" style="font-style: italic;">ObjectsTotal</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">ObjectName</span><span class="f_Text">). Their point should be clear in general: the first function returns the index of objects on the chart, and the second one returns the name of the object under the specified index.</span></p>
+<p class="p_Text"><span class="f_Text">It is also worth noting that the loop through objects goes in index descending order. If we did it in the usual way, then deleting objects at the beginning of the list would lead to a violation of the numbering. Strictly speaking, even the current loop does not guarantee complete deletion, assuming that another MQL program starts adding objects in parallel with our deletion. Indeed, a new &quot;foreign&quot; object can be added to the beginning of the list (it is formed in alphabetical order of object names) and increase the remaining indexes, pushing &quot;our&quot; next object to be deleted beyond the current index </span><span class="f_Text" style="font-style: italic;">i</span><span class="f_Text">. The more new objects are added to the beginning, the more likely it is to miss deleting your own.</span></p>
+<p class="p_Text"><span class="f_Text">Therefore, to improve reliability, it would be possible after the loop to check that the number of remaining objects is equal to the difference between the initial number and the number of objects removed. Although this does not give a 100% guarantee, since other programs could delete objects in parallel. We will leave these specifics for independent study.</span></p>
+<p class="p_Text"><span class="f_Text">In the current implementation, our script should delete all objects with &quot;our&quot; prefix, regardless of switching the </span><span class="f_Text" style="font-style: italic;">UseCustomDeleteAll</span><span class="f_Text"> mode. The log should show something like this:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">ObjectSimpleShowcase&nbsp;(XAUUSD,H1)&nbsp;14&nbsp;objects&nbsp;of&nbsp;various&nbsp;types&nbsp;created&nbsp;</span>
+<br><span class="f_CodeExample">ObjectCleanup1&nbsp;(XAUUSD,H1)&nbsp;14&nbsp;objects&nbsp;deleted</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's get to know the </span><span class="f_Text" style="font-style: italic;">ObjectsTotal</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ObjectName</span><span class="f_Text"> functions, which we just used, and then return to the </span><span class="f_Text" style="font-style: italic;">ObjectCleanup2.mq5</span><span class="f_Text"> version of the script.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1.9 Checking symbol status</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_1_symbols.htm"> 6.1 Financial instruments and Market Watch </a>/ 6.1.9 Checking symbol status
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_8_symbols_info.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_10_symbols_chart_mode.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.1.9 Checking symbol status</span></p>
+<p class="p_Text"><span class="f_Text">Earlier we looked at several functions related to the status of a symbol. Recall that </span><span class="f_Text" style="font-style: italic;"><a href="6_1_3_symbols_exist.htm" class="topiclink">SymbolExist</a></span><span class="f_Text"> is used to check for the existence of a symbol, and </span><span class="f_Text" style="font-style: italic;"><a href="6_1_2_symbols_select.htm" class="topiclink">SymbolSelect</a></span><span class="f_Text"> is used to check for inclusion or exclusion from the </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> list. Among the properties of the symbol, there are several flags similar in purpose, the use of which has both pluses and minuses compared to the above functions.</span></p>
+<p class="p_Text"><span class="f_Text">In particular, the SYMBOL_SELECT property allows you to find out if the specified symbol is selected in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text">, while the </span><span class="f_Text" style="font-style: italic;">SymbolSelect</span><span class="f_Text"> function changes this property.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">SymbolExist</span><span class="f_Text"> function, unlike the similar SYMBOL_EXIST property, additionally populates the output variable with an indication that the symbol is a user-defined one. When querying properties, it would be necessary to analyze these two attributes separately, since the attribute of the custom symbol is stored in another property, <a href="6_1_23_symbols_custom.htm" class="topiclink">SYMBOL_CUSTOM</a>. However, in some cases, the program may need only one property, and then the possibility of a separate query becomes a plus.</span></p>
+<p class="p_Text"><span class="f_Text">All flags are boolean values obtained through the </span><span class="f_Text" style="font-style: italic;">SymbolInfoInteger</span><span class="f_Text"> function.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:33%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">SYMBOL_EXIST</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Indicates that a symbol with the given name exists</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">SYMBOL_SELECT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Indicates that the symbol is selected in </span><span class="f_fortable" style="font-style: italic;">Market Watch</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">SYMBOL_VISIBLE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Indicates that the specified symbol is displayed in </span><span class="f_fortable" style="font-style: italic;">Market Watch</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Of particular interest is SYMBOL_VISIBLE. The fact is that some symbols (as a rule, these are cross rates that are necessary for calculating margin requirements and profit in the deposit currency) are selected in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> automatically and are not displayed in the list visible to the user. Such symbols must be explicitly chosen (by the user or programmatically) to be displayed. Thus, it is the SYMBOL_VISIBLE property that allows you to determine whether a symbol is visible in the window: it can be equal to </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> for some elements of the <a href="6_1_1_symbols_list.htm" class="topiclink">list</a>, obtained using a pair of functions </span><span class="f_Text" style="font-style: italic;">SymbolsTotal</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">SymbolName</span><span class="f_Text"> with the </span><span class="f_Text" style="font-style: italic;">selected</span><span class="f_Text"> parameter equal to </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Consider a simple script (</span><span class="f_Text" style="font-style: italic;">SymbolInvisible.mq5</span><span class="f_Text">), which searches the terminal for implicitly selected symbols, that is, those that are not displayed in the Market Watch (SYMBOL_VISIBLE is reset) while SYMBOL_SELECT for them is equal to </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PUSH</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">V</span><span class="f_CodeExample">)&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">)&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">V</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolsTotal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">selected</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">invisible</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;loop&nbsp;through&nbsp;all&nbsp;available&nbsp;symbols&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_SELECT</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">selected</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_VISIBLE</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;collect&nbsp;selected&nbsp;but&nbsp;invisible&nbsp;symbols&nbsp;into&nbsp;an&nbsp;array&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PUSH</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">invisible</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Symbols:&nbsp;total=%d,&nbsp;selected=%d,&nbsp;implicit=%d&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">selected</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">invisible</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">invisible</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">invisible</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Try compiling and running the script on different accounts. The situation when a symbol is implicitly selected is not always encountered. For example, if in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> tickers of Russian blue chips that are quoted in rubles are selected, and the trading account is in a different currency (for example, dollars or euros, but not rubles), then the USDRUB symbol will be automatically selected. Of course, this assumes that it has not been previously added to the </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> explicitly. Then we get the following result in the log:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Symbols:&nbsp;total=50681,&nbsp;selected=49,&nbsp;implicit=1</span>
+<br><span class="f_CodeExample">&quot;USDRUB&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

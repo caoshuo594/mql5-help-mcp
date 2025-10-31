@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.3.4 Initializing and populating arrays</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_3_arrays.htm"> 4.3 Working with arrays </a>/ 4.3.4 Initializing and populating arrays
+          </td>
+          <td width="70" align="right">
+          <a href="4_3_3_arrays_metrics.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_3_5_arrays_edit.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.3.4 Initializing and populating arrays</span></p>
+<p class="p_Text"><span class="f_Text">Describing an array with an initialization list is possible only for arrays of a fixed size. Dynamic arrays can be populated only after allocating memory for them by the function </span><span class="f_Text" style="font-style: italic;"><a href="4_3_2_arrays_dynamic.htm" class="topiclink">ArrayResize</a></span><span class="f_Text">. They are populated using the </span><span class="f_Text" style="font-style: italic;">ArrayInitialize</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">ArrayFill </span><span class="f_Text">functions. They are also useful in a program when you want to bulk-replace values in fixed arrays or time series.</span></p>
+<p class="p_Text"><span class="f_Text">Examples of using the functions are given after their description.</span></p>
+<p class="p_H4"><span class="f_H4">int ArrayInitialize(type &amp;array[], type value)</span></p>
+<p class="p_Text"><span class="f_Text">The function sets all array elements to the specified value. Only arrays of built-in numeric types are supported (</span><span class="f_Text" style="font-style: italic;">char, uchar, short, ushort, int, uint, long, ulong, bool, color, datetime, float, double</span><span class="f_Text">). String, structure and pointer arrays cannot be filled in this way: they will need to implement their own initialization functions. An array can be multidimensional.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of elements.</span></p>
+<p class="p_Text"><span class="f_Text">If the dynamic array is allocated with a reserve (the third parameter of the </span><span class="f_Text" style="font-style: italic;">ArrayResize</span><span class="f_Text"> function), then the reserve is not initialized.</span></p>
+<p class="p_Text"><span class="f_Text">If, after the array is initialized, its size is increased using </span><span class="f_Text" style="font-style: italic;">ArrayResize</span><span class="f_Text">, the added elements will not be automatically set to </span><span class="f_Text" style="font-style: italic;">value</span><span class="f_Text">. They can be populated using the </span><span class="f_Text" style="font-style: italic;">ArrayFill</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">void ArrayFill(type &amp;array[], int start, int count, type value)</span></p>
+<p class="p_Text"><span class="f_Text">The function fills a numeric array or part of it with a specified value. Part of the array is given by parameters </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text">, which denote the initial number of the element and the number of elements to be filled, respectively.</span></p>
+<p class="p_Text"><span class="f_Text">It does not matter to the function whether the numbering order of the array elements is set <a href="4_3_8_arrays_as_series.htm" class="topiclink">like in timeseries</a> or not: this property is ignored. In other words, the elements of an array are always counted from its beginning to its end.</span></p>
+<p class="p_Text"><span class="f_Text">For a multidimensional array, the </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> parameter can be obtained by converting the coordinates in all dimensions into a through index for an equivalent one-dimensional array. So, for a two-dimensional array, the elements with the 0th index in the first dimension are located in memory first, then there will be the elements with the index 1 in the first dimension, and so on. The formula to calculate </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> is as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">start&nbsp;=&nbsp;D1&nbsp;*&nbsp;N2&nbsp;+&nbsp;D2</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">where D1 and D2 are the indexes for the first and second dimensions, respectively, N2 is the number of elements for the second dimension. D2 changes from 0 to (N2-1), D1 changes from 0 to (N1-1). For example, in an array </span><span class="f_Text" style="font-style: italic;">array[3][4]</span><span class="f_Text"> the element with indexes [1][3] is the seventh one in a row, and therefore the call </span><span class="f_Text" style="font-style: italic;">ArrayFill(array, 7, 2, ...)</span><span class="f_Text"> will fill two elements:</span><span class="f_Text" style="font-style: italic;">array[1][3]</span><span class="f_Text"> and following after him </span><span class="f_Text" style="font-style: italic;">array[2][0]</span><span class="f_Text">. On the diagram, this can be depicted as follows (each cell contains a through index of the element):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[][0]&nbsp;&nbsp;[][1]&nbsp;&nbsp;[][2]&nbsp;&nbsp;[][3]</span>
+<br><span class="f_CodeExample">[0][]&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3</span>
+<br><span class="f_CodeExample">[1][]&nbsp;&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7</span>
+<br><span class="f_CodeExample">[2][]&nbsp;&nbsp;&nbsp;&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">ArrayFill.mq5</span><span class="f_Text"> script provides examples of using the aforementioned functions.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">]&nbsp;=&nbsp;{{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">7</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">}};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayInitialize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayFill</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,&nbsp;+</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">50</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayInitialize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">50</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayFill</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">40</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here's what a possible result looks like (random data in uninitialized elements of a dynamic array will be different):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">ArrayInitialize(fixed,-1)=8</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample">[0,]&nbsp;&nbsp;-1&nbsp;&nbsp;-1&nbsp;&nbsp;-1&nbsp;&nbsp;-1</span>
+<br><span class="f_CodeExample">[1,]&nbsp;&nbsp;-1&nbsp;&nbsp;-1&nbsp;&nbsp;-1&nbsp;&nbsp;-1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample">[0,]&nbsp;&nbsp;-1&nbsp;&nbsp;-1&nbsp;&nbsp;-1&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample">[1,]&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;-1</span>
+<br><span class="f_CodeExample">ArrayResize(dynamic,10,50)=10</span>
+<br><span class="f_CodeExample">ArrayInitialize(dynamic,0)=10</span>
+<br><span class="f_CodeExample">0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0</span>
+<br><span class="f_CodeExample">ArrayResize(dynamic,50)=50</span>
+<br><span class="f_CodeExample">[&nbsp;0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[10]&nbsp;-1402885947&nbsp;&nbsp;-727144693&nbsp;&nbsp;&nbsp;699739629&nbsp;&nbsp;&nbsp;172950740&nbsp;-1326090126</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;47384&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4194184&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[20]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;1765933056&nbsp;&nbsp;2084602885&nbsp;-1956758056</span>
+<br><span class="f_CodeExample">[30]&nbsp;&nbsp;&nbsp;&nbsp;73910037&nbsp;-1937061701&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;56&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;56</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1048601&nbsp;&nbsp;1979187200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10851&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[40]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;-685178880&nbsp;-1720475236</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;782716519&nbsp;-1462194191&nbsp;&nbsp;1434596297&nbsp;&nbsp;&nbsp;415166825&nbsp;-1944066819</span>
+<br><span class="f_CodeExample">0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0</span>
+<br><span class="f_CodeExample">0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0&nbsp;0</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

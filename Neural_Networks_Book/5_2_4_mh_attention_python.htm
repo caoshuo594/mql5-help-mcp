@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.2.4 Building Multi-Head Self-Attention in Python</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="5_transformer.htm"> 5. Attention mechanisms </a> / <a class="h_m" href="5_2_mh_attention.htm"> 5.2 Multi-Head attention </a>/ 5.2.4 Building Multi-Head Self-Attention in Python
+          </td>
+          <td width="70" align="right">
+          <a href="5_2_3_mh_attention_opencl.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_2_4_1_mh_attention_py_class.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">5.2.4 Building Multi-Head Self-Attention in Python</span></p>
+<p class="p_Text"><span class="f_Text">We have already implemented the </span><span class="f_Text" style="font-style: italic;">Multi-Head Self-Attention</span><span class="f_Text"> algorithm using MQL5 and have even added the ability to perform multi-threaded calculations using OpenCL.</span><span class="f_Text" style="font-style: italic;"> </span><span class="f_Text">Now let's look at an option for implementing such an algorithm in Python using the </span><span class="f_Text" style="font-style: italic;">Keras</span><span class="f_Text"> library for </span><span class="f_Text" style="font-style: italic;">TensorFlow</span><span class="f_Text">. We had to deal with this library when creating previous models. Indeed, up to this point, we have been using only pre-built neural layers offered by the library, and with their help, we constructed linear models.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">Multi-Head Self-Attention</span><span class="f_Text"> model cannot be called linear. The parallel work of several heads of attention in itself is a rejection of the linearity of the model. In the </span><span class="f_Text" style="font-style: italic;">Self-Attention</span><span class="f_Text"> algorithm itself, the source data simultaneously goes in four directions.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Multi-Head Self-Attention" title="Multi-Head Self-Attention" width="600" height="439" style="margin:0 auto 0 auto;width:600px;height:439px;border:none" src="mh_self_attention.png"/></p>
+<p class="p_Text"><span class="f_Text">Therefore, to build a </span><span class="f_Text" style="font-style: italic;">Multi-Head Self-Attention</span><span class="f_Text"> model, we will consider another functionality offered by this library, which is creating custom neural layers.</span></p>
+<p class="p_Text"><span class="f_Text">A layer is a callable object that takes one or more tensors as input and outputs one or more tensors. It includes computation and status. </span></p>
+<p class="p_Text"><span class="f_Text">All neural layers in the </span><span class="f_Text" style="font-style: italic;">Keras</span><span class="f_Text"> library represent classes inherited from the </span><span class="f_Text" style="font-style: italic;">tf.keras.layers.Layer</span><span class="f_Text"> base class. Therefore, when creating a new custom neural layer, we will also inherit from the specified base class.</span></p>
+<p class="p_Text"><span class="f_Text">The base class provides the following parameters:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">trainable</span><span class="f_li"> – flag that indicates the need to train the parameters of the neural layer</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">name</span><span class="f_li"> – layer name</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">dtype</span><span class="f_li"> – type of layer results and weighting factors</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">dynamic</span><span class="f_li"> – flag that indicates that the layer cannot be used to create a graph of static calculations</span></li>
+</ul>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">tf.keras.layers.Layer(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;trainable=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">,&nbsp;name=</span><span class="f_CodeExample" style="color: #ff0000;">None</span><span class="f_CodeExample">,&nbsp;dtype=</span><span class="f_CodeExample" style="color: #ff0000;">None</span><span class="f_CodeExample">,&nbsp;dynamic=</span><span class="f_CodeExample" style="color: #ff0000;">False</span><span class="f_CodeExample">,&nbsp;**kwargs</span>
+<br><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Also, the library architecture defines a minimum set of methods for each layer:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">__init__</span><span class="f_li"> – layer initialization method</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">call</span><span class="f_li"> – calculation method (feed-forward pass)</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">In the initialization method, we define the custom attributes of the layer and create weight matrices, the structure of which does not depend on the format and structure of the input data. However, when solving practical problems, we often do not know the structure of the input data, and as a result, we cannot create weight matrices without understanding the dimensionality of the input data. In such cases, the initialization of weight matrices and other objects is transferred to the </span><span class="f_Text" style="font-style: italic;">build(self, input_shape)</span><span class="f_Text"> method. This method is called once, during the first call of the </span><span class="f_Text" style="font-style: italic;">call</span><span class="f_Text"> method.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">call</span><span class="f_Text"> method describes the forward-pass operations that must be performed with the initial data. The results of the operations are returned as one or more tensors. For layers used in linear models, there is a restriction on the result in the form of a single tensor.</span></p>
+<p class="p_Text"><span class="f_Text">Each neural layer has the following attributes (a list of the most commonly used attributes is provided):</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">name</span><span class="f_li"> – layer name</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">dtype</span><span class="f_li"> – type of weighting factors</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">trainable_weights</span><span class="f_li"> – list of variables to be trained</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">non_trainable_weights</span><span class="f_li"> – list of non-trainable variables</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">weights</span><span class="f_li"> – combines lists of trainable and non-trainable variables</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">trainable</span><span class="f_li"> – logical flag that indicates the need to train layer parameters</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">activity_regularizer</span><span class="f_li"> – additional regularization function for the output of the neural layer.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The advantages of this implementation are obvious: we are not creating backpropagation methods. All functionality is implemented by the library. We just need to correctly describe the logic of the feed-forward pass in the </span><span class="f_Text" style="font-style: italic;">call</span><span class="f_Text"> method.</span></p>
+<p class="p_Text"><span class="f_Text">This approach makes it possible to create rather complex architectural solutions. Moreover, the created layer may contain other nested neural layers. At the same time, the parameters of the internal neural layers are included in the list of parameters of the external neural layer.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.8.3 Displaying messages in the chart window</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_8_output.htm"> 4.8 User interaction </a>/ 4.8.3 Displaying messages in the chart window
+          </td>
+          <td width="70" align="right">
+          <a href="4_8_2_output_alert.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_8_4_output_messagebox.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.8.3 Displaying messages in the chart window</span></p>
+<p class="p_Text"><span class="f_Text">As we have seen in the previous sections, MQL5 allows you to output messages to the log or alert window. The first method is primarily for technical information and cannot guarantee that the user will notice the message (because the log window may be hidden). At the same time, the second method can seem too intrusive if used to display frequently changing program status. An intermediate option offers the function </span><span class="f_Text" style="font-style: italic;">Comment</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">void Comment(argument, ...)</span></p>
+<p class="p_Text"><span class="f_Text">The function displays a message composed of all the passed arguments in the upper left corner of the chart. The message remains there until this or some other program removes it or replaces it with another one.</span></p>
+<p class="p_Text"><span class="f_Text">The window can contain only one comment: on each call of </span><span class="f_Text" style="font-style: italic;">Comment</span><span class="f_Text"> the old content (if any) is replaced with the new one.</span></p>
+<p class="p_Text"><span class="f_Text">To clear a comment, just call the function with an empty string: </span><span class="f_Text" style="font-style: italic;">Comment(&quot;&quot;)</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The number of parameters must not exceed 64. Only built-in type arguments are supported. The concepts of forming the resulting string from the passed values are similar to those described for the function </span><span class="f_Text" style="font-style: italic;"><a href="4_8_1_output_print.htm" class="topiclink">Print</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The total length of the displayed message is limited to 2045 characters. If the limit is exceeded, the end of the line will be cut off.</span></p>
+<p class="p_Quote"><span class="f_Quote">The current content of a comment is one of the string properties of the chart, which can be found by calling the function </span><span class="f_Quote" style="font-style: italic;">ChartGetString(NULL, CHART_COMMENT)</span><span class="f_Quote">. We will talk about this and other properties of charts (not only string ones) in a separate <a href="5_7_charts.htm" class="topiclink">chapter</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Same as in the </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">PrintFormat</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">Alert</span><span class="f_Text"> functions, the string arguments may contain a newline character ('\n' or '\r\n'), which will cause the message to be split into the appropriate number of strings. For </span><span class="f_Text" style="font-style: italic;">Comment</span><span class="f_Text"> this is the only way to show a multi-line message. If you can call them several times to get the same effect using the print and signal functions, then with </span><span class="f_Text" style="font-style: italic;">Comment</span><span class="f_Text"> this cannot be done, since each call will replace the old string with the new one.</span></p>
+<p class="p_Text"><span class="f_Text">An example of work of the function </span><span class="f_Text" style="font-style: italic;">Comment</span><span class="f_Text"> is shown in the image of the window with the welcome script from the first chapter, in the section <a href="1_a_data_output.htm" class="topiclink">Data output</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Additionally, we will develop a class and simplified functions for displaying multi-line comments based on a ring buffer of a given size. The test script (</span><span class="f_Text" style="font-style: italic;">OutputComment.mq5</span><span class="f_Text">) and the header file with the class code (</span><span class="f_Text" style="font-style: italic;">Comments.mqh</span><span class="f_Text">) are included in the book.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Comments</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const&nbsp;int&nbsp;</span><span class="f_CodeExample" style="color: #333333;">capacity</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;maximum&nbsp;number&nbsp;of&nbsp;strings</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const&nbsp;bool&nbsp;</span><span class="f_CodeExample" style="color: #333333;">reverse</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;display&nbsp;order&nbsp;(new&nbsp;ones&nbsp;on&nbsp;top&nbsp;if&nbsp;true)</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lines</span><span class="f_CodeExample">[];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;text&nbsp;buffer</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int&nbsp;</span><span class="f_CodeExample" style="color: #333333;">cursor</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;where&nbsp;to&nbsp;put&nbsp;the&nbsp;next&nbsp;string</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int&nbsp;</span><span class="f_CodeExample" style="color: #333333;">size</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;actual&nbsp;number&nbsp;of&nbsp;strings&nbsp;saved</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Comments</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">limit</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">N_LINES</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">):</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">capacity</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">limit</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">reverse</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">cursor</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">size</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">lines</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">capacity</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">add</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clear</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The main work is done by the method </span><span class="f_Text" style="font-style: italic;">add</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Comments</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">add</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;if&nbsp;the&nbsp;passed&nbsp;text&nbsp;contains&nbsp;multiple&nbsp;strings,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;split&nbsp;it&nbsp;into&nbsp;elements&nbsp;by&nbsp;newline&nbsp;character</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">inputs</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringSplit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">,&nbsp;'\</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">',&nbsp;</span><span class="f_CodeExample" style="color: #333333;">inputs</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;add&nbsp;all&nbsp;new&nbsp;elements&nbsp;to&nbsp;the&nbsp;ring&nbsp;buffer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;overwriting&nbsp;the&nbsp;oldest&nbsp;entries&nbsp;at&nbsp;the&nbsp;cursor</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;cursor&nbsp;increases&nbsp;by&nbsp;capacity&nbsp;module&nbsp;(reset&nbsp;to&nbsp;0&nbsp;on&nbsp;overflow)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lines</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">cursor</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">inputs</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">reverse</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">cursor</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">cursor</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">capacity</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">size</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">capacity</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">size</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;concatenate&nbsp;all&nbsp;text&nbsp;entries&nbsp;in&nbsp;forward&nbsp;or&nbsp;reverse&nbsp;order</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;gluing&nbsp;with&nbsp;newline&nbsp;characters</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">size</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">capacity</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">cursor</span><span class="f_CodeExample">&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">capacity</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">size</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">&nbsp;=&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">capacity</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">reverse</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lines</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">]&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;\n&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lines</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">]&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;output&nbsp;the&nbsp;result</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If necessary, the comment, and text buffer can be cleared by the method </span><span class="f_Text" style="font-style: italic;">clear</span><span class="f_Text">, or by calling </span><span class="f_Text" style="font-style: italic;">add(NULL)</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Comments</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">clear</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">cursor</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">size</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Given such a class, you can define an object with the required buffer capacity and output direction, and then use its methods.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">Comments</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">30</span><span class="f_CodeExample" style="color: #808080;">/*capacity*/</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample" style="color: #808080;">/*order*/</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">function</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">add</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;123&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">But to simplify the generation of comments in the usual functional style, by analogy with the function </span><span class="f_Text" style="font-style: italic;">Comment</span><span class="f_Text">, a couple of helper functions are implemented.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MultiComment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">NULL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Comments</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">com</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">N_LINES</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">com</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">add</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ChronoComment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">NULL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Comments</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">com</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">N_LINES</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">com</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">add</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">They differ only in the direction of the buffer output. </span><span class="f_Text" style="font-style: italic;">MultiComment</span><span class="f_Text"> displays rows in reverse chronological order, i.e. most recent at the top, like on a bulletin board. This function is recommended for an indefinitely long episodic display of information with the preservation of history. </span><span class="f_Text" style="font-style: italic;">ChronoComment</span><span class="f_Text"> displays rows in forward order, i.e. new ones are added at the bottom. This function is recommended for batch output of multi-line messages.</span></p>
+<p class="p_Text"><span class="f_Text">The number of buffer lines is N_LINES (10) by default. If you define this macro with a different value before including the header file, it will resize.</span></p>
+<p class="p_Text"><span class="f_Text">The test script contains a loop in which messages are periodically generated.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">50</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;!</span><span class="f_CodeExample" style="color: #0000ff;">IsStopped</span><span class="f_CodeExample">();&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MultiComment</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MultiComment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Line&nbsp;&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;+&nbsp;((</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;\n&nbsp;&nbsp;(details)&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Sleep</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MultiComment</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">At every tenth iteration, the comment is cleared. At every third iteration, a message is created from two lines (for the rest - from one). A delay of 1 second allows you to see the dynamics in action.</span></p>
+<p class="p_Text"><span class="f_Text">Here is an example of the window while the script is running (in &quot;new messages on top&quot; mode).</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Multi-line comments on the chart" title="Multi-line comments on the chart" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="comments.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Multi-line comments on the chart</span></p>
+<p class="p_Text"><span class="f_Text">Displaying multi-line information in a comment has rather limited capabilities. If you need to organize data output by columns, highlighting with color or different fonts, reaction to mouse clicks, or arbitrary locations on the chart, you should use graphical <a href="5_8_objects.htm" class="topiclink">objects</a>.</span></p>
+
+</div>
+
+</body>
+</html>

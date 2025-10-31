@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.5.8 Advanced way to create indicators: IndicatorCreate</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_5_indicators_use.htm"> 5.5 Using ready-made indicators from MQL programs </a>/ 5.5.8 Advanced way to create indicators: IndicatorCreate
+          </td>
+          <td width="70" align="right">
+          <a href="5_5_7_indicators_standard_use.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_5_9_indicators_flexible_create.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.5.8 Advanced way to create indicators: IndicatorCreate</span></p>
+<p class="p_Text"><span class="f_Text">Creating an indicator using the </span><span class="f_Text" style="font-style: italic;">iCustom</span><span class="f_Text"> function or one of those functions that make up a set of built-in indicators requires knowledge of the list of parameters at the coding stage. However, in practice, it often becomes necessary to write programs that are flexible enough to replace one indicator with another.</span></p>
+<p class="p_Text"><span class="f_Text">For example, when optimizing an Expert Advisor in the <a href="6_5_tester.htm" class="topiclink">tester</a>, it makes sense to select not only the period of the moving average, but also the algorithm for its calculation. Of course, if we build the algorithm on a single indicator </span><span class="f_Text" style="font-style: italic;">iMA</span><span class="f_Text">, you can provide the possibility to specify ENUM_MA_METHOD in its method settings. But someone would probably like to expand the choice by switching between double exponential, triple exponential and fractal moving average. At first glance, this could be done using </span><span class="f_Text" style="font-style: italic;">switch</span><span class="f_Text"> with a call of </span><span class="f_Text" style="font-style: italic;">DEMA</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">iTEMA</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">iFrAMA</span><span class="f_Text">, respectively. However, what about including custom indicators in this list?</span></p>
+<p class="p_Text"><span class="f_Text">Although the name of the indicator can be easily replaced in the </span><span class="f_Text" style="font-style: italic;">iCustom</span><span class="f_Text"> call, the list of parameters may differ significantly. In the general case, an Expert Advisor may need to generate signals based on a combination of any indicators that are not known in advance, and not just moving averages.</span></p>
+<p class="p_Text"><span class="f_Text">For such cases, MQL5 has a universal method for creating an arbitrary technical indicator using the </span><span class="f_Text" style="font-style: italic;">IndicatorCreate</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">int IndicatorCreate(const string symbol, ENUM_TIMEFRAMES timeframe, ENUM_INDICATOR indicator, int count = 0, const MqlParam &amp;parameters[] = NULL)</span></p>
+<p class="p_Text"><span class="f_Text">The function creates an indicator instance for the specified symbol and timeframe. The indicator type is set using the </span><span class="f_Text" style="font-style: italic;">indicator</span><span class="f_Text"> parameter. Its type is the ENUM_INDICATOR enumeration (see further along) containing identifiers for all <a href="5_5_6_indicators_standard.htm" class="topiclink">built-in indicators</a>, as well as an option for </span><span class="f_Text" style="font-style: italic;"><a href="5_5_2_indicators_icustom.htm" class="topiclink">iCustom</a></span><span class="f_Text">. The number of indicator parameters and their descriptions are passed, respectively, in the </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> argument and in the </span><span class="f_Text" style="font-style: italic;">MqlParam</span><span class="f_Text"> array of structures (see below).</span></p>
+<p class="p_Text"><span class="f_Text">Each element of this array describes the corresponding input parameter of the indicator being created, so the content and order of the elements must correspond to the prototype of the built-in indicator function or, in the case of a custom indicator, to the descriptions of the input variables in its source code.</span></p>
+<p class="p_Text"><span class="f_Text">Violation of this rule may result in an error at the program execution stage (see example below) and in the inability to create a handle. In the worst case, the passed parameters will be interpreted incorrectly and the indicator will not behave as expected, but due to the lack of errors, this is not easy to notice. The exception is passing an empty array or not passing it at all (because the arguments </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">parameters</span><span class="f_Text"> are optional): in this case, the indicator will be created with default settings. Also, for custom indicators, you can omit an arbitrary number of parameters from the end of the list.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">MqlParam</span><span class="f_Text"> structure is specially designed to pass input parameters when creating an indicator using </span><span class="f_Text" style="font-style: italic;">IndicatorCreate</span><span class="f_Text"> or to obtain information about the parameters of a third-party indicator (performed on the chart) using </span><span class="f_Text" style="font-style: italic;"><a href="5_5_14_indicators_parameters.htm" class="topiclink">IndicatorParameters</a></span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlParam</span><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">{&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_DATATYPE&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;input&nbsp;parameter&nbsp;type</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">integer_value</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;field&nbsp;for&nbsp;storing&nbsp;an&nbsp;integer&nbsp;value</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">double_value</span><span class="f_CodeExample">;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;field&nbsp;for&nbsp;storing&nbsp;double&nbsp;or&nbsp;float&nbsp;values</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">string_value</span><span class="f_CodeExample">;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;field&nbsp;for&nbsp;storing&nbsp;a&nbsp;value&nbsp;of&nbsp;string&nbsp;type</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The actual value of the parameter must be set in one of the fields </span><span class="f_Text" style="font-style: italic;">integer_value</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">double_value</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">string_value</span><span class="f_Text">, according to the value of the first </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> field. In turn, the </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> field is described using the ENUM_DATATYPE enumeration containing identifiers for all <a href="2_2_builtin_types.htm" class="topiclink">built-in MQL5 types</a>.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Data&nbsp;type</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_BOOL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">bool</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_CHAR</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">char</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_UCHAR</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">uchar</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_SHORT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">short</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_USHORT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">ushort</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_COLOR</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">color</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_INT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">int</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_UINT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">uint</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_DATETIME</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">datetime</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_LONG</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">long</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_ULONG</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">ulong</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_FLOAT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">float</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_DOUBLE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">double</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TYPE_STRING</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">string</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If any indicator parameter has an enumeration type, you should use the TYPE_INT value in the </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> field to describe it.</span></p>
+<p class="p_Text"><span class="f_Text">The ENUM_INDICATOR enumeration used in the third parameter </span><span class="f_Text" style="font-style: italic;">IndicatorCreate</span><span class="f_Text"> to indicate the indicator type contains the following constants.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:33%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Indicator</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_AC</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Accelerator Oscillator</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_AD</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Accumulation/Distribution</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_ADX</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Average Directional Index</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_ADXW</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">ADX by Welles Wilder</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_ALLIGATOR</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Alligator</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_AMA</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Adaptive Moving Average</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_AO</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Awesome Oscillator</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_ATR</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Average True Range</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_BANDS</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Bollinger Bands&reg;</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_BEARS</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Bears Power</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_BULLS</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Bulls Power</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_BWMFI</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Market Facilitation Index</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_CCI</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Commodity Channel Index</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_CHAIKIN</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Chaikin Oscillator</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_CUSTOM</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Custom indicator</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_DEMA</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Double Exponential Moving Average</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_DEMARKER</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">DeMarker</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_ENVELOPES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Envelopes</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_FORCE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Force Index</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_FRACTALS</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Fractals</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_FRAMA</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Fractal Adaptive Moving Average</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_GATOR</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Gator Oscillator</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_ICHIMOKU</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Ichimoku Kinko Hyo</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_MA</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Moving Average</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_MACD</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">MACD</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_MFI</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Money Flow Index</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_MOMENTUM</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Momentum</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_OBV</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">On Balance Volume</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_OSMA</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">OsMA</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_RSI</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Relative Strength Index</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_RVI</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Relative Vigor Index</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_SAR</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Parabolic SAR</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_STDDEV</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Standard Deviation</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_STOCHASTIC</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Stochastic Oscillator</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_TEMA</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Triple Exponential Moving Average</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_TRIX</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Triple Exponential Moving Averages Oscillator</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_VIDYA</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Variable Index Dynamic Average</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_VOLUMES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Volumes</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">IND_WPR</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Williams Percent Range</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It is important to note that if the IND_CUSTOM value is passed as the indicator type, then the first element of the parameters array must have the </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> field with the value TYPE_STRING, and the </span><span class="f_Text" style="font-style: italic;">string_value</span><span class="f_Text"> field must contain the name (path) of the custom indicator.</span></p>
+<p class="p_Text"><span class="f_Text">If successful, the </span><span class="f_Text" style="font-style: italic;">IndicatorCreate</span><span class="f_Text"> function returns a handle of the created indicator, and in case of failure it returns INVALID_HANDLE. The error code will be provided in </span><span class="f_Text" style="font-style: italic;"><a href="4_9_15_env_last_error.htm" class="topiclink">_LastError</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Recall that in order to test MQL programs that create custom indicators whose names are not known at the compilation stage (which is also the case when using </span><span class="f_Text" style="font-style: italic;">IndicatorCreate</span><span class="f_Text">), you must explicitly bind them using the directive:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">tester_indicator</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;indicator_name.ex5&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This allows the tester to send the required auxiliary indicators to the testing agents but limits the process to only indicators known in advance.</span></p>
+<p class="p_Text"><span class="f_Text">Let's look at a few examples. Let's start with a simple application </span><span class="f_Text" style="font-style: italic;">IndicatorCreate</span><span class="f_Text"> as an alternative to already known functions, and then, to demonstrate the flexibility of the new approach, we will create a universal wrapper indicator for visualizing arbitrary built-in or custom indicators.</span></p>
+<p class="p_Text"><span class="f_Text">The first example of </span><span class="f_Text" style="font-style: italic;">UseEnvelopesParams1.mq5</span><span class="f_Text"> creates an embedded copy of the </span><span class="f_Text" style="font-style: italic;">Envelopes</span><span class="f_Text"> indicator. To do this, we describe two buffers, two plots, arrays for them, and input parameters that repeat the </span><span class="f_Text" style="font-style: italic;">iEnvelopes</span><span class="f_Text"> parameters.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_chart_window</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_buffers</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_plots</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;drawing&nbsp;settings</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_type1</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">DRAW_LINE</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_color1</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">clrBlue</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_width1</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_label1</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Upper&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_style1</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">STYLE_DOT</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_type2</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">DRAW_LINE</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_color2</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">clrRed</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_width2</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_label2</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Lower&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_style2</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">STYLE_DOT</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WorkPeriod</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">14</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shift</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_MA_METHOD</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Method</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MODE_EMA</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_APPLIED_PRICE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Price</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRICE_TYPICAL</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Deviation</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Deviation,&nbsp;%</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UpBuffer</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DownBuffer</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;handle&nbsp;of&nbsp;the&nbsp;subordinate&nbsp;indicator</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The handler </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> could look like this if you use the function </span><span class="f_Text" style="font-style: italic;">iEnvelopes</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UpBuffer</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DownBuffer</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iEnvelopes</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">WorkPeriod</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shift</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Method</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Price</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Deviation</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INVALID_HANDLE</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_FAILED</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_SUCCEEDED</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The buffer bindings will remain the same, but to create a handle, we will now go the other way. Let's describe the </span><span class="f_Text" style="font-style: italic;">MqlParam</span><span class="f_Text"> array, fill it in and call the </span><span class="f_Text" style="font-style: italic;">IndicatorCreate</span><span class="f_Text"> function.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlParam</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">]&nbsp;=&nbsp;{};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">TYPE_INT</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">integer_value</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WorkPeriod</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">TYPE_INT</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">integer_value</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shift</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">TYPE_INT</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">integer_value</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Method</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">TYPE_INT</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">integer_value</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Price</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">TYPE_DOUBLE</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">double_value</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Deviation</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">IndicatorCreate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">IND_ENVELOPES</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INVALID_HANDLE</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_FAILED</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_SUCCEEDED</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Having received the handle, we use it in </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> to fill two of its buffers.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnCalculate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">begin</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">[])</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">BarsCalculated</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">)&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">CopyBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExampleCondensed">Handle,&nbsp;0,&nbsp;0,&nbsp;rates_total&nbsp;-&nbsp;prev_calculated&nbsp;+&nbsp;1,&nbsp;UpBuffer</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">CopyBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExampleCondensed">Handle,&nbsp;1,&nbsp;0,&nbsp;rates_total&nbsp;-&nbsp;prev_calculated&nbsp;+&nbsp;1,&nbsp;DownBuffer</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's check how the created indicator </span><span class="f_Text" style="font-style: italic;">UseEnvelopesParams1</span><span class="f_Text"> looks on the chart.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="UseEnvelopesParams1 indicator" title="UseEnvelopesParams1 indicator" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="eurusdh1-envelopes.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">UseEnvelopesParams1 indicator</span></p>
+<p class="p_Text"><span class="f_Text">Above was a standard but not very elegant way to populate properties. Since the </span><span class="f_Text" style="font-style: italic;">IndicatorCreate</span><span class="f_Text"> call may be required in many projects, it makes sense to simplify the procedure for the calling code. For this purpose, we will develop a class entitled </span><span class="f_Text" style="font-style: italic;">MqlParamBuilder</span><span class="f_Text"> (see file </span><span class="f_Text" style="font-style: italic;">MqlParamBuilder.mqh</span><span class="f_Text">). Its task will be to accept parameter values using some methods, determine their type, and add appropriate elements (correctly filled structures) to the array.</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 does not fully support the concept of the Run-Time Type Information (RTTI). With it, programs can ask the runtime for descriptive meta-data about their constituent parts, including variables, structures, classes, functions, etc. The few built-in features of MQL5 that can be classified as RTTI are operators <a href="2_5_11_operators_sizeof_typename.htm" class="topiclink">typename</a> and <a href="3_1_5_structs_pack_dll.htm" class="topiclink">offsetof</a>. Because </span><span class="f_Text" style="font-style: italic;">typename</span><span class="f_Text"> returns the name of the type as a string, let's build our type autodetector on strings (see file </span><span class="f_Text" style="font-style: italic;">RTTI.mqh</span><span class="f_Text">).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">ENUM_DATATYPE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rtti</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">types</span><span class="f_CodeExample">[]&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;null&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(0)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;bool&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;0&nbsp;TYPE_BOOL=1&nbsp;(1)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;char&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1&nbsp;TYPE_CHAR=2&nbsp;(2)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;uchar&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;2&nbsp;TYPE_UCHAR=3&nbsp;(3)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;short&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;3&nbsp;TYPE_SHORT=4&nbsp;(4)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ushort&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;4&nbsp;TYPE_USHORT=5&nbsp;(5)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;color&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;5&nbsp;TYPE_COLOR=6&nbsp;(6)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;int&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;6&nbsp;TYPE_INT=7&nbsp;(7)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;uint&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;7&nbsp;TYPE_UINT=8&nbsp;(8)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;datetime&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;8&nbsp;TYPE_DATETIME=9&nbsp;(9)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;long&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;9&nbsp;TYPE_LONG=10&nbsp;(A)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ulong&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;10&nbsp;TYPE_ULONG=11&nbsp;(B)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;float&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;11&nbsp;TYPE_FLOAT=12&nbsp;(C)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;double&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;12&nbsp;TYPE_DOUBLE=13&nbsp;(D)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;string&quot;</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;13&nbsp;TYPE_STRING=14&nbsp;(E)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">types</span><span class="f_CodeExample">);&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">types</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_DATATYPE</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_DATATYPE</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The template function </span><span class="f_Text" style="font-style: italic;">rtti</span><span class="f_Text"> uses </span><span class="f_Text" style="font-style: italic;">typename</span><span class="f_Text"> to receive a string with the name of the template type parameter and compares it with the elements of an array containing all built-in types from the ENUM_DATATYPE enumeration. The order of enumeration of names in the array corresponds to the value of the enumeration element, so when a matching string is found, it is enough to cast the index to type (ENUM_DATATYPE) and return it to the calling code. For example, call to </span><span class="f_Text" style="font-style: italic;">rtti(1.0)</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">rtti&lt;double&gt; ()</span><span class="f_Text"> will give the value TYPE_DOUBLE.</span></p>
+<p class="p_Text"><span class="f_Text">With this tool, we can return to working on </span><span class="f_Text" style="font-style: italic;">MqlParamBuilder</span><span class="f_Text">. In the class, we describe the </span><span class="f_Text" style="font-style: italic;">MqlParam</span><span class="f_Text"> array of structures and the </span><span class="f_Text" style="font-style: italic;">n</span><span class="f_Text"> variable which will contain the index of the last element to be filled.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MqlParamBuilder</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlParam</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's make the public method for adding the next value to the list of parameters a template one. Moreover, we implement it as an overload of the operator '&lt;&lt;' , which returns a pointer to the &quot;builder&quot; object itself. This will allow to write multiple values to the array in one line, for example, like this: </span><span class="f_Text" style="font-style: italic;">builder &lt;&lt; WorkPeriod &lt;&lt; PriceType &lt;&lt; SmoothingMode</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">It is in this method that we increase the size of the array, get the working index </span><span class="f_Text" style="font-style: italic;">n</span><span class="f_Text"> to fill, and immediately reset this </span><span class="f_Text" style="font-style: italic;">n-</span><span class="f_Text">th structure.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MqlParamBuilder</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #0000ff;">operator</span><span class="f_CodeExample">&lt;&lt;(</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;expand&nbsp;the&nbsp;array</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ZeroMemory</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">]);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #0000ff;">this</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Where there is an ellipsis, the main working part will follow, that is, filling in the fields of the structure. It could be assumed that we will directly determine the type of the parameter using a self-made </span><span class="f_Text" style="font-style: italic;">rtti</span><span class="f_Text">. But you should pay attention to one nuance. If we write instructions </span><span class="f_Text" style="font-style: italic;">array[n].type = rtti(v)</span><span class="f_Text">, it will not work correctly for enumerations. Each enumeration is an independent type with its own name, despite the fact that it is stored in the same way as integers. For enumerations, the function </span><span class="f_Text" style="font-style: italic;">rtti</span><span class="f_Text"> will return 0, and therefore, you need to explicitly replace it with TYPE_INT.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;define&nbsp;value&nbsp;type</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rtti</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">TYPE_INT</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;imply&nbsp;enum</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now we only need to put the </span><span class="f_Text" style="font-style: italic;">v </span><span class="f_Text">value to one of the three fields of the structure: </span><span class="f_Text" style="font-style: italic;">integer_value</span><span class="f_Text"> of type </span><span class="f_Text" style="font-style: italic;">long</span><span class="f_Text"> (note, </span><span class="f_Text" style="font-style: italic;">long</span><span class="f_Text"> is a long integer, hence the name of the field), </span><span class="f_Text" style="font-style: italic;">double_value</span><span class="f_Text"> of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">string_value</span><span class="f_Text"> of type </span><span class="f_Text" style="font-style: italic;">string</span><span class="f_Text">. Meanwhile, the number of built-in types is much larger, so it is assumed that all integral types (including </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">short</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">char</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">color</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text">, and enumerations) must fall into the field </span><span class="f_Text" style="font-style: italic;">integer_value</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">float</span><span class="f_Text"> values must fall in field </span><span class="f_Text" style="font-style: italic;">double_value</span><span class="f_Text">, and only for the </span><span class="f_Text" style="font-style: italic;">string_value</span><span class="f_Text"> field has is an unambiguous interpretation: it is always </span><span class="f_Text" style="font-style: italic;">string</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">To accomplish this task, we implement several overloaded </span><span class="f_Text" style="font-style: italic;">assign</span><span class="f_Text"> methods: three with specific types of </span><span class="f_Text" style="font-style: italic;">float</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">string</span><span class="f_Text">, and one template for everything else.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MqlParamBuilder</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">assign</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">double_value</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">assign</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">double_value</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">assign</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">string_value</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;here&nbsp;we&nbsp;process&nbsp;int,&nbsp;enum,&nbsp;color,&nbsp;datetime,&nbsp;etc.&nbsp;compatible&nbsp;with&nbsp;long</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">assign</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">integer_value</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This completes the process of filling structures, and the question remains of passing the generated array to the calling code. This action is assigned to a public method with an overload of the operator '&gt;&gt;', which has a single argument: a reference to the receiving array </span><span class="f_Text" style="font-style: italic;">MqlParam</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;export&nbsp;the&nbsp;inner&nbsp;array&nbsp;to&nbsp;the&nbsp;outside</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">operator</span><span class="f_CodeExample">&gt;&gt;(</span><span class="f_CodeExample" style="color: #0000ff;">MqlParam</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[])</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySwap</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now that everything is ready, we can work with the source code of the modified indicator </span><span class="f_Text" style="font-style: italic;">UseEnvelopesParams2.mq5</span><span class="f_Text">. Changes compared to the first version concern only filling of the </span><span class="f_Text" style="font-style: italic;">MqlParam</span><span class="f_Text"> array in the </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> handler. In it, we describe the &quot;builder&quot; object, send all parameters to it via '&lt;&lt;' and return the finished array via '&gt;&gt;'. All is done in one line.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlParam</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MqlParamBuilder</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">builder</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">builder</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WorkPeriod</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shift</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Method</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Price</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Deviation</span><span class="f_CodeExample">&nbsp;&gt;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[type]&nbsp;[integer_value]&nbsp;[double_value]&nbsp;[string_value]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00000&nbsp;null&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&nbsp;&quot;INT&quot;&nbsp;period</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00000&nbsp;null&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&nbsp;&quot;INT&quot;&nbsp;shift</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[2]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00000&nbsp;null&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&nbsp;&quot;INT&quot;&nbsp;EMA</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[3]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00000&nbsp;null&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&nbsp;&quot;INT&quot;&nbsp;TYPICAL</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[4]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;13&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.10000&nbsp;null&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&nbsp;&quot;DOUBLE&quot;&nbsp;deviation</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For control, we output the array to the log (the result for the default values is shown above).</span></p>
+<p class="p_Text"><span class="f_Text">If the array is not completely filled, </span><span class="f_Text" style="font-style: italic;">IndicatorCreate</span><span class="f_Text"> call will end with an error. For example, if you pass only 3 parameters out of 5 required for </span><span class="f_Text" style="font-style: italic;">Envelopes</span><span class="f_Text">, you will get error 4002 and an invalid handle.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">IndicatorCreate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">IND_ENVELOPES</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Error&nbsp;example:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;indicator&nbsp;Envelopes&nbsp;cannot&nbsp;load&nbsp;[4002]&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;IndicatorCreate(_Symbol,_Period,IND_ENVELOPES,3,params)=</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1&nbsp;/&nbsp;WRONG_INTERNAL_PARAMETER(4002)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">However, a longer array than in the indicator specification is not considered an error: extra values are simply not taken into account.</span></p>
+<p class="p_Text"><span class="f_Text">Note that when the value types differ from the expected parameter types, the system performs an implicit cast, and this does not raise obvious errors, although the generated indicator may not work as expected. For example, if instead of </span><span class="f_Text" style="font-style: italic;">Deviation</span><span class="f_Text"> we send a string to the indicator, it will be interpreted as the number 0, as a result of which the &quot;envelope&quot; will collapse: both lines will be aligned on the middle line, relative to which the indent is made by the size of </span><span class="f_Text" style="font-style: italic;">Deviation</span><span class="f_Text"> (in percentages). Similarly, passing a real number with a fractional part in a parameter where an integer is expected will cause it to be rounded.</span></p>
+<p class="p_Text"><span class="f_Text">But we, of course, leave the correct version of the </span><span class="f_Text" style="font-style: italic;">IndicatorCreate</span><span class="f_Text"> call and get a working indicator, just like in the first version.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">IndicatorCreate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">IND_ENVELOPES</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">params</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;success:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;IndicatorCreate(_Symbol,_Period,IND_ENVELOPES,ArraySize(params),params)=10&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INVALID_HANDLE</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_FAILED</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_SUCCEEDED</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">By the look of it, the new indicator is no different from the previous one.</span></p>
+
+</div>
+
+</body>
+</html>

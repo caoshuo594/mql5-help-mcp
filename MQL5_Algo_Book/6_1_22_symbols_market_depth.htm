@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1.22 Depth of Market</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_1_symbols.htm"> 6.1 Financial instruments and Market Watch </a>/ 6.1.22 Depth of Market
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_21_symbols_description.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_23_symbols_custom.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.1.22 Depth of Market</span></p>
+<p class="p_Text"><span class="f_Text">When it comes to exchange instruments, MetaTrader 5 allows you to get not only price and volume information packed in <a href="6_1_5_symbols_tick.htm" class="topiclink">ticks</a>, but also the Depth of Market (order book, level II prices), that is, the distribution of volumes in placed buy and sell orders at several nearest levels around the current price. One of the integer properties of the symbol SYMBOL_TICKS_BOOKDEPTH contains the maximum number of levels shown in the Depth of Market. This amount is allowed for each of the parties, that is, the total size of the order book can be two times larger (and this does not take into account price levels with zero volumes that are not broadcast).</span></p>
+<p class="p_Text"><span class="f_Text">Depending on the market situation, the actual size of the transmitted order book may become smaller than indicated in this property. For non-exchange instruments, this property is usually equal to 0, although some brokers can broadcast the order book for Forex symbols, limited only by the orders of their clients.</span></p>
+<p class="p_Text"><span class="f_Text">The order book itself and notifications about its update must be requested by the interested MQL program using a special API, which we will discuss in the <a href="6_2_marketbook.htm" class="topiclink">next chapter</a>.</span></p>
+<p class="p_Quote"><span class="f_Quote">It should be noted that due to the architectural features of the platform, this property is not directly related to the translation of the order book, that is, it is just a specification field filled in by the broker. In other words, a non-zero value of the property does not mean that the order book will necessarily arrive at the terminal in an open market. This depends on other server settings and whether it has an active connection to the data provider.</span></p>
+<p class="p_Text"><span class="f_Text">Let's try to get statistics on the depth of the market for all or selected symbols using the script </span><span class="f_Text" style="font-style: italic;">SymbolFilterBookDepth.mq5</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UseMarketWatch</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ShowSymbolsWithDepth</span><span class="f_CodeExample">&nbsp;=&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Parameter </span><span class="f_Text" style="font-style: italic;">ShowSymbolsWithDepth</span><span class="f_Text">, which is equal to -1 by default, instructs to collect statistics on different Depth of Market settings among all symbols. If you set the parameter to a different value, the program will try to find all symbols with the specified order book depth.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolFilter</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;filter&nbsp;object</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;array&nbsp;for&nbsp;symbol&nbsp;names</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">depths</span><span class="f_CodeExample">[];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;array&nbsp;of&nbsp;property&nbsp;values</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MapArray</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;counters&nbsp;of&nbsp;occurrences&nbsp;of&nbsp;each&nbsp;depth</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ShowSymbolsWithDepth</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">let</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_TICKS_BOOKDEPTH</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ShowSymbolsWithDepth</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;apply&nbsp;filter&nbsp;and&nbsp;fill&nbsp;arrays</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">select</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">UseMarketWatch</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_TICKS_BOOKDEPTH</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">depths</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;=====&nbsp;Book&nbsp;depths&nbsp;for&nbsp;%s&nbsp;symbols&nbsp;%s=====&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">UseMarketWatch</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Market&nbsp;Watch&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;all&nbsp;available&quot;</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">ShowSymbolsWithDepth</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;(filtered&nbsp;by&nbsp;depth=&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">ShowSymbolsWithDepth</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;)&nbsp;&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Total&nbsp;symbols:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If a specific depth is given, we simply output an array of symbols (they all satisfy the filter condition), and exit.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ShowSymbolsWithDepth</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Otherwise, we calculate the statistics and display them.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">inc</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">depths</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Stats&nbsp;per&nbsp;depth:&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Legend:&nbsp;key=depth,&nbsp;value=count&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">With the default settings, we can get the following picture.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">=====&nbsp;Book&nbsp;depths&nbsp;for&nbsp;all&nbsp;available&nbsp;symbols&nbsp;=====</span>
+<br><span class="f_CodeExample">Total&nbsp;symbols:&nbsp;52357</span>
+<br><span class="f_CodeExample">Stats&nbsp;per&nbsp;depth:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[key]&nbsp;[value]</span>
+<br><span class="f_CodeExample">[0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;52244</span>
+<br><span class="f_CodeExample">[1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3</span>
+<br><span class="f_CodeExample">[2]&nbsp;&nbsp;&nbsp;&nbsp;10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;67</span>
+<br><span class="f_CodeExample">[3]&nbsp;&nbsp;&nbsp;&nbsp;16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5</span>
+<br><span class="f_CodeExample">[4]&nbsp;&nbsp;&nbsp;&nbsp;20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;13</span>
+<br><span class="f_CodeExample">[5]&nbsp;&nbsp;&nbsp;&nbsp;32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;25</span>
+<br><span class="f_CodeExample">Legend:&nbsp;key=depth,&nbsp;value=count</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If you set </span><span class="f_Text" style="font-style: italic;">ShowSymbolsWithDepth</span><span class="f_Text"> to one of the detected values, for example, 32, we get a list of symbols with this order book depth.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">=====&nbsp;Book&nbsp;depths&nbsp;for&nbsp;all&nbsp;available&nbsp;symbols&nbsp;(filtered&nbsp;by&nbsp;depth=32)&nbsp;=====</span>
+<br><span class="f_CodeExample">Total&nbsp;symbols:&nbsp;25</span>
+<br><span class="f_CodeExample">[&nbsp;0]&nbsp;&quot;USDCNH&quot;&nbsp;&quot;USDZAR&quot;&nbsp;&quot;USDHUF&quot;&nbsp;&quot;USDPLN&quot;&nbsp;&quot;EURHUF&quot;&nbsp;&quot;EURNOK&quot;&nbsp;&quot;EURPLN&quot;&nbsp;&quot;EURSEK&quot;&nbsp;&quot;EURZAR&quot;&nbsp;&quot;GBPNOK&quot;&nbsp;&quot;GBPPLN&quot;&nbsp;&quot;GBPSEK&quot;&nbsp;&quot;GBPZAR&quot;</span>
+<br><span class="f_CodeExample">[13]&nbsp;&quot;NZDCAD&quot;&nbsp;&quot;NZDCHF&quot;&nbsp;&quot;USDMXN&quot;&nbsp;&quot;EURMXN&quot;&nbsp;&quot;GBPMXN&quot;&nbsp;&quot;CADMXN&quot;&nbsp;&quot;CHFMXN&quot;&nbsp;&quot;MXNJPY&quot;&nbsp;&quot;NZDMXN&quot;&nbsp;&quot;USDCOP&quot;&nbsp;&quot;USDARS&quot;&nbsp;&quot;USDCLP&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

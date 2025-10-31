@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.2.2 Custom symbol properties</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_2_custom_symbols.htm"> 7.2 Custom symbols </a>/ 7.2.2 Custom symbol properties
+          </td>
+          <td width="70" align="right">
+          <a href="7_2_1_custom_symbols_create_delete.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_2_3_custom_symbols_margin.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.2.2 Custom symbol properties</span></p>
+<p class="p_Text"><span class="f_Text">Custom symbols have the same properties as broker-provided symbols. The properties are read by the standard functions discussed in the chapter on <a href="6_1_symbols.htm" class="topiclink">financial instruments</a>.</span></p>
+<p class="p_Text"><span class="f_Text">The properties of custom symbols can be set by a special group of </span><span class="f_Text" style="font-style: italic;">CustomSymbolSet</span><span class="f_Text"> functions, one function for each fundamental type (integer, real, string).</span></p>
+<p class="p_H4"><span class="f_H4">bool CustomSymbolSetInteger(const string name, ENUM_SYMBOL_INFO_INTEGER property, long value)</span></p>
+<p class="p_H4"><span class="f_H4">bool CustomSymbolSetDouble(const string name, ENUM_SYMBOL_INFO_DOUBLE property, double value)</span></p>
+<p class="p_H4"><span class="f_H4">bool CustomSymbolSetString(const string name, ENUM_SYMBOL_INFO_STRING property, string value)</span></p>
+<p class="p_Text"><span class="f_Text">The functions set for a custom symbol named </span><span class="f_Text" style="font-style: italic;">name</span><span class="f_Text"> a value of </span><span class="f_Text" style="font-style: italic;">property</span><span class="f_Text"> to </span><span class="f_Text" style="font-style: italic;">value</span><span class="f_Text">. All existing properties are grouped into enumerations ENUM_SYMBOL_INFO_INTEGER, ENUM_SYMBOL_INFO_DOUBLE, ENUM_SYMBOL_INFO_STRING, which were considered element by element in the sections of the aforementioned chapter.</span></p>
+<p class="p_Text"><span class="f_Text">The functions return an indication of success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or error (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">). One possible problem for errors is that not all properties are allowed to change. When trying to set a read-only property, we get the error CUSTOM_SYMBOL_PROPERTY_WRONG (5307). If you try to write an invalid value to the property, you will get a CUSTOM_SYMBOL_PARAMETER_ERROR (5308) error.</span></p>
+<p class="p_Text"><span class="f_Text">Please note that the minute and tick history of a custom symbol is completely deleted if any of the following properties are changed in the symbol specification:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">SYMBOL_CHART_MODE – price type used to build bars (</span><span class="f_li" style="font-style: italic;">Bid</span><span class="f_li"> or </span><span class="f_li" style="font-style: italic;">Last</span><span class="f_li">)</span></li>
+<li class="p_li"><span class="f_li">SYMBOL_DIGITS – number of decimal places in price values</span></li>
+<li class="p_li"><span class="f_li">SYMBOL_POINT – value of one point</span></li>
+<li class="p_li"><span class="f_li">SYMBOL_TRADE_TICK_SIZE – the value of one tick, the minimum allowable price change</span></li>
+<li class="p_li"><span class="f_li">SYMBOL_TRADE_TICK_VALUE – price change cost per tick (see also SYMBOL_TRADE_TICK_VALUE_PROFIT, SYMBOL_TRADE_TICK_VALUE_LOSS)</span></li>
+<li class="p_li"><span class="f_li">SYMBOL_FORMULA – formula for price calculation</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">If a custom symbol is calculated by a formula, then after deleting its history, the terminal will automatically try to create a new history using the updated properties. However, for programmatically generated symbols, the MQL program itself must take care of the recalculation.</span></p>
+<p class="p_Text"><span class="f_Text">Editing individual properties is most in demand for modifying custom symbols created earlier (after specifying the third parameter </span><span class="f_Text" style="font-style: italic;">origin</span><span class="f_Text"> in the </span><span class="f_Text" style="font-style: italic;"><a href="7_2_1_custom_symbols_create_delete.htm" class="topiclink">CustomSymbolCreate</a></span><span class="f_Text"> function).</span></p>
+<p class="p_Text"><span class="f_Text">In other cases, changing properties in bulk can cause subtle effects. The point is that properties are internally linked and changing one of them may require a certain state of other properties in order for the operation to complete successfully. Moreover, setting some properties leads to automatic changes in others.</span></p>
+<p class="p_Text"><span class="f_Text">In the simplest example, after setting the SYMBOL_DIGITS property, you will find that the SYMBOL_POINT property has changed as well. Here is the less obvious case: assigning SYMBOL_CURRENCY_MARGIN or SYMBOL_CURRENCY_PROFIT has no effect on Forex symbols, since the system assumes currency names to occupy the first 3 and next 3 letters of the name (&quot;XXXYYY[suffix]&quot;), respectively. Please note that immediately after the creation of an &quot;empty&quot; symbol, it is by default considered a Forex symbol, and therefore these properties cannot be set for it without first changing the market.</span></p>
+<p class="p_Text"><span class="f_Text">When copying or setting symbol properties, be aware that the platform implies some specifics. In particular, the property <a href="6_1_16_symbols_margin.htm" class="topiclink">SYMBOL_TRADE_CALC_MODE</a> has a default value of 0 (immediately after the symbol is created, but before any property is set), while 0 in the ENUM_SYMBOL_CALC_MODE enumeration corresponds to the SYMBOL_CALC_MODE_FOREX member. At the same time, special naming rules are implied for Forex symbols in the form XXXYYY (where XXX and YYY are currency codes) plus an optional suffix. Therefore, if you do not change SYMBOL_TRADE_CALC_MODE to another required mode in advance, substrings of the specified symbol name (the first and second triple of symbols) will automatically fall into the properties of the base currency (SYMBOL_CURRENCY_BASE) and profit currency (SYMBOL_CURRENCY_PROFIT). For example, if you specify the name &quot;Dummy&quot;, it will be split into 2 pseudo-currencies &quot;Dum&quot; and &quot;my&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">Another nuance is that before setting the value of SYMBOL_POINT with an accuracy of N decimal places, you need to ensure that SYMBOL_DIGITS is at least N.</span></p>
+<p class="p_Text"><span class="f_Text">The book comes with the script </span><span class="f_Text" style="font-style: italic;">CustomSymbolProperties.mq5</span><span class="f_Text">, which allows you to experiment with creating copies of the symbol of the current chart and study the resulting effects in practice. In particular, you can choose the name of the symbol, its path, and the direction of bypassing (setting) all supported properties, direct or reverse in terms of property numbering in the language. The script uses a special class </span><span class="f_Text" style="font-style: italic;">CustomSymbolMonitor</span><span class="f_Text">, which is a wrapper for the above built-in functions: we will describe it </span><span class="f_Text" style="font-style: italic;"><a href="7_2_6_custom_symbols_ticks.htm" class="topiclink">later</a></span><span class="f_Text">.</span></p>
+
+</div>
+
+</body>
+</html>

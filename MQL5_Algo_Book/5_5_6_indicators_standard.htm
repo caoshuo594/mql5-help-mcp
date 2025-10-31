@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.5.6 Overview of built-in indicators</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_5_indicators_use.htm"> 5.5 Using ready-made indicators from MQL programs </a>/ 5.5.6 Overview of built-in indicators
+          </td>
+          <td width="70" align="right">
+          <a href="5_5_5_indicators_multitimeframe.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_5_7_indicators_standard_use.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.5.6 Overview of built-in indicators</span></p>
+<p class="p_Text"><span class="f_Text">The terminal provides a large set of popular indicators, which are also available through the API. So, you don't need to implement their algorithms in MQL5. Such indicators are created using built-in functions similar to </span><span class="f_Text" style="font-style: italic;">iCustom</span><span class="f_Text">. For example, we previously created our own versions of the WPR and EMA Triple Moving Average for educational purposes. However, the corresponding indicators can be used right out of the box via the </span><span class="f_Text" style="font-style: italic;">iWPR</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">iTEMA</span><span class="f_Text"> functions. All the available indicators are listed in the table below.</span></p>
+<p class="p_Text"><span class="f_Text">All built-in indicators take a string with a working symbol and a timeframe as the first two parameters, and also return an integer which is the indicator descriptor. In general, the prototype of all functions looks like this:</span></p>
+<p class="p_H4"><span class="f_H4">int iFunction(const string symbol, ENUM_TIMEFRAMES timeframe, ...)</span></p>
+<p class="p_Text"><span class="f_Text">Instead of an ellipsis, specific parameters of a particular indicator follow. Their number and types differ. Some indicators do not have parameters.</span></p>
+<p class="p_Text"><span class="f_Text">For example, WPR has one parameter, as in our homemade version – a period: </span><span class="f_Text" style="font-style: italic;">int iWPR(const string symbol, ENUM_TIMEFRAMES timeframe, int period)</span><span class="f_Text">. And the built-in fractal indicator, unlike our version, does not have special parameters: </span><span class="f_Text" style="font-style: italic;">int iFractals(const string symbol, ENUM_TIMEFRAMES period)</span><span class="f_Text">. In this case, the order of fractals is hard coded and is equal to 2, that is, before the extremum (top or bottom) and after it, there must be at least two bars with less pronounced </span><span class="f_Text" style="font-style: italic;">high</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">low</span><span class="f_Text"> prices, respectively.</span></p>
+<p class="p_Text"><span class="f_Text">It is allowed to set the value NULL instead of a symbol. NULL means the working symbol of the current chart, and the value 0 in the </span><span class="f_Text" style="font-style: italic;">timeframe</span><span class="f_Text"> parameter corresponds to the current chart timeframe, since it is also the PERIOD_CURRENT value in the ENUM_TIMEFRAMES enumeration (see section <a href="5_3_1_timeseries_symbol_period.htm" class="topiclink">Symbols and timeframes</a>).</span></p>
+<p class="p_Text"><span class="f_Text">You should also keep in mind that different types of indicators have different numbers of buffers. For example, a moving average or WPR has only one buffer, while fractals have two. The number of buffers is also noted in the table in a separate column.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:20%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Function</span></p>
+</th>
+<th class="table" style="width:30%;"><p class="p_BoldTitlesInTables" style="text-align: left;"><span class="f_BoldTitlesInTables">Name&nbsp;of&nbsp;the&nbsp;indicator</span></p>
+</th>
+<th class="table" style="width:30%;"><p class="p_BoldTitlesInTables" style="text-align: left;"><span class="f_BoldTitlesInTables">Options</span></p>
+</th>
+<th class="table" style="width:15%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Buffers</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iAC</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Accelerator Oscillator</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">—</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iAD</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Accumulation / Distribution</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">ENUM_APPLIED_VOLUME volume</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iADX</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Average Directional Index</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">3</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iADXWilder</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Average Directional Index by Welles Wilder</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">3</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iAlligator</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Alligator</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left; page-break-inside: avoid;"><span class="f_fortableCondensed">int jawPeriod, int jawShift, int teethPeriod,int teethShift, int lipsPeriod, int lipsShift, ENUM_MA_METHOD method, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">3</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iAMA</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Adaptive Moving Average</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left; page-break-inside: avoid;"><span class="f_fortableCondensed">int period, int fast, int slow, int shift, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iAO</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Awesome Oscillator</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">—</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iATR</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Average True Range</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iBands</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Bollinger Bands</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left; page-break-inside: avoid;"><span class="f_fortableCondensed">int period, int shift, double deviation, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">3</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iBearsPower</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Bears Power</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iBullsPower</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Bulls Power</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iBWMFI</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Market Facilitation Index by Bill Williams</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">ENUM_APPLIED_VOLUME volume</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iCCI</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Commodity Channel Index</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iChaikin</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Chaikin Oscillator</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int fast, int slow, ENUM_MA_METHOD method, ENUM_APPLIED_VOLUME volume</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iDEMA</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Double Exponential Moving Average</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, int shift, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iDeMarker</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">DeMarker</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iEnvelopes</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Envelopes</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, int shift, ENUM_MA_METHOD method, ENUM_APPLIED_PRICE price, double deviation</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iForce</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Force Index</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, ENUM_MA_METHOD method, ENUM_APPLIED_VOLUME volume</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iFractals</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Fractals</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">—</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iFrAMA</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Fractal Adaptive Moving Average</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, int shift, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iGator</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Gator Oscillator</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int jawPeriod, int jawShift, int teethPeriod, int teethShift, int lipsPeriod, int lipsShift, ENUM_MA_METHOD method, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">4</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iIchimoku</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Ichimoku Kinko Hyo</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int tenkan, int kijun, int senkou</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">5</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iMomentum</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Momentum</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iMFI</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Money Flow Index</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, ENUM_APPLIED_VOLUME volume</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iMA</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Moving Average</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, int shift, ENUM_MA_METHOD method, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iMACD</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Moving Averages Convergence-Divergence</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int fast, int slow, int signal, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">2</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iOBV</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">On Balance Volume</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">ENUM_APPLIED_VOLUME volume</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iOsMA</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Moving Average of Oscillator (MACD histogram)</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int fast, int slow, int signal, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iRSI</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Relative Strength Index</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iRVI</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Relative Vigor Index</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iSAR</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Parabolic Stop And Reverse System</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">double step, double maximum</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iStdDev</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Standard Deviation</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, int shift, ENUM_MA_METHOD method, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iStochastic</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Stochastic Oscillator</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int Kperiod, int Dperiod, int slowing, ENUM_MA_METHOD method, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">2</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iTEMA</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Triple Exponential Moving Average</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, int shift, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iTriX</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Triple Exponential Moving Averages Oscillator</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iVIDyA</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Variable Index Dynamic Average</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int momentum, int smooth, int shift, ENUM_APPLIED_PRICE price</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iVolumes</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Volumes</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">ENUM_APPLIED_VOLUME volume</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">iWPR</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Williams Percent Range</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">int period</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span><span class="f_fortable" style="font-size: 7pt; vertical-align: super;">*</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the right column indicators with their own window are indicated with an asterisk </span><span class="f_Text" style="font-size: 7pt; vertical-align: super;">*</span><span class="f_Text"> (they are displayed under the main chart).</span></p>
+<p class="p_Text"><span class="f_Text">The most commonly used parameters are those that define indicator periods (</span><span class="f_Text" style="font-style: italic;">period</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">fast</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">slow</span><span class="f_Text"> and other variations), as well as line </span><span class="f_Text" style="font-style: italic;">shift</span><span class="f_Text">: when it is positive, the plots are shifted to the right, when it is negative they are shifted to the left by a given number of bars.</span></p>
+<p class="p_Text"><span class="f_Text">Many parameters have application enumeration types: ENUM_APPLIED_PRICE, ENUM_APPLIED_VOLUME, ENUM_MA_METHOD. We already got acquainted with ENUM_APPLIED_PRICE in the section <a href="4_1_6_conversions_enums.htm" class="topiclink">Enumerations</a>. All available types are presented below in tables with descriptions.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table" style="width:50%;"><p class="p_BoldTitlesInTables" style="text-align: left;"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+<th class="table" style="width:5%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Value</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">PRICE_CLOSE</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Bar closing price</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">PRICE_OPEN</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Bar opening price</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">PRICE_HIGH</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Bar high price</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">3</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">PRICE_LOW</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Bar low price</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">4</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">PRICE_MEDIAN</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Median price, (high+low)/2</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">5</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">PRICE_TYPICAL</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Typical price, (high+low+close)/3</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">6</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">PRICE_WEIGHTED</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Weighted average price, (high+low+close+close)/4</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">7</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Indicators that work with volumes can operate with tick volumes (in fact, this is a tick counter) or real volumes (they are usually available only for exchange instruments). Both types are summarized in the ENUM_APPLIED_VOLUME enum.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table" style="width:50%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+<th class="table" style="width:10%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Value</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">VOLUME_TICK</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Tick volume</span></p>
+</td>
+<td class="table" style="width:10%;"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">VOLUME_REAL</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Trading volume</span></p>
+</td>
+<td class="table" style="width:10%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Many technical indicators smooth (or average) timeseries. The terminal supports the four most common smoothing methods, which are specified in MQL5 using the elements of the ENUM_MA_METHOD enumeration.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table" style="width:50%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+<th class="table" style="width:10%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Value</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">MODE_SMA</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Simple averaging</span></p>
+</td>
+<td class="table" style="width:10%;"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">MODE_EMA</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Exponential averaging</span></p>
+</td>
+<td class="table" style="width:10%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">MODE_SMMA</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Smoothed averaging</span></p>
+</td>
+<td class="table" style="width:10%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">MODE_LWMA</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Linearly weighted averaging</span></p>
+</td>
+<td class="table" style="width:10%;"><p class="p_fortable"><span class="f_fortable">3</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For the Stochastic indicator, an example of which we will consider in the next section, there are two calculation options: by </span><span class="f_Text" style="font-style: italic;">Close</span><span class="f_Text"> prices or by </span><span class="f_Text" style="font-style: italic;">High/Low</span><span class="f_Text"> prices. These values are provided in the special enumeration ENUM_STO_PRICE.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table" style="width:50%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+<th class="table" style="width:10%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Value</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">STO_LOWHIGH</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Calculation by Low/High prices</span></p>
+</td>
+<td class="table" style="width:10%;"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">STO_CLOSECLOSE</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Calculation by Close/Close prices</span></p>
+</td>
+<td class="table" style="width:10%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The purpose and numbering of buffers for those indicators that have more than one buffer is shown in the following table.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:20%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Indicators</span></p>
+</th>
+<th class="table" style="width:30%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Constants</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: left;"><span class="f_BoldTitlesInTables">Descriptions</span></p>
+</th>
+<th class="table" style="width:5%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Value</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" colspan="4"  style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">ADX, ADXW</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">MAIN_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Main line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">PLUSDI_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Line +DI</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">MINUSDI_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Line -DI</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" colspan="4"  style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">iAlligator</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">GATORJAW_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Jaw line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">GATORTEETH_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Teeth line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">GATORLIPS_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Lip line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" colspan="4"  style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">iBands</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">BASE_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Main line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">UPPER_BAND</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Upper band</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">LOWER_BAND</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Lower band</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" colspan="4"  style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">iEnvelopes, iFractals</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">UPPER_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Upper line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">LOWER_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Lower line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" colspan="4"  style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">iGator</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">UPPER_HISTOGRAM</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Upper histogram</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">LOWER_HISTOGRAM</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Lower histogram</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" colspan="4"  style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">iIchimoku</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TENKANSEN_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Tenkan-sen line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">KIJUNSEN_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Kijun-sen line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SENKOUSPANA_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Senkou Span A Line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SENKOUSPANB_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Senkou Span B line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">3</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">CHIKOUSPAN_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Chikou span line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">4</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" colspan="4"  style="width:30%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">iMACD, iRVI, iStochastic</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">MAIN_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Main line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">SIGNAL_LINE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Signal line</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Formulas for calculating all indicators are given in <a href="https://www.metatrader5.com/en/terminal/help/charts_analysis/indicators" target="_blank" class="weblink" title="Indicators">MetaTrader 5 documentation</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Full technical information on calling indicator functions, including examples of source codes, can be found in <a href="https://www.mql5.com/en/docs/indicators" target="_blank" class="weblink" title="Indicators">MQL5 documentation</a>. We will consider some examples in this book later.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.5.5 Selecting an encoding for text mode</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_5_files.htm"> 4.5 Working with files </a>/ 4.5.5 Selecting an encoding for text mode
+          </td>
+          <td width="70" align="right">
+          <a href="4_5_4_files_handles.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_5_6_files_arrays.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.5.5 Selecting an encoding for text mode</span></p>
+<p class="p_Text"><span class="f_Text">For written text files, the encoding should be chosen based on the characteristics of the text or adjusted to the requirements of external programs for which the generated files are intended. If there are no external requirements, you can follow the rule to always use ANSI for plain texts with numbers, English letters and punctuation (a table of 128 such international characters is given in the section <a href="4_2_3_strings_comparison.htm" class="topiclink">String comparison</a>). When working with various languages or special characters, use UTF-8 or Unicode, i.e. respectively:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">u8</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;utf8.txt&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_WRITE</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_TXT</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_ANSI</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">u0</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;unicode.txt&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_WRITE</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_TXT</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_UNICODE</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For example, these settings are useful for saving the names of financial instruments to a file, since they sometimes use special characters that denote currencies or trading modes.</span></p>
+<p class="p_Text"><span class="f_Text">Reading your own files should not be a problem, because it is enough to specify the same encoding settings when reading as you did when writing. However, text files can come from different sources. Their encoding may be unknown, or subject to change without prior notice. Therefore, here comes the question of what to do if some of the files can be supplied as single-byte strings (ANSI), some as two-byte strings (Unicode), and some as UTF-8 encoding.</span></p>
+<p class="p_Text"><span class="f_Text">Encoding can be selected via the <a href="2_3_6_input_variables.htm" class="topiclink">input parameters</a> of the program. However, this is effective only for one file, and if you have to open many different files, their encodings may not match. Therefore, it is desirable to instruct the system to make the correct model choice on the fly (from file to file).</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 does not allow 100% automatic detection and application of correct encodings, however, there is one most universal mode for reading a variety of text files. To do this, you need to set the following input parameters of the </span><span class="f_Text" style="font-style: italic;">FileOpen</span><span class="f_Text"> function:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">filename</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_READ</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_TXT</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_ANSI</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">There are several factors at work.</span></p>
+<p class="p_Text"><span class="f_Text">First, the UTF-8 encoding transparently skips the mentioned 128 characters in any ANSI encoding (i.e. they are transmitted &quot;one to one&quot;).</span></p>
+<p class="p_Text"><span class="f_Text">Second, it is the most popular for Internet protocols.</span></p>
+<p class="p_Text"><span class="f_Text">Third, MQL5 has an additional built-in analysis for text formatting in two-byte Unicode, which allows you to automatically switch the file operation mode to FILE_UNICODE, if necessary, regardless of the specified parameters. The fact is that files in Unicode format are usually preceded by a special pair of identifiers: 0xFFFE, or vice versa, 0xFEFF. This sequence is called the Byte Order Mark (BOM). It is needed because, as we know, bytes can be stored inside numbers in a different order on different platforms (this was discussed in the section <a href="4_4_11_maths_byte_swap.htm" class="topiclink">Endianness control in integers</a>).</span></p>
+<p class="p_Text"><span class="f_Text">The FILE_UNICODE format uses a 2-byte integer (code) per character, so byte order becomes important, unlike other encodings. The Windows byte order BOM is 0xFFFE. If the MQL5 core finds this label at the beginning of a text file, its reading will automatically switch to Unicode mode.</span></p>
+<p class="p_Text"><span class="f_Text">Let's see how the different mode settings work with text files of different encodings. For this, we will use the </span><span class="f_Text" style="font-style: italic;">FileText.mq5</span><span class="f_Text"> script and several text files with the same content, but in different encodings (the size in bytes is indicated in brackets):</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">ansi1252.txt (50): European encoding 1252 (it will be displayed in full without distortion in Windows with the European language)</span></li>
+<li class="p_li"><span class="f_li">unicode1.txt (102): two-byte Unicode, at the beginning is the inherent Windows BOM 0xFFFE</span></li>
+<li class="p_li"><span class="f_li">unicode2.txt (100): two-byte Unicode without BOM (in general, BOM is optional)</span></li>
+<li class="p_li"><span class="f_li">unicode3.txt (102): two-byte Unicode, at the beginning there is BOM inherent to Unix, 0xFEFF</span></li>
+<li class="p_li"><span class="f_li">utf8.txt (54): UTF-8 encoding</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function, we will read these files in loops with different settings of </span><span class="f_Text" style="font-style: italic;">FileOpen</span><span class="f_Text">. Please note that by using </span><span class="f_Text" style="font-style: italic;">FileHandle</span><span class="f_Text"> (reviewed in the <a href="4_5_4_files_handles.htm" class="topiclink">previous section</a>) we don't have to worry about closing files: everything happens automatically within each iteration.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;=====&gt;&nbsp;UTF-8&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">);&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FileHandle</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fh</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_READ</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_TXT</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_ANSI</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;-&gt;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileReadString</span><span class="f_CodeExample">(~</span><span class="f_CodeExample" style="color: #333333;">fh</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;=====&gt;&nbsp;Unicode&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">);&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FileHandle</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fh</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_READ</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_TXT</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_UNICODE</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;-&gt;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileReadString</span><span class="f_CodeExample">(~</span><span class="f_CodeExample" style="color: #333333;">fh</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;=====&gt;&nbsp;ANSI/1252&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">);&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FileHandle</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fh</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_READ</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_TXT</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_ANSI</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1252</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;-&gt;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileReadString</span><span class="f_CodeExample">(~</span><span class="f_CodeExample" style="color: #333333;">fh</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">FileReadString</span><span class="f_Text"> function reads a string from a file. We'll cover it in the section on <a href="4_5_9_files_txt_atomic.htm" class="topiclink">writing and reading variables</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Here is an example log with the script execution results:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">=====&gt;&nbsp;UTF-8</span>
+<br><span class="f_CodeExample">MQL5Book/ansi1252.txt&nbsp;-&gt;&nbsp;This&nbsp;is&nbsp;a&nbsp;text&nbsp;with&nbsp;special&nbsp;characters:&nbsp;??&nbsp;/&nbsp;?&nbsp;/&nbsp;?</span>
+<br><span class="f_CodeExample">MQL5Book/unicode1.txt&nbsp;-&gt;&nbsp;This&nbsp;is&nbsp;a&nbsp;text&nbsp;with&nbsp;special&nbsp;characters:&nbsp;&plusmn;&#931;&nbsp;/&nbsp;&pound;&nbsp;/&nbsp;&yen;</span>
+<br><span class="f_CodeExample">MQL5Book/unicode2.txt&nbsp;-&gt;&nbsp;T</span>
+<br><span class="f_CodeExample">MQL5Book/unicode3.txt&nbsp;-&gt;&nbsp;??</span>
+<br><span class="f_CodeExample">MQL5Book/utf8.txt&nbsp;-&gt;&nbsp;This&nbsp;is&nbsp;a&nbsp;text&nbsp;with&nbsp;special&nbsp;characters:&nbsp;&plusmn;&#931;&nbsp;/&nbsp;&pound;&nbsp;/&nbsp;&yen;</span>
+<br><span class="f_CodeExample">=====&gt;&nbsp;Unicode</span>
+<br><span class="f_CodeExample">MQL5Book/ansi1252.txt&nbsp;-&gt;&nbsp;&#26708;&#29545;&#26912;&#8307;&#8289;&#25972;&#29816;&#30496;&#29801;&#8296;&#28787;&#25445;&#24937;&#8300;&#26723;&#29281;&#25441;&#25972;&#29554;›&#16305;&#12064;&#41760;&#12064;&#42272;</span>
+<br><span class="f_CodeExample">MQL5Book/unicode1.txt&nbsp;-&gt;&nbsp;This&nbsp;is&nbsp;a&nbsp;text&nbsp;with&nbsp;special&nbsp;characters:&nbsp;&plusmn;&#931;&nbsp;/&nbsp;&pound;&nbsp;/&nbsp;&yen;</span>
+<br><span class="f_CodeExample">MQL5Book/unicode2.txt&nbsp;-&gt;&nbsp;This&nbsp;is&nbsp;a&nbsp;text&nbsp;with&nbsp;special&nbsp;characters:&nbsp;&plusmn;&#931;&nbsp;/&nbsp;&pound;&nbsp;/&nbsp;&yen;</span>
+<br><span class="f_CodeExample">MQL5Book/unicode3.txt&nbsp;-&gt;&nbsp;&#21504;&#26624;&#26880;&#29440;&#8192;&#26880;&#29440;&#8192;&#24832;&#8192;&#29696;&#25856;&#30720;&#29696;&#8192;&#30464;&#26880;&#29696;&#26624;&#8192;&#29440;&#28672;&#25856;&#25344;&#26880;&#24832;&#27648;&#8192;&#25344;&#26624;&#24832;&#29184;&#24832;&#25344;&#29696;&#25856;&#29184;&#29440;&#14848;&#8192;&#45312;</span>
+<br><span class="f_CodeExample">MQL5Book/utf8.txt&nbsp;-&gt;&nbsp;&#26708;&#29545;&#26912;&#8307;&#8289;&#25972;&#29816;&#30496;&#29801;&#8296;&#28787;&#25445;&#24937;&#8300;&#26723;&#29281;&#25441;&#25972;&#29554;›&#45506;&#41934;&#12064;&#49696;&#8355;&#8239;&#42434;</span>
+<br><span class="f_CodeExample">=====&gt;&nbsp;ANSI/1252</span>
+<br><span class="f_CodeExample">MQL5Book/ansi1252.txt&nbsp;-&gt;&nbsp;This&nbsp;is&nbsp;a&nbsp;text&nbsp;with&nbsp;special&nbsp;characters:&nbsp;&plusmn;?&nbsp;/&nbsp;&pound;&nbsp;/&nbsp;&yen;</span>
+<br><span class="f_CodeExample">MQL5Book/unicode1.txt&nbsp;-&gt;&nbsp;This&nbsp;is&nbsp;a&nbsp;text&nbsp;with&nbsp;special&nbsp;characters:&nbsp;&plusmn;&#931;&nbsp;/&nbsp;&pound;&nbsp;/&nbsp;&yen;</span>
+<br><span class="f_CodeExample">MQL5Book/unicode2.txt&nbsp;-&gt;&nbsp;T</span>
+<br><span class="f_CodeExample">MQL5Book/unicode3.txt&nbsp;-&gt;&nbsp;&thorn;&yuml;</span>
+<br><span class="f_CodeExample">MQL5Book/utf8.txt&nbsp;-&gt;&nbsp;This&nbsp;is&nbsp;a&nbsp;text&nbsp;with&nbsp;special&nbsp;characters:&nbsp;&Acirc;&plusmn;&Icirc;&pound;&nbsp;/&nbsp;&Acirc;&pound;&nbsp;/&nbsp;&Acirc;&yen;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The unicode1.txt file is always read correctly because it has BOM 0xFFFE, and the system ignores the settings in the source code. However, if the label is missing or is big-endian, this auto-detection does not work. Also, when setting FILE_UNICODE, we lose the ability to read single-byte texts and UTF-8.</span></p>
+<p class="p_Text"><span class="f_Text">As a result, the aforementioned combination of FILE_ANSI and CP_UTF8 should be considered more resistant to variations in formatting. Selecting a specific national code page is only recommended when required explicitly.</span></p>
+<p class="p_Text"><span class="f_Text">Despite the significant help provided for the programmer from the API when working with files in text mode, we can, if necessary, avoid the FILE_TXT or FILE_CSV mode, and open a text file in binary mode FILE_BINARY. This will shift all the complexity of parsing text and determining the encoding onto the shoulders of the programmer, but it will allow them to support other non-standard formats. But the main point here is that text can be read from and written to a file opened in binary mode. However, the opposite, in the general case, is impossible. A binary file with arbitrary data (which means, it does not contain strings exclusively) opened in text mode will most likely be interpreted as text &quot;gibberish&quot;. If you need to write binary data to a text file, first use the </span><span class="f_Text" style="font-style: italic;"><a href="7_4_2_crypt_encode.htm" class="topiclink">CryptEncode</a></span><span class="f_Text"> function and CRYPT_BASE64 encoding.</span></p>
+
+</div>
+
+</body>
+</html>

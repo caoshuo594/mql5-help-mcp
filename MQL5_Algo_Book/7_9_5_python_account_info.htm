@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.9.5 Getting information about a trading account</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_9_python.htm"> 7.9 Native python support </a>/ 7.9.5 Getting information about a trading account
+          </td>
+          <td width="70" align="right">
+          <a href="7_9_4_python_last_error.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_9_6_python_terminal_info.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.9.5 Getting information about a trading account</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">account_info</span><span class="f_Text"> function obtains full information about the current trading account.</span></p>
+<p class="p_H4"><span class="f_H4">namedtuple account_info()</span></p>
+<p class="p_Text"><span class="f_Text">The function returns information as a structure of named tuples (</span><span class="f_Text" style="font-style: italic;">namedtuple</span><span class="f_Text">). In case of an error, the result is </span><span class="f_Text" style="font-style: italic;">None</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Using this function, you can use one call to get all the information that is provided by </span><span class="f_Text" style="font-style: italic;"><a href="6_3_1_account_info_overview.htm" class="topiclink">AccountInfoInteger</a></span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;"><a href="6_3_1_account_info_overview.htm" class="topiclink">AccountInfoDouble</a></span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;"><a href="6_3_1_account_info_overview.htm" class="topiclink">AccountInfoString</a></span><span class="f_Text"> in MQL5, with all variants of supported properties. The names of the fields in the tuple correspond to the names of the enumeration elements without the &quot;ACCOUNT_&quot; prefix, reduced to lowercase.</span></p>
+<p class="p_Text"><span class="f_Text">The following script </span><span class="f_Text" style="font-style: italic;">MQL5/Scripts/MQL5Book/Python/accountinfo.py</span><span class="f_Text"> is included with the book.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;MetaTrader5&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;mt5</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;let's&nbsp;establish&nbsp;a&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;mt5.initialize():&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;initialize()&nbsp;failed,&nbsp;error&nbsp;code&nbsp;=&quot;</span><span class="f_CodeExample">,&nbsp;mt5.last_error())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">account_info&nbsp;=&nbsp;mt5.account_info()</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;account_info&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">None</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">&nbsp;&nbsp;&nbsp;#&nbsp;display&nbsp;trading&nbsp;account&nbsp;data&nbsp;as&nbsp;is</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(account_info)&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">&nbsp;&nbsp;&nbsp;#&nbsp;display&nbsp;data&nbsp;about&nbsp;the&nbsp;trading&nbsp;account&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;dictionary</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;Show&nbsp;account_info()._asdict():&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;account_info_dict&nbsp;=&nbsp;mt5.account_info()._asdict()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;prop&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;account_info_dict:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;{}={}&quot;</span><span class="f_CodeExample">.format(prop,&nbsp;account_info_dict[prop]))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;complete&nbsp;the&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample">mt5.shutdown()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The result should be something like this.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">AccountInfo(login=25115284,&nbsp;trade_mode=0,&nbsp;leverage=100,&nbsp;limit_orders=200,&nbsp;margin_so_mode=0,&nbsp;...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Show&nbsp;account_info()._asdict():&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;login=25115284&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;trade_mode=0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;leverage=100&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;limit_orders=200&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_so_mode=0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;trade_allowed=True&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;trade_expert=True&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_mode=2&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;currency_digits=2&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;fifo_close=False&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;balance=99511.4&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;credit=0.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;profit=41.82&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;equity=99553.22&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin=98.18&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_free=99455.04&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_level=101398.67590140559&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_so_call=50.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_so_so=30.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_initial=0.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_maintenance=0.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;assets=0.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;liabilities=0.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;commission_blocked=0.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;name=MetaQuotes&nbsp;Dev&nbsp;Demo&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;server=MetaQuotes-Demo&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;currency=USD&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;company=MetaQuotes&nbsp;Software&nbsp;Corp.&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

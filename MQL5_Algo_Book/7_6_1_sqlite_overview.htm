@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.6.1 SQL Basics</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_6_sqlite.htm"> 7.6 SQLite database </a>/ 7.6.1 SQL Basics
+          </td>
+          <td width="70" align="right">
+          <a href="7_6_0_sqlite_intro.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_6_2_sqlite_scheme_types.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.6.1 SQL Basics</span></p>
+<p class="p_Text"><span class="f_Text">All tasks performed in SQLite assume the presence of a working database (one or more), so creating and opening a database (similar to a file) are mandatory framework operations that establish the necessary programming environment. There is no facility for programmatic deletion of the database in SQLite as it is assumed that you can simply delete the database file from disk.</span></p>
+<p class="p_Text"><span class="f_Text">The actions available in the context of an open base can be conditionally divided into the following main groups:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Creating and deleting tables, as well as modifying their schemas, i.e., column descriptions, including the identification of types, names, and restrictions</span></li>
+<li class="p_li"><span class="f_li">Creating (adding), reading, editing, and deleting records in tables; these operations are often denoted by the common abbreviation CRUD (Create, Read, Update, Delete)</span></li>
+<li class="p_li"><span class="f_li">Building queries to select records from one or a combination of several tables according to complex conditions</span></li>
+<li class="p_li"><span class="f_li">Optimizing algorithms by building indexes on selected columns, using views (view), wrapping batch actions in transactions, declaring event processing triggers, and other advanced tools</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">In SQL databases, all of these actions are performed using reserved SQL commands (or statements). Due to the specifics of integration with MQL5, some of the actions are performed by built-in MQL5 functions. For example, opening, applying, or canceling a transaction is performed by the trinity of </span><span class="f_Text" style="font-style: italic;"><a href="7_6_13_sqlite_transactions.htm" class="topiclink">DatabaseTransaction</a></span><span class="f_Text"><a href="7_6_13_sqlite_transactions.htm" class="topiclink"> functions</a>, although the SQL standard (and the public implementation of SQLite) has corresponding SQL commands (BEGIN TRANSACTION, COMMIT, and ROLLBACK).</span></p>
+<p class="p_Text"><span class="f_Text">Most SQL commands are also available in MQL programs: they are passed to the SQLite executing engine as string parameters of the </span><span class="f_Text" style="font-style: italic;"><a href="7_6_5_sqlite_simple_queries.htm" class="topiclink">DatabaseExecute</a></span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;"><a href="7_6_7_sqlite_prepare.htm" class="topiclink">DatabasePrepare</a></span><span class="f_Text"> functions. The difference between these two options lies in several nuances.</span></p>
+<p class="p_Text"><span class="f_Text" style="font-style: italic;">DatabasePrepare</span><span class="f_Text"> allows you to prepare a query for its subsequent mass cyclic execution with different parameter values at each iteration (the parameters themselves, that is, their names in the query, are the same). In addition, these prepared queries provide a mechanism to read the results using </span><span class="f_Text" style="font-style: italic;"><a href="7_6_10_sqlite_read.htm" class="topiclink">DatabaseRead</a></span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;"><a href="7_6_10_sqlite_read.htm" class="topiclink">DatabaseReadBind</a></span><span class="f_Text">. So, you can use them for operations with a set of selected records.</span></p>
+<p class="p_Text"><span class="f_Text">In contrast, the </span><span class="f_Text" style="font-style: italic;">DatabaseExecute</span><span class="f_Text"> function executes the passed single query unilaterally: the command goes inside the SQLite engine, performs some actions on the data, but returns nothing. This is commonly used for table creation or batch modification of data.</span></p>
+<p class="p_Text"><span class="f_Text">In the future, we will often have to operate with several basic concepts. Let's introduce them:</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Table</span><span class="f_Text"> – a structured set of data, consisting of rows and columns. Each row is a separate data record with fields (properties) described using the name and type of the corresponding columns. All database tables are physically stored in the database file and are available for reading and writing (if rights were not restricted when opening the database).</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">View</span><span class="f_Text"> – a kind of virtual table calculated by the SQLite engine based on a given SQL query, other tables, or views. Views are read-only. Unlike any tables (including temporary ones that SQL allows you to create in memory for the duration of a program session), views are dynamically recalculated each time they are accessed.</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Index</span><span class="f_Text"> – a service data structure (the balanced tree, B-tree) for quick search of records by the values of predefined fields (properties) or their combinations.</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Trigger</span><span class="f_Text"> – a subroutine of one or more SQL statements assigned to be automatically run in response to events (before or after) adding, changing, or deleting a record in a particular table.</span></p>
+<p class="p_Text"><span class="f_Text">Here is a short list of the most popular SQL statements and the actions they perform:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">CREATE – creates a database object (table, view, index, trigger);</span></li>
+<li class="p_li"><span class="f_li">ALTER – changes an object (table);</span></li>
+<li class="p_li"><span class="f_li">DROP – deletes an object (table, view, index, trigger);</span></li>
+<li class="p_li"><span class="f_li">SELECT – selects records or calculates values that satisfy the given conditions;</span></li>
+<li class="p_li"><span class="f_li">INSERT – adds new data (one or a set of records);</span></li>
+<li class="p_li"><span class="f_li">UPDATE – changes existing records;</span></li>
+<li class="p_li"><span class="f_li">DELETE – deletes records from the table;</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The list only shows the keywords that start the corresponding SQL language construct. A more detailed syntax will be shown below. Their practical application will be shown in the following examples.</span></p>
+<p class="p_Text"><span class="f_Text">Each statement can span multiple lines (linefeed characters and extra spaces are ignored). If necessary, you can send several commands to SQLite at once. In this case, after each command, you should use the command termination character ';' (semicolon).</span></p>
+<p class="p_Text"><span class="f_Text">The text in commands is analyzed by the system regardless of case, but in SQL it is customary to write keywords in capital letters.</span></p>
+<p class="p_Text"><span class="f_Text">When creating a table, we must specify its name, as well as a list of columns in parentheses, separated by commas. Each column is given a name, a type, and optionally a constraint. The simplest form:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">CREATE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TABLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table_name</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;(&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;[&nbsp;</span><span class="f_CodeExample" style="color: #333333;">constraints</span><span class="f_CodeExample">&nbsp;]&nbsp;[,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;[&nbsp;</span><span class="f_CodeExample" style="color: #333333;">constraints</span><span class="f_CodeExample">&nbsp;...]&nbsp;...]);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We will see the restrictions in SQL in the <a href="7_6_2_sqlite_scheme_types.htm" class="topiclink">next section</a>. In the meantime, let's have a look at a clear example (with different types and options):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">CREATE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TABLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">IF</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">NOT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">EXISTS</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">example_table</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">INTEGER</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PRIMARY</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">KEY</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TEXT</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">timestamp</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">INTEGER</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">DEFAULT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CURRENT_STAMP</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">income</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">REAL</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BLOB</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The syntax for creating an index is:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">CREATE</span><span class="f_CodeExample">&nbsp;[&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UNIQUE</span><span class="f_CodeExample">&nbsp;]&nbsp;</span><span class="f_CodeExample" style="color: #333333;">INDEX</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">index_name</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ON</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table_name</span><span class="f_CodeExample">(&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name</span><span class="f_CodeExample">&nbsp;[,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name&nbsp;</span><span class="f_CodeExample">...]);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Existing indexes are automatically used in queries with filter conditions on the corresponding columns. Without indexes, the process is slower.</span></p>
+<p class="p_Text"><span class="f_Text">Deleting a table (along with the data, if something has been written to it) is quite simple:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">DROP</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TABLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table_name</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">You can insert data into a table like this:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">INSERT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">INTO</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table_name</span><span class="f_CodeExample">&nbsp;[&nbsp;(&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name</span><span class="f_CodeExample">&nbsp;[,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name&nbsp;</span><span class="f_CodeExample">...]&nbsp;)&nbsp;]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">VALUES</span><span class="f_CodeExample">(&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">&nbsp;[,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value&nbsp;</span><span class="f_CodeExample">...]);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The first list in parentheses includes the column names and is optional (see explanation below). It must match the second list with values for them. For example,</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">INSERT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">INTO</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">example_table</span><span class="f_CodeExample">&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">income</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">VALUES</span><span class="f_CodeExample">&nbsp;('</span><span class="f_CodeExample" style="color: #333333;">Morning</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Flat</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Breakout</span><span class="f_CodeExample">',&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Note that string literals are enclosed in single quotes in SQL.</span></p>
+<p class="p_Text"><span class="f_Text">If the column names are omitted from the INSERT statement, the VALUES keyword is assumed to be followed by the values for all the columns in the table, and in the exact order in which they are described in the table.</span></p>
+<p class="p_Text"><span class="f_Text">There are also more complex forms of the operator, allowing, in particular, the insertion of records from other tables or query results.</span></p>
+<p class="p_Text"><span class="f_Text">Selecting records by condition, with an optional limitation of the list of returned fields (columns), is performed by the SELECT command.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">SELECT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name</span><span class="f_CodeExample">&nbsp;[,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name&nbsp;</span><span class="f_CodeExample">...]&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FROM</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table_name</span><span class="f_CodeExample">&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">WHERE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">condition</span><span class="f_CodeExample">&nbsp;];</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If you want to return every matching record in its entirety (all columns), use the star notation:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">SELECT</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">FROM</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table_name</span><span class="f_CodeExample">&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">WHERE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">condition</span><span class="f_CodeExample">&nbsp;];</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When the condition is not present, the system returns all records in the table.</span></p>
+<p class="p_Text"><span class="f_Text">As a condition, you can substitute a logical expression that includes column names and various comparison operators, as well as built-in SQL functions and the results of a nested SELECT query (such queries are written in parentheses). Comparison operators include:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Logical AND</span></li>
+<li class="p_li"><span class="f_li">Logical OR</span></li>
+<li class="p_li"><span class="f_li">IN for a value from the list</span></li>
+<li class="p_li"><span class="f_li">NOT IN &nbsp;for a value outside the list</span></li>
+<li class="p_li"><span class="f_li">BETWEEN &nbsp;for a value in the range</span></li>
+<li class="p_li"><span class="f_li">LIKE – similar in spelling to a pattern with special wildcard characters ('%', '_')</span></li>
+<li class="p_li"><span class="f_li">EXISTS – check for non-emptiness of the results of the nested query</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">For example, a selection of record names with an income of at least 1000 and no older than one year (preliminarily rounded to the nearest month):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">SELECT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FROM</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">example_table</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WHERE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">income</span><span class="f_CodeExample">&nbsp;&gt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">AND</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">timestamp</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">('</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">',&nbsp;'</span><span class="f_CodeExample" style="color: #333333;">start</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">of</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">month</span><span class="f_CodeExample">',&nbsp;'-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">year</span><span class="f_CodeExample">');</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Additionally, the selection can be sorted in ascending or descending order (ORDER BY), grouped by characteristics (GROUP BY), and filtered by groups (HAVING). We can also limit the number of records in it (LIMIT, OFFSET). For each group, you can return the value of any aggregate function, in particular, COUNT, SUM, MIN, MAX, and AVG, calculated on all group records.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">SELECT</span><span class="f_CodeExample">&nbsp;[&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DISTINCT</span><span class="f_CodeExample">&nbsp;]&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name</span><span class="f_CodeExample">&nbsp;[,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name</span><span class="f_CodeExample">...](</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FROM</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table_name</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WHERE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">condition</span><span class="f_CodeExample">&nbsp;]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">ORDER</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BY</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name</span><span class="f_CodeExample">&nbsp;[&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ASC</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DESC</span><span class="f_CodeExample">&nbsp;]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[&nbsp;</span><span class="f_CodeExample" style="color: #333333;">LIMIT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">quantity</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OFFSET</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">start_offset</span><span class="f_CodeExample">&nbsp;]&nbsp;]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GROUP</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BY</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name</span><span class="f_CodeExample">&nbsp;&#8992;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">HAVING</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">condition</span><span class="f_CodeExample">&nbsp;]&nbsp;];</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The optional keyword DISTINCT allows you to remove duplicates (if they are found in the results according to the current selection criteria). It only makes sense in the absence of grouping.</span></p>
+<p class="p_Text"><span class="f_Text">LIMIT will only give reproducible results if sorting is present.</span></p>
+<p class="p_Text"><span class="f_Text">If necessary, the SELECT selection can be made not from one table but from several, combining them according to the required combination of fields. The keyword JOIN is used for this.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">SELECT</span><span class="f_CodeExample">&nbsp;[...]&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FROM</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name_1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;</span><span class="f_CodeExample" style="color: #333333;">INNER</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OUTER</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CROSS</span><span class="f_CodeExample">&nbsp;]&nbsp;</span><span class="f_CodeExample" style="color: #333333;">JOIN</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table_name_2</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ON</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">boolean_condition</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">or</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">SELECT</span><span class="f_CodeExample">&nbsp;[...]&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FROM</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name_1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;</span><span class="f_CodeExample" style="color: #333333;">INNER</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OUTER</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CROSS</span><span class="f_CodeExample">&nbsp;]&nbsp;</span><span class="f_CodeExample" style="color: #333333;">JOIN</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table_name_2</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">USING</span><span class="f_CodeExample">&nbsp;(&nbsp;</span><span class="f_CodeExample" style="color: #333333;">common_column_name</span><span class="f_CodeExample">&nbsp;[,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">common_column_name&nbsp;</span><span class="f_CodeExample">...]&nbsp;)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">SQLite supports three kinds of JOINs: INNER JOIN, OUTER JOIN, and CROSS JOIN. The book provides a general idea of them from examples, while you can further explore the details on your own.</span></p>
+<p class="p_Text"><span class="f_Text">For example, using JOIN, you can build all combinations of records from one table with records from another table or compare deals from the deals table (let's call it &quot;deals&quot;) with deals from the same table according to the principle of matching position identifiers, but in such a way that the direction of deals (entry to the market/exit from the market) was the opposite, resulting in a virtual table of trades.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">SELECT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;list&nbsp;the&nbsp;columns&nbsp;of&nbsp;the&nbsp;results&nbsp;table&nbsp;with&nbsp;aliases&nbsp;(after&nbsp;'as')</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">time_in</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">position_id</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;table&nbsp;d1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">volume</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">volume</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price_in</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d2</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">time_out</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d2</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price_out</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;table&nbsp;d2</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d2</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">swap</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">swap</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d2</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">profit</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">commission</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d2</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">commission</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">commission</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;combination</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FROM</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">deals</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">INNER</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">JOIN</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">deals</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d2</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;d1&nbsp;and&nbsp;d2&nbsp;-&nbsp;aliases&nbsp;of&nbsp;one&nbsp;table&nbsp;&quot;deals&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ON</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">position_id</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d2</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">position_id</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;merge&nbsp;condition&nbsp;by&nbsp;position</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WHERE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">entry</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">AND</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d2</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">entry</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;selection&nbsp;condition&nbsp;&quot;entry/exit&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This is an SQL query from the MQL5 help, where JOIN examples are available in descriptions of the </span><span class="f_Text" style="font-style: italic;">DatabaseExecute</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">DatabasePrepare</span><span class="f_Text"> functions.</span></p>
+<p class="p_Text"><span class="f_Text">The fundamental property of SELECT is that it always returns results to the calling program, unlike other queries such as CREATE, INSERT, etc. However, starting from SQLite 3.35, INSERT, UPDATE, and DELETE statements also have the ability to return values, if necessary, using the additional RETURNING keyword. For example,</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">INSERT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">INTO</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">example_table</span><span class="f_CodeExample">&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">income</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">VALUES</span><span class="f_CodeExample">&nbsp;('</span><span class="f_CodeExample" style="color: #333333;">Morning</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Flat</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Breakout</span><span class="f_CodeExample">',&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">RETURNING</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In any case, query results in MQL5 are accessed through </span><span class="f_Text" style="font-style: italic;"><a href="7_6_11_sqlite_columns.htm" class="topiclink">DatabaseColumn</a></span><span class="f_Text"><a href="7_6_11_sqlite_columns.htm" class="topiclink"> functions</a>, </span><span class="f_Text" style="font-style: italic;"><a href="7_6_10_sqlite_read.htm" class="topiclink">DatabaseRead</a></span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;"><a href="7_6_10_sqlite_read.htm" class="topiclink">DatabaseReadBind</a></span><span class="f_Text">. &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">In addition, SELECT allows you to evaluate the results of expressions and return them as they are or combine them with results from tables. Expressions can include most of the operators we are familiar with from <a href="2_5_expressions.htm" class="topiclink">MQL5 expressions</a>, as well as built-in SQL functions. See the SQLite documentation for a complete list. For example, here's how you can find the current build version of SQLite in your terminal and editor instance, which can be important for finding out which options are available.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">SELECT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">sqlite_version</span><span class="f_CodeExample">();</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here the entire expression consists of a single call of the </span><span class="f_Text" style="font-style: italic;">sqlite_version</span><span class="f_Text"> function. Similar to selecting multiple columns from a table, you can evaluate multiple expressions separated by commas.</span></p>
+<p class="p_Text"><span class="f_Text">Several popular <a href="https://www.mql5.com/en/docs/database#stats" target="_blank" class="weblink" title="MQL5 documentation">statistical</a> and <a href="https://www.mql5.com/en/docs/database#math" target="_blank" class="weblink" title="MQL5 documentation">mathematical</a> functions are also available.</span></p>
+<p class="p_Text"><span class="f_Text">Records should be edited with an UPDATE statement.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">UPDATE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table_name</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SET</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">&nbsp;[,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">column_name</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value&nbsp;</span><span class="f_CodeExample">...]&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WHERE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">condition</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The syntax for the deletion command is as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">DELETE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FROM</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">table_name</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WHERE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">condition</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

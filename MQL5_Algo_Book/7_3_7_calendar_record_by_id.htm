@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.3.7 Reading event records by ID</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_3_calendar.htm"> 7.3 Economic calendar </a>/ 7.3.7 Reading event records by ID
+          </td>
+          <td width="70" align="right">
+          <a href="7_3_6_calendar_records_by_event_kind.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_3_8_calendar_change_last.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.3.7 Reading event records by ID</span></p>
+<p class="p_Text"><span class="f_Text">Knowing the events schedule for the near future, traders can adjust their robots accordingly. There are no functions or events in the calendar API (&quot;events&quot; in the sense of functions for processing new financial information like </span><span class="f_Text" style="font-style: italic;">OnCalendar</span><span class="f_Text">, by analogy with </span><span class="f_Text" style="font-style: italic;">OnTick</span><span class="f_Text">) to automatically track news releases. The algorithm must do this itself at any chosen frequency. In particular, you can find out the identifier of the desired event using one of the previously discussed functions (for example, </span><span class="f_Text" style="font-style: italic;">CalendarValueHistoryByEvent</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">CalendarValueHistory</span><span class="f_Text">) and then call </span><span class="f_Text" style="font-style: italic;">CalendarValueById</span><span class="f_Text"> to get the current state of the fields in the </span><span class="f_Text" style="font-style: italic;">MqlCalendarValue</span><span class="f_Text"> structure.</span></p>
+<p class="p_H4"><span class="f_H4">bool CalendarValueById(ulong id, MqlCalendarValue &amp;value)</span></p>
+<p class="p_Text"><span class="f_Text">The function fills the structure passed by reference with current information about a specific event.</span></p>
+<p class="p_Text"><span class="f_Text">The result of the function denotes a sign of success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or error (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">Let's create a simple bufferless indicator </span><span class="f_Text" style="font-style: italic;">CalendarRecordById.mq5</span><span class="f_Text">, which will find in the future the nearest event with the type of &quot;financial indicator&quot; (i.e., a numerical indicator) and will poll its status on timer. When the news is published, the data will change (the &quot;actual&quot; value of the indicator will become known), and the indicator will display an alert.</span></p>
+<p class="p_Text"><span class="f_Text">The frequency of polling the calendar is set in the input variable.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TimerSeconds</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We run the timer in </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EventSetTimer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">TimerSeconds</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For the convenient output to the event description log, we use the </span><span class="f_Text" style="font-style: italic;">MqlCalendarRecord</span><span class="f_Text"> structure which we already know from the example with the script </span><span class="f_Text" style="font-style: italic;"><a href="7_3_5_calendar_records_by_country_currency.htm" class="topiclink">CalendarForDates.mq5</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">To store the initial state of news information, we describe the </span><span class="f_Text" style="font-style: italic;">track</span><span class="f_Text"> structure.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">MqlCalendarValue</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When the structure is empty (and there is &quot;0&quot; in the field </span><span class="f_Text" style="font-style: italic;">id</span><span class="f_Text">), the program must query the upcoming events and find among them the closest one with the CALENDAR_TYPE_INDICATOR type and for which the current value is not yet known.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTimer</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlCalendarValue</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CalendarValueHistory</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeCurrent</span><span class="f_CodeExample">(),&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeCurrent</span><span class="f_CodeExample">()&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">DAY_LONG</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">);&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlCalendarEvent</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">event</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">CalendarEventById</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">event_id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">event</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">event</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CALENDAR_TYPE_INDICATOR</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;!</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">HasActualValue</span><span class="f_CodeExample">())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Started&nbsp;monitoring&nbsp;%lld&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StructPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">MqlCalendarRecord</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ARRAYPRINT_HEADER</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The found event is copied to </span><span class="f_Text" style="font-style: italic;">track</span><span class="f_Text"> and output to the log. After that, every call to </span><span class="f_Text" style="font-style: italic;">OnTimer</span><span class="f_Text"> comes down to getting updated information about the event into the </span><span class="f_Text" style="font-style: italic;">update</span><span class="f_Text"> structure, which is transferred to </span><span class="f_Text" style="font-style: italic;">CalendarValueById</span><span class="f_Text"> with the </span><span class="f_Text" style="font-style: italic;">track.id</span><span class="f_Text"> identifier. Next, the original and new structures are compared using the auxiliary function </span><span class="f_Text" style="font-style: italic;">StructCompare</span><span class="f_Text"> (based on </span><span class="f_Text" style="font-style: italic;">StructToCharArray</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ArrayCompare</span><span class="f_Text">, see the complete source code). Any difference causes a new state to be printed (the forecast may have changed), and if the current value appears, the timer stops. To start waiting for the next news, this indicator needs to be reinitialized: this one is for demonstration, and to control the situation according to the list of news, we will later develop a more practical filter class.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlCalendarValue</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">update</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CalendarValueById</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">update</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">fabs</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">StructCompare</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">update</span><span class="f_CodeExample">))&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Alert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;News&nbsp;%lld&nbsp;changed&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;New&nbsp;state&nbsp;of&nbsp;%lld&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StructPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">MqlCalendarRecord</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">update</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ARRAYPRINT_HEADER</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">update</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">HasActualValue</span><span class="f_CodeExample">())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Timer&nbsp;stopped&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EventKillTimer</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">update</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TimeCurrent</span><span class="f_CodeExample">()&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Forthcoming&nbsp;event&nbsp;time:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;remaining:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Timing</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">stringify</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeCurrent</span><span class="f_CodeExample">())));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Forthcoming&nbsp;event&nbsp;time:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;late&nbsp;for:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Timing</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">stringify</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #0000ff;">TimeCurrent</span><span class="f_CodeExample">()&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">track</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">)));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">While waiting for the event, the indicator displays a comment with the expected time of the news release and how much time is left before it (or what is the delay).</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Commentary on the expectation or expiration of the upcoming news" title="Commentary on the expectation or expiration of the upcoming news" width="400" height="300" style="margin:0 auto 0 auto;width:400px;height:300px;border:none" src="eurusdm15_news.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Comment about waiting or being late for the next news</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that the news may come out a little earlier or a little later than the scheduled date. This creates some problems when testing news strategies on history, since the time of updating calendar entries in the terminal and through the MQL5 API is not provided. We will try to partially solve this problem in the next section.</span></p>
+<p class="p_Text"><span class="f_Text">Here are fragments of the log output produced by the indicator with a gap:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">CalendarValueHistory(values,TimeCurrent(),TimeCurrent()+(60*60*24)*3)=186&nbsp;/&nbsp;ok</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Started&nbsp;monitoring&nbsp;156045</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;[id]&nbsp;[event_id]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[time]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[period]&nbsp;[revision]&nbsp;&raquo;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">156045&nbsp;&nbsp;840020013&nbsp;2022.06.27&nbsp;15:30:00&nbsp;2022.05.01&nbsp;00:00:00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&raquo;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&raquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[actual_value]&nbsp;[prev_value]&nbsp;[revised_prev_value]&nbsp;[forecast_value]&nbsp;[impact_type]&nbsp;&raquo;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&raquo;&nbsp;-9223372036854775808&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;400000&nbsp;-9223372036854775808&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&raquo;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&raquo;&nbsp;[importance]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[name]&nbsp;[currency]&nbsp;[code]&nbsp;[actual]&nbsp;[previous]&nbsp;[revised]&nbsp;[forecast]</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&raquo;&nbsp;&quot;Medium&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Durable&nbsp;Goods&nbsp;Orders&nbsp;m/m&quot;&nbsp;&quot;USD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;US&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nan&nbsp;&nbsp;&nbsp;&nbsp;0.40000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nan&nbsp;&nbsp;&nbsp;&nbsp;0.00000</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Alert:&nbsp;News&nbsp;156045&nbsp;changed</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">New&nbsp;state&nbsp;of&nbsp;156045</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;[id]&nbsp;[event_id]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[time]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[period]&nbsp;[revision]&nbsp;&raquo;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">156045&nbsp;&nbsp;840020013&nbsp;2022.06.27&nbsp;15:30:00&nbsp;2022.05.01&nbsp;00:00:00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&raquo;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&raquo;&nbsp;[actual_value]&nbsp;[prev_value]&nbsp;[revised_prev_value]&nbsp;[forecast_value]&nbsp;[impact_type]&nbsp;&raquo;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&raquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;700000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;400000&nbsp;-9223372036854775808&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&raquo;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&raquo;&nbsp;[importance]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[name]&nbsp;[currency]&nbsp;[code]&nbsp;[actual]&nbsp;[previous]&nbsp;[revised]&nbsp;[forecast]</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&raquo;&nbsp;&quot;Medium&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Durable&nbsp;Goods&nbsp;Orders&nbsp;m/m&quot;&nbsp;&quot;USD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;US&quot;&nbsp;&nbsp;&nbsp;&nbsp;0.70000&nbsp;&nbsp;&nbsp;&nbsp;0.40000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nan&nbsp;&nbsp;&nbsp;&nbsp;0.00000</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Timer&nbsp;stopped</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The updated news has the </span><span class="f_Text" style="font-style: italic;">actual_value</span><span class="f_Text"> value.</span></p>
+<p class="p_Text"><span class="f_Text">In order not to wait too long during the test, it is advisable to run this indicator during the working hours of the main markets, when the density of news releases is high.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">CalendarValueById</span><span class="f_Text"> function is not the only one, and probably not the most flexible, with which you can monitor changes in the calendar. We will look at a couple of other approaches in the following sections.</span></p>
+
+</div>
+
+</body>
+</html>

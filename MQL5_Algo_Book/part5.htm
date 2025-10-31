@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>part5</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a>/ Part 5. Creating application programs
+          </td>
+          <td width="70" align="right">
+          <a href="4_10_13_matrices_ml.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_1_runtime.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Part 5. Creating application programs in MQL5</span></p>
+<p class="p_Text"><span class="f_Text">In this part, we will closely study those sections of the API that are related to solving applied problems of algorithmic trading: analysis and processing of financial data, their visualization and markup using graphic objects, automation of routine actions, and interactive user interaction.</span></p>
+<p class="p_Text"><span class="f_Text">Let's start with the general principles of creating MQL programs, their types, features, and the event model in the terminal. Then we will touch on access to timeseries, work with charts and graphical objects. Finally, let's analyze the principles of creating and using each type of MQL program separately.</span></p>
+<p class="p_Text"><span class="f_Text">Active users of MetaTrader 5 undoubtedly remember that the terminal supports five types of programs:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Technical indicators for calculating arbitrary indicators in the form of time series, with the possibility of their visualization in the main chart window, or in a separate panel (sub-window);</span></li>
+<li class="p_li"><span class="f_li">Expert Advisors providing automatic or semi-automatic trading;</span></li>
+<li class="p_li"><span class="f_li">Scripts for performing auxiliary one-time tasks on demand;</span></li>
+<li class="p_li"><span class="f_li">Services for performing background tasks in continuous mode;</span></li>
+<li class="p_li"><span class="f_li">Libraries, which are compiled modules with a specific, separate functionality, which are connected to other types of MQL programs during their loading, dynamically (which fundamentally distinguishes libraries from header files that are included statically at the compilation stage).</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">In the previous parts of the book, as we mastered the basics of programming and common built-in functions, we already had to turn to the implementation of scripts and services as examples. These types of programs were chosen as being simpler than the others. Now we will describe them purposefully and add more functional and popular indicators to them.</span></p>
+<p class="p_Text"><span class="f_Text">With the help of indicators and charts, we will learn some techniques that will be applicable to Expert Advisors as well. However, we will postpone the actual development of Expert Advisors, which is a more complex task in its essence, and move it to a separate, following Part 6, which includes not only automatic execution of orders and formalization of trading strategies, but also their backtesting and optimization.</span></p>
+<p class="p_Text"><span class="f_Text">As far as indicators are concerned, MetaTrader 5 is known to come with a set of built-in standard indicators. In this part, we will learn how to use them programmatically, as well as create our own indicators both from scratch, and based on other indicators.</span></p>
+<p class="p_Text"><span class="f_Text">All compiled indicators, Expert Advisors, scripts and services are displayed in the Navigator in MetaTrader 5. Libraries are not independent programs, and therefore do not have a dedicated branch in the hierarchy, although, of course, this would be convenient from the point of view of uniform management of all binary modules. As we will see later, those programs that depend on a particular library cannot run without it. But now you can check the existence of the library only in the file manager.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table id="footer-links" cellspacing="0" cellpadding="0" border="0" style="text-align: justify;width:100%; border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:middle; width:21px; padding:0; border:none"><p class="p_fortableFooterLinks"><img class="help" alt="MQL5 Programming for Traders – Source Codes from the Book. Part 5" title="MQL5 Programming for Traders – Source Codes from the Book. Part 5" width="16" height="16" style="margin:0;width:16px;height:16px;border:none" src="code_base_icon.png"/></p>
+</td>
+<td style="vertical-align:middle; padding:0; border:none"><p class="p_fortableFooterLinks"><span class="f_fortableFooterLinks"><a href="https://www.mql5.com/en/code/45594" target="_blank" class="weblink">MQL5 Programming for Traders – Source Codes from the Book. Part 5</a></span></p>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:middle; width:21px; padding:0; border:none"><p class="p_fortableFooterLinks"><img class="help" alt="&#1055;&#1088;&#1080;&#1084;&#1077;&#1088;&#1099; &#1080;&#1079; &#1082;&#1085;&#1080;&#1075;&#1080; &#1090;&#1072;&#1082;&#1078;&#1077; &#1076;&#1086;&#1089;&#1090;&#1091;&#1087;&#1085;&#1099; &#1074; &#1087;&#1091;&#1073;&#1083;&#1080;&#1095;&#1085;&#1086;&#1084; &#1087;&#1088;&#1086;&#1077;&#1082;&#1090;&#1077; \MQL5\Shared Projects\MQL5Book. " title="&#1055;&#1088;&#1080;&#1084;&#1077;&#1088;&#1099; &#1080;&#1079; &#1082;&#1085;&#1080;&#1075;&#1080; &#1090;&#1072;&#1082;&#1078;&#1077; &#1076;&#1086;&#1089;&#1090;&#1091;&#1087;&#1085;&#1099; &#1074; &#1087;&#1091;&#1073;&#1083;&#1080;&#1095;&#1085;&#1086;&#1084; &#1087;&#1088;&#1086;&#1077;&#1082;&#1090;&#1077; \MQL5\Shared Projects\MQL5Book. " width="16" height="16" style="margin:0;width:16px;height:16px;border:none" src="metaeditor_icon.png"/></p>
+</td>
+<td style="vertical-align:middle; padding:0; border:none"><p class="p_fortableFooterLinks"><span class="f_fortableFooterLinks">Examples from the book are also available in the <a href="https://www.metatrader5.com/en/metaeditor/help/mql5storage/projects#public" target="_blank" class="weblink">public project</a> \MQL5\Shared Projects\MQL5Book</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

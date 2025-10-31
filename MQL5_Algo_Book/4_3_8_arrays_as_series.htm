@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.3.8 Timeseries indexing direction in arrays</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_3_arrays.htm"> 4.3 Working with arrays </a>/ 4.3.8 Timeseries indexing direction in arrays
+          </td>
+          <td width="70" align="right">
+          <a href="4_3_7_arrays_compare_sort_search.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_3_9_zero_memory.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.3.8 Timeseries indexing direction in arrays</span></p>
+<p class="p_Text"><span class="f_Text">Due to the applied trading specifics, MQL5 brings additional features to working with arrays. One of them is that array elements can contain data corresponding to time points. These include for example, arrays with financial instrument quotes, price ticks, and readings of technical indicators. The chronological order of the data means that new elements are constantly added to the end of the array and their indexes increase.</span></p>
+<p class="p_Text"><span class="f_Text">However, from the point of view of trading, it is more convenient to count from the present to the past. Then element 0 always contains the most recent, up-to-date value, element 1 always contains the previous value, and so on.</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 allows you to select and switch the direction of array indexing on the go. An array numbered from the present to the past is called a timeseries. If the indexing increase occurs from the past to the present, this is a regular array. In timeseries, the time decreases with the growth of indices. In ordinary arrays, the time increases, as in real life.</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that an array does not have to contain time-related values in order to be able to switch the addressing order for it. It's just that this feature is most in demand and, in fact, appeared to work with historical data.</span></p>
+<p class="p_Text"><span class="f_Text">This array attribute does not affect the layout of data in memory. Only the order of numbering changes. In particular, we could implement its analogue in MQL5 ourselves by traversing the array in a &quot;back to front&quot; loop. But MQL5 provides ready-made functions to hide all this routine from application programmers.</span></p>
+<p class="p_Text"><span class="f_Text">Timeseries can be any one-dimensional dynamic array described in an MQL program, as well as external arrays passed to the MQL program from the MetaTrader 5 core, such as parameters of utility functions. For example, a special type of MQL programs, <a href="5_4_indicators_make.htm" class="topiclink">indicators</a> receives arrays with price data of the current chart in the </span><span class="f_Text" style="font-style: italic;"><a href="5_4_2_indicators_oncalculate.htm" class="topiclink">OnCalculate</a></span><span class="f_Text"> event handler. We will study all the features of the applied use of timeseries later, in the fifth Part of the book.</span></p>
+<p class="p_Text"><span class="f_Text">Arrays defined in an MQL program are not timeseries by default.</span></p>
+<p class="p_Text"><span class="f_Text">Let's consider a set of functions for determining and changing the &quot;series&quot; attribute of an array, as well as its &quot;belonging&quot; to the terminal. The general </span><span class="f_Text" style="font-style: italic;">ArrayAsSeries.mq5</span><span class="f_Text"> script with examples will be given after the description.</span></p>
+<p class="p_H4"><span class="f_H4">bool ArrayIsSeries(const void &amp;array[])</span></p>
+<p class="p_Text"><span class="f_Text">The function returns a sign of whether the specified array is a &quot;real&quot; timeseries, i.e., it is controlled and provided by the terminal itself. You cannot change this characteristic of an array. Such arrays are available to the MQL program in the &quot;read-only&quot; mode.</span></p>
+<p class="p_Quote"><span class="f_Quote">In the MQL5 documentation, the terms &quot;timeseries&quot; and &quot;series&quot; are used to describe both the reverse indexing of an array and the fact that the array can &quot;belong&quot; to the terminal (the terminal allocates memory for it and fills it with data). In the book, we will try to avoid this ambiguity and refer to arrays with reverse indexing as &quot;timeseries&quot;. And the terminal arrays will be just terminal's </span><span class="f_Quote" style="font-style: italic;">own</span><span class="f_Quote"> arrays.</span></p>
+<p class="p_Text"><span class="f_Text">You can change the indexing of any custom array of the terminal at your discretion by switching it to the timeseries mode or back to the standard one. This is done using the function </span><span class="f_Text" style="font-style: italic;">ArraySetAsSeries</span><span class="f_Text">, which is applicable not only to own, but also to custom dynamic arrays (see below).</span></p>
+<p class="p_H4"><span class="f_H4">bool ArrayGetAsSeries(const void &amp;array[])</span></p>
+<p class="p_Text"><span class="f_Text">The function returns a sign of whether the timeseries indexing mode is enabled for the specified array, that is, indexing increases in the direction from the present to the past. You can change the indexing direction using the </span><span class="f_Text" style="font-style: italic;">ArraySetAsSeries</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">The direction of indexing affects values returned by the functions </span><span class="f_Text" style="font-style: italic;">ArrayBsearch</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">ArrayMaximum</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">ArrayMinimum</span><span class="f_Text"> (see section <a href="4_3_7_arrays_compare_sort_search.htm" class="topiclink">Comparing, sorting and searching in arrays</a>).</span></p>
+<p class="p_H4"><span class="f_H4">bool ArraySetAsSeries(const void &amp;array[], bool as_series)</span></p>
+<p class="p_Text"><span class="f_Text">The function sets the indexing direction in the array according to the </span><span class="f_Text" style="font-style: italic;">as_series</span><span class="f_Text"> parameter: the </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> value means the reverse order of indexing, while </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> means the normal order of elements.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> on successful attribute setting, or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> in case of an error.</span></p>
+<p class="p_Text"><span class="f_Text">Arrays of any type are supported, but changing the direction of indexing is prohibited for multidimensional and fixed-size arrays.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">ArrayAsSeries.mq5</span><span class="f_Text"> script describes several small arrays for experiments involving the above functions.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LIMIT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">indexArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[])</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">);&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array2D</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #ff0000;">LIMIT</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlRates</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dummies</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LIMIT</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;allocating&nbsp;memory</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;fill&nbsp;in&nbsp;a&nbsp;couple&nbsp;of&nbsp;arrays&nbsp;with&nbsp;numbers:&nbsp;1,&nbsp;2,&nbsp;3,...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">indexArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">indexArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We have a two-dimensional array </span><span class="f_Text" style="font-style: italic;">array2D</span><span class="f_Text">, fixed and dynamic array, all of which are of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">, as well as arrays of structures and class objects. The </span><span class="f_Text" style="font-style: italic;">fixed</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">dynamic</span><span class="f_Text"> arrays are filled with consecutive integers (using the auxiliary function </span><span class="f_Text" style="font-style: italic;">indexArray</span><span class="f_Text">) for demonstration purposes. For other array types of arrays, we will only check the applicability of the &quot;series&quot; mode, since the idea of the reversal indexing effect will become clear from the example of filled arrays.</span></p>
+<p class="p_Text"><span class="f_Text">First, make sure none of the arrays are the terminal's own array:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayIsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array2D</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayIsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayIsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayIsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">All </span><span class="f_Text" style="font-style: italic;">ArrayIsSeries</span><span class="f_Text"> calls return </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> since we defined all arrays in the MQL program. We will see the </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> value for parameter arrays of the function </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> in indicators (in the fifth Part).</span></p>
+<p class="p_Text"><span class="f_Text">Next, let's check the initial direction of array indexing:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayGetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array2D</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false,&nbsp;cannot&nbsp;be&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayGetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayGetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayGetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayGetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dummies</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">And again we will get </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> everywhere.</span></p>
+<p class="p_Text"><span class="f_Text">Let's output arrays </span><span class="f_Text" style="font-style: italic;">fixed</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">dynamic</span><span class="f_Text"> to the journal to see the original order of the elements.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed,&nbsp;1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic,&nbsp;1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0&nbsp;&nbsp;2.0&nbsp;&nbsp;3.0&nbsp;&nbsp;4.0&nbsp;&nbsp;5.0&nbsp;&nbsp;6.0&nbsp;&nbsp;7.0&nbsp;&nbsp;8.0&nbsp;&nbsp;9.0&nbsp;10.0</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0&nbsp;&nbsp;2.0&nbsp;&nbsp;3.0&nbsp;&nbsp;4.0&nbsp;&nbsp;5.0&nbsp;&nbsp;6.0&nbsp;&nbsp;7.0&nbsp;&nbsp;8.0&nbsp;&nbsp;9.0&nbsp;10.0</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now we try to change the indexing order:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error:&nbsp;parameter&nbsp;conversion&nbsp;not&nbsp;allowed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;PRTS(ArraySetAsSeries(array2D,&nbsp;true));</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;warning:&nbsp;cannot&nbsp;be&nbsp;used&nbsp;for&nbsp;static&nbsp;allocated&nbsp;array</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArraySetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;//&nbsp;after&nbsp;this&nbsp;everything&nbsp;is&nbsp;standard</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArraySetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArraySetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArraySetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dummies</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">A statement for the </span><span class="f_Text" style="font-style: italic;">array2D</span><span class="f_Text"> array causes a compilation error and is therefore commented out.</span></p>
+<p class="p_Text"><span class="f_Text">A statement for the </span><span class="f_Text" style="font-style: italic;">fixed</span><span class="f_Text"> array issues a compiler warning that it cannot be applied to an array of constant size. At runtime, all 3 last statements returned success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">). Let's see how the attributes of the arrays have changed:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;attribute&nbsp;checks:</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;//&nbsp;first,&nbsp;whether&nbsp;they&nbsp;are&nbsp;native&nbsp;to&nbsp;the&nbsp;terminal</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayIsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayIsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayIsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayIsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dummies</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;second,&nbsp;indexing&nbsp;direction</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayGetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayGetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayGetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayGetAsSeries</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dummies</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As expected, the arrays didn't turn into the terminal's own arrays. However, three out of four arrays changed their indexing to timeseries mode, including an array of structures and objects. To demonstrate the result, the </span><span class="f_Text" style="font-style: italic;">fixed</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">dynamic</span><span class="f_Text"> arrays are again displayed in the log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed,&nbsp;1</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;without&nbsp;changes&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic,&nbsp;1</span><span class="f_CodeExample">);&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;reverse&nbsp;order</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0&nbsp;&nbsp;2.0&nbsp;&nbsp;3.0&nbsp;&nbsp;4.0&nbsp;&nbsp;5.0&nbsp;&nbsp;6.0&nbsp;&nbsp;7.0&nbsp;&nbsp;8.0&nbsp;&nbsp;9.0&nbsp;10.0</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.0&nbsp;&nbsp;9.0&nbsp;&nbsp;8.0&nbsp;&nbsp;7.0&nbsp;&nbsp;6.0&nbsp;&nbsp;5.0&nbsp;&nbsp;4.0&nbsp;&nbsp;3.0&nbsp;&nbsp;2.0&nbsp;&nbsp;1.0</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Since the mode was not applied to the array of constant size, it remained unchanged. The </span><span class="f_Text" style="font-style: italic;">dynamic</span><span class="f_Text"> array is now displayed in reverse order.</span></p>
+<p class="p_Text"><span class="f_Text">If you put the array into reverse indexing mode, resize it, and then return the previous indexing, then the added elements will be inserted at the beginning of the array.</span></p>
+
+</div>
+
+</body>
+</html>

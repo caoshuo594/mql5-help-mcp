@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.6.4 Deleting global variables</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_6_globals.htm"> 4.6 Client terminal global variables </a>/ 4.6.4 Deleting global variables
+          </td>
+          <td width="70" align="right">
+          <a href="4_6_3_globals_list.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_6_5_globals_temp.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.6.4 Deleting global variables</span></p>
+<p class="p_Text"><span class="f_Text">If necessary, an MQL program can delete a global variable or a group of them that has become redundant. The list of global variables consumes some computer resources, and the good programming style suggests that resources should be freed whenever possible.</span></p>
+<p class="p_H4"><span class="f_H4">bool GlobalVariableDel(const string name)</span></p>
+<p class="p_Text"><span class="f_Text">The function removes the 'name' global variable. On success, the function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">, otherwise returns </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">int GlobalVariablesDeleteAll(const string prefix = NULL, datetime limit = 0)</span></p>
+<p class="p_Text"><span class="f_Text">The function deletes global variables with the specified prefix in the name and with a usage time older than the </span><span class="f_Text" style="font-style: italic;">limit</span><span class="f_Text"> parameter value.</span></p>
+<p class="p_Text"><span class="f_Text">If the NULL prefix (default) or an empty string is specified, then all global variables that also match the deletion criterion by date (if it's set) fall under the deletion criterion.</span></p>
+<p class="p_Text"><span class="f_Text">If the </span><span class="f_Text" style="font-style: italic;">limit</span><span class="f_Text"> parameter is zero (default), then global variables with any date taking into account the prefix are deleted.</span></p>
+<p class="p_Text"><span class="f_Text">If both parameters are specified, then global variables that match both, the prefix and the time criterion, are deleted.</span></p>
+<p class="p_Text"><span class="f_Text">Be careful: calling </span><span class="f_Text" style="font-style: italic;">GlobalVariablesDeleteAll</span><span class="f_Text"> without parameters will remove all variables.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of deleted variables.</span></p>
+<p class="p_Text"><span class="f_Text">Consider the script </span><span class="f_Text" style="font-style: italic;">GlobalsDelete.mq5</span><span class="f_Text">, exploiting two new features.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariableDel</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;#123%&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariablesDeleteAll</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;#123%&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the beginning, an attempt is made to delete non-existent global variables by their exact name and prefix. Both have no effect on existing variables.</span></p>
+<p class="p_Text"><span class="f_Text">Calling </span><span class="f_Text" style="font-style: italic;">GlobalVariablesDeleteAll</span><span class="f_Text"> with a filter by time in the past (more than 4 weeks ago) also has a zero result, because the terminal deletes such old variables automatically (such variables cannot exist).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariablesDeleteAll</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">'</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">'));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then, we create a variable with the name &quot;abracadabra&quot; (if it did not exist) and immediately delete it. These calls should succeed.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariableSet</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">abracadabra</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariableDel</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">abracadabra</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, let's delete the variables starting with the &quot;GlobalsRun&quot; prefix: they should have been created by the test scripts from the two previous sections on file names (respectively, &quot;GlobalsRunCount.mq5&quot; and &quot;GlobalsRunCheck.mq5&quot;).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariablesDeleteAll</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;GlobalsRun&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariablesTotal</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The script should output something like the following set of strings to the log (some indicators depend on external conditions and startup time).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">GlobalVariableDel(#123%)=false&nbsp;/&nbsp;GLOBALVARIABLE_NOT_FOUND(4501)</span>
+<br><span class="f_CodeExample">GlobalVariablesDeleteAll(#123%)=0&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">GlobalVariablesDeleteAll(NULL,D'2021.01.01')=0&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">GlobalVariableSet(abracadabra,0)=2021.08.30&nbsp;14:02:32&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">GlobalVariableDel(abracadabra)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">GlobalVariablesDeleteAll(GlobalsRun)=2&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">GlobalVariablesTotal()=0&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the end, we printed out the total number of remaining global variables (in this case, we got 0, i.e., there are no variables). It may differ for you if the global variables were created by other MQL programs or by the user.</span></p>
+
+</div>
+
+</body>
+</html>

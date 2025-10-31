@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.2.17 Splitting class declaration and definition</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_2_classes_and_interfaces.htm"> 3.2 Classes and interfaces </a>/ 3.2.17 Splitting class declaration and definition
+          </td>
+          <td width="70" align="right">
+          <a href="3_2_16_classes_namespace_context.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_2_18_classes_abstract_interfaces.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.2.17 Splitting class declaration and definition</span></p>
+<p class="p_Text"><span class="f_Text">In large software projects, it is convenient to separate classes into a brief description (declaration) and a definition, which includes the main implementation details. In some cases, such a separation becomes necessary if the classes somehow refer to each other, that is, none can be fully defined without prior declarations.</span></p>
+<p class="p_Text"><span class="f_Text">We saw an example of a forward declaration in the section <a href="3_2_13_classes_pointers.htm" class="topiclink">Indicators</a> (see file </span><span class="f_Text" style="font-style: italic;">ThisCallback.mq5</span><span class="f_Text">), where classes </span><span class="f_Text" style="font-style: italic;">Manager</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Element</span><span class="f_Text"> contain reciprocal pointers. There, the class was pre-declared in a short form: in the form of a header with the keyword </span><span class="f_Text" style="font-style: italic;">class</span><span class="f_Text"> and a name:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">However, this is the shortest declaration possible. It registers only the name and makes it possible to postpone the description of the programming interface until some time, but this description must be encountered somewhere later in the code.</span></p>
+<p class="p_Text"><span class="f_Text">More often, the declaration includes a complete description of the interface: it specifies all the variables and method headers of the class but without their bodies (code blocks).</span></p>
+<p class="p_Text"><span class="f_Text">Method definitions are written separately: with headers that use fully qualified names that include the name of the class (or multiple classes and namespaces if the method context is highly nested). The names of all classes and the name of the method are concatenated using the context selection operator '::'.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">class_name</span><span class="f_CodeExample">&nbsp;[::&nbsp;</span><span class="f_CodeExample" style="color: #333333;">nested_class_name</span><span class="f_CodeExample">...]&nbsp;::&nbsp;</span><span class="f_CodeExample" style="color: #333333;">method_name</span><span class="f_CodeExample">([</span><span class="f_CodeExample" style="color: #333333;">parameters...]</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In theory, you can define part of the methods directly in the class description block (usually they do this with small functions), and some can be taken out separately (as a rule, large functions). But a method must have only one definition (that is, you cannot define a method in a class block, and then again separately) and one declaration (a definition in a class block is also a declaration).</span></p>
+<p class="p_Text"><span class="f_Text">The list of parameters, return type and </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> modifiers (if any) must match exactly in the method declaration and definition.</span></p>
+<p class="p_Text"><span class="f_Text">Let's see how we can separate the description and definition of classes from the script </span><span class="f_Text" style="font-style: italic;">ThisCallback.mq5</span><span class="f_Text"> (an example from the section <a href="3_2_13_classes_pointers.htm" class="topiclink">Pointers</a>): let's create its analog with the name </span><span class="f_Text" style="font-style: italic;">ThisCallback2.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The predeclaration </span><span class="f_Text" style="font-style: italic;">Manager</span><span class="f_Text"> will still come at the beginning. Further, both classes </span><span class="f_Text" style="font-style: italic;">Element</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Manager</span><span class="f_Text"> are declared without implementation: instead of a block of code with a method body, there is a semicolon.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;preliminary&nbsp;announcement</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Element</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">owner</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;pointer</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Element</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">doMath</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">getMyName</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Manager</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Element</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">elements</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">];&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;array&nbsp;of&nbsp;pointers&nbsp;(replace&nbsp;with&nbsp;dynamic)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;~</span><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Element</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">addElement</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">progressNotify</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Element</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">percent</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The second part of the source code contains implementations of all methods (the implementations themselves are unchanged).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">Element</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">Element</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">)&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">owner</span><span class="f_CodeExample">(&amp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Element</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">doMath</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Element</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">getMyName</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">this</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">::~</span><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #333333;">Element</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">addElement</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">progressNotify</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Element</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">percent</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Structures also support separate method declarations and definitions.</span></p>
+<p class="p_Text"><span class="f_Text">Note that the constructor initialization list (after the name and ':') is a part of the definition and therefore must precede the function body (in other words, the initialization list is not allowed in a constructor declaration where only the header is present).</span></p>
+<p class="p_Text"><span class="f_Text">Separate writing of the declaration and definition allows the development of <a href="7_7_libraries.htm" class="topiclink">libraries</a>, the source code of which must be closed. In this case, the declarations are placed in a separate header file with the </span><span class="f_Text" style="font-style: italic;">mqh</span><span class="f_Text"> extension, while the definitions are placed in a file of the same name with the </span><span class="f_Text" style="font-style: italic;">mq5</span><span class="f_Text"> extension. The program is compiled and distributed as an ex5 file with a header file describing the external interface.</span></p>
+<p class="p_Text"><span class="f_Text">In this case, the question may arise why part of the internal implementation, in particular the organization of data (variables), is visible in the external interface. Strictly speaking, this signals an insufficient level of abstraction in the class hierarchy. All classes that provide an external interface should not expose any implementation details.</span></p>
+<p class="p_Text"><span class="f_Text">In other words, if we set ourselves the goal of exporting the above classes from a certain library, then we would need to separate their methods into base classes that would provide a description of the API (without data fields), and </span><span class="f_Text" style="font-style: italic;">Manager</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Element</span><span class="f_Text"> inherit from them. At the same time, in the methods of base classes, we cannot use any data from derived classes and, by and large, they cannot have implementations at all. How is it possible?</span></p>
+<p class="p_Text"><span class="f_Text">To do this, there is a technology of abstract methods, abstract classes and interfaces.</span></p>
+
+</div>
+
+</body>
+</html>

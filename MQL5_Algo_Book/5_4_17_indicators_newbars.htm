@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.4.17 Tracking bar formation</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_4_indicators_make.htm"> 5.4 Creating custom indicators </a>/ 5.4.17 Tracking bar formation
+          </td>
+          <td width="70" align="right">
+          <a href="5_4_16_indicators_multisymbol.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_4_18_indicators_test.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.4.17 Tracking bar formation</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">IndUnityPercent.mq5</span><span class="f_Text"> indicator discussed in the previous section is recalculated on the last bar on each tick since it uses </span><span class="f_Text" style="font-style: italic;">Close</span><span class="f_Text"> prices. Some indicators and Experts Advisors are specially developed in a more economical style, with a single calculation on each bar. For example, we could calculate Unity's formula at open prices, and then it makes sense to skip ticks. There are several ways to detect a new bar:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Remember the time of the current 0 bar (via the </span><span class="f_li" style="font-style: italic;">time</span><span class="f_li"> parameter of the </span><span class="f_li" style="font-style: italic;">OnCalculate</span><span class="f_li"> function – </span><span class="f_li" style="font-style: italic;">time[0]</span><span class="f_li"> or, in general, </span><span class="f_li" style="font-style: italic;">iTime(symbol, period, 0)</span><span class="f_li">) and wait for it to change</span></li>
+<li class="p_li"><span class="f_li">Memorize the number of bars </span><span class="f_li" style="font-style: italic;">rates_total</span><span class="f_li"> (or </span><span class="f_li" style="font-style: italic;">iBars(symbol, period)</span><span class="f_li">) and respond to an increase by 1 (a change to a different amount in one direction or another is suspicious and may indicate a history modification)</span></li>
+<li class="p_li"><span class="f_li">Wait for a bar with a tick volume equal to 1 (the first tick on the bar)</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">However, with the multicurrency nature of the indicator, the very concept of the formation of a new bar becomes not so unambiguous.</span></p>
+<p class="p_Text"><span class="f_Text">On each symbol, the next bar appears upon the arrival of its own ticks, and they usually have different arrival times. In this case, the indicator developer must determine how to act: whether to wait for the appearance of bars with the same time on all symbols or to recalculate the indicator on the last bars several times after the appearance of a new bar on any of the symbols.</span></p>
+<p class="p_Text"><span class="f_Text">In this section, we will introduce a simple class </span><span class="f_Text" style="font-style: italic;">MultiSymbolMonitor</span><span class="f_Text"> (see file</span><span class="f_Text" style="font-style: italic;">MultiSymbolMonitor.mqh</span><span class="f_Text">) to track the formation of new bars according to a given list of symbols.</span></p>
+<p class="p_Text"><span class="f_Text">The required timeframe can be passed to the class constructor. By default, it tracks the timeframe of the current chart, on which the program is running.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MultiSymbolMonitor</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_TIMEFRAMES</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">period</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MultiSymbolMonitor</span><span class="f_CodeExample">():&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">period</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">)&nbsp;{}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MultiSymbolMonitor</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_TIMEFRAMES</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">):&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">period</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">)&nbsp;{}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To store the list of tracked symbols, we will use an auxiliary class </span><span class="f_Text" style="font-style: italic;">MapArray</span><span class="f_Text"> from the previous section. In this array, we will write pairs [symbol name;timestamp of the last bar], that is, template types </span><span class="f_Text" style="font-style: italic;">&lt;string,datetime&gt;</span><span class="f_Text">. The </span><span class="f_Text" style="font-style: italic;">attach</span><span class="f_Text"> method populates the array.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MapArray</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">attach</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">put</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For a given array, the class can update and check timestamps in the </span><span class="f_Text" style="font-style: italic;">check</span><span class="f_Text"> method by calling the </span><span class="f_Text" style="font-style: italic;">iTime</span><span class="f_Text"> function in a loop over symbols.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">check</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">refresh</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getSize</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getKey</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dt</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dt</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">])&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;are&nbsp;there&nbsp;any&nbsp;changes?</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">&nbsp;|=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">refresh</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;update&nbsp;timestamp</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">put</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dt</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The calling code should call </span><span class="f_Text" style="font-style: italic;">check</span><span class="f_Text"> at its own discretion, which is usually upon the arrival of ticks, or on a timer. Strictly speaking, both of these options do not provide an instant reaction to the appearance of ticks (and new bars) on other instruments since the </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> event appears only on the ticks of the working symbol of the chart, and if there was a tick of some other symbol between them, we will not know about it until the next &quot;own&quot; tick.</span></p>
+<p class="p_Text"><span class="f_Text">We will consider real-time monitoring of ticks from several instruments in the chapter on interactive chart events (see spy indicator </span><span class="f_Text" style="font-style: italic;">EventTickSpy.mq5</span><span class="f_Text"> in the section <a href="5_9_7_events_custom.htm" class="topiclink">Generation of custom events</a>).</span></p>
+<p class="p_Text"><span class="f_Text">For now, we'll check bars with available accuracy. So, let's proceed with the </span><span class="f_Text" style="font-style: italic;">check</span><span class="f_Text"> method.</span></p>
+<p class="p_Text"><span class="f_Text">Each point in time is characterized by its own state of the timestamps set for all symbols in the array. For example, a new bar may form at 12:00 only for the most liquid instrument, and for several other instruments, ticks will appear in a few milliseconds or even seconds. During this interval, one element will be updated in the array, and the rest will be old. Then gradually all symbols will get 12:00 bars.</span></p>
+<p class="p_Text"><span class="f_Text">For all symbols for which the opening time of the last bar is not equal to the saved one, the method sets the bit with the symbol number, thus forming a bit mask with changes. The list must not contain more than 64 symbols.</span></p>
+<p class="p_Text"><span class="f_Text">If the return value is zero, no changes have been registered.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">refresh</span><span class="f_Text"> parameter specifies whether the </span><span class="f_Text" style="font-style: italic;">check</span><span class="f_Text"> method will only register changes (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">), or will update the status according to the current market situation (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">describe</span><span class="f_Text"> method allows you to get a list of changed symbols by a bitmask.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">describe</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">check</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getSize</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">&nbsp;&amp;&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">))&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getKey</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;\t&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, we will use the </span><span class="f_Text" style="font-style: italic;">inSync</span><span class="f_Text"> to determine if all symbols in the array have the same last bar time. It makes sense to use it only for a set of currencies with the same trading sessions.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">inSync</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getSize</span><span class="f_CodeExample">()&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">first</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getSize</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">first</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastTime</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">])&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Using the described class, we implement a simple multicurrency indicator </span><span class="f_Text" style="font-style: italic;">IndMultiSymbolMonitor.mq5</span><span class="f_Text">, whose only task will be to detect new bars for a list of symbols.</span></p>
+<p class="p_Text"><span class="f_Text">Since no drawing is provided for the indicator, the number of buffers and charts is 0.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_chart_window</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_buffers</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_plots</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The list of instruments is specified in the corresponding input variable and then converted to an array registered in the </span><span class="f_Text" style="font-style: italic;">monitor</span><span class="f_Text"> object.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Instruments</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;EURUSD,GBPUSD,USDCHF,USDJPY,AUDUSD,USDCAD,NZDUSD&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">MQL5Book</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">MultiSymbolMonitor</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #333333;">MultiSymbolMonitor</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">monitor</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringSplit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Instruments</span><span class="f_CodeExample">,&nbsp;',',&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">monitor</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">attach</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> handler calls the monitor on ticks and outputs state changes to the log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnCalculate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">begin</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">[])</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">changes</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">monitor</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">check</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">changes</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;New&nbsp;bar(s)&nbsp;on:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">monitor</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">describe</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">changes</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;in-sync:&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">monitor</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">inSync</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To check this indicator, we would need to spend a lot of time online in the terminal. However, MetaTrader 5 allows you to do this much easier – with the help of a tester. We will do this in the next section.</span></p>
+
+</div>
+
+</body>
+</html>

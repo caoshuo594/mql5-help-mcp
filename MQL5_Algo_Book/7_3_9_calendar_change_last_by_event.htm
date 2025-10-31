@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.3.9 Tracking event changes by type</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_3_calendar.htm"> 7.3 Economic calendar </a>/ 7.3.9 Tracking event changes by type
+          </td>
+          <td width="70" align="right">
+          <a href="7_3_8_calendar_change_last.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_3_10_calendar_filter_custom.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.3.9 Tracking event changes by type</span></p>
+<p class="p_Text"><span class="f_Text">The MQL5 API allows you to request recent changes not only in general for the entire calendar or by country or currency, but also in a narrower range, or rather, for a specific type of event.</span></p>
+<p class="p_Text"><span class="f_Text">In theory, we can say that the built-in functions provide filtering of events according to several basic conditions: time, country, currency, or type of event. For other attributes, such as importance or economic sector, you need to implement your own filtering, and we will deal with this later. For now, let's introduce the </span><span class="f_Text" style="font-style: italic;">CalendarValueLastByEvent</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">int CalendarValueLastByEvent(ulong id, ulong &amp;change_id, MqlCalendarValue &amp;values[])</span></p>
+<p class="p_Text"><span class="f_Text">The function fills the </span><span class="f_Text" style="font-style: italic;">values</span><span class="f_Text"> array passed by reference with event records of a specific type with the </span><span class="f_Text" style="font-style: italic;">id</span><span class="f_Text"> identifier that have occurred since </span><span class="f_Text" style="font-style: italic;">change_id</span><span class="f_Text">. This </span><span class="f_Text" style="font-style: italic;">change_id</span><span class="f_Text"> parameter is both input and output: the calling code passes in it the label of the past state of the calendar, after which changes are requested, and when control returns, the function writes the current label of the calendar database state to </span><span class="f_Text" style="font-style: italic;">change_id</span><span class="f_Text">. It should be used the next time the function is called.</span></p>
+<p class="p_Text"><span class="f_Text">If you pass null in </span><span class="f_Text" style="font-style: italic;">change_id</span><span class="f_Text">, then the function does not fill the array but simply sends the current state of the database through the parameter </span><span class="f_Text" style="font-style: italic;">change_id</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The array can be dynamic (then it will be automatically adjusted to the amount of data) or fixed size (if its size is insufficient, only data that fit will be copied). &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">The output value of the function is equal to the number of elements copied into the </span><span class="f_Text" style="font-style: italic;">values</span><span class="f_Text"> array. If there are no changes or </span><span class="f_Text" style="font-style: italic;">change_id = 0</span><span class="f_Text"> is specified, the function will return 0.</span></p>
+<p class="p_Text"><span class="f_Text">To check for an error, analyze the built-in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> variable. Some of the possible error codes are:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">4004 - ERR_NOT_ENOUGH_MEMORY (not enough memory to complete the request),</span></li>
+<li class="p_li"><span class="f_li">5401 - ERR_CALENDAR_TIMEOUT (request timed out),</span></li>
+<li class="p_li"><span class="f_li">5400 - ERR_CALENDAR_MORE_DATA (the size of the fixed array is not enough to get all the values).</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">We will not give a separate example for </span><span class="f_Text" style="font-style: italic;">CalendarValueLastByEvent</span><span class="f_Text">. Instead, let's turn to a more complex, but in-demand task of querying and filtering calendar entries with arbitrary conditions on news attributes, where all the &quot;calendar&quot; API functions will be involved. This will be the subject of the next section.</span></p>
+
+</div>
+
+</body>
+</html>

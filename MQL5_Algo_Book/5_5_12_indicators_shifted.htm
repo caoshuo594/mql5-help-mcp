@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.5.12 Reading data from charts that have a shift</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_5_indicators_use.htm"> 5.5 Using ready-made indicators from MQL programs </a>/ 5.5.12 Reading data from charts that have a shift
+          </td>
+          <td width="70" align="right">
+          <a href="5_5_11_indicators_chart_plus_subwindow.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_5_13_indicators_indicatorrelease.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.5.12 Reading data from charts that have a shift</span></p>
+<p class="p_Text"><span class="f_Text">Our new indicator </span><span class="f_Text" style="font-style: italic;">UseDemoAll</span><span class="f_Text"> is almost ready. We only need to consider one more point.</span></p>
+<p class="p_Text"><span class="f_Text">In the subordinate indicator, some charts can have an offset set by the <a href="5_4_6_indicators_plotindexsetinteger.htm" class="topiclink">PLOT_SHIFT</a> property. For example, with a positive shift, the timeseries elements are shifted into the future and displayed to the right of the bar with index 0. Their indexes, oddly enough, are negative. As you move to the right, the numbers decrease more and more: -1, -2, -3, etc. This addressing also affects the </span><span class="f_Text" style="font-style: italic;">CopyBuffer</span><span class="f_Text"> function. When we use the first form of </span><span class="f_Text" style="font-style: italic;">CopyBuffer</span><span class="f_Text">, the </span><span class="f_Text" style="font-style: italic;">offset</span><span class="f_Text"> parameter set to 0 refers to the element with the current time in the timeseries. But if the timeseries itself is shifted to the right, we will get data starting from the element numbered N, where N is the shift value in the source indicator. At the same time, the elements located in our buffer to the right of index N will not be filled with data, and &quot;garbage&quot; will remain in them.</span></p>
+<p class="p_Text"><span class="f_Text">To demonstrate the problem, let's start with an indicator without a shift: </span><span class="f_Text" style="font-style: italic;">Awesome Oscillator</span><span class="f_Text"> fits perfectly to this requirement. Recall that </span><span class="f_Text" style="font-style: italic;">UseDemoAll</span><span class="f_Text"> copies all values to its arrays, and although they are not visible on the chart due to different price scales and indicator readings, we can check against </span><span class="f_Text" style="font-style: italic;">Data Window</span><span class="f_Text">. Wherever we move the mouse cursor on the chart, the indicator values in the subwindow in the </span><span class="f_Text" style="font-style: italic;">Data Window </span><span class="f_Text">and in </span><span class="f_Text" style="font-style: italic;">UseDemoAll</span><span class="f_Text"> buffers will match. For example, in the image below, you can clearly see that on the hourly bar at 16:00 both values are equal to 0.001797.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="AO indicator data in UseDemoAll buffers" title="AO indicator data in UseDemoAll buffers" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="eurusdh1-ao.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">AO indicator data in UseDemoAll buffers</span></p>
+<p class="p_Text"><span class="f_Text">Now, in </span><span class="f_Text" style="font-style: italic;">UseDemoAll</span><span class="f_Text"> settings, we select the </span><span class="f_Text" style="font-style: italic;">iGator</span><span class="f_Text"> (</span><span class="f_Text" style="font-style: italic;">Gator Oscillator</span><span class="f_Text">) indicator. For simplicity, clear the field with </span><span class="f_Text" style="font-style: italic;">Gator</span><span class="f_Text"> parameters, so that it will be built with its default parameters. In this case, the histogram shift is 5 bars (forward), which is clearly seen on the chart.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Gator indicator data in UseDemoAll buffers without correction for future shift" title="Gator indicator data in UseDemoAll buffers without correction for future shift" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="eurusdh1-gator-before-en.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Gator indicator data in UseDemoAll buffers without correction for future shift</span></p>
+<p class="p_Text"><span class="f_Text">The black vertical line marks the 16:00 hour bar. However, the </span><span class="f_Text" style="font-style: italic;">Gator</span><span class="f_Text"> indicator values in the </span><span class="f_Text" style="font-style: italic;">Data Window</span><span class="f_Text"> and in our arrays read from the same indicator are different. Yellow color </span><span class="f_Text" style="font-style: italic;">UseDemoAll</span><span class="f_Text"> highlights buffers containing garbage.</span></p>
+<p class="p_Text"><span class="f_Text">If we examine the data moving 5 bars into &nbsp;the past, at 11:00 (orange vertical line), we will find there the values that </span><span class="f_Text" style="font-style: italic;">Gator</span><span class="f_Text"> outputs at 16:00. The pairwise correct values of the upper and lower histograms are highlighted in green and pink, respectively.</span></p>
+<p class="p_Text"><span class="f_Text">To solve this problem, we have to add to </span><span class="f_Text" style="font-style: italic;">UseDemoAll</span><span class="f_Text"> an input variable for the user to specify a chart shift, and then make a correction for it when calling </span><span class="f_Text" style="font-style: italic;">CopyBuffer</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">IndicatorShift</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Plot&nbsp;Shift</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnCalculate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">ON_CALCULATE_STD_SHORT_PARAM_LIST</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">buffers</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">copy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">IndicatorShift</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Unfortunately, it is impossible to find the PLOT_SHIFT property for a third-party indicator from MQL5.</span></p>
+<p class="p_Text"><span class="f_Text">Let's check how introducing a shift of 5 fixes the situation with the Gator indicator (with default settings).</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Gator indicator data in UseDemoAll buffers after adjusting for future shift" title="Gator indicator data in UseDemoAll buffers after adjusting for future shift" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="eurusdh1-gator-after-en.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Gator indicator data in UseDemoAll buffers after adjusting for future shift</span></p>
+<p class="p_Text"><span class="f_Text">Now the readings of </span><span class="f_Text" style="font-style: italic;">UseDemoAll</span><span class="f_Text"> at the 16:00 bar correspond to the actual data from Gator from the virtual future 5 bars ahead (lilac vertical line at 21:00).</span></p>
+<p class="p_Text"><span class="f_Text">You may wonder why only 2 buffers are displayed in the </span><span class="f_Text" style="font-style: italic;">Gator</span><span class="f_Text"> window while our one has 4. The point is that the color histogram of </span><span class="f_Text" style="font-style: italic;">Gator</span><span class="f_Text"> uses one additional buffer for color encoding. But there are only two colors, red and green, and we see them in our arrays as 0 or 1.</span></p>
+
+</div>
+
+</body>
+</html>

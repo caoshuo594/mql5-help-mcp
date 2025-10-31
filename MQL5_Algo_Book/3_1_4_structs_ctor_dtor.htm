@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.1.4 Constructors and destructors</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_1_structs_and_unions.htm"> 3.1 Structures and unions </a>/ 3.1.4 Constructors and destructors
+          </td>
+          <td width="70" align="right">
+          <a href="3_1_3_structs_assignment.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_1_5_structs_pack_dll.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.1.4 Constructors and destructors</span></p>
+<p class="p_Text"><span class="f_Text">Among the methods that can be defined for a structure, there are special ones: constructors and destructors.</span></p>
+<p class="p_Text"><span class="f_Text">A constructor has the same name as the structure name and does not return a value (type </span><span class="f_Text" style="font-style: italic;">void</span><span class="f_Text">). The constructor, if defined, will be called at the time of initialization for each new instance of the structure. Due to this, in the constructor, the initial state of the structure can be calculated in a special way.</span></p>
+<p class="p_Text"><span class="f_Text">A structure can have multiple constructors with different sets of parameters, and the compiler will choose the appropriate one based on the number and type of arguments when defining the variable.</span></p>
+<p class="p_Text"><span class="f_Text">For example, we can describe a pair of constructors in the structure </span><span class="f_Text" style="font-style: italic;">Result</span><span class="f_Text">: one without parameters, and the second one with one string type parameter to set the status.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">status</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ok&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">status</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">By the way, a constructor without parameters is called a default constructor. If there are no explicit constructors, the compiler implicitly creates a default constructor for any structure that contains strings and dynamic arrays to pad these fields with zeros.</span></p>
+<p class="p_Text"><span class="f_Text">It is important that fields of other types (for example, all numeric) are not reset to zero, regardless of whether the structure has a default constructor, and therefore the initial values of the elements after memory allocation will be random. You should either create constructors or make sure that the correct values are assigned in your code immediately after the object is created.</span></p>
+<p class="p_Text"><span class="f_Text">The presence of explicit constructors makes it impossible to use the aggregate initialization syntax. Because of it, the line </span><span class="f_Text" style="font-style: italic;">Result r = {};</span><span class="f_Text"> in the </span><span class="f_Text" style="font-style: italic;">calculate</span><span class="f_Text"> method will not be compiled. Now we have the right to use only one of the constructors that we provided ourselves. For example, the following statements call the parameterless constructor:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r2</span><span class="f_CodeExample">();</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">And creating a structure with a filled status can be done like this:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r3</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;success&quot;</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The default constructor (explicit or implicit) is also called when an array of structures is created. For example, the following statement allocates memory for 10 structures with results and initializes them with a default constructor:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span><span class="f_CodeExample">&nbsp;a</span><span class="f_CodeExample" style="color: #333333;">rray</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">];</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">A destructor is a function that will be called when the structure object is being destroyed. The destructor has the same name as the structure name, but is prefixed with a tilde character '~'. The destructor, like the constructor, does not return a value, but it does not take parameters either.</span></p>
+<p class="p_Text"><span class="f_Text">There can only be one destructor.</span></p>
+<p class="p_Text"><span class="f_Text">You cannot explicitly call the destructor. The program itself does this when exiting a block of code where a local structure variable was defined, or when freeing an array of structures.</span></p>
+<p class="p_Text"><span class="f_Text">The purpose of the destructor is to release any dynamic resources if the structure allocated them in the constructor. For example, a structure can have the </span><span class="f_Text" style="font-style: italic;">persistence </span><span class="f_Text">property, that is, save its state to a file when it is unloaded from memory and restore it when the program creates it again. In this case, a descriptor that needs to be opened and closed is used in the built-in <a href="4_5_files.htm" class="topiclink">file functions</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Let's define a destructor in the </span><span class="f_Text" style="font-style: italic;">Result</span><span class="f_Text"> structure and add constructors along the way so that all these methods keep track of the number of object instances (as they are created and destroyed).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">status</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ok&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">status</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;~</span><span class="f_CodeExample" style="color: #333333;">Result</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Three static variables named </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> exist independently of each other: each of them counts in the context of its own function.</span></p>
+<p class="p_Text"><span class="f_Text">As a result of running the script, we will receive the following log:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Result::Result()&nbsp;1</span>
+<br><span class="f_CodeExample">Result::Result()&nbsp;2</span>
+<br><span class="f_CodeExample">Result::Result()&nbsp;3</span>
+<br><span class="f_CodeExample">Result::~Result()&nbsp;1</span>
+<br><span class="f_CodeExample">Result::~Result()&nbsp;2</span>
+<br><span class="f_CodeExample">0.5&nbsp;1&nbsp;ok</span>
+<br><span class="f_CodeExample">1.00000&nbsp;2.00000&nbsp;3.00000</span>
+<br><span class="f_CodeExample">Result::Result(string)&nbsp;1</span>
+<br><span class="f_CodeExample">0.5&nbsp;1&nbsp;ok</span>
+<br><span class="f_CodeExample">1.00000&nbsp;2.00000&nbsp;3.00000</span>
+<br><span class="f_CodeExample">Result::~Result()&nbsp;3</span>
+<br><span class="f_CodeExample">Result::~Result()&nbsp;4</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's figure out, what it means.</span></p>
+<p class="p_Text"><span class="f_Text">The first instance of the structure is created in the function </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">, in the same line where </span><span class="f_Text" style="font-style: italic;">calculate</span><span class="f_Text"> is called. When entering the constructor, the counter value </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> is initialized once with zero and then incremented each time the constructor is executed, so for the first time, the value 1 is output.</span></p>
+<p class="p_Text"><span class="f_Text">Inside the </span><span class="f_Text" style="font-style: italic;">calculate </span><span class="f_Text">function, a local variable of type </span><span class="f_Text" style="font-style: italic;">Result</span><span class="f_Text"> is defined; it is registered under number 2.</span></p>
+<p class="p_Text"><span class="f_Text">The third structure instance is not so obvious. The point is that to pass the result from the function, the compiler implicitly creates a temporary variable, where it copies the data of the local variable. It is likely that this behavior will change in the future, and then the local instance will &quot;move&quot; out of the function without duplication.</span></p>
+<p class="p_Text"><span class="f_Text">The last constructor call is in a method with a string parameter, so the call count is 1.</span></p>
+<p class="p_Text"><span class="f_Text">It is important that the total number of calls to both constructors is the same as the number of calls to the destructor: 4.</span></p>
+<p class="p_Text"><span class="f_Text">We'll talk more about <a href="3_2_8_classes_ctors.htm" class="topiclink">constructors</a> and <a href="3_2_9_classes_dtors.htm" class="topiclink">destructors</a> in the Chapter on Classes.</span></p>
+
+</div>
+
+</body>
+</html>

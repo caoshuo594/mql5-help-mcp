@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.4.10 Random number generation</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_4_maths.htm"> 4.4 Mathematical functions </a>/ 4.4.10 Random number generation
+          </td>
+          <td width="70" align="right">
+          <a href="4_4_9_maths_nan.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_4_11_maths_byte_swap.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.4.10 Random number generation</span></p>
+<p class="p_Text"><span class="f_Text">Many algorithms in trading require the generation of random numbers. MQL5 provides two functions that initialize and then poll the pseudo-random integer generator.</span></p>
+<p class="p_Text"><span class="f_Text">To get a better &quot;randomness&quot;, you can use the Alglib library available in MetaTrader 5 (see </span><span class="f_Text" style="font-style: italic;">MQL5/Include/Math/Alglib/alglib.mqh</span><span class="f_Text">).</span></p>
+<p class="p_H4"><span class="f_H4">void MathSrand(int seed) &#8801; void srand(int seed)</span></p>
+<p class="p_Text"><span class="f_Text">The function sets some initial state of the pseudo-random integer generator. It should be called once before starting the algorithm. The random values themselves should be obtained using the sequential call of the </span><span class="f_Text" style="font-style: italic;">MathRand</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">By initializing a generator with the same </span><span class="f_Text" style="font-style: italic;">seed</span><span class="f_Text"> value, you can get reproducible sequences of numbers. The </span><span class="f_Text" style="font-style: italic;">seed</span><span class="f_Text"> value is not the first random number obtained from </span><span class="f_Text" style="font-style: italic;">MathRand</span><span class="f_Text">. The generator maintains some internal state, which at each moment of time (between calls to it for a new random number) is characterized by an integer value which is available from the program as the built-in </span><span class="f_Text" style="font-style: italic;">uint</span><span class="f_Text"> variable</span><span class="f_Text" style="font-style: italic;"> <a href="4_9_18_env_variables.htm" class="topiclink">_RandomSeed</a></span><span class="f_Text">. It is this initial state value that establishes the </span><span class="f_Text" style="font-style: italic;">MathSrand</span><span class="f_Text"> call.</span></p>
+<p class="p_Text"><span class="f_Text">Generator operation on every call to </span><span class="f_Text" style="font-style: italic;">MathRand</span><span class="f_Text"> is described by two formulas:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">Xn</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Tf</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Xp</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #333333;">R</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Gf</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Xn</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">Tf</span><span class="f_Text"> function is called transition. It calculates the new internal state of the </span><span class="f_Text" style="font-style: italic;">Xn</span><span class="f_Text"> generator based on the previous </span><span class="f_Text" style="font-style: italic;">Xp</span><span class="f_Text"> state.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">Gf</span><span class="f_Text"> function generates another &quot;random&quot; value that the function </span><span class="f_Text" style="font-style: italic;">MathRand</span><span class="f_Text"> will return, using a new internal state for this.</span></p>
+<p class="p_Text"><span class="f_Text">In MQL5, these formulas are implemented as follows (pseudocode):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">Tf</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_RandomSeed</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_RandomSeed</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">214013</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2531011</span>
+<br><span class="f_CodeExample" style="color: #333333;">Gf</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MathRand</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">_RandomSeed</span><span class="f_CodeExample">&nbsp;&gt;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">16</span><span class="f_CodeExample">)&nbsp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0x7FFF</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It is recommended to pass the </span><span class="f_Text" style="font-style: italic;"><a href="4_7_5_timing_count.htm" class="topiclink">GetTickCount</a></span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;"><a href="4_7_1_timing_local_server.htm" class="topiclink">TimeLocal</a> </span><span class="f_Text">function as the </span><span class="f_Text" style="font-style: italic;">seed</span><span class="f_Text"> value.</span></p>
+<p class="p_H4"><span class="f_H4">int MathRand() &#8801; int rand()</span></p>
+<p class="p_Text"><span class="f_Text">The function returns a pseudo-random integer in the range from 0 to 32767. The sequence of generated numbers varies depending on the opening initialization done by calling </span><span class="f_Text" style="font-style: italic;">MathSrand</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">An example of working with the generator is given in the </span><span class="f_Text" style="font-style: italic;">MathRand.mq5</span><span class="f_Text"> file. It calculates statistics on the distribution of generated numbers over a given number of subranges (baskets). Ideally, we should get a uniform distribution.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LIMIT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;number&nbsp;of&nbsp;attempts&nbsp;(generated&nbsp;numbers)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">STATS</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;number&nbsp;of&nbsp;baskets</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #ff0000;">STATS</span><span class="f_CodeExample">]&nbsp;=&nbsp;{};&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;calculation&nbsp;of&nbsp;statistics&nbsp;of&nbsp;hits&nbsp;in&nbsp;baskets</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bucket</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">32767</span><span class="f_CodeExample">&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">STATS</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;generator&nbsp;reset</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MathSrand</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">TimeLocal</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;repeat&nbsp;the&nbsp;experiment&nbsp;in&nbsp;a&nbsp;loop</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LIMIT</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;getting&nbsp;a&nbsp;new&nbsp;random&nbsp;number&nbsp;and&nbsp;updating&nbsp;statistics</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #0000ff;">MathRand</span><span class="f_CodeExample">()&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bucket</span><span class="f_CodeExample">]++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">An example of results for three runs (each time we will get a new sequence):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;96&nbsp;&nbsp;93&nbsp;117&nbsp;&nbsp;76&nbsp;&nbsp;98&nbsp;&nbsp;88&nbsp;104&nbsp;124&nbsp;113&nbsp;&nbsp;91</span>
+<br><span class="f_CodeExample">110&nbsp;&nbsp;81&nbsp;106&nbsp;&nbsp;88&nbsp;103&nbsp;&nbsp;90&nbsp;105&nbsp;102&nbsp;106&nbsp;109</span>
+<br><span class="f_CodeExample">&nbsp;89&nbsp;&nbsp;98&nbsp;&nbsp;98&nbsp;107&nbsp;114&nbsp;&nbsp;90&nbsp;101&nbsp;106&nbsp;&nbsp;93&nbsp;104</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

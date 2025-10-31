@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1.4.1 Creating a script to test batch normalization</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="6_improvement_realization.htm"> 6. Architectural solutions for improving model convergence </a> / <a class="h_m" href="6_1_batch_norm.htm"> 6.1 Batch normalization </a> / <a class="h_m" href="6_1_4_batch_norm_py.htm"> 6.1.4 Implementing batch normalization in Python </a>/ 6.1.4.1 Creating a script to test batch normalization
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_4_batch_norm_py.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_5_batch_norm_comparison.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.1.4.1 Creating a script to test batch normalization</span></p>
+<p class="p_Text"><span class="f_Text">To analyze the effect of batch normalization on the result, let's take the simplest models with a fully connected perceptron. One of our very first tests was to check the influence of preprocessing normalization of input data on the model's performance. In that test, we concluded that it was important to normalize the initial data and used normalized initial data in all subsequent models. However, the preliminary normalization of the initial data always has costs and is not very convenient for working in financial markets, when the initial data goes in a continuous stream. In this case, the normalization of the source data must be written in the program code. When changing the dataset, whether it's due to time-dependent factors or alterations in the analyzed instrument, it may require modifications to the code or external parameters that need to be defined outside the model. This is an additional cost. After that, you would need to retrain the model. Therefore, it would be logical to find a way to incorporate the data normalization process into the model and update its parameters during the model training. Don't you think that the batch normalization model we are looking at is suitable for solving this problem? This will be our first test.</span></p>
+<p class="p_Text"><span class="f_Text">To conduct such an experiment, we will use the script for testing perceptron models </span><span class="f_Text" style="font-style: italic;"><a href="3_8_pr_py.htm" class="topiclink">perceptron.py</a></span><span class="f_Text"> and create a copy of it named </span><span class="f_Text" style="font-style: italic;">batch_norm.py</span><span class="f_Text">. Let's make small changes to it.</span></p>
+<p class="p_Text"><span class="f_Text">At the beginning of the script, we import the necessary libraries as usual.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Import&nbsp;libraries</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">import</span><span class="f_CodeExample">&nbsp;os</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">import</span><span class="f_CodeExample">&nbsp;pandas&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">as</span><span class="f_CodeExample">&nbsp;pd</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">import</span><span class="f_CodeExample">&nbsp;numpy&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">as</span><span class="f_CodeExample">&nbsp;np</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">import</span><span class="f_CodeExample">&nbsp;tensorflow&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">as</span><span class="f_CodeExample">&nbsp;tf&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">from</span><span class="f_CodeExample">&nbsp;tensorflow&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">import</span><span class="f_CodeExample">&nbsp;keras&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">import</span><span class="f_CodeExample">&nbsp;matplotlib.pyplot&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">as</span><span class="f_CodeExample">&nbsp;plt</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">import</span><span class="f_CodeExample">&nbsp;MetaTrader5&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">as</span><span class="f_CodeExample">&nbsp;mt5</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Before training, we need to load training datasets which are available in the sandbox of the MetaTrader 5 terminal. To determine the path to the sandbox, we connect to the terminal and find the path to the terminal data folder. We add </span><span class="f_Text" style="font-style: italic;">MQL5\Files</span><span class="f_Text"> to the resulting path and thus get the path to the terminal sandbox. If you saved the training dataset to a subdirectory, you also need to add it to this sandbox path. Now you can disconnect from the terminal. We will create two local variables with the full path to the files of the training dataset, one with normalized data and the second one with non-normalized data.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Load&nbsp;the&nbsp;training&nbsp;dataset</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">not</span><span class="f_CodeExample">&nbsp;mt5.initialize():</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;initialize()&nbsp;failed,&nbsp;error&nbsp;code&nbsp;=&quot;</span><span class="f_CodeExample">,mt5.last_error())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">path=os.path.join(mt5.terminal_info().data_path,</span><span class="f_CodeExample" style="color: #008080;">r'MQL5\Files'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">mt5.shutdown()</span>
+<br><span class="f_CodeExample">filename&nbsp;=&nbsp;os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'study_data.csv'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">filename_not_norm&nbsp;=&nbsp;os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'study_data_not_norm.csv'</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">First, we load data from the normalized set.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">data&nbsp;=&nbsp;np.asarray(&nbsp;pd.read_table(filename,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sep=</span><span class="f_CodeExample" style="color: #008080;">','</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;header=</span><span class="f_CodeExample" style="color: #ff0000;">None</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skipinitialspace=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;encoding=</span><span class="f_CodeExample" style="color: #008080;">'utf-8'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float_precision=</span><span class="f_CodeExample" style="color: #008080;">'high'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dtype=np.float64,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;low_memory=</span><span class="f_CodeExample" style="color: #ff0000;">False</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then we divide the uploaded data into patterns and goals. Let me remind you that when creating the training dataset, we wrote all the information about the pattern to the file in one line. At the same time, each line contains information about only one pattern. The last two elements in the row contain the target values of the pattern. Let's use this property and determine the number of elements in the second dimension of our data array. Subtracting the number of elements from the obtained value by the target values, we get the number of elements of one pattern description. Using this information, we divide the data into two arrays.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Divide&nbsp;the&nbsp;training&nbsp;sample&nbsp;into&nbsp;initial&nbsp;data&nbsp;and&nbsp;goals</span>
+<br><span class="f_CodeExample">targets=</span><span class="f_CodeExample" style="color: #008100;">2</span>
+<br><span class="f_CodeExample">inputs=data.shape[</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">]-targets</span>
+<br><span class="f_CodeExample">train_data=data[:,</span><span class="f_CodeExample" style="color: #008100;">0</span><span class="f_CodeExample">:inputs]</span>
+<br><span class="f_CodeExample">train_target=data[:,inputs:]</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After that, we load and divide the data of the non-normalized training dataset in the same way.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#load&nbsp;unnormalized&nbsp;training&nbsp;dataset</span>
+<br><span class="f_CodeExample">data&nbsp;=&nbsp;np.asarray(&nbsp;pd.read_table(filename_not_norm,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sep=</span><span class="f_CodeExample" style="color: #008080;">','</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;header=</span><span class="f_CodeExample" style="color: #ff0000;">None</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skipinitialspace=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;encoding=</span><span class="f_CodeExample" style="color: #008080;">'utf-8'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float_precision=</span><span class="f_CodeExample" style="color: #008080;">'high'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dtype=np.float64,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;low_memory=</span><span class="f_CodeExample" style="color: #ff0000;">False</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Split&nbsp;the&nbsp;non-normalized&nbsp;training&nbsp;sample&nbsp;into&nbsp;initial&nbsp;data&nbsp;and&nbsp;goals</span>
+<br><span class="f_CodeExample">train_nn_data=data[:,</span><span class="f_CodeExample" style="color: #008100;">0</span><span class="f_CodeExample">:inputs]</span>
+<br><span class="f_CodeExample">train_nn_target=data[:,inputs:]</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">del</span><span class="f_CodeExample">&nbsp;data</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After dividing the training dataset into two tensors, we delete the source data object in order to use our resources more efficiently.</span></p>
+<p class="p_Text"><span class="f_Text">The next step after loading the data is to create neural network models for testing.</span></p>
+<p class="p_Text"><span class="f_Text">First, we will create a small fully connected perceptron with one hidden layer of 40 elements and a result layer of 2 elements.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Creating&nbsp;the&nbsp;first&nbsp;model&nbsp;with&nbsp;one&nbsp;hidden&nbsp;layer</span>
+<br><span class="f_CodeExample">model1&nbsp;=&nbsp;keras.Sequential([keras.layers.InputLayer(input_shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targets,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After this, we create a callback object for early termination if the model's error on the training dataset doesn't decrease for more than five epochs. When compiling the model, we specify the </span><span class="f_Text" style="font-style: italic;">Adam</span><span class="f_Text"> parameter optimization method and the standard deviation as a function of the model's training error. In addition to the error function to track the quality of training, we add the </span><span class="f_Text" style="font-style: italic;">Accuracy</span><span class="f_Text"> metric, which shows the proportion of correct responses to the model.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">callback&nbsp;=&nbsp;tf.keras.callbacks.EarlyStopping(monitor=</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">,&nbsp;patience=</span><span class="f_CodeExample" style="color: #008100;">5</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">model1.</span><span class="f_CodeExample" style="color: #ff0000;">compile</span><span class="f_CodeExample">(optimizer=</span><span class="f_CodeExample" style="color: #008080;">'Adam'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss=</span><span class="f_CodeExample" style="color: #008080;">'mean_squared_error'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metrics=[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">model1.summary()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, we create a second model, in which we simply add a batch normalization layer between the source data layer and the hidden model layer.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Add&nbsp;batch&nbsp;normalization&nbsp;to&nbsp;the&nbsp;source&nbsp;data&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;to&nbsp;a&nbsp;model&nbsp;with&nbsp;one&nbsp;hidden&nbsp;layer</span>
+<br><span class="f_CodeExample">model1bn&nbsp;=&nbsp;keras.Sequential([keras.layers.InputLayer(input_shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.BatchNormalization(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targets,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">And we compile the model with the same parameters.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">model1bn.</span><span class="f_CodeExample" style="color: #ff0000;">compile</span><span class="f_CodeExample">(optimizer=</span><span class="f_CodeExample" style="color: #008080;">'Adam'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss=</span><span class="f_CodeExample" style="color: #008080;">'mean_squared_error'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metrics=[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">model1bn.summary()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The models for our first experiment are ready.</span></p>
+<p class="p_Text"><span class="f_Text">In the second experiment, I would like to evaluate the impact of using batch normalization within the network between hidden layers of the model. To conduct this experiment, we will also create fully connected perceptrons, but with three similar hidden layers. In the first model, we'll create a model without using batch normalization. Let's just take the first model from this script and add two hidden layers to it, similar to the first hidden layer. The source data and results layers remain unchanged.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Create&nbsp;a&nbsp;model&nbsp;with&nbsp;three&nbsp;hidden&nbsp;layers</span>
+<br><span class="f_CodeExample">model2&nbsp;=&nbsp;keras.Sequential([keras.layers.InputLayer(input_shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targets,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For the sake of experiment purity, we will compile the model with the same parameters.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">model2.</span><span class="f_CodeExample" style="color: #ff0000;">compile</span><span class="f_CodeExample">(optimizer=</span><span class="f_CodeExample" style="color: #008080;">'Adam'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss=</span><span class="f_CodeExample" style="color: #008080;">'mean_squared_error'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metrics=[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">model2.summary()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now let's add a batch normalization layer before each hidden layer. Note that we </span><span class="f_Text" style="font-style: italic; font-weight: bold;">do not add </span><span class="f_Text">a batch normalization layer before the result layer, because the authors of the method do not recommend it. In their experiments, this worsened the results of the models.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Add&nbsp;batch&nbsp;normalization&nbsp;for&nbsp;the&nbsp;source&nbsp;data&nbsp;and&nbsp;hidden&nbsp;layers&nbsp;of&nbsp;the&nbsp;second&nbsp;model</span>
+<br><span class="f_CodeExample">model2bn&nbsp;=&nbsp;keras.Sequential([keras.layers.InputLayer(input_shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.BatchNormalization(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.BatchNormalization(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.BatchNormalization(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targets,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As before, the model is compiled without changing the parameters.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">model2bn.</span><span class="f_CodeExample" style="color: #ff0000;">compile</span><span class="f_CodeExample">(optimizer=</span><span class="f_CodeExample" style="color: #008080;">'Adam'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss=</span><span class="f_CodeExample" style="color: #008080;">'mean_squared_error'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metrics=[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">model2bn.summary()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now that all the models are built, we can start training them. All models will be trained with the same parameters. To train the model, we will use batches of 1000 patterns between weight matrix updates. Training will last for 500 epochs unless early stopping occurs. The last 10% of the training dataset will be used for validation. At the same time, the patterns will be mixed during the learning process.</span></p>
+<p class="p_Text"><span class="f_Text">First, let's train a model with one hidden layer using normalized data.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Train&nbsp;the&nbsp;first&nbsp;model&nbsp;on&nbsp;non-normalized&nbsp;data</span>
+<br><span class="f_CodeExample">history1&nbsp;=&nbsp;model1.fit(train_data,&nbsp;train_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0.1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">model1.save(os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'perceptron1.h5'</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, we train the same model using non-normalized data.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Train&nbsp;the&nbsp;first&nbsp;model&nbsp;on&nbsp;non-normalized&nbsp;data</span>
+<br><span class="f_CodeExample">history1nn&nbsp;=&nbsp;model1.fit(train_nn_data,&nbsp;train_nn_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0.1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now we train a similar model using a batch normalization layer between the source data and the hidden layer. Training will be carried out on a non-normalized training dataset.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">history1bn&nbsp;=&nbsp;model1bn.fit(train_nn_data,&nbsp;train_nn_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0.1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">model1bn.save(os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'perceptron1bn.h5'</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The results of the first two trainings will serve as benchmarks for evaluating the model performance with the batch normalization layer.</span></p>
+<p class="p_Text"><span class="f_Text">At this stage, we gather enough information to draw a conclusion from the first experiment: data normalization during data preprocessing can be replaced with a batch normalization layer between the raw data and the trainable model.</span></p>
+<p class="p_Text"><span class="f_Text">Let's move on to working on the second experiment and determine the impact of the addition of a batch normalization layer before the hidden layer of the model on the training process and the overall performance of the trained model. To do this, we need to train two more models.</span></p>
+<p class="p_Text"><span class="f_Text">First, we train a model with three hidden layers using pre-normalized data. We use the same training parameters to train the model.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">history2&nbsp;=&nbsp;model2.fit(train_data,&nbsp;train_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_CodeExample" style="color: #0000ff;">0.1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">model2.save(os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'perceptron2.h5'</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, we train the model using a non-normalized training dataset, but with a batch normalization layer before of each hidden layer. In particular, the batch normalization layer is also used before the first hidden layer after the source data layer.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">history2bn&nbsp;=&nbsp;model2bn.fit(train_nn_data,&nbsp;train_nn_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_CodeExample" style="color: #0000ff;">0.1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">model2bn.save(os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'perceptron2bn.h5'</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After training these two models, we have enough information to draw conclusions from the results of the second experiment. For clarity, let's create graphs showing the change in training and validation errors as a function of the number of training epochs.</span></p>
+<p class="p_Text"><span class="f_Text">First, let's plot the change in the standard deviation of the data of our models from the target data for the first experiment.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Drawing&nbsp;model&nbsp;training&nbsp;results&nbsp;with&nbsp;one&nbsp;hidden&nbsp;layer</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1nn.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1nn.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bn.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bn.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$MSE$&nbsp;$loss$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics\n1&nbsp;hidden&nbsp;layer'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'upper&nbsp;right'</span><span class="f_CodeExample">,&nbsp;ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In addition to the first graph, let's plot the dynamics of changes in the </span><span class="f_Text" style="font-style: italic;">Accuracy</span><span class="f_Text"> metric.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1nn.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1nn.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bn.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bn.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$Accuracy$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics\n1&nbsp;hidden&nbsp;layer'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'lower&nbsp;right'</span><span class="f_CodeExample">,&nbsp;ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We build similar graphs to display the results of the second experiment.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Drawing&nbsp;the&nbsp;results&nbsp;of&nbsp;training&nbsp;models&nbsp;with&nbsp;three&nbsp;hidden&nbsp;layers</span>
+<br><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bn.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bn.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$MSE$&nbsp;$loss$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics\n3&nbsp;hidden&nbsp;layers'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'upper&nbsp;right'</span><span class="f_CodeExample">,&nbsp;ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bn.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bn.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$Accuracy$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics\n3&nbsp;hidden&nbsp;layers'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'lower&nbsp;right'</span><span class="f_CodeExample">,&nbsp;ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">So, at this stage, we have trained all the models using data from the training set. For us, the training dataset represents historical data. Of course, the fact that the model can approximate historical data is a good thing. But we would like the model to work well in real-time. To check how the model behaves on unknown data, let's check the operation of the models on a test sample.</span></p>
+<p class="p_Text"><span class="f_Text">We load the test dataset in the same way as we loaded the training datasets. First, let's load the normalized test dataset.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Uploading&nbsp;a&nbsp;test&nbsp;dataset</span>
+<br><span class="f_CodeExample">test_filename&nbsp;=&nbsp;os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'test_data.csv'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">test&nbsp;=&nbsp;np.asarray(&nbsp;pd.read_table(test_filename,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sep=</span><span class="f_CodeExample" style="color: #008080;">','</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;header=</span><span class="f_CodeExample" style="color: #ff0000;">None</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skipinitialspace=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;encoding=</span><span class="f_CodeExample" style="color: #008080;">'utf-8'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float_precision=</span><span class="f_CodeExample" style="color: #008080;">'high'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dtype=np.float64,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;low_memory=</span><span class="f_CodeExample" style="color: #ff0000;">False</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now we divide the loaded data into patterns and target values.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Separation&nbsp;of&nbsp;the&nbsp;test&nbsp;sample&nbsp;into&nbsp;initial&nbsp;data&nbsp;and&nbsp;goals</span>
+<br><span class="f_CodeExample">test_data=test[:,</span><span class="f_CodeExample" style="color: #008100;">0</span><span class="f_CodeExample">:inputs]</span>
+<br><span class="f_CodeExample">test_target=test[:,inputs:]</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then we repeat the algorithm to load the non-normalized test dataset.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">test_filename&nbsp;=&nbsp;os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'test_data_not_norm.csv'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">test&nbsp;=&nbsp;np.asarray(&nbsp;pd.read_table(test_filename,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sep=</span><span class="f_CodeExample" style="color: #008080;">','</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;header=</span><span class="f_CodeExample" style="color: #ff0000;">None</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skipinitialspace=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;encoding=</span><span class="f_CodeExample" style="color: #008080;">'utf-8'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float_precision=</span><span class="f_CodeExample" style="color: #008080;">'high'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dtype=np.float64,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;low_memory=</span><span class="f_CodeExample" style="color: #ff0000;">False</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Split&nbsp;the&nbsp;test&nbsp;dataset&nbsp;into&nbsp;initial&nbsp;data&nbsp;and&nbsp;goals</span>
+<br><span class="f_CodeExample">test_nn_data=test[:,</span><span class="f_CodeExample" style="color: #008100;">0</span><span class="f_CodeExample">:inputs]</span>
+<br><span class="f_CodeExample">test_nn_target=test[:,inputs:]</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">del</span><span class="f_CodeExample">&nbsp;test</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After copying the data, we delete the array of initial data, which will allow us to manage our resources more efficiently.</span></p>
+<p class="p_Text"><span class="f_Text">Next, we will test the operation of all models on test samples. We check the operation of models without batch normalization layers on normalized data. We will test models using batch normalization layers on non-normalized test sample data.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Checking&nbsp;the&nbsp;results&nbsp;of&nbsp;models&nbsp;on&nbsp;a&nbsp;test&nbsp;sample</span>
+<br><span class="f_CodeExample">test_loss1,&nbsp;test_acc1&nbsp;=&nbsp;model1.evaluate(test_data,&nbsp;test_target,&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss1bn,&nbsp;test_acc1bn&nbsp;=&nbsp;model1bn.evaluate(test_nn_data,&nbsp;test_nn_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss2,&nbsp;test_acc2&nbsp;=&nbsp;model2.evaluate(test_data,&nbsp;test_target,&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss2bn,&nbsp;test_acc2bn&nbsp;=&nbsp;model2bn.evaluate(test_nn_data,&nbsp;test_nn_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Testing results are output to the log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Output&nbsp;test&nbsp;results&nbsp;to&nbsp;the&nbsp;journal</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;1&nbsp;hidden&nbsp;layer'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;accuracy:'</span><span class="f_CodeExample">,&nbsp;test_acc1)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;loss:'</span><span class="f_CodeExample">,&nbsp;test_loss1)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;1&nbsp;hidden&nbsp;layer&nbsp;with&nbsp;BatchNormalization'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;accuracy:'</span><span class="f_CodeExample">,&nbsp;test_acc1bn)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;loss:'</span><span class="f_CodeExample">,&nbsp;test_loss1bn)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;3&nbsp;hidden&nbsp;layers'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;accuracy:'</span><span class="f_CodeExample">,&nbsp;test_acc2)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;loss:'</span><span class="f_CodeExample">,&nbsp;test_loss2)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;3&nbsp;hidden&nbsp;layer&nbsp;with&nbsp;BatchNormalization'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;accuracy:'</span><span class="f_CodeExample">,&nbsp;test_acc2bn)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;loss:'</span><span class="f_CodeExample">,&nbsp;test_loss2bn)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For clarity, we make a graphical representation of the results separately for the standard deviation and for the </span><span class="f_Text" style="font-style: italic;">Accuracy</span><span class="f_Text"> metric.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.bar([</span><span class="f_CodeExample" style="color: #008080;">'1&nbsp;hidden&nbsp;layer'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'1&nbsp;hidden&nbsp;layer\nvs&nbsp;BatchNormalization'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample" style="color: #008080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'3&nbsp;hidden&nbsp;layers'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'3&nbsp;hidden&nbsp;layers\nvs&nbsp;BatchNormalization'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[test_loss1,test_loss1bn,test_loss2,test_loss2bn])</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$MSE$&nbsp;$Loss$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;results'</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.bar([</span><span class="f_CodeExample" style="color: #008080;">'1&nbsp;hidden&nbsp;layer'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'1&nbsp;hidden&nbsp;layer\nvs&nbsp;BatchNormalization'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample" style="color: #008080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'3&nbsp;hidden&nbsp;layers'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'3&nbsp;hidden&nbsp;layers\nvs&nbsp;BatchNormalization'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[test_acc1,test_acc1bn,test_acc2,test_acc2bn])</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$Accuracy$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;results'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">plt.show()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After creating the graphs, we call the command to render them on the user's screen.</span></p>
+<p class="p_Text"><span class="f_Text">With this, we conclude our work on the script that allows testing of how the use of batch normalization layer affects training results and model performance. We will get familiar with the results in the next section, dedicated to testing models.</span></p>
+
+</div>
+
+</body>
+</html>

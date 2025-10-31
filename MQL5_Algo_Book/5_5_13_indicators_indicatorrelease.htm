@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.5.13 Deleting indicator instances: IndicatorRelease</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_5_indicators_use.htm"> 5.5 Using ready-made indicators from MQL programs </a>/ 5.5.13 Deleting indicator instances: IndicatorRelease
+          </td>
+          <td width="70" align="right">
+          <a href="5_5_12_indicators_shifted.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_5_14_indicators_parameters.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.5.13 Deleting indicator instances: IndicatorRelease</span></p>
+<p class="p_Text"><span class="f_Text">As mentioned in the introductory part of this chapter, the terminal maintains a reference counter for each created indicator and leaves it in operation for as long as at least one MQL program or chart uses it. In an MQL program, a sign of the need for an indicator is a valid handle. Usually, we ask for a handle during initialization and use it in algorithms until the end of the program.</span></p>
+<p class="p_Text"><span class="f_Text">At the moment the program is unloaded, all created unique handles are automatically released, that is, their counters are decremented by 1 (and if they reach zero, those indicators are also unloaded from memory). Therefore, there is no need to explicitly release the handle.</span></p>
+<p class="p_Text"><span class="f_Text">However, there are situations when a sub-indicator becomes unnecessary during program operation. Then the useless indicator continues to consume resources. Therefore, you must explicitly release the handle with </span><span class="f_Text" style="font-style: italic;">IndicatorRelease</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">bool IndicatorRelease(int handle)</span></p>
+<p class="p_Text"><span class="f_Text">The function deletes the specified indicator handle and unloads the indicator itself if no one else uses it. Unloading occurs with a slight delay.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns an indicator of success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or errors (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">After the call of </span><span class="f_Text" style="font-style: italic;">IndicatorRelease</span><span class="f_Text">, the handle passed to it becomes invalid, even though the variable itself retains its previous value. An attempt to use such a handle in other indicator functions like </span><span class="f_Text" style="font-style: italic;">CopyBuffer</span><span class="f_Text"> will fail with error 4807 (ERR_INDICATOR_WRONG_HANDLE). To avoid misunderstandings, it is desirable to assign the value INVALID_HANDLE to the corresponding variable immediately after the handle is freed.</span></p>
+<p class="p_Text"><span class="f_Text">However, if the program then requests a handle for a new indicator, that handle will most likely have the same value as the previously released one but will now be associated with the new indicator's data.</span></p>
+<p class="p_Quote"><span class="f_Quote">When working in the strategy tester, the </span><span class="f_Quote" style="font-style: italic;">IndicatorRelease</span><span class="f_Quote"> function is not performed.</span></p>
+<p class="p_Text"><span class="f_Text">To demonstrate the application of </span><span class="f_Text" style="font-style: italic;">IndicatorRelease</span><span class="f_Text">, let's prepare a special version of </span><span class="f_Text" style="font-style: italic;">UseDemoAllLoop.mq5</span><span class="f_Text">, which will periodically recreate an auxiliary indicator in a cycle from the list, which will include only indicators for the main window (for clarity).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">IndicatorType</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MainLoop</span><span class="f_CodeExample">[]&nbsp;=</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iCustom_</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iAlligator_jawP_jawS_teethP_teethS_lipsP_lipsS_method_price</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iAMA_period_fast_slow_shift_price</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iBands_period_shift_deviation_price</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iDEMA_period_shift_price</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iEnvelopes_period_shift_method_price_deviation</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iFractals_</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iFrAMA_period_shift_price</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iIchimoku_tenkan_kijun_senkou</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iMA_period_shift_method_price</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iSAR_step_maximum</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iTEMA_period_shift_price</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iVIDyA_momentum_smooth_shift_price</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">MainLoop</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Cursor</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;current&nbsp;position&nbsp;inside&nbsp;the&nbsp;MainLoop&nbsp;array</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">IndicatorCustom</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;LifeCycle&quot;</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The first element of the array contains one custom indicator as an exception, </span><span class="f_Text" style="font-style: italic;">LifeCycle</span><span class="f_Text"> from the section <a href="5_1_4_runtime_lifecycle.htm" class="topiclink">Features of starting and stopping programs</a> of different types. Although this indicator does not display any lines, it is appropriate here because it displays messages in the log when its </span><span class="f_Text" style="font-style: italic;">OnInit/OnDeinit</span><span class="f_Text"> handlers are called, which will allow you to track its life cycle. Life cycles of other indicators are similar. &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">In the input variables, we will leave only the rendering settings. The default output of DRAW_ARROW labels is optimal for displaying different types of indicators.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_DRAW_TYPE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DrawType</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">DRAW_ARROW</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Drawing&nbsp;Type</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DrawLineWidth</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Drawing&nbsp;Line&nbsp;Width</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To recreate indicators &quot;on the go&quot;</span><span class="f_Text" style="font-style: italic;">,</span><span class="f_Text"> let's run 5 second <a href="5_6_timer.htm" class="topiclink">timer</a> in </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text">, and the entire previous initialization (with some modifications described below) will be moved to the </span><span class="f_Text" style="font-style: italic;">OnTimer</span><span class="f_Text"> handler.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Wait&nbsp;5&nbsp;seconds&nbsp;to&nbsp;start&nbsp;looping&nbsp;through&nbsp;indicator&nbsp;set&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EventSetTimer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_SUCCEEDED</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #333333;">IndicatorType</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">IndicatorSelector</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;currently&nbsp;selected&nbsp;indicator&nbsp;type</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTimer</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INVALID_HANDLE</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ClearHandles</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">IndicatorRelease</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;descriptor&nbsp;is&nbsp;still&nbsp;10,&nbsp;but&nbsp;is&nbsp;no&nbsp;longer&nbsp;valid</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;if&nbsp;we&nbsp;uncomment&nbsp;the&nbsp;fragment,&nbsp;we&nbsp;get&nbsp;the&nbsp;following&nbsp;error</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double&nbsp;data[1];</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const&nbsp;int&nbsp;n&nbsp;=&nbsp;CopyBuffer(Handle,&nbsp;0,&nbsp;0,&nbsp;1,&nbsp;data);</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print(&quot;Handle=&quot;,&nbsp;Handle,&nbsp;&quot;&nbsp;CopyBuffer=&quot;,&nbsp;n,&nbsp;&quot;&nbsp;Error=&quot;,&nbsp;_LastError);</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Handle=10&nbsp;CopyBuffer=-1&nbsp;Error=4807&nbsp;(ERR_INDICATOR_WRONG_HANDLE)</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">IndicatorSelector</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MainLoop</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">Cursor</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Cursor</span><span class="f_CodeExample">&nbsp;=&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">Cursor</span><span class="f_CodeExample">&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;create&nbsp;a&nbsp;handle&nbsp;with&nbsp;default&nbsp;parameters</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;(because&nbsp;we&nbsp;pass&nbsp;an&nbsp;empty&nbsp;string&nbsp;in&nbsp;the&nbsp;third&nbsp;argument&nbsp;of&nbsp;the&nbsp;constructor)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">AutoIndicator</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">indicator</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">IndicatorSelector</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">IndicatorSelector</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iCustom_</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">IndicatorCustom</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">indicator</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getHandle</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INVALID_HANDLE</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Can't&nbsp;create&nbsp;indicator:&nbsp;%s&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">E2S</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">)&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;The&nbsp;name&nbsp;or&nbsp;number&nbsp;of&nbsp;parameters&nbsp;is&nbsp;incorrect&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Handle=&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">buffers</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">empty</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;clear&nbsp;buffers&nbsp;because&nbsp;a&nbsp;new&nbsp;indicator&nbsp;will&nbsp;be&nbsp;displayed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartSetSymbolPeriod</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;request&nbsp;a&nbsp;full&nbsp;redraw</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;further&nbsp;setup&nbsp;of&nbsp;diagrams&nbsp;-&nbsp;similar&nbsp;to&nbsp;the&nbsp;previous&nbsp;one</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;DemoAll:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">IndicatorSelector</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">iCustom_</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">IndicatorCustom</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;(default-params)&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The main difference is that the type of the currently created indicator </span><span class="f_Text" style="font-style: italic;">IndicatorSelector</span><span class="f_Text"> now it is not set by the user but is sequentially selected from the </span><span class="f_Text" style="font-style: italic;">MainLoop</span><span class="f_Text"> array at the </span><span class="f_Text" style="font-style: italic;">Cursor</span><span class="f_Text"> index. Each time the timer is called, this index increases cyclically, that is, when the end of the array is reached, we jump to its beginning.</span></p>
+<p class="p_Text"><span class="f_Text">For all indicators, the line with parameters is empty. This is done to unify their initialization. As a result, each indicator will be created with its own defaults.</span></p>
+<p class="p_Text"><span class="f_Text">At the beginning of the </span><span class="f_Text" style="font-style: italic;">OnTimer</span><span class="f_Text"> handler, we call </span><span class="f_Text" style="font-style: italic;">IndicatorRelease</span><span class="f_Text"> for the previous handle. However, we have provided an input variable </span><span class="f_Text" style="font-style: italic;">ClearHandles</span><span class="f_Text"> to disable the given </span><span class="f_Text" style="font-style: italic;">if</span><span class="f_Text"> operator branch and see what happens if you do not clean the handles.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ClearHandles</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">By default, </span><span class="f_Text" style="font-style: italic;">ClearHandles</span><span class="f_Text"> is equal to </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">, that is, the indicators will be deleted as expected.</span></p>
+<p class="p_Text"><span class="f_Text">Finally, another additional setting is the lines with clearing buffers and requesting a complete redrawing of the chart. Both are needed, because we have replaced the slave indicator that supplies the displayed data.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> handler has not changed.</span></p>
+<p class="p_Text"><span class="f_Text">Let's run </span><span class="f_Text" style="font-style: italic;">UseDemoAllLoop</span><span class="f_Text"> with default settings. The following entries will appear in the log (only the beginning is shown):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;LifeCycle()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=10</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">LifeCycle&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(EURUSD,H1)&nbsp;Loader::Loader()</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">LifeCycle&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(EURUSD,H1)&nbsp;void&nbsp;OnInit()&nbsp;0&nbsp;DEINIT_REASON_PROGRAM</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iAlligator_jawP_jawS_teethP_teethS_lipsP_lipsS_method_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iAlligator_jawP_jawS_teethP_teethS_lipsP_lipsS_method_price&nbsp;requires&nbsp;8&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=10</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">LifeCycle&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(EURUSD,H1)&nbsp;void&nbsp;OnDeinit(const&nbsp;int)&nbsp;DEINIT_REASON_REMOVE</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">LifeCycle&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(EURUSD,H1)&nbsp;Loader::~Loader()</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iAMA_period_fast_slow_shift_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iAMA_period_fast_slow_shift_price&nbsp;requires&nbsp;5&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=10</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iBands_period_shift_deviation_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iBands_period_shift_deviation_price&nbsp;requires&nbsp;4&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=10</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Note that we get the same handle &quot;number&quot; (10) every time because we free it before creating a new handle.</span></p>
+<p class="p_Text"><span class="f_Text">It is also important that the </span><span class="f_Text" style="font-style: italic;">LifeCycle</span><span class="f_Text"> indicator unloaded shortly after we freed it (assuming it was not added to the same chart by itself, because then its reference count would not be reset to zero).</span></p>
+<p class="p_Text"><span class="f_Text">The image below shows the moment when our indicator renders Alligator data.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="UseDemoAllLoop in the Alligator demo step" title="UseDemoAllLoop in the Alligator demo step" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="eurusdh1-demoall-loop.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">UseDemoAllLoop in the Alligator demo step</span></p>
+<p class="p_Text"><span class="f_Text">If you change the </span><span class="f_Text" style="font-style: italic;">ClearHandles</span><span class="f_Text"> value to </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">, we will see a completely different picture in the log. Handle numbers will now constantly increase, indicating that the indicators remain in the terminal and continue to work, consuming resources in vain. In particular, no deinitialization message is received from the </span><span class="f_Text" style="font-style: italic;">LifeCycle</span><span class="f_Text"> indicator.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;LifeCycle()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=10</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">LifeCycle&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(EURUSD,H1)&nbsp;Loader::Loader()</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">LifeCycle&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(EURUSD,H1)&nbsp;void&nbsp;OnInit()&nbsp;0&nbsp;DEINIT_REASON_PROGRAM</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iAlligator_jawP_jawS_teethP_teethS_lipsP_lipsS_method_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iAlligator_jawP_jawS_teethP_teethS_lipsP_lipsS_method_price&nbsp;requires&nbsp;8&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=11</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iAMA_period_fast_slow_shift_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iAMA_period_fast_slow_shift_price&nbsp;requires&nbsp;5&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=12</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iBands_period_shift_deviation_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iBands_period_shift_deviation_price&nbsp;requires&nbsp;4&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=13</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iDEMA_period_shift_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iDEMA_period_shift_price&nbsp;requires&nbsp;3&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=14</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iEnvelopes_period_shift_method_price_deviation()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iEnvelopes_period_shift_method_price_deviation&nbsp;requires&nbsp;5&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=15</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iVIDyA_momentum_smooth_shift_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iVIDyA_momentum_smooth_shift_price&nbsp;requires&nbsp;4&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=22</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;LifeCycle()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=10</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iAlligator_jawP_jawS_teethP_teethS_lipsP_lipsS_method_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iAlligator_jawP_jawS_teethP_teethS_lipsP_lipsS_method_price&nbsp;requires&nbsp;8&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=11</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iAMA_period_fast_slow_shift_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iAMA_period_fast_slow_shift_price&nbsp;requires&nbsp;5&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=12</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iBands_period_shift_deviation_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iBands_period_shift_deviation_price&nbsp;requires&nbsp;4&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=13</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Initializing&nbsp;iDEMA_period_shift_price()&nbsp;EURUSD,&nbsp;PERIOD_H1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;iDEMA_period_shift_price&nbsp;requires&nbsp;3&nbsp;parameters,&nbsp;0&nbsp;given</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;Handle=14</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">UseDemoAllLoop&nbsp;(EURUSD,H1)&nbsp;void&nbsp;OnDeinit(const&nbsp;int)</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When the index in the loop over the array of indicator types reaches the last element and circles from the beginning, the terminal will start returning handles of already existing indicators to our code (the same values: handle 22 is followed by 10 again).</span></p>
+
+</div>
+
+</body>
+</html>

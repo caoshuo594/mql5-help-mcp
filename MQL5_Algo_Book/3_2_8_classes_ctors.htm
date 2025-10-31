@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.2.8 Constructors: default, parametric, and copying</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_2_classes_and_interfaces.htm"> 3.2 Classes and interfaces </a>/ 3.2.8 Constructors: default, parametric, and copying
+          </td>
+          <td width="70" align="right">
+          <a href="3_2_7_classes_access_rights.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_2_9_classes_dtors.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.2.8 Constructors: default, parametric, and copying</span></p>
+<p class="p_Text"><span class="f_Text">We have already encountered constructors in the chapter on structures (see section <a href="3_1_4_structs_ctor_dtor.htm" class="topiclink">Constructors and destructors</a>). For classes, they work in much the same way. Let's get back to the main points and consider further features.</span></p>
+<p class="p_Text"><span class="f_Text">A constructor is a method having the same name as the class and is of type void, meaning it does not return a value. Usually, the keyword </span><span class="f_Text" style="font-style: italic;">void</span><span class="f_Text"> is omitted before the constructor name. A class can have several constructors: they must differ in the number or type of parameters. When a new object is created, the program calls the constructor so that it can set the initial values for the fields.</span></p>
+<p class="p_Text"><span class="f_Text">One of the ways to create an object that we used is the description in the code of the variable of the corresponding class. The constructor will be called on this string. It happens automatically. &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">Depending on the presence and types of parameters, constructors are divided into:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">default constructor: no parameters;</span></li>
+<li class="p_li"><span class="f_li">copy constructor: with a single parameter which is the type of a reference to an object of the same class;</span></li>
+<li class="p_li"><span class="f_li">parametric constructor: with an arbitrary set of parameters, except for a single reference for copying shown above.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text" style="page-break-after: avoid;"><span class="f_Text" style="font-weight: bold;">Default constructor</span></p>
+<p class="p_Text"><span class="f_Text">The simplest constructor, without parameters, is called the default constructor. Unlike C++, MQL5 does not consider a default constructor to be a constructor that has parameters and all of them have default values &#8203;&#8203;(that is, all parameters are optional, see section <a href="2_8_5_functions_parameters_default.htm" class="topiclink">Optional parameters</a>).</span></p>
+<p class="p_Text"><span class="f_Text">Let's define a default constructor for the class </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Of course, it should be done in the public section of the class.</span></p>
+<p class="p_Text"><span class="f_Text">Constructors are sometimes deliberately made protected or private to control how objects are created, for example, through factory methods. But in this case, we are considering the standard version of class composition.</span></p>
+<p class="p_Text"><span class="f_Text">To set initial values for object variables, we could use the usual assignment statements:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">However, the constructor syntax provides another option. It is called the initialization list and is written after the function header, separated by a colon. The list itself is a comma-separated sequence of field names, with the desired initial value in parentheses to the right of each name.</span></p>
+<p class="p_Text"><span class="f_Text">For example, for the constructor </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text"> it can be written as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">()&nbsp;:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">backgroundColor</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">clrNONE</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This syntax is preferred over assigning variables in the body of a constructor for several reasons.</span></p>
+<p class="p_Text"><span class="f_Text">First, the assignment in the function body is made after the corresponding variable has been created. Depending on the type of the variable, this may mean that the default constructor was first called for it and then the new value was overwritten (and this means extra expenses). In the case of an initialization list, the variable is immediately created with the desired value. It is likely that the compiler will be able to optimize the assignment in the absence of an initialization list, but in the general case, this is not guaranteed.</span></p>
+<p class="p_Text"><span class="f_Text">Secondly, some class fields can be declared with the </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> modifier. Then they can only be set in the initialization list.</span></p>
+<p class="p_Text"><span class="f_Text">Thirdly, field variables of user-defined types may not have a default constructor (that is, all available constructors in their class have parameters). This means that when you create a variable, you need to pass actual parameters to it, and the initialization list allows you to do this: the argument values are specified inside parentheses, as if in an explicit constructor call. An initialization list can be used in constructor definitions, but not in other methods.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text" style="page-break-after: avoid;"><span class="f_Text" style="font-weight: bold;">Parametric constructor</span></p>
+<p class="p_Text"><span class="f_Text">A parametric constructor, by definition, has multiple parameters (one or more).</span></p>
+<p class="p_Text"><span class="f_Text">For example, imagine that for coordinates </span><span class="f_Text" style="font-style: italic;">x</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">y</span><span class="f_Text"> a special structure with a parametric constructor is described:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Pair</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Pair</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">):&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">)&nbsp;{&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then we can use the </span><span class="f_Text" style="font-style: italic;">coordinates</span><span class="f_Text"> field of the new type </span><span class="f_Text" style="font-style: italic;">Pair</span><span class="f_Text"> instead of the two integer fields </span><span class="f_Text" style="font-style: italic;">x</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">y</span><span class="f_Text"> in the </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text"> class. This construction of objects is called inclusion or compositional aggregation. The </span><span class="f_Text" style="font-style: italic;">Pair</span><span class="f_Text"> object is an integral part of the object </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">. A coordinate pair is automatically created and destroyed along with the &quot;host&quot; object.</span></p>
+<p class="p_Text"><span class="f_Text">Because </span><span class="f_Text" style="font-style: italic;">Pair</span><span class="f_Text"> does not have a parameterless constructor, the </span><span class="f_Text" style="font-style: italic;">coordinates</span><span class="f_Text"> field must be specified in the initialization list of the </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text"> constructor, with two parameters </span><span class="f_Text" style="font-style: italic;">(int, int)</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;int&nbsp;x,&nbsp;y;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Pair</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;center&nbsp;coordinates&nbsp;(object&nbsp;inclusion)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">()&nbsp;:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;x(0),&nbsp;y(0),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//object&nbsp;initialization</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">backgroundColor</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">clrNONE</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Without an initialization list, such automatic objects cannot be created.</span></p>
+<p class="p_Text"><span class="f_Text">Given the change in how coordinates are stored in the object, we need to update the </span><span class="f_Text" style="font-style: italic;">toString</span><span class="f_Text">method:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">toString</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">But this is not the final version: we will make some more changes soon.</span></p>
+<p class="p_Quote"><span class="f_Quote">Recall that automatic variables were described in the <a href="2_7_2_statements_declaration.htm" class="topiclink">Declaration/Definition Instructions</a> section. They are called automatic because the compiler creates them (allocates memory) automatically, and also automatically deletes them when program execution leaves the context (block of code) in which the variable was created.</span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">In the case of object variables, automatic creation means not only memory allocation but also a constructor call. The automatic deletion of an object is accompanied by a call to its destructor (see below section <a href="3_2_9_classes_dtors.htm" class="topiclink">Destructors</a>). Moreover, if the object is part of another object, then its lifetime coincides with the lifetime of its &quot;owner&quot;, as in the case of the field </span><span class="f_Quote" style="font-style: italic;">coordinates</span><span class="f_Quote"> — an instance of </span><span class="f_Quote" style="font-style: italic;">Pair</span><span class="f_Quote"> in the object </span><span class="f_Quote" style="font-style: italic;">Shape</span><span class="f_Quote">.</span><br>
+<span class="f_Quote" style="font-style: italic;">&nbsp;</span><br>
+<span class="f_Quote">Static (including global) objects are also managed automatically by the compiler.</span><br>
+<span class="f_Quote" style="font-style: italic;">&nbsp;</span><br>
+<span class="f_Quote">An alternative to automatic allocation is <a href="3_2_12_classes_new_delete_pointers.htm" class="topiclink">dynamic object creation and manipulation via pointers</a>.</span></p>
+<p class="p_Text"><span class="f_Text">In the <a href="3_2_11_classes_inheritance.htm" class="topiclink">inheritance</a> section, we will learn how one class can be inherited from another. In this case, the initialization list is the only way to call the parametric constructor of the base class (the compiler is not able to automatically generate a constructor call with parameters, as it does implicitly for the default constructor).</span></p>
+<p class="p_Text"><span class="f_Text">Let's add another constructor to the class </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text"> that allows you to set specific values &#8203;&#8203;to variables. It will just be a parametric constructor (you can create as many of them as you like: for different purposes and with a different set of parameters).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">px</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">py</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">color</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">back</span><span class="f_CodeExample">)&nbsp;:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">px</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">py</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">backgroundColor</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">back</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The initialization list ensures that when the body of the constructor is executed, all internal fields (including nested objects, if any) have already been created and initialized.</span></p>
+<p class="p_Text"><span class="f_Text">The order of initialization of class members does not correspond to the initialization list but to the sequence of their declaration in the class.</span></p>
+<p class="p_Text"><span class="f_Text">If a constructor with parameters is declared in a class, and it is required to allow the creation of objects without arguments, the programmer must explicitly implement the default constructor</span></p>
+<p class="p_Text"><span class="f_Text">In the event that there are no constructors at all in the class, the compiler implicitly provides a default constructor in the form of a stub, which is responsible for initializing fields of the following types: strings, dynamic arrays, and automatic objects with a default constructor. If there are no such fields, the implicit default constructor does nothing. Fields of other types are not affected by the implicit constructor, so they will contain random &quot;garbage&quot;. To avoid this, the programmer must explicitly declare the constructor and set the initial values.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text" style="page-break-after: avoid;"><span class="f_Text" style="font-weight: bold;">Copy constructor</span></p>
+<p class="p_Text"><span class="f_Text">The copy constructor allows you to create an object based on another object passed by reference as the only parameter.</span></p>
+<p class="p_Text"><span class="f_Text">For example, for the class </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">, the copy constructor might look like this:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">)&nbsp;:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">backgroundColor</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">backgroundColor</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Note that protected and private members of another object are available in the current object because permissions work at the class level. In other words, two objects of the same class can access each other's data when given a reference (or <a href="3_2_12_classes_new_delete_pointers.htm" class="topiclink">pointer</a>).</span></p>
+<p class="p_Text"><span class="f_Text">If there is such a constructor, you can create objects using one of two syntax types:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s2</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok:&nbsp;syntax&nbsp;1&nbsp;-&nbsp;copying</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s3</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok:&nbsp;syntax&nbsp;2&nbsp;-&nbsp;copying&nbsp;via&nbsp;initialization</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(if&nbsp;there&nbsp;is&nbsp;copy&nbsp;constructor)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;or&nbsp;assignment</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(if&nbsp;there&nbsp;is&nbsp;no&nbsp;copy&nbsp;constructor,</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;but&nbsp;there&nbsp;is&nbsp;default&nbsp;constructor)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s4</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;definition</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s4</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;assignment,&nbsp;not&nbsp;copy&nbsp;constructor!</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It is necessary to distinguish between initialization of an object during creation and assignment.</span></p>
+<p class="p_Text"><span class="f_Text">The second option (marked with the &quot;syntax 2&quot; comment) will work even if there is no copy constructor, but there is a default constructor. In this case, the compiler will generate less efficient code: first, using the default constructor, it will create an empty instance of the receiving variable (</span><span class="f_Text" style="font-style: italic;">s3</span><span class="f_Text">, in this case), and then copy the fields of the sample (</span><span class="f_Text" style="font-style: italic;">s</span><span class="f_Text">, in this case) element by element. In fact, the same case will turn out as with the variable </span><span class="f_Text" style="font-style: italic;">s4</span><span class="f_Text">, for which the definition and assignment are performed by separate statements.</span></p>
+<p class="p_Text"><span class="f_Text">If there is no copy constructor, then attempting to use the first syntax will result in a &quot;parameter conversion not allowed&quot; error, as the compiler will try to take some other constructor available with a different set of parameters.</span></p>
+<p class="p_Text"><span class="f_Text">Keep in mind that if the class has fields with the modifier </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text">, assigning such objects is prohibited for obvious reasons: a constant field cannot be changed, it can only be set once when creating an object. Therefore, the copy constructor becomes the only way to duplicate an object.</span></p>
+<p class="p_Text"><span class="f_Text">In particular, in the following sections, we will complete our </span><span class="f_Text" style="font-style: italic;">Shape1.mq5</span><span class="f_Text"> example, and the following field will appear in the </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text"> class (with a description string </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text">). Then the assignment operator will generate errors (in particular, for such lines as with the variable </span><span class="f_Text" style="font-style: italic;">s4</span><span class="f_Text">):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">attempting&nbsp;to&nbsp;reference&nbsp;deleted&nbsp;function</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;'void&nbsp;Shape::operator=(const&nbsp;Shape&amp;)'</span>
+<br><span class="f_CodeExample">function&nbsp;'void&nbsp;Shape::operator=(const&nbsp;Shape&amp;)'&nbsp;was&nbsp;implicitly&nbsp;deleted</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;because&nbsp;member&nbsp;'type'&nbsp;has&nbsp;'const'&nbsp;modifier</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Thanks to the detailed wording of the compiler, you can understand the essence and reasons for what is happening: first, the assignment operator ('=') is mentioned, and not the copy constructor; second, it is reported that the assignment operator was implicitly removed due to the presence of the modifier </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text">. Here we encounter concepts that are yet unknown, which we will study later: <a href="3_2_19_classes_operator_overloading.htm" class="topiclink">operator overloading in classes</a>, <a href="3_2_20_classes_dynamic_cast_void.htm" class="topiclink">object type conversion</a>, and the ability to mark methods as <a href="3_2_22_classes_final_delete.htm" class="topiclink">deleted</a>.</span></p>
+<p class="p_Text"><span class="f_Text">In the section <a href="3_2_11_classes_inheritance.htm" class="topiclink">Inheritance</a>, after we learn how to describe derived classes, we need to make some clarifications about copy constructors in class hierarchies.</span></p>
+
+</div>
+
+</body>
+</html>

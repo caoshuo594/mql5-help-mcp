@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.7.18 Translation of screen coordinates to time/price and vice versa</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_7_charts.htm"> 5.7 Working with charts </a>/ 5.7.18 Translation of screen coordinates to time/price and vice versa
+          </td>
+          <td width="70" align="right">
+          <a href="5_7_17_charts_on_drop.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_7_19_charts_navigate.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.7.18 Translation of screen coordinates to time/price and vice versa</span></p>
+<p class="p_Text"><span class="f_Text">The presence of different principles for measuring the working space of the chart leads to the need to recalculate the units of measurement among themselves. There are two functions for this.</span></p>
+<p class="p_H4"><span class="f_H4">bool ChartTimePriceToXY(long chartId, int window, datetime time, double price, int &amp;x, int &amp;y)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool ChartXYToTimePrice(long chartId, int x, int y, int &amp;window, datetime &amp;time, double &amp;price)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">ChartTimePriceToXY</span><span class="f_Text"> function converts chart coordinates from time/price representation (</span><span class="f_Text" style="font-style: italic;">time/price</span><span class="f_Text">) to X and Y coordinates in pixels (</span><span class="f_Text" style="font-style: italic;">x/y</span><span class="f_Text">). The </span><span class="f_Text" style="font-style: italic;">ChartXYToTimePrice</span><span class="f_Text"> function performs the reverse operation: it converts the X and Y coordinates into time and price values.</span></p>
+<p class="p_Text"><span class="f_Text">Both functions require the chart ID to be specified in the first parameter </span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text">. In addition to this, the number of the </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text"> subwindow is passed in </span><span class="f_Text" style="font-style: italic;">ChartTimePriceToXY</span><span class="f_Text"> (it should be within the number of windows). If there are several subwindows, each of them has its own timeseries and a scale along the vertical axis (conditionally called &quot;price&quot; with the </span><span class="f_Text" style="font-style: italic;">price</span><span class="f_Text"> parameter).</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text"> parameter is the output in the </span><span class="f_Text" style="font-style: italic;">ChartXYToTimePrice</span><span class="f_Text"> function. The function fills this parameter along with </span><span class="f_Text" style="font-style: italic;">time</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">price</span><span class="f_Text">. This is because pixel coordinates are common to the entire screen, and the origin </span><span class="f_Text" style="font-style: italic;">x/y</span><span class="f_Text"> can fall into any subwindow.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Time, price and screen coordinates" title="Time, price and screen coordinates" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="chart_coordinates.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Time, price, and screen coordinates</span></p>
+<p class="p_Text"><span class="f_Text">Functions return </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> upon successful completion.</span></p>
+<p class="p_Text"><span class="f_Text">Please note that the visible rectangular area that corresponds to quotes or screen coordinates is limited in both coordinate systems. Therefore, situations are possible when, with specific initial data, the received time, prices, or pixels will be out of the visibility area. In particular, negative values can also be obtained. We will look at an interactive recalculation example in the chapter on <a href="5_9_events.htm" class="topiclink">events on charts</a>.</span></p>
+<p class="p_Text"><span class="f_Text">In the previous section, we saw how you can find out where an MQL program was launched. Although physically there is only one end drop point, its representation in quotation and screen coordinates, as a rule, contains a calculation error. Two new functions for converting pixels into price/time and vice versa will help us to make sure of this.</span></p>
+<p class="p_Text"><span class="f_Text">The modified script is called </span><span class="f_Text" style="font-style: italic;">ChartXY.mq5</span><span class="f_Text">. It can be roughly divided into 3 stages. In the first stage, we derive the coordinates of the drop point, as before.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w1</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartWindowOnDropped</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t1</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartTimeOnDropped</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p1</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartPriceOnDropped</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x1</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartXOnDropped</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y1</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartYOnDropped</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the second stage, we try to transform the screen coordinates </span><span class="f_Text" style="font-style: italic;">x1</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">y1</span><span class="f_Text"> during (</span><span class="f_Text" style="font-style: italic;">t2</span><span class="f_Text">) and price (</span><span class="f_Text" style="font-style: italic;">p2</span><span class="f_Text">), and compare them with those obtained from </span><span class="f_Text" style="font-style: italic;">OnDropped</span><span class="f_Text"> functions above.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartXYToTimePrice</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p2</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w1</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w2</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t1</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t2</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p1</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then we perform the inverse transformation: we use the obtained quotation coordinates </span><span class="f_Text" style="font-style: italic;">t1</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">p1</span><span class="f_Text"> to calculate screen coordinates -</span><span class="f_Text" style="font-style: italic;">x2</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">y2</span><span class="f_Text"> and also compare with the original values </span><span class="f_Text" style="font-style: italic;">x1</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">y1</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartTimePriceToXY</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y2</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">x2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">x1</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x2</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y1</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As we will see later in the example log, all of the above checks will fail (there will be slight discrepancies in the values). So we need a third step.</span></p>
+<p class="p_Text"><span class="f_Text">Let's recalculate the screen and quote coordinates with the suffix 2 in the variable names and save them in the variables with the new suffix 3. Then we compare all the values from the first and third stages with each other.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w3</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t3</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p3</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartXYToTimePrice</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p3</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t3</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w1</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w3</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t1</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t3</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p1</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p3</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y3</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartTimePriceToXY</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y3</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">x3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y3</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">x1</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x3</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y1</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y3</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's run the script on the XAUUSD, H1 chart. Here is the original point data.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">ChartWindowOnDropped()=0&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">ChartTimeOnDropped()=2021.11.22&nbsp;18:00:00&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">ChartPriceOnDropped()=1797.7&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">ChartXOnDropped()=234&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">ChartYOnDropped()=280&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Converting pixels to quotes gives the following results.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">ChartXYToTimePrice(0,x1,y1,w2,t2,p2)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">0&nbsp;1797.16&nbsp;2021.11.22&nbsp;18:30:00</span>
+<br><span class="f_CodeExample">w1==w2&amp;&amp;t1==t2&amp;&amp;p1==p2=false&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">There are differences in both time and price. Backcounting is also not perfect in terms of accuracy.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">ChartTimePriceToXY(0,w1,t1,p1,x2,y2)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">232&nbsp;278</span>
+<br><span class="f_CodeExample">x1==x2&amp;&amp;y1==y2=false&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The loss of precision occurs due to the quantization of the values on the axes according to the units of measurement, in particular pixels and points.</span></p>
+<p class="p_Text"><span class="f_Text">Finally, the last step proves that the errors obtained above are not function artifacts, because round-robin recalculation leads to the original result.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">ChartXYToTimePrice(0,x2,y2,w3,t3,p3)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">0&nbsp;1797.7&nbsp;2021.11.22&nbsp;18:00:00</span>
+<br><span class="f_CodeExample">w1==w3&amp;&amp;t1==t3&amp;&amp;p1==p3=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">ChartTimePriceToXY(0,w2,t2,p2,x3,y3)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">234&nbsp;280</span>
+<br><span class="f_CodeExample">x1==x3&amp;&amp;y1==y3=true&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In pseudocode, this can be expressed by the following equalities:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">ChartTimePriceToXY</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartXYToTimePrice</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">XY</span><span class="f_CodeExample">))&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">XY</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">ChartXYToTimePrice</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartTimePriceToXY</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">TP</span><span class="f_CodeExample">))&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TP</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Applying the </span><span class="f_Text" style="font-style: italic;">ChartTimePriceToXY</span><span class="f_Text"> function to </span><span class="f_Text" style="font-style: italic;">ChartXYToTimePrice</span><span class="f_Text"> work results will give the original coordinates. The same is true for transformations in the other direction: applying </span><span class="f_Text" style="font-style: italic;">ChartXYToTimePrice</span><span class="f_Text"> to the results of </span><span class="f_Text" style="font-style: italic;">ChartTimePriceToXY</span><span class="f_Text"> will give a match.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, one should carefully consider the implementation of algorithms that use recalculation functions if they are subject to increased accuracy requirements.</span></p>
+<p class="p_Text"><span class="f_Text">Another example of using </span><span class="f_Text" style="font-style: italic;">ChartWindowOnDropped</span><span class="f_Text"> will be given in the script </span><span class="f_Text" style="font-style: italic;">ChartIndicatorMove.mq5</span><span class="f_Text"> in the section <a href="5_7_22_charts_indicators.htm" class="topiclink">Managing indicators on the chart</a>.</span></p>
+
+</div>
+
+</body>
+</html>

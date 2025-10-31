@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.4.23 Order properties (active and historical)</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_4_experts.htm"> 6.4 Creating Expert Advisors </a>/ 6.4.23 Order properties (active and historical)
+          </td>
+          <td width="70" align="right">
+          <a href="6_4_22_experts_order_list.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_4_24_experts_orderget_funcs.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.4.23 Order properties (active and history)</span></p>
+<p class="p_Text"><span class="f_Text">In the sections related to trading operations, in particular to <a href="6_4_14_experts_market_buy_sell.htm" class="topiclink">making buying/selling</a>, <a href="6_4_17_experts_close.htm" class="topiclink">closing a position</a>, and <a href="6_4_19_experts_pending.htm" class="topiclink">placing a pending order</a>, we have seen that requests are sent to the server based on the filling of specific fields of the </span><span class="f_Text" style="font-style: italic;">MqlTradeRequest</span><span class="f_Text"> structure, most of which directly define the properties of the resulting orders. The MQL5 API allows you to learn these and some other properties set by the trading system itself, such as ticket, registration time, and status.</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that the list of order properties is common for both active and historical orders, although, of course, the values of many properties will differ for them.</span></p>
+<p class="p_Text"><span class="f_Text">Order properties are grouped in MQL5 according to the principle already familiar to us based on the type of values: integer (compatible with </span><span class="f_Text" style="font-style: italic;">long/ulong</span><span class="f_Text">), real (</span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">), and strings. Each property group has its own enumeration.</span></p>
+<p class="p_Text"><span class="f_Text">Integer properties are summarized in ENUM_ORDER_PROPERTY_INTEGER and are presented in the following table.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:33%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+<th class="table" style="width:33%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Type</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_TYPE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order type</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed"><a href="6_4_4_experts_order_type.htm" class="topiclink">ENUM_ORDER_TYPE</a></span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_TYPE_FILLING</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Execution type by volume</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed"><a href="6_4_5_experts_execution_filling.htm" class="topiclink">ENUM_ORDER_TYPE_FILLING</a></span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_TYPE_TIME</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order lifetime (pending)</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed"><a href="6_4_6_experts_pending_expiration.htm" class="topiclink">ENUM_ORDER_TYPE_TIME</a></span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_TIME_EXPIRATION</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order expiration time (pending)</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">datetime</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_MAGIC</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Arbitrary identifier set by the Expert Advisor that placed the order</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">ulong</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_TICKET</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order ticket; a unique number assigned by the server to each order</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">ulong</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_STATE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order status</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">ENUM_ORDER_STATE (see below)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_REASON</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Reason or source for the order</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">ENUM_ORDER_REASON (see below)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_TIME_SETUP</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order placement time</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">datetime</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_TIME_DONE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order execution or withdrawal time</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">datetime</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_TIME_SETUP_MSC</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Time of order placement for execution in milliseconds</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">ulong</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_TIME_DONE_MSC</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order execution/withdrawal time in milliseconds</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">ulong</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_POSITION_ID</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">ID of the position that the order generated or modified upon execution</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">ulong</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">ORDER_POSITION_BY_ID</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Opposite position identifier for orders of type ORDER_TYPE_CLOSE_BY</span></p>
+</td>
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">ulong</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Each executed order generates a deal that opens a new or changes an existing position. The ID of this position is assigned to the executed order in the ORDER_POSITION_ID property.</span></p>
+<p class="p_Text"><span class="f_Text">The ENUM_ORDER_STATE enumeration contains elements that describe order statuses. See a simplified scheme (state diagram) of orders below.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_STATE_STARTED</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The order has been checked for correctness but has not yet been accepted by the server</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_STATE_PLACED</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The order has been accepted by the server</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_STATE_CANCELED</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The order has been canceled by the client (user or MQL program)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_STATE_PARTIAL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The order has been partially executed</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_STATE_FILLED</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The order has been filled in full</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_STATE_REJECTED</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The order has been rejected by the server</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_STATE_EXPIRED</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The order has been canceled upon expiration</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_STATE_REQUEST_ADD</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The order is being registered (being placed in the trading system)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_STATE_REQUEST_MODIFY</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The order is being modified (its parameters are being changed)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_STATE_REQUEST_CANCEL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The order is being deleted (removing from the trading system)</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_ImageCaption"><img class="help" alt="Order Status Chart" title="Order Status Chart" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="orderstates.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Order status diagram</span></p>
+<p class="p_Text"><span class="f_Text">Changing the state is possible only for active orders. For historical orders (filled or canceled), the status is fixed.</span></p>
+<p class="p_Text"><span class="f_Text">You can cancel an order that has already been partially fulfilled, and then its status in the history will be ORDER_STATE_CANCELED.</span></p>
+<p class="p_Text"><span class="f_Text">ORDER_STATE_PARTIAL occurs only for active orders. Executed (historical) orders always have the status ORDER_STATE_FILLED.</span></p>
+<p class="p_Text"><span class="f_Text">The ENUM_ORDER_REASON enumeration specifies possible order source options.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_REASON_CLIENT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order placed manually from the desktop terminal</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_REASON_EXPERT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order placed from the desktop terminal by an Expert Adviser or a script</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_REASON_MOBILE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order placed from the mobile application</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_REASON_WEB</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order placed from the web terminal (browser)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_REASON_SL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order placed by the server as a result of Stop Loss triggering</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_REASON_TP</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order placed by the server as a result of Take Profit triggering</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_REASON_SO</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order placed by the server as a result of the Stop Out event</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Real properties are collected in the ENUM_ORDER_PROPERTY_DOUBLE enumeration.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_VOLUME_INITIAL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Initial volume when placing an order</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_VOLUME_CURRENT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Current volume (initial or remaining after partial execution)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_PRICE_OPEN</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The price indicated in the order</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_PRICE_CURRENT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The current symbol price of an order that has not yet been executed or the execution price</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_SL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Stop Loss Level</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_TP</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Take Profit level</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_PRICE_STOPLIMIT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The price for placing a Limit order when a StopLimit order is triggered</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The ORDER_PRICE_CURRENT property contains the current </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> price for active buy pending orders or the </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> price for active sell pending orders. &quot;Current&quot; refers to the price known in the trading environment at the time the order is selected using </span><span class="f_Text" style="font-style: italic;">OrderSelect</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">OrderGetTicket</span><span class="f_Text">. For executed orders in the history, this property contains the execution price, which may differ from the one specified in the order due to slippage.</span></p>
+<p class="p_Text"><span class="f_Text">The ORDER_VOLUME_INITIAL and ORDER_VOLUME_CURRENT properties are not equal to each other only if the order status is ORDER_STATE_PARTIAL.</span></p>
+<p class="p_Text"><span class="f_Text">If the order was filled in parts, then its ORDER_VOLUME_INITIAL property in history will be equal to the size of the last filled part, and all other &quot;fills&quot; related to the original full volume will be executed as separate orders (and deals).</span></p>
+<p class="p_Text"><span class="f_Text">String properties are described in the ENUM_ORDER_PROPERTY_STRING enumeration.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_SYMBOL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The symbol on which the order is placed</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_COMMENT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Comment</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_EXTERNAL_ID</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order ID in the external trading system (on the exchange)</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To read all the above properties, there are two different sets of functions: for active orders and for historical orders. First, we will consider the functions for active orders, and we will return to the historical ones after we get acquainted with the principles of selecting the required period in <a href="6_4_30_experts_history_select.htm" class="topiclink">history</a>.</span></p>
+
+</div>
+
+</body>
+</html>

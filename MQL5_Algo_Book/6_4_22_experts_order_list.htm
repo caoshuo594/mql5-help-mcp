@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.4.22 Getting a list of active orders</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_4_experts.htm"> 6.4 Creating Expert Advisors </a>/ 6.4.22 Getting a list of active orders
+          </td>
+          <td width="70" align="right">
+          <a href="6_4_21_experts_remove_order.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_4_23_experts_order_properties.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.4.22 Getting a list of active orders</span></p>
+<p class="p_Text"><span class="f_Text">Expert Advisor programs often need to enumerate existing active orders and analyze their properties. In particular, in the section on <a href="6_4_20_experts_modify_order.htm" class="topiclink">pending order modifications</a>, in the example </span><span class="f_Text" style="font-style: italic;">PendingOrderModify.mq5</span><span class="f_Text">, we have created a special function </span><span class="f_Text" style="font-style: italic;">GetMyOrder</span><span class="f_Text"> to find the orders belonging to the Expert Advisor in to modify this order. There, the analysis was carried out by symbol name and Expert Advisor ID (</span><span class="f_Text" style="font-style: italic;">Magic</span><span class="f_Text">). In theory, the same approach should have been applied in the example of deleting a pending order </span><span class="f_Text" style="font-style: italic;">PendingOrderDelete.mq5</span><span class="f_Text"> from the previous section.</span></p>
+<p class="p_Text"><span class="f_Text">In the latter case, for simplicity, we created an order and stored its ticket in a global variable. But this cannot be done in the general case because the Expert Advisor and the entire terminal can be stopped or restarted at any time. Therefore, the Expert Advisor must contain an algorithm for restoring the internal state, including the analysis of the entire trading environment, along with orders, deals, positions, account balance, and so on.</span></p>
+<p class="p_Text"><span class="f_Text">In this section, we will study the MQL5 functions for obtaining a list of active orders and selecting any of them in the trading environment, which makes it possible to read all its properties.</span></p>
+<p class="p_H4"><span class="f_H4">int OrdersTotal()</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OrdersTotal</span><span class="f_Text"> function returns the number of currently active orders. These include pending orders, as well as market orders that have not yet been executed. As a rule, a market order is executed promptly, and therefore it is not often possible to catch it in the active phase, but if there is not enough liquidity in the market, this can happen. As soon as the order is executed (a deal is concluded), it is transferred from the category of active ones to history. We will talk about working with order history in a separate section.</span></p>
+<p class="p_Quote"><span class="f_Quote">Please note that only orders can be active and historical. This significantly distinguishes orders from deals which are always created in history and from positions that exist only online. To restore the history of positions, you should analyze the <a href="6_4_30_experts_history_select.htm" class="topiclink">history of deals</a>.</span></p>
+<p class="p_H4"><span class="f_H4">ulong OrderGetTicket(uint index)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OrderGetTicket</span><span class="f_Text"> function returns the order ticket by its number in the list of orders in the terminal's trading environment. The </span><span class="f_Text" style="font-style: italic;">index</span><span class="f_Text"> parameter must be between 0 and the </span><span class="f_Text" style="font-style: italic;">OrdersTotal()-1</span><span class="f_Text"> value inclusive. The way in which orders are organized is not regulated.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OrderGetTicket</span><span class="f_Text"> function selects an order, that is, copies data about it to some internal cache so that the MQL program can read all its properties using the subsequent calls of the </span><span class="f_Text" style="font-style: italic;">OrderGetDouble</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">OrderGetInteger</span><span class="f_Text">, or </span><span class="f_Text" style="font-style: italic;">OrderGetString</span><span class="f_Text"> function, which will be discussed in a <a href="6_4_24_experts_orderget_funcs.htm" class="topiclink">separate section</a>.</span></p>
+<p class="p_Text"><span class="f_Text">The presence of such a cache indicates that the data received from it can become obsolete: the order may no longer exist or may have been modified (for example, it may have a different status, open price, </span><span class="f_Text" style="font-style: italic;">Stop Loss</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">Take Profit</span><span class="f_Text"> levels and expiration). Therefore, to guarantee the receipt of relevant data about the order, it is recommended to call the </span><span class="f_Text" style="font-style: italic;">OrderGetTicket</span><span class="f_Text"> function immediately prior to requesting the data. Here is how this is done in the example of </span><span class="f_Text" style="font-style: italic;">PendingOrderModify.mq5</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetMyOrder</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">magic</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OrdersTotal</span><span class="f_CodeExample">();&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OrderGetTicket</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">OrderGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_MAGIC</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">magic</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OrderGetString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_SYMBOL</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Each MQL program maintains its own cache (trading environment context), which includes the selected order. In the following sections, we will learn that in addition to orders, an MQL program can select positions and history fragments with deals and orders into the active context.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OrderSelect</span><span class="f_Text"> function performs a similar selection of an order with copying of its data to the internal cache.</span></p>
+<p class="p_H4"><span class="f_H4">bool OrderSelect(ulong ticket)</span></p>
+<p class="p_Text"><span class="f_Text">The function checks for the presence of an order and prepares the possibility of further reading its properties. In this case, the order is specified not by a serial number but by a ticket which must be received by the MQL program earlier in one way or another, in particular, as a result of executing </span><span class="f_Text" style="font-style: italic;">OrderSend/OrderSendAsync</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> in case of success. If </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> is received, it usually means that there is no order with the specified ticket. The most common reason for this is when order status has changed from active to history, for example, as a result of execution or cancellation (we will learn how to determine the exact status later). Orders can be selected in history using the <a href="6_4_30_experts_history_select.htm" class="topiclink">relevant functions</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Previously we used the </span><span class="f_Text" style="font-style: italic;">OrderSelect</span><span class="f_Text"> function in the </span><span class="f_Text" style="font-style: italic;">MqlTradeResultSync</span><span class="f_Text"> structure for tracking <a href="6_4_19_experts_pending.htm" class="topiclink">creation</a> and <a href="6_4_21_experts_remove_order.htm" class="topiclink">removal</a> of pending orders.</span></p>
+
+</div>
+
+</body>
+</html>

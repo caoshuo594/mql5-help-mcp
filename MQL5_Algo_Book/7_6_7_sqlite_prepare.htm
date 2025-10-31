@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.6.7 Preparing bound queries: DatabasePrepare</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_6_sqlite.htm"> 7.6 SQLite database </a>/ 7.6.7 Preparing bound queries: DatabasePrepare
+          </td>
+          <td width="70" align="right">
+          <a href="7_6_6_sqlite_table_exists.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_6_8_sqlite_reset.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.6.7 Preparing bound queries: DatabasePrepare</span></p>
+<p class="p_Text"><span class="f_Text">In many cases, parameters need to be embedded in SQL queries. Since the SQL query is &quot;originally&quot; a string that corresponds to a special syntax, it can be formed by a simple </span><span class="f_Text" style="font-style: italic;">StringFormat</span><span class="f_Text"> call or by concatenation, adding parameter values in the right places. We have already used this technique in queries to create a table (&quot;CREATE TABLE %s '%s' (%s);&quot;), but here only part of the parameters contained data (the list of values was substituted for %s inside parentheses), and the rest represented an option and a table name. In this section, we will focus exclusively on substituting data into a query. Doing this in a native SQL way is important for several reasons.</span></p>
+<p class="p_Text"><span class="f_Text">First of all, the SQL query is only passed to the SQLite engine as a string, and there it is parsed into components, checked for correctness, and &quot;compiled&quot; in a certain way (of course, this is not an MQL5 compiler). The compiled query is then executed by the database. That is why we put the word &quot;originally&quot; in quotation marks.</span></p>
+<p class="p_Text"><span class="f_Text">When the same query needs to be executed with different parameters (for example, inserting many records into a table; we are slowly approaching this task), separately compiling and checking the query for each record is rather inefficient. It is more correct to compile the query once, and then execute it in bulk, simply substituting different values.</span></p>
+<p class="p_Text"><span class="f_Text">This compilation operation is called query preparation and is performed by the </span><span class="f_Text" style="font-style: italic;">DatabasePrepare</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">Prepared queries have one more purpose: with their help, the SQLite engine returns the results of query execution to the MQL5 code (you will find more on this in the sections <a href="7_6_10_sqlite_read.htm" class="topiclink">Executing prepared queries</a> and <a href="7_6_11_sqlite_columns.htm" class="topiclink">Separate reading of query result record fields</a>).</span></p>
+<p class="p_Text"><span class="f_Text">The last, but not least, moment associated with parameterized queries is that they protect your program from potential hacker attacks called SQL injection. First of all, this is critical for databases of public sites, where information entered by users is recorded in the database by embedding it in SQL queries: if in this case a simple format substitution '%s' is used, the user will be able to enter some long string instead of the expected data with additional SQL commands, and it will become part of the original SQL query, distorting its meaning. But if the SQL query is compiled, it cannot be changed by the input data: it is always treated as data.</span></p>
+<p class="p_Text"><span class="f_Text">Although the MQL program is not a server program, it can still store information received from the user in the database.</span></p>
+<p class="p_H4"><span class="f_H4">int DatabasePrepare(int database, const string sql, ...)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabasePrepare</span><span class="f_Text"> function creates a handle in the specified database for the query in the string </span><span class="f_Text" style="font-style: italic;">sql</span><span class="f_Text">. The </span><span class="f_Text" style="font-style: italic;">database</span><span class="f_Text"> must be opened beforehand by the </span><span class="f_Text" style="font-style: italic;"><a href="7_6_4_sqlite_db_create_open_close.htm" class="topiclink">DatabaseOpen</a></span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">The query parameter locations are specified in the </span><span class="f_Text" style="font-style: italic;">sql</span><span class="f_Text"> string using fragments '?1', '?2', '?3', and so on. The numbering means the parameter index used in the future when assigning an input value to it, in </span><span class="f_Text" style="font-style: italic;"><a href="7_6_9_sqlite_bind.htm" class="topiclink">DatabaseBind</a></span><span class="f_Text"><a href="7_6_9_sqlite_bind.htm" class="topiclink"> functions</a>. Numbers in the </span><span class="f_Text" style="font-style: italic;">sql</span><span class="f_Text"> string are not required to go in order and can be repeated if the same parameter needs to be inserted in different places in the query.</span></p>
+<p class="p_Quote"><span class="f_Quote">Attention! Indexing in substituted fragments '?n' starts from 1, while in </span><span class="f_Quote" style="font-style: italic;">DatabaseBind</span><span class="f_Quote"> functions it starts from 0. For example, the '?1' parameter in the query body will get the value when calling </span><span class="f_Quote" style="font-style: italic;">DatabaseBind</span><span class="f_Quote"> at index 0, parameter '?2' at index 1, and so on. This constant offset of 1 is maintained even if there are gaps (whether it was accidental or intentional) in the numbering of the '?n' parameters.</span></p>
+<p class="p_Text"><span class="f_Text">If you plan to bind all the parameters strictly in order, you can use an abbreviated notation: in place of each parameter, simply indicate the symbol '?' without a number: in this case, the parameters are automatically numbered. Any parameter '?' without a number gets the number which is by 1 larger than the maximum of the parameters read to the left (with explicit numbers or calculated according to the same principle, and the very first one will get the number 1, that is, '?1').</span></p>
+<p class="p_Text"><span class="f_Text">Thus, the request </span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">SELECT&nbsp;*&nbsp;FROM&nbsp;table&nbsp;WHERE&nbsp;risk&nbsp;&gt;&nbsp;?1&nbsp;AND&nbsp;signal&nbsp;=&nbsp;?2</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">is equivalent to:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">SELECT&nbsp;*&nbsp;FROM&nbsp;table&nbsp;WHERE&nbsp;risk&nbsp;&gt;&nbsp;?&nbsp;AND&nbsp;signal&nbsp;=&nbsp;?</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If some of the parameters are constant or the query is being prepared for one-time execution in order to get a result, the parameter values can be passed to the </span><span class="f_Text" style="font-style: italic;">DatabasePrepare</span><span class="f_Text"> function as a comma-separated list instead of an ellipsis (same as in </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">Comment</span><span class="f_Text">).</span></p>
+<p class="p_Quote"><span class="f_Quote">Query parameters can only be used to set values in table columns (when writing, changing, or filtering conditions). Names of tables, columns, options, and SQL keywords cannot be passed through '?'/'?n' parameters.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabasePrepare</span><span class="f_Text"> function itself does not fulfill the query. The handle returned from it must then be passed to </span><span class="f_Text" style="font-style: italic;"><a href="7_6_10_sqlite_read.htm" class="topiclink">DatabaseRead</a></span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;"><a href="7_6_10_sqlite_read.htm" class="topiclink">DatabaseReadBind</a></span><span class="f_Text"> function calls. These functions execute the query and make the result available for reading (it can be one record or many). Of course, if there are parameter placeholders ('?' or '?n') in the query, and the values for them were not specified in </span><span class="f_Text" style="font-style: italic;">DatabasePrepare</span><span class="f_Text">, before executing the query, you need to bind the parameters and data using the appropriate </span><span class="f_Text" style="font-style: italic;"><a href="7_6_9_sqlite_bind.htm" class="topiclink">DatabaseBind</a></span><span class="f_Text"><a href="7_6_9_sqlite_bind.htm" class="topiclink"> functions</a>.</span></p>
+<p class="p_Text"><span class="f_Text">If a value is not assigned to a parameter, NULL is substituted for it during query execution.</span></p>
+<p class="p_Text"><span class="f_Text">In case of an error, the </span><span class="f_Text" style="font-style: italic;">DatabasePrepare</span><span class="f_Text"> function will return INVALID_HANDLE.</span></p>
+<p class="p_Text"><span class="f_Text">An example of using </span><span class="f_Text" style="font-style: italic;">DatabasePrepare</span><span class="f_Text"> will be introduced in the following sections, after exploring other features related to prepared queries.</span></p>
+
+</div>
+
+</body>
+</html>

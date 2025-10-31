@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.2.1.1 Feed-forward method</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="6_improvement_realization.htm"> 6. Architectural solutions for improving model convergence </a> / <a class="h_m" href="6_2_dropout_realization.htm"> 6.2 Dropout </a> / <a class="h_m" href="6_2_1_dropout_mql.htm"> 6.2.1 Building Dropout in MQL5 </a>/ 6.2.1.1 Feed-forward method
+          </td>
+          <td width="70" align="right">
+          <a href="6_2_1_dropout_mql.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_2_1_2_dropout_backprop.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.2.1.1 Feed-forward method</span></p>
+<p class="p_Text"><span class="f_Text">The feed-forward pass is traditionally implemented in the </span><span class="f_Text" style="font-style: italic;">FeedForward</span><span class="f_Text"> method. This method is declared virtual in the neural layer base class. It is overridden in each new class to build a specific algorithm for the class. We will do the same for this particular class, that is, we will also override this method.</span></p>
+<p class="p_Text"><span class="f_Text">In the parameters, the </span><span class="f_Text" style="font-style: italic;">CNeuronDropout::FeedForward</span><span class="f_Text"> method receives a pointer to the object of the previous layer of our model. Within the method body, we immediately set up control blocks to check the pointers to objects used in this method. As usual, here we check not only pointers to external objects received in parameters but also to internal objects of the class. In this case, we will check the pointers to the previous layer object and its result buffer. We will also check the validity of the pointer to the result buffer of the current layer.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CNeuronDropout</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">FeedForward</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CNeuronBase</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;control&nbsp;block</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">&nbsp;||&nbsp;!</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">GetOutputs</span><span class="f_CodeExample">()&nbsp;||&nbsp;!</span><span class="f_CodeExample" style="color: #333333;">m_cOutputs</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After successfully passing the control block, we proceed to execute the algorithm of the </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text"> method.</span></p>
+<p class="p_Text"><span class="f_Text">To execute the algorithm in training mode, we prepare a masking buffer. First, we fill the entire buffer with increasing coefficients </span><span class="f_Text" style="font-style: italic;">1/q</span><span class="f_Text">, which we stored in the </span><span class="f_Text" style="font-style: italic;">m_dInitValue</span><span class="f_Text"> variable at the class initialization stage.</span></p>
+<p class="p_Text"><span class="f_Text">After that, we create a loop with the number of iterations equal to the number of elements to be dropped out. In the loop body, we generate random values from the range between 0 and the number of elements of the sequence. For randomly selected elements, we replace the multiplier in the masking buffer with 0.</span></p>
+<p class="p_Text"><span class="f_Text">Although lightning never strikes twice in the same place, let's provide an algorithm for the case when the same element falls out twice. Before writing 0 to the masking buffer, we first check the current coefficient for the dropped element. If it is equal to zero, then we decrease the value of the loop iteration counter and move on to selecting the next element. This approach will allow us to exclude the specified number of elements precisely.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;generate&nbsp;a&nbsp;data&nbsp;masking&nbsp;tensor</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">total</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_cOutputs</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Total</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">m_cDropOutMultiplier</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Fill</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">m_dInitValue</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_iOutNumber</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pos</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)(</span><span class="f_Functions">MathRand</span><span class="f_CodeExample">()&nbsp;*&nbsp;</span><span class="f_Functions">MathRand</span><span class="f_CodeExample">()&nbsp;/&nbsp;</span><span class="f_Functions">MathPow</span><span class="f_CodeExample">(</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">32767.0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">2</span><span class="f_CodeExample">)&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">total</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">m_cDropOutMultiplier</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Flat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">pos</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">--;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">continue</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">m_cDropOutMultiplier</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Flat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">pos</span><span class="f_CodeExample">,&nbsp;</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After generating the masking vector, we only need to apply it to the initial data. To do this, we multiply two buffers, element by element: the initial data and the masking.</span></p>
+<p class="p_Text"><span class="f_Text">According to our library building concept, in each method of the class, we create two execution branches whenever possible: one using standard MQL5 means and the other one using OpenCL for multi-threaded computations. Therefore, next, we create a branching of the algorithm depending on the selected device for computing operations.</span></p>
+<p class="p_Text"><span class="f_Text">As always, now we will look at the implementation of the algorithm using MQL5. We will return to implementing the algorithm in multi-threaded operations using OpenCL a little later. In the block for implementing the algorithm using MQL5</span><span class="f_Text" style="font-style: italic;">, </span><span class="f_Text">we use matrix operations. </span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;branching&nbsp;of&nbsp;the&nbsp;algorithm&nbsp;depending&nbsp;on&nbsp;the&nbsp;execution&nbsp;device</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">m_cOpenCL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As you remember, the method has two modes: training and operation. Therefore, before executing the algorithm, we check the current operating mode. If the class runs in operational mode, we simply copy the contents of the result buffer from the previous layer into the result buffer of the current layer. In the case of the training process, we multiply the tensor of the original data by the masking tensor.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;checking&nbsp;the&nbsp;operating&nbsp;mode&nbsp;flag</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">m_bTrain</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_cOutputs</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">GetOutputs</span><span class="f_CodeExample">().</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_cOutputs</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">GetOutputs</span><span class="f_CodeExample">().</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">&nbsp;*</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_cDropOutMultiplier</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OpenCL&nbsp;block</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">So, as a result of the operations described above, the result buffer of our layer contains the masked data from the previous layer. The task set for the feed-forward method has been completed, and we can complete the method execution. Let's also add a temporary stub in place of the multi-threaded calculation algorithm.</span></p>
+<p class="p_Text"><span class="f_Text">Next, we move on to organizing the backpropagation process.</span></p>
+
+</div>
+
+</body>
+</html>

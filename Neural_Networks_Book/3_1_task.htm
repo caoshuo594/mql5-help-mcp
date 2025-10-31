@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.1 Problem statement</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="3_realization.htm"> 3. Building the first neural network model in MQL5 </a>/ 3.1 Problem statement
+          </td>
+          <td width="70" align="right">
+          <a href="3_realization.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_2_files_struct.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">3.1 Problem statement</span></p>
+<p class="p_Text"><span class="f_Text">Before embarking on the practical implementation of our first neural network, it's essential to define the objective and the means to achieve it. When developing the architecture of a neural network, we must have a clear understanding of what data should be provided as input and output for the neural network. The number of neurons in the input layer and their type entirely depend on the dataset being used. The architecture of the output layer depends on the expected outcome and on how the results of the developed neural network's work will be represented. </span></p>
+<p class="p_Text"><span class="f_Text">Let's formulate a problem that we would like to solve using artificial intelligence. We work on financial markets, and we need a tool to forecast the future movement of the analyzed instrument. The task seems somewhat familiar and is often on the minds of traders. Everyone tries to solve it in their own way.</span></p>
+<p class="p_Text"><span class="f_Text">But there are no specifics in this task. What do we mean by &quot;future movement&quot;? Does the future arrive in 5 minutes, 1 hour, 1 day, or 1 month? How about something in between? What is the minimum price movement we will react to? What metrics can we use to evaluate the accuracy of our model's performance? Our goal must be specific and measurable.</span></p>
+<p class="p_Text"><span class="f_Text">We realize that price does not move in a straight line. There are always large and small price fluctuations. Small fluctuations are essentially noise. To identify trends and tendencies that can potentially yield profits, we must filter out this noise. The MetaTrader 5 platform provides the ZigZag indicator. It is one of the oldest indicators used in financial markets. The sole purpose of this indicator is to identify the most significant extremes on the instrument's chart, thereby indicating trends and tendencies while excluding minor noisy fluctuations.</span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" id="task_zz" alt="ZigZag on the price chart of the instrument" title="ZigZag on the price chart of the instrument" width="600" height="400" style="width:600px;height:400px;border:none" src="task_zz.png"/><p style="text-align:center"><span class="f_ImageCaption">ZigZag on the price chart of the instrument</span></p></div></div>
+<p class="p_Text"><span class="f_Text">Three parameters are used to customize the indicator:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic; font-weight: bold;">Depth</span><span class="f_li"> sets the number of candlesticks to search for extrema. As the parameter increases, the indicator highlights the most significant extremes.</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic; font-weight: bold;">Deviation</span><span class="f_li"> defines the number of points between two neighboring extrema to be displayed on the chart.</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic; font-weight: bold;">Backstep</span><span class="f_li"> indicates the </span><span class="f_Text">minimum distance between neighboring extrema in candlesticks.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">In our case, we can use ZigZag to find extrema and specify training targets for our neural network. By applying the indicator to historical data of the training set, we can determine the direction and distance to the nearest extreme for each candlestick and its preceding candlestick combination. By doing so, we will teach the model to determine the potential direction and strength of a future price movement.</span></p>
+<p class="p_Text"><span class="f_Text">Metrics for evaluating the model's performance can include both the proportion of correctly predicted directional movements and the accuracy in determining the strength of such movements.</span></p>
+<p class="p_Text"><span class="f_Text">The task of predicting the upcoming direction of movement is regarded as a binary classification problem. Based on the ZigZag indicator data, at any given point we can have either an upward movement of the price chart (</span><span class="f_Text" style="font-style: italic;">Buy</span><span class="f_Text">) or a downward movement of the price chart (</span><span class="f_Text" style="font-style: italic;">Sell</span><span class="f_Text">). This does not contradict the generally accepted division of trend movements into </span><span class="f_Text" style="font-style: italic;">BUY</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">SELL</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">FLAT</span><span class="f_Text">, as flat movements are essentially alternating </span><span class="f_Text" style="font-style: italic;">Buy</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Sell</span><span class="f_Text"> oscillations of small amplitude.</span></p>
+<p class="p_Text"><span class="f_Text">At the same time, using mathematical statistics alone, we cannot provide a definitive answer about the direction of the upcoming movement. We can only provide a probabilistic answer based on our past experience. We will &quot;draw&quot; this experience from the training sample.</span></p>
+<p class="p_Text"><span class="f_Text">As for predicting the strength of movement, here we would like to obtain a quantitative assessment. This will help to correctly assess the risk of the trade and determine the point for setting take profit with the highest probability of achievement.</span></p>
+<p class="p_Text"><span class="f_Text">In this way, the task of predicting future movement becomes specific and measurable. Let's formulate it as forecasting the most probable direction of the upcoming price movement and its expected strength.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.5.1 Information storage methods: text and binary</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_5_files.htm"> 4.5 Working with files </a>/ 4.5.1 Information storage methods: text and binary
+          </td>
+          <td width="70" align="right">
+          <a href="4_5_files.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_5_2_files_save_load.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.5.1 Information storage methods: text and binary</span></p>
+<p class="p_Text"><span class="f_Text">We have already seen in many previous sections that the same information can be represented in textual and binary forms. For example, numbers of </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">long</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> formats, date and time (</span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text">) and colors (</span><span class="f_Text" style="font-style: italic;">color</span><span class="f_Text">) are stored in memory as a sequence of bytes of a certain length. This method is compact and is better for computer interpretation, but it is more convenient for a human to analyze information in a text form, although it takes longer. Therefore, we paid much attention to <a href="4_1_1_conversions_numbers.htm" class="topiclink">converting numbers to strings and vice versa</a>, and to <a href="4_2_strings.htm" class="topiclink">functions for working with strings</a>.</span></p>
+<p class="p_Text"><span class="f_Text">At the file level, the division into the binary and textual representation of data is also preserved. A binary file is designed to store data in the same internal representation that is used in memory. The text file contains a string representation.</span></p>
+<p class="p_Text"><span class="f_Text">Text files are commonly used for standard formats such as CSV (Comma Separated Values), JSON (JavaScript Object Notation), XML (Extensible Markup Language), HTML (HyperText Markup Language).</span></p>
+<p class="p_Text"><span class="f_Text">Binary files, of course, also have standard formats for many applications, in particular for images (PNG, GIF, JPG, BMP), sounds (WAV, MP3), or compressed archives (ZIP). However, the binary format initially assumes greater protection and low-level work with data, and therefore is more often used to solve internal problems, when only storage efficiency and data availability for a specific program are important. In other words, objects of any applied structures and classes can easily save and restore their state in a binary file, actually making a memory impression and not worrying about compatibility with any standard.</span></p>
+<p class="p_Text"><span class="f_Text">In theory, we could manually convert the data to strings when writing to a binary file and then convert it back from strings to numbers (or structures, or arrays) when reading the file. This would be similar to what the text file mode automatically provides but would require additional effort. The text file mode saves us from such a routine. Moreover, the MQL5 file subsystem implicitly performs several optional but important operations that are necessary when working with text.</span></p>
+<p class="p_Text"><span class="f_Text">First, the concept of text is based on some general rules of using delimiter characters. In particular, it is assumed that all texts consist of strings. This way it is more convenient to read and analyze them algorithmically. Therefore, there are special characters that separate one string from another.</span></p>
+<p class="p_Text"><span class="f_Text">Here we are faced with the first difficulties associated with the fact that different operating systems accept different combinations of these characters. In Windows, the line separator is the sequence of two characters '\r\n' (either as hexadecimal codes: 0xD 0xA, or as the name CRLF, which stands for Carriage Return and Line Feed). In Unix and Linux, the single character '\n' is the standard, but some versions and programs under MacOS may use the single character '\r'.</span></p>
+<p class="p_Text"><span class="f_Text">Although MetaTrader 5 runs under Windows, we have no guarantee that any resulting text file will not be saved with unusual separators. If we were to read it in binary mode and check for delimiters ourselves to form strings, these discrepancies would require specific handling. Here the text mode of file operation in MQL5 comes to the rescue: it automatically normalizes line breaks when reading and writing.</span></p>
+<p class="p_Quote"><span class="f_Quote">MQL5 might not fix line breaks for all cases. In particular, a single character '\r' will not be interpreted as '\r\n' when reading a text file, while a single '\n' is correctly interpreted as '\r\n'.</span></p>
+<p class="p_Text"><span class="f_Text">Secondly, strings can be stored in memory in multiple representations. By default, string (type </span><span class="f_Text" style="font-style: italic;"><a href="2_2_4_strings.htm" class="topiclink">string</a></span><span class="f_Text">) in MQL5 consists of two-byte <a href="2_2_3_characters.htm" class="topiclink">characters</a>. This provides support for the universal Unicode encoding, which is nice because it includes all national scripts. However, in many cases, such universality is not required (for example, when storing numbers or messages in English), in which case it is more efficient to use strings of single-byte characters in the ANSI encoding. The MQL5 API functions allow you to choose the preferred way of writing strings in text mode into files. But if we control writing in our MQL program, we can guarantee the validity and reliability of switching from Unicode to single-byte characters. In this case, when integrating with some external software or web service, the ANSI code page in its files can be any. In this regard, the following point arises.</span></p>
+<p class="p_Text"><span class="f_Text">Thirdly, due to the presence of many different languages, you need to be prepared for texts in various ANSI encodings. Without the correct interpretation of the encoding, the text can be written or read with distortions, or even become unreadable. We saw it in the section <a href="4_2_6_strings_codepages.htm" class="topiclink">Working with symbols and code pages</a>. This is why file functions already include means for correct character processing: it is enough to specify the desired or expected encoding in the parameters. The choice of encoding is described in more detail in a <a href="4_5_5_files_txt_codepage.htm" class="topiclink">separate section</a>.</span></p>
+<p class="p_Text"><span class="f_Text">And finally, the text mode has built-in support for the well-known CSV format. Since trading often requires tabular data, CSV is well suited for this. In a text file in CSV mode, the MQL5 API functions process not only delimiters for wrapping lines of text but also an additional delimiter for the border of columns (fields in each row of the table). This is usually a tab character '\t', a comma ',' or a semicolon ';'. For example, here is what a CSV file with Forex news looks like ( a comma-separated fragment is shown):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">Title</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Country</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Date</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Time</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Impact</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Forecast</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Previous</span>
+<br><span class="f_CodeExample" style="color: #333333;">Bank</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Holiday</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">JPY</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">08</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">09</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">00am</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Holiday</span><span class="f_CodeExample">,,</span>
+<br><span class="f_CodeExample" style="color: #333333;">CPI</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">CNY</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">08</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">09</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">30am</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Low</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">%,</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">%</span>
+<br><span class="f_CodeExample" style="color: #333333;">PPI</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">CNY</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">08</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">09</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">30am</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Low</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">%,</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">%</span>
+<br><span class="f_CodeExample" style="color: #333333;">Unemployment</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rate</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">CHF</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">08</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">09</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">45am</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Low</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">%,</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">%</span>
+<br><span class="f_CodeExample" style="color: #333333;">German</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Trade</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Balance</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">EUR</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">08</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">09</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">00am</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Low</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">13</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">9B</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">6B</span>
+<br><span class="f_CodeExample" style="color: #333333;">Sentix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Investor</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Confidence</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">EUR</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">08</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">09</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">30am</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Low</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">29</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">29</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">8</span>
+<br><span class="f_CodeExample" style="color: #333333;">JOLTS</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Job</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Openings</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">USD</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">08</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">09</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">00pm</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Medium</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">9</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">27M</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">9</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">21M</span>
+<br><span class="f_CodeExample" style="color: #333333;">FOMC</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Member</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Bostic</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Speaks</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">USD</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">08</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">09</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">00pm</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Medium</span><span class="f_CodeExample">,,</span>
+<br><span class="f_CodeExample" style="color: #333333;">FOMC</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Member</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Barkin</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Speaks</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">USD</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">08</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">09</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">00pm</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Medium</span><span class="f_CodeExample">,,</span>
+<br><span class="f_CodeExample" style="color: #333333;">BRC</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Retail</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Sales</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Monitor</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">GBP</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">08</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">09</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">11</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">01pm</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Low</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">9</span><span class="f_CodeExample">%,</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">7</span><span class="f_CodeExample">%</span>
+<br><span class="f_CodeExample" style="color: #333333;">Current</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Account</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">JPY</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">08</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">09</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">11</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">50pm</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">Low</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">71T</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">87T</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">And here it is, for clarity, in the form of a table:</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="0" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:30%; padding:0;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables" style="font-size: 9pt;">Title</span></p>
+</th>
+<th class="table" style="padding:0;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables" style="font-size: 9pt;">Country</span></p>
+</th>
+<th class="table" style="padding:0;"><p class="p_BoldTitlesInTables" style="margin: 8px 17px 7px 17px;"><span class="f_BoldTitlesInTables" style="font-size: 9pt;">Date</span></p>
+</th>
+<th class="table" style="padding:0;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables" style="font-size: 9pt;">Time</span></p>
+</th>
+<th class="table" style="padding:0;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables" style="font-size: 9pt;">Impact</span></p>
+</th>
+<th class="table" style="padding:0;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables" style="font-size: 9pt;">Forecast</span></p>
+</th>
+<th class="table" style="padding:0;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables" style="font-size: 9pt;">Previous</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:30%; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_fortable" style="font-size: 9pt;">Bank&nbsp;Holiday</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">JPY</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">08-09-2021</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">12:00am</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">Holiday</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">&nbsp;</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">&nbsp;</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:30%; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_fortable" style="font-size: 9pt;">CPI&nbsp;y/y</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">CNY</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">08-09-2021</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">1:30am</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">Low</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">0.8%</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">1.1%</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:30%; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_fortable" style="font-size: 9pt;">PPI&nbsp;y/y</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">CNY</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">08-09-2021</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">1:30am</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">Low</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">8.6%</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">8.8%</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:30%; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_fortable" style="font-size: 9pt;">Unemployment&nbsp;Rate</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">CHF</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">08-09-2021</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">5:45am</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">Low</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">3.0%</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">3.1%</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:30%; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_fortable" style="font-size: 9pt;">German&nbsp;Trade&nbsp;Balance</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">EUR</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">08-09-2021</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">6:00am</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">Low</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">13.9B</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">12.6B</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:30%; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_fortable" style="font-size: 9pt;">Sentix&nbsp;Investor&nbsp;Confidence</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">EUR</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">08-09-2021</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">8:30am</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">Low</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">29.2</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">29.8</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:30%; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_fortable" style="font-size: 9pt;">JOLTS&nbsp;Job&nbsp;Openings</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">USD</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">08-09-2021</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">2:00pm</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">Medium</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">9.27M</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">9.21M</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:30%; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_fortable" style="font-size: 9pt;">FOMC&nbsp;Member&nbsp;Bostic&nbsp;Speaks</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">USD</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">08-09-2021</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">2:00pm</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">Medium</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">&nbsp;</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">&nbsp;</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:30%; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_fortable" style="font-size: 9pt;">FOMC&nbsp;Member&nbsp;Barkin&nbsp;Speaks</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">USD</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">08-09-2021</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">4:00pm</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">Medium</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">&nbsp;</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">&nbsp;</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:30%; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_fortable" style="font-size: 9pt;">BRC&nbsp;Retail&nbsp;Sales&nbsp;Monitor&nbsp;y/y</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">GBP</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">08-09-2021</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">11:01pm</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">Low</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">4.9%</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">6.7%</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:30%; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_fortable" style="font-size: 9pt;">Current&nbsp;Account</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">JPY</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">08-09-2021</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">11:50pm</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">Low</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">1.71T</span></p>
+</td>
+<td class="table" style="vertical-align:middle; padding:0;"><p class="p_fortable" style="line-height: 1.0; white-space: nowrap; margin: 7px 10px 7px 10px;"><span class="f_Text" style="font-size: 9pt;">1.87T</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

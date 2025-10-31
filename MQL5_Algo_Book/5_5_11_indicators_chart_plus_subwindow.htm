@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.5.11 Combining output to main and auxiliary windows </title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_5_indicators_use.htm"> 5.5 Using ready-made indicators from MQL programs </a>/ 5.5.11 Combining output to main and auxiliary windows 
+          </td>
+          <td width="70" align="right">
+          <a href="5_5_10_indicators_chart_review.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_5_12_indicators_shifted.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.5.11 Combining output to main and auxiliary windows </span></p>
+<p class="p_Text"><span class="f_Text">Let's return to the problem of displaying graphics from one indicator in the main window and in a subwindow, since we encountered it when developing the example </span><span class="f_Text" style="font-style: italic;">UseDemoAllSimple.mq5</span><span class="f_Text">. I intended for a separate window are not suitable for visualization on the main chart, and indicators for the main window do not have additional windows. There are several alternative approaches:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Implement a parent indicator for a separate window and display charts there and use it in the main window to display data of type <a href="5_8_objects.htm" class="topiclink">graphic objects</a>. This is bad, because data from objects cannot be read the same way as from a timeseries, and many objects consume extra resources.</span></li>
+<li class="p_li"><span class="f_li">Develop your own virtual panel (class) for the main window and, with the correct scale, represent there timeseries which should be displayed in the subwindow.</span></li>
+<li class="p_li"><span class="f_li">Use several indicators, at least one for the main window and one for the subwindow, and exchange data between them via shared memory (DLL required), <a href="7_1_resources.htm" class="topiclink">resources</a> or <a href="7_6_sqlite.htm" class="topiclink">database</a>.</span></li>
+<li class="p_li"><span class="f_li">Duplicate calculations (use common source code) in indicators for the main window and subwindow.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">We will present one of the solutions which goes beyond a single MQL program: we need an additional indicator with the </span><span class="f_Text" style="font-style: italic;">indicator_separate_window</span><span class="f_Text"> property. We actually already have it since we create its calculated part by requesting a handle. We only need to somehow display it in a separate subwindow.</span></p>
+<p class="p_Text"><span class="f_Text">In the new (full) version of </span><span class="f_Text" style="font-style: italic;">UseDemoAll.mq5</span><span class="f_Text">, we will analyze the metadata of the indicator requested to be created in the corresponding </span><span class="f_Text" style="font-style: italic;">IndicatorType</span><span class="f_Text"> enumeration element. Recall that, among other things, the working window of each type of built-in indicator is encoded there. When an indicator requires a separate window, we will create one using special MQL5 functions, which we have yet to learn.</span></p>
+<p class="p_Text"><span class="f_Text">There is no way to get information about the working window for custom indicators. So, let's add the </span><span class="f_Text" style="font-style: italic;">IndicatorCustomSubwindow</span><span class="f_Text"> input variable, in which the user can specify that a subwindow is required.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">IndicatorCustomSubwindow</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Custom&nbsp;Indicator&nbsp;Subwindow</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text">, we hide the buffers intended for the subwindow.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">subwindow</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">IND_WINDOW</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">IndicatorSelector</span><span class="f_CodeExample">)&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;||&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">IndicatorSelector</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">iCustom_</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">IndicatorCustomSubwindow</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BUF_NUM</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PLOT_DRAW_TYPE</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;!</span><span class="f_CodeExample" style="color: #333333;">subwindow</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DrawType</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">DRAW_NONE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After this setup, we will have to use a couple of functions that apply not only to working with indicators, but also with charts. We will study them in detail in the corresponding chapter, while an introductory overview is presented in the <a href="5_5_10_indicators_chart_review.htm" class="topiclink">previous section</a>.</span></p>
+<p class="p_Text"><span class="f_Text">One of the functions </span><span class="f_Text" style="font-style: italic;">ChartIndicatorAdd</span><span class="f_Text"> allows you to add the indicator specified by the handle to the window, and not only to the main part, but also to the subwindow. We will talk about chart identifiers and window numbering in the chapter on <a href="5_7_charts.htm" class="topiclink">charts</a>, and for now it is enough to know that the next </span><span class="f_Text" style="font-style: italic;">ChartIndicatorAdd</span><span class="f_Text"> function call adds an indicator with the </span><span class="f_Text" style="font-style: italic;">handle</span><span class="f_Text"> to the current chart, to a new subwindow.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">&nbsp;=&nbsp;...</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;get&nbsp;indicator&nbsp;handle,&nbsp;iCustom&nbsp;or&nbsp;IndicatorCreate</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;set&nbsp;the&nbsp;current&nbsp;chart&nbsp;(0)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;|</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;the&nbsp;window&nbsp;number&nbsp;to&nbsp;the&nbsp;current&nbsp;number&nbsp;of&nbsp;windows</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;passing&nbsp;the&nbsp;descriptor</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;v&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartIndicatorAdd</span><span class="f_CodeExample">(&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_WINDOWS_TOTAL</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">);&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Knowing about this possibility, we can think about calling </span><span class="f_Text" style="font-style: italic;">ChartIndicatorAdd</span><span class="f_Text"> and pass to it the handle of a ready-made subordinate indicator.</span></p>
+<p class="p_Text"><span class="f_Text">The second function we need is </span><span class="f_Text" style="font-style: italic;">ChartIndicatorName</span><span class="f_Text">. It returns the short name of the indicator by its handle. This name corresponds to the <a href="5_4_12_indicators_caption_digits.htm" class="topiclink">INDICATOR_SHORTNAME</a> property set in the indicator code and may differ from the file name. The name will be required to clean up after itself, that is, to remove the auxiliary indicator and its subwindow, after deleting or reconfiguring the parent indicator.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">subTitle</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">subwindow</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;show&nbsp;a&nbsp;new&nbsp;indicator&nbsp;in&nbsp;the&nbsp;subwindow</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_WINDOWS_TOTAL</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartIndicatorAdd</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Handle</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;save&nbsp;the&nbsp;name&nbsp;to&nbsp;remove&nbsp;the&nbsp;indicator&nbsp;in&nbsp;OnDeinit</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">subTitle</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartIndicatorName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> handler, we use the saved </span><span class="f_Text" style="font-style: italic;">subTitle</span><span class="f_Text"> to call another function which we will study later – </span><span class="f_Text" style="font-style: italic;">ChartIndicatorDelete</span><span class="f_Text">. It removes the indicator with the name specified in the last argument from the chart.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnDeinit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">subTitle</span><span class="f_CodeExample">)&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;deleting&nbsp;&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">subTitle</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">subTitle</span><span class="f_CodeExample">)&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartIndicatorDelete</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_WINDOWS_TOTAL</span><span class="f_CodeExample">)&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">subTitle</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It is assumed here that only our indicator works on the chart, and only in a single instance. In a more general case, all subwindows should be analyzed for correct deletion, but this would require a few more functions from those that will be presented in the chapter on <a href="5_7_charts.htm" class="topiclink">charts</a>, so we restrict ourselves to a simple version for the time being.</span></p>
+<p class="p_Text"><span class="f_Text">If now we run </span><span class="f_Text" style="font-style: italic;">UseDemoAll</span><span class="f_Text"> and select an indicator marked with an asterisk (that is, the one that requires a subwindow) from the list, for example, RSI, we will see the expected result: RSI in a separate window.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="RSI in the subwindow created by the UseDemoAll indicator" title="RSI in the subwindow created by the UseDemoAll indicator" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="usdrubh1-rsi.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">RSI in the subwindow created by the UseDemoAll indicator</span></p>
+
+</div>
+
+</body>
+</html>

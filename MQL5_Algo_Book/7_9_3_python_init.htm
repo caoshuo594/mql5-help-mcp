@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.9.3 Connecting a Python script to the terminal and account</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_9_python.htm"> 7.9 Native python support </a>/ 7.9.3 Connecting a Python script to the terminal and account
+          </td>
+          <td width="70" align="right">
+          <a href="7_9_2_python_funcs_overview.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_9_4_python_last_error.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.9.3 Connecting a Python script to the terminal and account</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">initialize</span><span class="f_Text"> function establishes a connection with the MetaTrader 5 terminal and has 2 forms: short (without parameters) and full (with several optional parameters, the first of them is </span><span class="f_Text" style="font-style: italic;">path</span><span class="f_Text"> and it is positional, and all the rest are named).</span></p>
+<p class="p_H4"><span class="f_H4">bool initialize()</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool initialize(path, account = &lt;ACCOUNT&gt;, password = &lt;&quot;PASSWORD&quot;&gt;,</span><br>
+<span class="f_H4"> &nbsp; server = &lt;&quot;SERVER&quot;&gt;, timeout = 60000, portable = False)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">path</span><span class="f_Text"> parameter sets the path to the terminal file (</span><span class="f_Text" style="font-style: italic;">metatrader64.exe</span><span class="f_Text">) (note that this is an unnamed parameter, unlike all the others, so if it is specified, it must come first in the list).</span></p>
+<p class="p_Text"><span class="f_Text">If the path is not specified, the module will try to find the executable file on its own (the developers do not disclose the exact algorithm). To eliminate ambiguities, use the second form of the function with parameters.</span></p>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">account</span><span class="f_Text"> parameter, you can specify the number of the trading account. If it is not specified, then the last trading account in the selected instance of the terminal will be used.</span></p>
+<p class="p_Text"><span class="f_Text">The password for the trading account is specified in the </span><span class="f_Text" style="font-style: italic;">password</span><span class="f_Text"> parameter and can also be omitted: in this case, the password stored in the terminal database for the specified trading account is automatically substituted.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">server</span><span class="f_Text"> parameter is processed in a similar way with the trade server name (as it is specified in the terminal): if it is not specified, then the server saved in the terminal database for the specified trading account is automatically substituted.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">timeout</span><span class="f_Text"> parameter indicates the timeout in milliseconds that is given for the connection (if it is exceeded, an error will occur). The default value is 60000 (60 seconds). &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">portable</span><span class="f_Text"> parameter contains a flag for launching the terminal in the portable mode (default is </span><span class="f_Text" style="font-style: italic;">False</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">True</span><span class="f_Text"> in case of successful connection to the MetaTrader 5 terminal and </span><span class="f_Text" style="font-style: italic;">False</span><span class="f_Text"> otherwise.</span></p>
+<p class="p_Text"><span class="f_Text">If necessary, when making a call </span><span class="f_Text" style="font-style: italic;">initialize</span><span class="f_Text">, the MetaTrader 5 terminal can be launched.</span></p>
+<p class="p_Text"><span class="f_Text">For example, connection to a specific trading account is performed as follows.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;MetaTrader5&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;mt5&nbsp;</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;mt5.initialize(login&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">562175752</span><span class="f_CodeExample">,&nbsp;server&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;MetaQuotes-Demo&quot;</span><span class="f_CodeExample">,&nbsp;password&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;abc&quot;</span><span class="f_CodeExample">):</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;initialize()&nbsp;failed,&nbsp;error&nbsp;code&nbsp;=&quot;</span><span class="f_CodeExample">,&nbsp;mt5.last_error())&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">login</span><span class="f_Text"> function also connects to the trading account with the specified parameters. But this implies that the connection with the terminal has already been established, that is, the function is usually used to change the account.</span></p>
+<p class="p_H4"><span class="f_H4">bool login(account, password = &lt;&quot;PASSWORD&quot;&gt;, server = &lt;&quot;SERVER&quot;&gt;, timeout = 60000)</span></p>
+<p class="p_Text"><span class="f_Text">The trading account number is provided in the </span><span class="f_Text" style="font-style: italic;">account</span><span class="f_Text"> parameter. This is a required unnamed parameter, meaning it must come first in the list.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">password</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">server</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">timeout</span><span class="f_Text"> parameters are identical to the relevant parameters of the </span><span class="f_Text" style="font-style: italic;">initialize</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">True</span><span class="f_Text"> in case of successful connection to the trading account and </span><span class="f_Text" style="font-style: italic;">False</span><span class="f_Text"> otherwise.</span></p>
+<p class="p_H4"><span class="f_H4">shutdown()</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">shutdown</span><span class="f_Text"> function closes the previously established connection to the MetaTrader 5 terminal.</span></p>
+<p class="p_Text"><span class="f_Text">The example for the above functions will be provided in the <a href="7_9_4_python_last_error.htm" class="topiclink">next section</a>.</span></p>
+<p class="p_Text"><span class="f_Text">When the connection is established, the script can find the version of the terminal.</span></p>
+<p class="p_H4"><span class="f_H4">tuple version()</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">version</span><span class="f_Text"> function returns brief information about the version of the MetaTrader 5 terminal as a tuple of three values: version number, build number, and build date.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:33%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Field&nbsp;type</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">integer</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">MetaTrader 5 terminal version (current, 500)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">integer</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Build number (for example, 3456)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">string</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Build date (e.g. '25 Feb 2022')</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In case of an error, the function returns </span><span class="f_Text" style="font-style: italic;">None</span><span class="f_Text">, and the error code can be obtained using </span><span class="f_Text" style="font-style: italic;"><a href="7_9_4_python_last_error.htm" class="topiclink">last_error</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">More complete information about the terminal can be obtained using the </span><span class="f_Text" style="font-style: italic;"><a href="7_9_6_python_terminal_info.htm" class="topiclink">terminal_info</a></span><span class="f_Text"> function.</span></p>
+
+</div>
+
+</body>
+</html>

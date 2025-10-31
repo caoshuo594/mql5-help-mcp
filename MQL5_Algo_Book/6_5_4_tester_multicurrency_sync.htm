@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.5.4 Multicurrency testing</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_5_tester.htm"> 6.5 Testing and optimization of Expert Advisors </a>/ 6.5.4 Multicurrency testing
+          </td>
+          <td width="70" align="right">
+          <a href="6_5_3_tester_chart_limits.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_5_5_tester_criterion.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.5.4 Multicurrency testing</span></p>
+<p class="p_Text"><span class="f_Text">As you know, the MetaTrader 5 tester allows you to test strategies that trade multiple financial instruments. Purely technically, subject to the computer hardware resources, it is possible to simulate simultaneous trading for all available instruments.</span></p>
+<p class="p_Text"><span class="f_Text">Testing such strategies imposes several additional technical requirements on the tester:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Generation of tick sequences for all instruments</span></li>
+<li class="p_li"><span class="f_li">Calculation of indicators for all instruments</span></li>
+<li class="p_li"><span class="f_li">Calculation of margin requirements and emulation of other trading conditions for all instruments</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The tester automatically downloads the history of required instruments from the terminal when accessing the history for the first time. If the terminal does not contain the required history, it will in turn request it from the trade server. Therefore, before testing a multicurrency Expert Advisor, it is recommended to select the required instruments in the terminal's </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> and download the desired amount of data.</span></p>
+<p class="p_Text"><span class="f_Text">The agent uploads the missing history with a small margin to provide the necessary data for calculating indicators or copying by the Expert Advisor at the time of testing. The minimum amount of history downloaded from the trading server depends on the timeframe. For example, for D1 timeframes and less, it is one year. In other words, the preliminary history is downloaded from the beginning of the previous year relative to the tester start date. This gives at least 1 year of history if testing is requested from January 1st and a maximum of almost two years if testing is ordered from December. For a weekly timeframe, a history of 100 bars is requested, that is, approximately two years (there are 52 weeks in a year). For testing on a monthly timeframe, the agent will request 100 months (equal to the history of about 8 years: 12 months * 8 years = 96). In any case, on timeframes lower than the working one, a proportionally larger number of bars will be available. If the existing data is not enough for the predefined depth of the preliminary history, this fact will be recorded in the test log.</span></p>
+<p class="p_Text"><span class="f_Text">You cannot configure (change) this behavior. Therefore, if you need to provide a specified number of historical bars of the current timeframe from the very beginning, you should set an earlier start date for the test and then &quot;wait&quot; in the Expert Advisor code for the required trading start date or a sufficient number of bars. Before that, you should skip all events. </span></p>
+<p class="p_Text"><span class="f_Text">The tester also emulates its own </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text">, from which the program can obtain information on instruments. By default, at the beginning of testing, the tester </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> contains only one symbol: the symbol on which testing is started. All additional symbols are added to the tester </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> automatically when accessing them through the API functions. At the first access to a &quot;third-party&quot; symbol from an MQL program, the testing agent will synchronize the symbol data with the terminal.</span></p>
+<p class="p_Text"><span class="f_Text">The data of additional symbols can be accessed in the following cases:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Using technical indicators, </span><span class="f_li" style="font-style: italic;">iCustom</span><span class="f_li">, or </span><span class="f_li" style="font-style: italic;">IndicatorCreate</span><span class="f_li"> for the symbol/timeframe pair</span></li>
+</ul>
+<ul>
+<li class="p_li"><span class="f_li">Querying another symbol's </span><span class="f_li" style="font-style: italic;">Market Watch</span><span class="f_li">:</span><ul>
+<li class="p_li"><span class="f_li">SeriesInfoInteger</span></li>
+<li class="p_li"><span class="f_li">Bars</span></li>
+<li class="p_li"><span class="f_li">SymbolSelect</span></li>
+<li class="p_li"><span class="f_li">SymbolIsSynchronized</span></li>
+<li class="p_li"><span class="f_li">SymbolInfoDouble</span></li>
+<li class="p_li"><span class="f_li">SymbolInfoInteger</span></li>
+<li class="p_li"><span class="f_li">SymbolInfoString</span></li>
+<li class="p_li"><span class="f_li">SymbolInfoTick</span></li>
+<li class="p_li"><span class="f_li">SymbolInfoSessionQuote</span></li>
+<li class="p_li"><span class="f_li">SymbolInfoSessionTrade</span></li>
+<li class="p_li"><span class="f_li">MarketBookAdd</span></li>
+<li class="p_li"><span class="f_li">MarketBookGet</span></li>
+</ul>
+
+<li class="p_li"><span class="f_li">Querying the symbol/timeframe pair timeseries using the following functions:</span><ul>
+<li class="p_li"><span class="f_li">CopyBuffer</span></li>
+<li class="p_li"><span class="f_li">CopyRates</span></li>
+<li class="p_li"><span class="f_li">CopyTime</span></li>
+<li class="p_li"><span class="f_li">CopyOpen</span></li>
+<li class="p_li"><span class="f_li">CopyHigh</span></li>
+<li class="p_li"><span class="f_li">CopyLow</span></li>
+<li class="p_li"><span class="f_li">CopyClose</span></li>
+<li class="p_li"><span class="f_li">CopyTickVolume</span></li>
+<li class="p_li"><span class="f_li">CopyRealVolume</span></li>
+<li class="p_li"><span class="f_li">CopySpread</span></li>
+</ul>
+</li>
+</ul>
+<p class="p_Text"><span class="f_Text">In addition, you can explicitly request the history for the desired symbols by calling the </span><span class="f_Text" style="font-style: italic;">SymbolSelect</span><span class="f_Text"> function in the </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> handler. The history will be loaded in advance before the Expert Advisor testing starts.</span></p>
+<p class="p_Text"><span class="f_Text">At the moment when another symbol is accessed for the first time, the testing process stops and the symbol/period pair history is downloaded from the terminal into the testing agent. The tick sequence generation is also enabled at this moment.</span></p>
+<p class="p_Text"><span class="f_Text">Each instrument generates its own tick sequence according to the set tick generation mode.</span></p>
+<p class="p_Text"><span class="f_Text">Synchronization of bars of different symbols is of particular importance when implementing multicurrency Expert Advisors since the correctness of calculations depends on this. A state is considered synchronized when the last bars of all used symbols have the same opening time.</span></p>
+<p class="p_Text"><span class="f_Text">The tester generates and plays its tick sequence for each instrument. At the same time, a new bar on each instrument is opened regardless of how bars are opened on other instruments. This means that when testing a multicurrency Expert Advisor, a situation is possible (and most often it happens) when a new bar has already opened on one instrument, but not yet on another.</span></p>
+<p class="p_Text"><span class="f_Text">For example, if we are testing an Expert Advisor using EURUSD symbol data and a new hourly candlestick has opened for this symbol, we will receive the </span><span class="f_Text" style="font-style: italic;">OnTick</span><span class="f_Text"> event. But at the same time, there is no guarantee that a new candlestick has opened on GBPUSD, which we might also be using.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, the synchronization algorithm implies that you need to check the quotes of all instruments and wait for the equality of the opening times of the last bars.</span></p>
+<p class="p_Text"><span class="f_Text">This does not raise any questions for as long as the real tick, emulation of all ticks, or OHLC M1 testing modes are used. With these modes, a sufficient number of ticks are generated within one candlestick to wait for the moment of synchronization of bars from different symbols. Just complete the </span><span class="f_Text" style="font-style: italic;">OnTick</span><span class="f_Text"> function and check the appearance of a new bar on GBPUSD on the next tick. But when testing in the &quot;Open prices only&quot; mode, there will be no other tick, since the Expert Advisor is called only once per bar, and it may seem that this mode is not suitable for testing multicurrency Expert Advisors. In fact, the tester allows you to detect the moment when a new bar opens on another symbol using the </span><span class="f_Text" style="font-style: italic;">Sleep</span><span class="f_Text"> function (in a loop) or a timer.</span></p>
+<p class="p_Text"><span class="f_Text">First, let's consider an example of an Expert Advisor </span><span class="f_Text" style="font-style: italic;">SyncBarsBySleep.mq5</span><span class="f_Text">, which demonstrates the synchronization of bars through </span><span class="f_Text" style="font-style: italic;">Sleep</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">A pair of input parameters allows you to set the </span><span class="f_Text" style="font-style: italic;">Pause</span><span class="f_Text"> size in seconds to wait for other symbol's bars, as well as the name of that other symbol (</span><span class="f_Text" style="font-style: italic;">OtherSymbol</span><span class="f_Text">), which must be different from the chart symbol.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Pause</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Pause&nbsp;(seconds)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OtherSymbol</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;USDJPY&quot;</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To identify patterns in the delay of bar opening times, we describe a simple class </span><span class="f_Text" style="font-style: italic;">BarTimeStatistics</span><span class="f_Text">. It contains a field for counting the total number of bars (</span><span class="f_Text" style="font-style: italic;">total</span><span class="f_Text">) and the number of bars on which there was no synchronization initially (</span><span class="f_Text" style="font-style: italic;">late</span><span class="f_Text">), that is, the other symbol was late.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BarTimeStatistics</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">total</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">late</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BarTimeStatistics</span><span class="f_CodeExample">():&nbsp;</span><span class="f_CodeExample" style="color: #333333;">total</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">late</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;{&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;~</span><span class="f_CodeExample" style="color: #333333;">BarTimeStatistics</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&nbsp;bars&nbsp;on&nbsp;%s&nbsp;was&nbsp;late&nbsp;among&nbsp;%d&nbsp;total&nbsp;bars&nbsp;on&nbsp;%s&nbsp;(%2.1f%%)&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">late</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OtherSymbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">total</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">late</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">total</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The object of this class prints the received statistics in its destructor. Since we are going to make this object static, the report will be printed at the very end of the test.</span></p>
+<p class="p_Text"><span class="f_Text">If the tick generation mode selected in the tester differs from the opening prices, we will detect this using the previously considered </span><span class="f_Text" style="font-style: italic;"><a href="6_5_1_tester_ticks.htm" class="topiclink">getTickModel</a></span><span class="f_Text"> function and will return a warning.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTick</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TICK_MODEL</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">model</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">getTickModel</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">model</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TICK_MODEL_OPEN_PRICES</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shownOnce</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">shownOnce</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;This&nbsp;Expert&nbsp;Advisor&nbsp;is&nbsp;intended&nbsp;to&nbsp;run&nbsp;in&nbsp;\&quot;Open&nbsp;Prices\&quot;&nbsp;mode&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shownOnce</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, </span><span class="f_Text" style="font-style: italic;">OnTick</span><span class="f_Text"> provides the working synchronization algorithm.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;time&nbsp;of&nbsp;the&nbsp;last&nbsp;known&nbsp;bar&nbsp;for&nbsp;_Symbol</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastBarTime</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;attribute&nbsp;of&nbsp;synchronization</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">synchronized</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;bar&nbsp;counters</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BarTimeStatistics</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">currentTime</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;if&nbsp;it&nbsp;is&nbsp;executed&nbsp;for&nbsp;the&nbsp;first&nbsp;time&nbsp;or&nbsp;the&nbsp;bar&nbsp;has&nbsp;changed,&nbsp;save&nbsp;the&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">lastBarTime</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">currentTime</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">total</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastBarTime</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">currentTime</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Last&nbsp;bar&nbsp;on&nbsp;%s&nbsp;is&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">lastBarTime</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">synchronized</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;time&nbsp;of&nbsp;the&nbsp;last&nbsp;known&nbsp;bar&nbsp;for&nbsp;another&nbsp;symbol</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">otherTime</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">late</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;wait&nbsp;until&nbsp;the&nbsp;times&nbsp;of&nbsp;two&nbsp;bars&nbsp;become&nbsp;the&nbsp;same</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">currentTime</span><span class="f_CodeExample">&nbsp;!=&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">otherTime</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">OtherSymbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">late</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Wait&nbsp;%d&nbsp;seconds...&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Pause</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Sleep</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Pause</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">late</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">late</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;here&nbsp;we&nbsp;are&nbsp;after&nbsp;synchronization,&nbsp;save&nbsp;the&nbsp;new&nbsp;status</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">synchronized</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;use&nbsp;TimeTradeServer()&nbsp;because&nbsp;TimeCurrent()&nbsp;does&nbsp;not&nbsp;change&nbsp;in&nbsp;the&nbsp;absence&nbsp;of&nbsp;ticks</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Bars&nbsp;are&nbsp;in&nbsp;sync&nbsp;at&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TimeTradeServer</span><span class="f_CodeExample">(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">TIME_DATE</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">TIME_SECONDS</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;no&nbsp;longer&nbsp;print&nbsp;a&nbsp;message&nbsp;until&nbsp;the&nbsp;next&nbsp;out&nbsp;of&nbsp;sync</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">synchronized</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;here&nbsp;is&nbsp;your&nbsp;synchronous&nbsp;algorithm</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's set up the tester to run the Expert Advisor on EURUSD, H1, which is the most liquid instrument. Let's use the default Expert Advisor parameters, that is, USDJPY will be the &quot;other&quot; symbol.</span></p>
+<p class="p_Text"><span class="f_Text">As a result of the test, the log will contain the following entries (we intentionally show the logs related to the downloading of the USDJPY history, which occurred during the first </span><span class="f_Text" style="font-style: italic;">iTime</span><span class="f_Text"> call).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;00:00:00&nbsp;&nbsp;&nbsp;Last&nbsp;bar&nbsp;on&nbsp;EURUSD&nbsp;is&nbsp;2022.04.15&nbsp;00:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">USDJPY:&nbsp;load&nbsp;27&nbsp;bytes&nbsp;of&nbsp;history&nbsp;data&nbsp;to&nbsp;synchronize&nbsp;in&nbsp;0:00:00.001</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">USDJPY:&nbsp;history&nbsp;synchronized&nbsp;from&nbsp;2020.01.02&nbsp;to&nbsp;2022.04.20</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">USDJPY,H1:&nbsp;history&nbsp;cache&nbsp;allocated&nbsp;for&nbsp;8109&nbsp;bars&nbsp;and&nbsp;contains&nbsp;8006&nbsp;bars&nbsp;from&nbsp;2021.01.04&nbsp;00:00&nbsp;to&nbsp;2022.04.14&nbsp;23:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">USDJPY,H1:&nbsp;1&nbsp;bar&nbsp;from&nbsp;2022.04.15&nbsp;00:00&nbsp;added</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">USDJPY,H1:&nbsp;history&nbsp;begins&nbsp;from&nbsp;2021.01.04&nbsp;00:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;00:00:00&nbsp;&nbsp;&nbsp;Bars&nbsp;are&nbsp;in&nbsp;sync&nbsp;at&nbsp;2022.04.15&nbsp;00:00:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;01:00:00&nbsp;&nbsp;&nbsp;Last&nbsp;bar&nbsp;on&nbsp;EURUSD&nbsp;is&nbsp;2022.04.15&nbsp;01:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;01:00:00&nbsp;&nbsp;&nbsp;Wait&nbsp;1&nbsp;seconds...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;01:00:01&nbsp;&nbsp;&nbsp;Bars&nbsp;are&nbsp;in&nbsp;sync&nbsp;at&nbsp;2022.04.15&nbsp;01:00:01</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;02:00:00&nbsp;&nbsp;&nbsp;Last&nbsp;bar&nbsp;on&nbsp;EURUSD&nbsp;is&nbsp;2022.04.15&nbsp;02:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;02:00:00&nbsp;&nbsp;&nbsp;Wait&nbsp;1&nbsp;seconds...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;02:00:01&nbsp;&nbsp;&nbsp;Bars&nbsp;are&nbsp;in&nbsp;sync&nbsp;at&nbsp;2022.04.15&nbsp;02:00:01</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.20&nbsp;23:59:59&nbsp;&nbsp;&nbsp;95&nbsp;bars&nbsp;on&nbsp;USDJPY&nbsp;was&nbsp;late&nbsp;among&nbsp;96&nbsp;total&nbsp;bars&nbsp;on&nbsp;EURUSD&nbsp;(99.0%)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">You can see that the USDJPY bars are delayed regularly. If you select USDJPY, H1 in the tester settings and EURUSD in the Expert Advisor parameters, you will get the opposite picture.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;00:00:00&nbsp;&nbsp;&nbsp;Last&nbsp;bar&nbsp;on&nbsp;USDJPY&nbsp;is&nbsp;2022.04.15&nbsp;00:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">EURUSD:&nbsp;load&nbsp;27&nbsp;bytes&nbsp;of&nbsp;history&nbsp;data&nbsp;to&nbsp;synchronize&nbsp;in&nbsp;0:00:00.002</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">EURUSD:&nbsp;history&nbsp;synchronized&nbsp;from&nbsp;2018.01.02&nbsp;to&nbsp;2022.04.20</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">EURUSD,H1:&nbsp;history&nbsp;cache&nbsp;allocated&nbsp;for&nbsp;8109&nbsp;bars&nbsp;and&nbsp;contains&nbsp;8006&nbsp;bars&nbsp;from&nbsp;2021.01.04&nbsp;00:00&nbsp;to&nbsp;2022.04.14&nbsp;23:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">EURUSD,H1:&nbsp;1&nbsp;bar&nbsp;from&nbsp;2022.04.15&nbsp;00:00&nbsp;added</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">EURUSD,H1:&nbsp;history&nbsp;begins&nbsp;from&nbsp;2021.01.04&nbsp;00:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;00:00:00&nbsp;&nbsp;&nbsp;Bars&nbsp;are&nbsp;in&nbsp;sync&nbsp;at&nbsp;2022.04.15&nbsp;00:00:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;01:00:00&nbsp;&nbsp;&nbsp;Last&nbsp;bar&nbsp;on&nbsp;USDJPY&nbsp;is&nbsp;2022.04.15&nbsp;01:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;01:00:00&nbsp;&nbsp;&nbsp;Wait&nbsp;1&nbsp;seconds...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;01:00:01&nbsp;&nbsp;&nbsp;Bars&nbsp;are&nbsp;in&nbsp;sync&nbsp;at&nbsp;2022.04.15&nbsp;01:00:01</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;02:00:00&nbsp;&nbsp;&nbsp;Last&nbsp;bar&nbsp;on&nbsp;USDJPY&nbsp;is&nbsp;2022.04.15&nbsp;02:00</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;02:00:00&nbsp;&nbsp;&nbsp;Wait&nbsp;1&nbsp;seconds...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.15&nbsp;02:00:01&nbsp;&nbsp;&nbsp;Bars&nbsp;are&nbsp;in&nbsp;sync&nbsp;at&nbsp;2022.04.15&nbsp;02:00:01</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2022.04.20&nbsp;23:59:59&nbsp;&nbsp;&nbsp;23&nbsp;bars&nbsp;on&nbsp;EURUSD&nbsp;was&nbsp;late&nbsp;among&nbsp;96&nbsp;total&nbsp;bars&nbsp;on&nbsp;USDJPY&nbsp;(24.0%)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here, in most cases, there was no need to wait: the EURUSD bars already existed at the time the USDJPY bar was formed.</span></p>
+<p class="p_Text"><span class="f_Text">There is another way to synchronize bars: using a timer. An example of such an Expert Advisor, </span><span class="f_Text" style="font-style: italic;">SyncBarsByTimer.mq5</span><span class="f_Text">, is included in the book. Please note that the timer events, as a rule, occur inside the bar (because the probability of hitting exactly the beginning is very low). Because of this, the bars are almost always synchronized.</span></p>
+<p class="p_Text"><span class="f_Text">We could also remind you about the possibility of synchronizing bars using the spy indicator </span><span class="f_Text" style="font-style: italic;"><a href="5_9_7_events_custom.htm" class="topiclink">EventTickSpy.mq5</a></span><span class="f_Text">, but it's based on custom events that only work when testing visually. In addition, for such indicators that require a response to each tick, it is important to use the </span><span class="f_Text" style="font-style: italic;">#property tester_everytick_calculate</span><span class="f_Text"> directive. We have already talked about it in the <a href="5_4_18_indicators_test.htm" class="topiclink">Testing indicators</a> section, and we will remind you about it once again in the section on specific <a href="6_5_12_tester_directives.htm" class="topiclink">tester directives</a>.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.5.18 Debugging and profiling</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_5_tester.htm"> 6.5 Testing and optimization of Expert Advisors </a>/ 6.5.18 Debugging and profiling
+          </td>
+          <td width="70" align="right">
+          <a href="6_5_17_tester_math_calc.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_5_19_tester_limitations.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.5.18 Debugging and profiling</span></p>
+<p class="p_Text"><span class="f_Text">The MetaTrader 5 tester is useful not only for testing the profitability of trading strategies but also for debugging MQL programs. Error detection is primarily associated with the ability to reproduce the problem situation. If we could only run MQL programs online, debugging and analyzing source code execution would require an unrealistic amount of effort. However, the tester allows you to &quot;run&quot; programs on arbitrary sections of history, change account settings and trading symbols.</span></p>
+<p class="p_Text"><span class="f_Text">Recall that in MetaEditor there are 2 commands in the </span><span class="f_Text" style="font-style: italic;">Debug</span><span class="f_Text"> menu:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">Start/Continue on real data</span><span class="f_li"> (F5)</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Start/Continue on historical data</span><span class="f_li"> (Ctrl-F5)</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">In both cases, the program is promptly recompiled in a special way with additional debugging information in the ex5 file and then launched directly in the terminal (first option) or in the tester (second option).</span></p>
+<p class="p_Text"><span class="f_Text">When debugging in the tester, you can use both quick (background) mode and visual mode. This setting is provided in the </span><span class="f_Text" style="font-style: italic;">Setting</span><span class="f_Text"> dialog on the </span><span class="f_Text" style="font-style: italic;">Debug/Profile</span><span class="f_Text"> tab: enable or disable the flag </span><span class="f_Text" style="font-style: italic;">Use visual mode for debugging on history</span><span class="f_Text">. The environment and settings of the program being debugged can be taken directly from the tester (as they were last set for this program) or in the same dialog in the input fields under the flag </span><span class="f_Text" style="font-style: italic;">Use specified settings</span><span class="f_Text"> (for them to work, the flag must be enabled).</span></p>
+<p class="p_Text"><span class="f_Text">You can pre-set breakpoints (F9) on operators in the part where something is supposedly starting to work wrong. The tester will pause the process when it reaches the specified location in the source code.</span></p>
+<p class="p_Text"><span class="f_Text">Please note that in the tester, the number of history bars loaded at startup depends on different factors (including timeframe, day number within a year, etc.) and can vary significantly. If necessary, move the start time of the test back in time.</span></p>
+<p class="p_Text"><span class="f_Text">In addition to obvious bugs that cause the program to stop or explicitly malfunction, there is a class of subtle bugs that negatively affect performance. As a rule, they are not so obvious, but turn into problems as the amount of data processed increases, for example, on trading accounts with a very long history, or on charts with a large number of markup objects.</span></p>
+<p class="p_Text"><span class="f_Text">To find &quot;bottlenecks&quot; in terms of performance, the debugger provides a source code profiling mechanism. It can also be performed online or in the tester, and the latter is especially valuable, as it allows you to significantly compress the time. The corresponding commands are also available in the debug menu.</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">Start profiling on real data</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Start profiling on historical data</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">For profiling, the program is also pre-compiled with special settings, so don't forget to compile the program again in normal mode after debugging or profiling is complete (especially if you plan to send it to a client or upload it to the MQL5 Market).</span></p>
+<p class="p_Text"><span class="f_Text">As a result of profiling in MetaEditor, you will receive time statistics of your code execution, broken down by lines and functions (methods). As a result, it will become clear what exactly slows down the program. The next stage of development is usually source code </span><span class="f_Text" style="font-style: italic;">refactoring</span><span class="f_Text">, i.e., its rewriting using improved algorithms, data structures, or other principles of the constructive organization of modules (components). Unfortunately, a significant part of the time in programming is spent on rewriting existing code, finding and fixing errors.</span></p>
+<p class="p_Text"><span class="f_Text">The program itself can, if necessary, find out its mode of operation and adapt its behavior to the environment (for example, when run in the tester, it will not try to download data from the Internet, since this feature is disabled, but will read them from a certain file).</span></p>
+<p class="p_Text"><span class="f_Text">At the compilation stage, the debug and production versions of the program can be formed differently due to preprocessor macros <a href="2_9_7_preprocessor_predefined.htm" class="topiclink">_DEBUG and _RELEASE</a>.</span></p>
+<p class="p_Text"><span class="f_Text">At the program execution stage, its modes can be distinguished using the </span><span class="f_Text" style="font-style: italic;"><a href="4_9_4_env_mode.htm" class="topiclink">MQLInfoInteger</a></span><span class="f_Text"> function options.</span></p>
+<p class="p_Text"><span class="f_Text">The following table summarizes all available combinations that affect runtime specifics.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Runtime\&nbsp;flags</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables">MQL_DEBUG</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables">MQL_PROFILER</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables">Normal(release)</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">Online</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 20pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 20pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 20pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">Tester</span><br>
+<span class="f_fortable">(MQL_TESTER)</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 20pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 20pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 20pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">Tester</span><br>
+<span class="f_fortable">(</span><span class="f_fortableCondensed">MQL_TESTER+MQL_VISUAL_MODE</span><span class="f_fortable">)</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 20pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 20pt;">-</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 20pt;">+</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Profiling in the tester is only possible without the visual mode, so you should measure operations with charts and objects online.</span></p>
+<p class="p_Text"><span class="f_Text">Debugging is not allowed during the optimization process, including special handlers </span><span class="f_Text" style="font-style: italic;">OnTesterInit</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">OnTesterDeinit</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">OnTesterPass</span><span class="f_Text">. If you need to check their performance, consider calling their code under other conditions.</span></p>
+
+</div>
+
+</body>
+</html>

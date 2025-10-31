@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.5.3 Sending files to FTP server</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_5_network.htm"> 7.5 Network functions </a>/ 7.5.3 Sending files to an FTP server
+          </td>
+          <td width="70" align="right">
+          <a href="7_5_2_network_email.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_5_4_network_http.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.5.3 Sending files to an FTP server</span></p>
+<p class="p_Text"><span class="f_Text">MetaTrader 5 supports sending files to an FTP server. For this feature to work, you must enter the necessary FTP details in the settings dialog on the FTP tab: FTP server address, login, password, and optionally the path for placing files on the server. If your computer is on the network of an ISP that has not allocated a public IP address for you, then you will probably need to turn on the passive mode.</span></p>
+<p class="p_Text"><span class="f_Text">Sending files directly from an MQL program is supported by the </span><span class="f_Text" style="font-style: italic;">SendFTP</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">bool SendFTP(const string filename, const string path = NULL)</span></p>
+<p class="p_Text"><span class="f_Text">The function sends a file with the specified name to the FTP server from the terminal settings. If necessary, you can specify a different path than the one configured in advance. If the </span><span class="f_Text" style="font-style: italic;">path</span><span class="f_Text"> parameter is not specified, the directory described in the settings is used.</span></p>
+<p class="p_Text"><span class="f_Text">The uploaded file must be located in the folder </span><span class="f_Text" style="font-style: italic;">MQL5/Files</span><span class="f_Text"> or its subfolders.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns an indicator of success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or error (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">). Potential errors in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> include:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">4514 – ERR_FTP_SEND_FAILED – failed to send a file via FTP</span></li>
+<li class="p_li"><span class="f_li">4519 – ERR_FTP_NOSERVER – FTP server not specified</span></li>
+<li class="p_li"><span class="f_li">4520 – ERR_FTP_NOLOGIN – FTP login was not specified</span></li>
+<li class="p_li"><span class="f_li">4521 – ERR_FTP_FILE_ERROR – the specified file was not found in the MQL5/Files directory</span></li>
+<li class="p_li"><span class="f_li">4522 – ERR_FTP_CONNECT_FAILED – an error occurred while connecting to the FTP server</span></li>
+<li class="p_li"><span class="f_li">4523 – ERR_FTP_CHANGEDIR – the directory for uploading the file was not found on the FTP server</span></li>
+<li class="p_li"><span class="f_li">4524 – ERR_FTP_CLOSED – the connection to the FTP server was closed</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The function blocks the execution of the MQL program until the operation is completed. In this regard, the function is not allowed to be used in indicators.</span></p>
+<p class="p_Text"><span class="f_Text">Also, the </span><span class="f_Text" style="font-style: italic;">SendFTP</span><span class="f_Text"> function is not executed in the strategy tester.</span></p>
+<p class="p_Quote"><span class="f_Quote">The terminal only supports sending a single file to an FTP server. All other FTP commands are not available from MQL5.</span></p>
+<p class="p_Text"><span class="f_Text">The example script </span><span class="f_Text" style="font-style: italic;">NetFtp.mq5</span><span class="f_Text"> takes a screenshot of the current chart and tries to send it via FTP.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filename</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;-&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PeriodToString</span><span class="f_CodeExample">()&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;-&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">TimeTradeServer</span><span class="f_CodeExample">()&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;.png&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartScreenShot</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filename</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">300</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">200</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Sending&nbsp;file:&nbsp;&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filename</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SendFTP</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">filename</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;/upload&quot;</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExampleCondensed" style="color: #808080;">//&nbsp;0&nbsp;(success)&nbsp;or&nbsp;FTP_CONNECT_FAILED(4522),&nbsp;FTP_CHANGEDIR(4523),&nbsp;etc.</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

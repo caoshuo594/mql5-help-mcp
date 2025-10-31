@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>Chapter 5. Attention mechanisms</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a>/ 5. Attention mechanisms
+          </td>
+          <td width="70" align="right">
+          <a href="4_2_5_rnn_comparison.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_1_self-attention.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">5. Attention mechanisms</span></p>
+<p class="p_Text"><span class="f_Text">In the previous sections of the book, we have explored various architectures for organizing neural networks, including convolutional networks borrowed from image processing algorithms. We also learned about recurrent neural networks used to work with sequences where both the values themselves and their place in the original data set are important.</span></p>
+<p class="p_Text"><span class="f_Text">Fully connected and convolutional neural networks have a fixed input sequence size. Recurrent neural networks allow a slight extension of the analyzed sequence by transmitting hidden states from previous iterations. Nevertheless, their effectiveness also declines as consistency increases.</span></p>
+<p class="p_Text"><span class="f_Text">All the models discussed so far spend the same amount of resources analyzing the entire sequence. However, consider your behavior in a given situation. For example, even as you read this book, your gaze moves across letters, words, and lines, turning the pages in sequence. At the same time, you focus your attention on some specific component. Gradually reading the words written in the book, in your mind you assemble a mosaic of the logical chain embedded in the written words. And again, in your consciousness, there is always only a certain part of the overall content of the book.</span></p>
+<p class="p_Text"><span class="f_Text">Looking at a photograph of your loved ones, you first and foremost focus your attention on their portraits. Only then might you shift your gaze to the background elements of the photograph. At the same time, you focus your attention on photography. And the entire external environment surrounding you remains outside of your cognitive activity at that moment.</span></p>
+<p class="p_Text"><span class="f_Text">I want to show you that human consciousness does not evaluate the entire environment. It constantly picks out some details from it and shifts its attention to them. However, the neural network models we have discussed do not possess such capability. </span></p>
+<p class="p_Text"><span class="f_Text">Therefore, in 2014, in the field of machine translation, the first attention mechanism was proposed, which was designed to programmatically identify and highlight blocks of the source sentence (context) most relevant to the target translation word. This intuitive approach has greatly improved the quality of text translation by neural networks.</span></p>
+<p class="p_Text"><span class="f_Text">Analyzing the financial symbol candlestick chart, we identify trends and determine trading zones. That is, from the overall picture, we single out certain objects, focusing our attention specifically on them. It is intuitive to us that objects influence future price behavior to different degrees. To implement exactly this approach, the first proposed algorithm analyzed and identified dependencies between elements of the input and output sequences. The proposed algorithm was called a generalized attention mechanism. Initially, it was proposed for use in machine translation models using recurrent networks to address the long-term memory challenges in translating long sentences. This approach significantly outperformed the results of the previously considered recurrent neural networks based on </span><span class="f_Text" style="font-style: italic;">LSTM</span><span class="f_Text"> blocks.</span></p>
+<p class="p_Text"><span class="f_Text">The classic machine translation model using recursive networks consists of two units, the Encoder and the Decoder. The first one encodes the input sequence in the source language into a context vector, and the second decodes the obtained context into a sequence of words in the target language. As the length of the input sequence increases, the influence of the first words on the final context of the sentence decreases, and as a result, the quality of the translation deteriorates. The use of </span><span class="f_Text" style="font-style: italic;">LSTM</span><span class="f_Text"> blocks slightly enhanced the capabilities of the model, but they still remained limited.</span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" alt="Encoder-Decoder without the attention mechanism" title="Encoder-Decoder without the attention mechanism" width="600" height="400" style="width:600px;height:400px;border:none" src="tr_description1.png"/><p style="text-align:center"><span class="f_ImageCaption">Encoder-Decoder without the attention mechanism</span></p></div></div>
+<p class="p_Text"><span class="f_Text">Authors of the basic attention mechanism proposed using an additional layer that would accumulate the hidden states of all recurrent blocks of the input sequence and then, during the decoding process, evaluate the influence of each element of the input sequence on the current word of the output sequence and suggest to the decoder the most relevant part of the context.</span></p>
+<p class="p_Text"><span class="f_Text">The algorithm for such a mechanism included the following iterations:</span></p>
+<ol style="list-style-type:decimal">
+<li value="1" class="p_li"><span class="f_li">Creation of hidden states in the </span><span class="f_li" style="font-style: italic;">Encoder</span><span class="f_li"> and their accumulation in the attention block.</span></li>
+<li value="2" class="p_li"><span class="f_li">Evaluation of pairwise dependencies between the hidden states of each element of the </span><span class="f_li" style="font-style: italic;">Encoder</span><span class="f_li"> and the last hidden state of the </span><span class="f_li" style="font-style: italic;">Decoder</span><span class="f_li">.</span></li>
+<li value="3" class="p_li"><span class="f_li">The resulting estimates are combined into a single vector and normalized using the </span><span class="f_li" style="font-style: italic;">Softmax</span><span class="f_li"> function.</span></li>
+<li value="4" class="p_li"><span class="f_li">Calculation of the context vector by multiplying all the hidden states of the </span><span class="f_li" style="font-style: italic;">Encoder</span><span class="f_li"> by their corresponding alignment scores.</span></li>
+<li value="5" class="p_li"><span class="f_li">Decoding of the context vector and merging the resulting value with the previous </span><span class="f_li" style="font-style: italic;">Decoder</span><span class="f_li"> state.</span></li>
+</ol>
+<p class="p_Text"><span class="f_Text">All iterations are repeated until the signal of the sentence end is received.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" alt="Encoder-Decoder with the attention mechanism" title="Encoder-Decoder with the attention mechanism" width="600" height="400" style="width:600px;height:400px;border:none" src="tr_description2.png"/><p style="text-align:center"><span class="f_ImageCaption">Encoder-Decoder with the attention mechanism</span></p></div></div>
+<p class="p_Text"><span class="f_Text">The proposed mechanism addressed the issue of the input sequence length limitation and enhanced the quality of machine translation using the recurrent neural network. As a result, it gained widespread popularity and various implementation variations. In particular, in August 2015, in their article <a href="https://arxiv.org/abs/1508.04025" target="_blank" rel="external" class="weblink">Effective Approaches to Attention-based Neural Machine Translation</a>, Minh-Thang Luong presented their variation on the method of attention. The main differences of the new approach were the use of three functions to calculate the degree of dependencies and the point of using the attention mechanism in the Decoder.</span></p>
+
+</div>
+
+</body>
+</html>

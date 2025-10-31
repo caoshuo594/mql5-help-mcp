@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.6.1 Writing and reading global variables</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_6_globals.htm"> 4.6 Client terminal global variables </a>/ 4.6.1 Writing and reading global variables
+          </td>
+          <td width="70" align="right">
+          <a href="4_6_globals.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_6_2_globals_exist_time.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.6.1 Writing and reading global variables</span></p>
+<p class="p_Text"><span class="f_Text">The MQL5 API provides 2 functions to write and read global variables: </span><span class="f_Text" style="font-style: italic;">GlobalVariableSet</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">GlobalVariableGet</span><span class="f_Text"> (in two versions).</span></p>
+<p class="p_H4"><span class="f_H4">datetime GlobalVariableSet(const string name, double value)</span></p>
+<p class="p_Text"><span class="f_Text">The function sets a new </span><span class="f_Text" style="font-style: italic;">value</span><span class="f_Text"> to the 'name' global variable. If the variable did not exist before the function was called, it will be created. If the variable already exists, the previous value will be replaced by </span><span class="f_Text" style="font-style: italic;">value</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">If successful, the function returns the variable modification time (the current local time of the computer). In case of an error, we get 0.</span></p>
+<p class="p_H4"><span class="f_H4">double GlobalVariableGet(const string name)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool GlobalVariableGet(const string name, double &amp;value)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the value of the 'name' global variable. The result of calling the first version of the function contains just the value of the variable (in case of success) or 0 (in case of error). Since the variable can contain the value of 0 (which is the same as an error indication), this option requires parsing the internal error code </span><span class="f_Text" style="font-style: italic;"><a href="4_9_15_env_last_error.htm" class="topiclink">_LastError</a></span><span class="f_Text"> if zero is received, to distinguish the standard version from the non-standard one. In particular, if an attempt is made to read a variable that does not exist, an internal error 4501 (GLOBALVARIABLE_NOT_FOUND) is generated.</span></p>
+<p class="p_Text"><span class="f_Text">This function version is convenient to use in algorithms where getting zero is a suitable analog of the default initialization for a previously nonexistent variable (see example below). If the absence of a variable needs to be handled in a special way (in particular, to calculate some other starting value), you should first check the existence of the variable using the </span><span class="f_Text" style="font-style: italic;"><a href="4_6_2_globals_exist_time.htm" class="topiclink">GlobalVariableCheck</a></span><span class="f_Text"> function and, depending on its result, execute different code branches. Optionally, you can use the second version.</span></p>
+<p class="p_Text"><span class="f_Text">The second version of the function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> depending on the success of the execution. If successful, the value of the global variable of the terminal is placed in the receiving </span><span class="f_Text" style="font-style: italic;">value</span><span class="f_Text"> variable, passed by reference as the second parameter. If there is no variable, we get </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In the test script </span><span class="f_Text" style="font-style: italic;">GlobalsRunCount.mq5</span><span class="f_Text">, we use a global variable to count the number of times it ran. The name of the variable is the name of the source file.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">gv</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">__FILE__</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Recall that the built-in macro __FILE__ (see <a href="2_9_7_preprocessor_predefined.htm" class="topiclink">Predefined constants</a>) is expanded by the compiler into the name of the compiled file, i.e., in this case, &quot;GlobalsRunCount.mq5&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function, we will try to read the given global variable and save the result in the local </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> variable. If there was no global variable yet, we get 0, which is okay for us (we start counting from zero).</span></p>
+<p class="p_Text"><span class="f_Text">Before saving the value in </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text">, it is necessary to typecast it to (</span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text">), since the </span><span class="f_Text" style="font-style: italic;">GlobalVariableGet</span><span class="f_Text"> function returns </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">, and without the cast, the compiler generates a warning about potential data loss (it doesn't know that we plan to store only integers).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariableGet</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">gv</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariableSet</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">gv</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;This&nbsp;script&nbsp;run&nbsp;count:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then we increment the counter by 1 and write it back to the global variable with </span><span class="f_Text" style="font-style: italic;">GlobalVariableSet</span><span class="f_Text">. If we run the script several times, we will get something like the following log entries (your timestamps will be different):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">GlobalVariableGet(gv)=0.0&nbsp;/&nbsp;GLOBALVARIABLE_NOT_FOUND(4501)</span>
+<br><span class="f_CodeExample">GlobalVariableSet(gv,count)=2021.08.29&nbsp;16:04:40&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">This&nbsp;script&nbsp;run&nbsp;count:&nbsp;1</span>
+<br><span class="f_CodeExample">GlobalVariableGet(gv)=1.0&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">GlobalVariableSet(gv,count)=2021.08.29&nbsp;16:05:00&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">This&nbsp;script&nbsp;run&nbsp;count:&nbsp;2</span>
+<br><span class="f_CodeExample">GlobalVariableGet(gv)=2.0&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">GlobalVariableSet(gv,count)=2021.08.29&nbsp;16:05:21&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">This&nbsp;script&nbsp;run&nbsp;count:&nbsp;3</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It is important to note that on the first run, we received a value of 0, and the internal error flag 4501 was generated. All subsequent calls are executed without problems since the variable exists (it can be seen in the &quot;Global Variables&quot; window of the terminal). Those who wish may close the terminal, restart it and execute the script again: the counter will continue to increase from the previous value.</span></p>
+
+</div>
+
+</body>
+</html>

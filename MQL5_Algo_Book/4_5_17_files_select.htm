@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.5.17 File or folder selection dialog</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_5_files.htm"> 4.5 Working with files </a>/ 4.5.17 File or folder selection dialog
+          </td>
+          <td width="70" align="right">
+          <a href="4_5_16_files_folders.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_6_globals.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.5.17 File or folder selection dialog</span></p>
+<p class="p_Text"><span class="f_Text">In the group of functions for working with files and folders, there is one that allows to interactively request the name of a file or folder, as well as a group of files from the user in order to pass this information to an MQL program. Calling the </span><span class="f_Text" style="font-style: italic;">FileSelectDialog</span><span class="f_Text"> function causes a standard Windows window for selecting files and folders to appear in the terminal.</span></p>
+<p class="p_Quote"><span class="f_Quote">Since the dialog interrupts the execution of the MQL program until it is closed, the function call is allowed only in two types of MQL programs that are executed in separate threads: EAs and scripts (see <a href="5_1_1_runtime_features_by_progtype.htm" class="topiclink">Types of MQL programs</a>). Using this function is prohibited in indicators and services: the former are executed in the terminal's interface thread (and stopping them would freeze updating the charts of the corresponding instruments), while the latter are executed in the background and cannot access the user interface.</span></p>
+<p class="p_Text"><span class="f_Text">All elements of the file system that the function works with are located inside the sandbox, i.e., in the directory of the current copy of the terminal or testing agent (if the program is running in the tester), in the subfolder </span><span class="f_Text" style="font-style: italic;">MQL5/Files</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">If the FSD_COMMON_FOLDER flag is present in the </span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text"> parameter (see further), a common sandbox of all terminals </span><span class="f_Text" style="font-style: italic;">Users/&lt;user&gt;...MetaQuotes/Terminal/Common/Files</span><span class="f_Text"> is used.</span></p>
+<p class="p_Text"><span class="f_Text">The appearance of the dialog depends on the Windows operating system. One of the possible interface options is shown below.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Windows file and folder selection dialog" title="Windows file and folder selection dialog" width="600" height="348" style="margin:0 auto 0 auto;width:600px;height:348px;border:none" src="fileselect600.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Windows file and folder selection dialog</span></p>
+<p class="p_H4"><span class="f_H4">int FileSelectDialog(const string caption, const string initDir, const string filter,</span><br>
+<span class="f_H4"> &nbsp; &nbsp; uint flags, string &amp;filenames[], const string defaultName)</span></p>
+<p class="p_Text"><span class="f_Text">The function displays a standard Windows dialog for opening or creating a file or selecting a folder. The title is specified in the </span><span class="f_Text" style="font-style: italic;">caption</span><span class="f_Text"> parameter. If the value is NULL, the standard title is used: &quot;Open&quot; for reading or &quot;Save as&quot; for writing a file, or &quot;Select folder&quot;, depending on the flags in the </span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text"> parameter.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">initDir</span><span class="f_Text"> parameter allows you to set the initial folder for which the dialog will open. If set to NULL, the contents of the </span><span class="f_Text" style="font-style: italic;">MQL5/Files</span><span class="f_Text"> folder will be shown. The same folder is used if a non-existent path is specified in </span><span class="f_Text" style="font-style: italic;">initDir</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Using the </span><span class="f_Text" style="font-style: italic;">filter</span><span class="f_Text"> parameter, you can limit the set of file extensions that will be shown in the dialog box. Files of other formats will be hidden. NULL means no restrictions.</span></p>
+<p class="p_Text"><span class="f_Text">The format of the </span><span class="f_Text" style="font-style: italic;">filter</span><span class="f_Text"> string is as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&quot;&lt;description&nbsp;1&gt;|&lt;extension&nbsp;1&gt;|&lt;description&nbsp;2&gt;|&lt;extension&nbsp;2&gt;...&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Any string is allowed as </span><span class="f_Text" style="font-style: italic;">description</span><span class="f_Text">. You can write any filter with the substituted characters '*' and '?' that we discussed in the section <a href="4_5_15_files_find.htm" class="topiclink">Finding files and folders</a> as </span><span class="f_Text" style="font-style: italic;">extensions</span><span class="f_Text">. Symbol '|' is a delimiter.</span></p>
+<p class="p_Text"><span class="f_Text">Since the adjacent description and extension form a logically related pair, the total number of elements in the line must be even, and the number of delimiters must be odd.</span></p>
+<p class="p_Text"><span class="f_Text">Each combination of description and extension generates a separate selection in the dialog's drop-down list. The description is shown to the user and the extension is used for filtering.</span></p>
+<p class="p_Text"><span class="f_Text">For example, &quot;Text documents (*.txt)|*.txt|All files (*.*)|*.*&quot;, while the first extension &quot;Text documents (*.txt)|*.txt&quot; will be selected as the default file type.</span></p>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text"> parameter, you can indicate a bit mask specifying the operating modes using the '|' operator. The following constants are defined for it:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">FSD_WRITE_FILE – file writing mode (&quot;Save as&quot;). In the absence of this flag, the read mode (&quot;Open&quot;) is used by default. If this flag is present, the input of an arbitrary new name is always allowed, regardless of the FSD_FILE_MUST_EXIST flag.</span></li>
+<li class="p_li"><span class="f_li">FSD_SELECT_FOLDER – folder selection mode (only one and only existing). With this flag, all other flags except FSD_COMMON_FOLDER are ignored or cause an error. You cannot explicitly request the creation of a folder, but it is possible to create a folder interactively in the dialog and immediately select it.</span></li>
+<li class="p_li"><span class="f_li">FSD_ALLOW_MULTISELECT – permission to select multiple files in read mode. This flag is ignored if FSD_WRITE_FILE or FSD_SELECT_FOLDER is specified.</span></li>
+<li class="p_li"><span class="f_li">FSD_FILE_MUST_EXIST – the selected files must exist. If the user tries to specify an arbitrary name, the dialog will display a warning and remain open. This flag is ignored if FSD_WRITE_FILE mode is specified.</span></li>
+<li class="p_li"><span class="f_li">FSD_COMMON_FOLDER – the dialog is opened for a common sandbox of all client terminals.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The function will fill an array of strings </span><span class="f_Text" style="font-style: italic;">filenames</span><span class="f_Text"> with the names of the selected files or folder. If the array is dynamic, its size changes to fit the actual amount of data, in particular, expands or truncates down to 0 if nothing was selected. If the array is fixed, it must be large enough to accept the expected data. Otherwise, an error 4007 (ARRAY_RESIZE_ERROR) will occur.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">defaultName</span><span class="f_Text"> parameter specifies the default file/folder name, which will be substituted into the corresponding input field immediately after opening the dialog. If the parameter is NULL, the field will be initially empty.</span></p>
+<p class="p_Quote"><span class="f_Quote">If the </span><span class="f_Quote" style="font-style: italic;">defaultName</span><span class="f_Quote"> parameter is set, then during non-visual testing of the MQL program, </span><span class="f_Quote" style="font-style: italic;">FileSelectDialog</span><span class="f_Quote"> call will return 1 and the </span><span class="f_Quote" style="font-style: italic;">defaultName</span><span class="f_Quote"> value itself will be copied to the </span><span class="f_Quote" style="font-style: italic;">filenames</span><span class="f_Quote"> array.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of items selected (0 if the user didn't select anything), or -1 if there was an error.</span></p>
+<p class="p_Text"><span class="f_Text">Consider examples of how the function works in the script </span><span class="f_Text" style="font-style: italic;">FileSelect.mq5</span><span class="f_Text">. In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function, we will sequentially call </span><span class="f_Text" style="font-style: italic;">FileSelectDialog</span><span class="f_Text"> with different settings. As long as the user selects something (doesn't click the &quot;Cancel&quot; button in the dialog), the test continues all the way to the last step (even if the function executes with an error code).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filenames</span><span class="f_CodeExample">[];&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;a&nbsp;dynamic&nbsp;array&nbsp;suitable&nbsp;for&nbsp;any&nbsp;call</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">];&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;too&nbsp;small&nbsp;array&nbsp;if&nbsp;there&nbsp;are&nbsp;more&nbsp;than&nbsp;1&nbsp;files</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const&nbsp;string</span><span class="f_CodeExample" style="color: #333333;">filter</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;filter&nbsp;example</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Text&nbsp;documents&nbsp;(*.txt)|*.txt&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;|Files&nbsp;with&nbsp;short&nbsp;names|????.*&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;|All&nbsp;files&nbsp;(*.*)|*.*&quot;</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">First, we will ask the user for one file from the &quot;MQL5Book&quot; folder. You can select an existing file or enter a new name (because there is no FSD_FILE_MUST_EXIST flag).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Open&nbsp;a&nbsp;file&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSelectDialog</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5book&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filter</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filenames</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">))&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">filenames</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;MQL5Book\utf8.txt&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Assuming that the folder contains at least 5 files from the book delivery, one of them is selected here.</span></p>
+<p class="p_Text"><span class="f_Text">Then we will make a similar request in &quot;for writing&quot; mode (with the FSD_WRITE_FILE flag).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Save&nbsp;as&nbsp;a&nbsp;file&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSelectDialog</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5book&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FSD_WRITE_FILE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filenames</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">))&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">filenames</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;MQL5Book\newfile&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here the user will also be able to select both an existing file and enter a new name. A check of whether the user is going to overwrite an existing file must be done by the programmer (the dialog does not generate warnings).</span></p>
+<p class="p_Text"><span class="f_Text">Now let's check the selection of multiple files (FSD_ALLOW_MULTISELECT) in a dynamic array.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSelectDialog</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5book&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FSD_FILE_MUST_EXIST</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FSD_ALLOW_MULTISELECT</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filenames</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">))&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;5</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">filenames</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;MQL5Book\ansi1252.txt&quot;&nbsp;&quot;MQL5Book\unicode1.txt&quot;&nbsp;&quot;MQL5Book\unicode2.txt&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;MQL5Book\unicode3.txt&quot;&nbsp;&quot;MQL5Book\utf8.txt&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The presence of the FSD_FILE_MUST_EXIST flag means that the dialog will display a warning and remain open if you try to enter a new name.</span></p>
+<p class="p_Text"><span class="f_Text">If we try to select more than one file in a fixed-size array in a similar way, we will get an error.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Open&nbsp;multiple&nbsp;files&nbsp;(fixed,&nbsp;choose&nbsp;more&nbsp;than&nbsp;1&nbsp;file&nbsp;for&nbsp;error)&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSelectDialog</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5book&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FSD_FILE_MUST_EXIST</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FSD_ALLOW_MULTISELECT</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">))&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;-1&nbsp;/&nbsp;ARRAY_RESIZE_ERROR(4007)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;null</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, let's check folder operations (FSD_SELECT_FOLDER).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Select&nbsp;a&nbsp;folder&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSelectDialog</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5book/nonexistent&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FSD_SELECT_FOLDER</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filenames</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">))&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">filenames</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;MQL5Book&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In this case, the non-existent subfolder &quot;nonexistent&quot; is specified as the start path, so the dialog will open in the root of the sandbox </span><span class="f_Text" style="font-style: italic;">MQL5/Files</span><span class="f_Text">. There we chose &quot;MQL5book&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">If we combine an invalid combination of flags, we get another error.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSelectDialog</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5book&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FSD_SELECT_FOLDER</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FSD_WRITE_FILE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filenames</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">))&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;-1&nbsp;/&nbsp;INTERNAL_ERROR(4001)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">filenames</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;MQL5Book&quot;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Due to an error, the function did not modify the passed array, and the old &quot;MQL5Book&quot; element remained in it.</span></p>
+<p class="p_Text"><span class="f_Text">In this test, we deliberately checked the results only for 0 in order to demonstrate all options, regardless of the presence of errors. In a real program, check the result of the function taking into account errors, i.e. with conditions for three outcomes: choice made (&gt;0), choice not made (==0), and error (&lt;0).</span></p>
+
+</div>
+
+</body>
+</html>

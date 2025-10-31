@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.6.3 Getting a list of global variables</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_6_globals.htm"> 4.6 Client terminal global variables </a>/ 4.6.3 Getting a list of global variables
+          </td>
+          <td width="70" align="right">
+          <a href="4_6_2_globals_exist_time.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_6_4_globals_delete.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.6.3 Getting a list of global variables</span></p>
+<p class="p_Text"><span class="f_Text">Quite often, an MQL program is required to look through the existing global variables and select those meeting some criteria. For example, if a program uses part of a variable name to store textual information, then only the prefix is known in advance. The purpose of this prefix is to identify &quot;its own&quot; variable, and the &quot;payload&quot; attached to the prefix does not allow searching for a variable by the exact name.</span></p>
+<p class="p_Text"><span class="f_Text">The MQL5 API has two functions that allow you to enumerate global variables.</span></p>
+<p class="p_H4"><span class="f_H4">int GlobalVariablesTotal()</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the total number of global variables.</span></p>
+<p class="p_H4"><span class="f_H4">string GlobalVariableName(int index)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the name of the global variable by its index number in the list of global variables. The </span><span class="f_Text" style="font-style: italic;">index</span><span class="f_Text"> parameter with the number of the requested variable must be in the range from 0 to </span><span class="f_Text" style="font-style: italic;">GlobalVariablesTotal() - 1</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In case of an error, the function will return NULL, and the error code can be obtained from the service variable </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> or the </span><span class="f_Text" style="font-style: italic;"><a href="4_9_15_env_last_error.htm" class="topiclink">GetLastError</a></span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">Let's test this pair of functions using the script </span><span class="f_Text" style="font-style: italic;">GlobalsList.mq5</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariableName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1000000</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariablesTotal</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariableName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&nbsp;%s=%f&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">GlobalVariableGet</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The first string deliberately asks for the name of a variable with a large number, which, most likely, does not exist, and that fact should cause an error. Next, a request is made for the real number of variables and a loop through all of them, with the output of the name and value. The log below includes variables created by previous test scripts and one third-party variable.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">GlobalVariableName(1000000)=&nbsp;/&nbsp;GLOBALVARIABLE_NOT_FOUND(4501)</span>
+<br><span class="f_CodeExample">GlobalVariablesTotal()=3&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">0&nbsp;GlobalsRunCheck.mq5=3.000000</span>
+<br><span class="f_CodeExample">1&nbsp;GlobalsRunCount.mq5=4.000000</span>
+<br><span class="f_CodeExample">2&nbsp;abracadabra=0.000000</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The order in which the terminal returns variables by an index is not defined.</span></p>
+
+</div>
+
+</body>
+</html>

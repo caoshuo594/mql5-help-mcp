@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.2.20 Object type casting: dynamic_cast and pointer void *</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_2_classes_and_interfaces.htm"> 3.2 Classes and interfaces </a>/ 3.2.20 Object type &#1089;asting: dynamic_cast and pointer void *
+          </td>
+          <td width="70" align="right">
+          <a href="3_2_19_classes_operator_overloading.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_2_21_classes_ref_pointers_const.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.2.20 Object type casting: dynamic_cast and pointer void *</span></p>
+<p class="p_Text"><span class="f_Text">Object types have specific casting rules which apply when source and destination variable types do not match. Rules for built-in types have already been discussed in Chapter 2.6 <a href="2_6_conversion.htm" class="topiclink">Type conversion</a>. The specifics of structure type casting of structures when copying were described in the <a href="3_1_6_structs_composition.htm" class="topiclink">Structure layout and inheritance</a> section. </span></p>
+<p class="p_Text"><span class="f_Text">For both structures and classes, the main condition for the admissibility of type casting is that they should be related along the inheritance chain. Types from different branches of the hierarchy or not related at all cannot be cast to each other.</span></p>
+<p class="p_Text"><span class="f_Text">Casting rules are different for objects (values) and pointers.</span><br>
+<span class="f_Text">&nbsp;</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Objects</span></p>
+<p class="p_Text"><span class="f_Text">An object of one type A can be assigned to an object of another type B if the latter has a constructor that takes a parameter of type A (with variations by value, reference or pointer, but usually of the form </span><span class="f_Text" style="font-style: italic;">B(const A &amp;a)</span><span class="f_Text">). Such a constructor is also called a conversion constructor.</span></p>
+<p class="p_Text"><span class="f_Text">In the absence of such an explicit constructor, the compiler will try to use an implicit copy operator, i.e. </span><span class="f_Text" style="font-style: italic;">B::operator=(const B &amp;b)</span><span class="f_Text">, while classes A and B must be in the same inheritance chain for the implicit copy to work. conversion from A to B. If A is inherited from B (including not directly, but indirectly), then the properties added to A will disappear when copied to B. If B is inherited from A, then only that part of the properties that are in A will be copied into it. Such conversions are usually not welcome.</span></p>
+<p class="p_Text"><span class="f_Text">Also, the implicit copy operator may not always be provided by the compiler. In particular, if the class has fields with the modifier </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text">, copying is considered prohibited (see further along).</span></p>
+<p class="p_Text"><span class="f_Text">In the script </span><span class="f_Text" style="font-style: italic;">ShapesCasting.mq5</span><span class="f_Text">, we use the shape class hierarchy to demonstrate object type conversions. In the class </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">, the field </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> is deliberately made constant, so an attempt to convert (assign) an object </span><span class="f_Text" style="font-style: italic;">Square</span><span class="f_Text"> to an object </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text"> ends with an error compiler with detailed explanations:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;attempting&nbsp;to&nbsp;reference&nbsp;deleted&nbsp;function&nbsp;'void&nbsp;Rectangle::operator=(const&nbsp;Rectangle&amp;)'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;function&nbsp;'void&nbsp;Rectangle::operator=(const&nbsp;Rectangle&amp;)'&nbsp;was&nbsp;implicitly&nbsp;deleted</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;because&nbsp;it&nbsp;invokes&nbsp;deleted&nbsp;function&nbsp;'void&nbsp;Shape::operator=(const&nbsp;Shape&amp;)'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;function&nbsp;'void&nbsp;Shape::operator=(const&nbsp;Shape&amp;)'&nbsp;was&nbsp;implicitly&nbsp;deleted</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;because&nbsp;member&nbsp;'type'&nbsp;has&nbsp;'const'&nbsp;modifier</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">According to this message, the copy method </span><span class="f_Text" style="font-style: italic;">Rectangle::operator=(const Rectangle&amp;)</span><span class="f_Text"> was implicitly removed by the compiler (which provides its default implementation) because it uses a similar method in the base class </span><span class="f_Text" style="font-style: italic;">Shape::operator =(const Shape&amp;)</span><span class="f_Text">, which in turn was removed due to the presence of the field </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> with the modifier </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text">. Such fields can only be set when the object is created, and the compiler does not know how to copy the object under such a restriction.</span></p>
+<p class="p_Text"><span class="f_Text">By the way, the effect of &quot;deleting&quot; methods is available not only to the compiler but to the application programmer: more about this will be discussed in the <a href="3_2_22_classes_final_delete.htm" class="topiclink">Inheritance control: final and delete</a> section.</span></p>
+<p class="p_Text"><span class="f_Text">The problem could be solved by removing the modifier </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> or by providing your own implementation of the assignment operator (in it, the </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> field is not involved and will save the content with a description of the type: &quot;Rectangle&quot;):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #0000ff;">operator</span><span class="f_CodeExample">=(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">coordinates</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">backgroundColor</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">backgroundColor</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dx</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">dx</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dy</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">dy</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #0000ff;">this</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Note that this definition returns a pointer to the current object, while the default implementation generated by the compiler was of type </span><span class="f_Text" style="font-style: italic;">void</span><span class="f_Text"> (as seen in the error message). This means that the compiler-provided default assignment operators cannot be used in the chain </span><span class="f_Text" style="font-style: italic;">x = y = z</span><span class="f_Text">. If you require this capability, override </span><span class="f_Text" style="font-style: italic;">operator=</span><span class="f_Text"> explicitly and return the desired type other than </span><span class="f_Text" style="font-style: italic;">void</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text" style="page-break-after: avoid;"><span class="f_Text" style="font-weight: bold;">Pointers</span></p>
+<p class="p_Text"><span class="f_Text">The most practical is to convert pointers to objects of different types.</span></p>
+<p class="p_Text"><span class="f_Text">In theory, all options for casting object type pointers can be reduced to three:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">From base to derived, the downward type casting (downcast), because it is customary to draw a class hierarchy with an inverted tree;</span></li>
+<li class="p_li"><span class="f_li">From derivative to base, the ascending type casting (upcast); and</span></li>
+<li class="p_li"><span class="f_li">Between classes of different branches of the hierarchy or even from different families.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The last option is forbidden (we will get a compilation error). The compiler allows the first two, but if &quot;upcast&quot; is natural and safe, then &quot;downcast&quot; can lead to runtime errors.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">addRandomShape</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">SHAPES</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">RECTANGLE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Square</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">addRandomShape</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">SHAPES</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">SQUARE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Circle</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">NULL</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">r2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OK</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Circle&nbsp;-&gt;&nbsp;Shape</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Square&nbsp;-&gt;&nbsp;Shape</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Rectangle&nbsp;-&gt;&nbsp;Shape</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r2</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Shape&nbsp;-&gt;&nbsp;Rectangle</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Of course, when a pointer to an object of the base class is used, methods and properties of the derived class cannot be called on it, even if the corresponding object is located at the pointer. We will get an &quot;undeclared identifier&quot; compilation error.</span></p>
+<p class="p_Text"><span class="f_Text">However, the <a href="2_6_3_conversion_explicit.htm" class="topiclink">explicit cast</a> syntax is supported for pointers (see C-style), which allows the &quot;on the fly&quot; conversion of a pointer to the required type in expressions and its dereferencing without creating an intermediate variable.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">Base</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #333333;">Derived</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">&nbsp;=&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">d</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #333333;">Derived</span><span class="f_CodeExample">&nbsp;*)</span><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">).</span><span class="f_CodeExample" style="color: #333333;">derivedMethod</span><span class="f_CodeExample">();</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here we have created a derived class object (</span><span class="f_Text" style="font-style: italic;">Derived</span><span class="f_Text">) and a base type pointer to it (</span><span class="f_Text" style="font-style: italic;">Base *</span><span class="f_Text">). To access the method </span><span class="f_Text" style="font-style: italic;">derivedMethod</span><span class="f_Text"> of a derived class, the pointer is temporarily converted to type </span><span class="f_Text" style="font-style: italic;">Derived</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">An asterisk pointer type must be enclosed in parentheses. In addition, the cast expression itself, including the variable name, is also surrounded by another pair of parentheses.</span></p>
+<p class="p_Text"><span class="f_Text">Another compilation error (&quot;type mismatch&quot; - &quot;type mismatch&quot;) in our test generates a line where we try to cast a pointer to </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text"> to a pointer to </span><span class="f_Text" style="font-style: italic;">Circle</span><span class="f_Text">: they are from different inheritance branches.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error:&nbsp;type&nbsp;mismatch</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Things are much worse when the type of the pointer being cast to does not match the actual object (although their types are compatible, and therefore the program compiles fine). Such an operation will end with an error already at the program execution stage (that is, the compiler cannot catch it). The program is then unloaded.</span></p>
+<p class="p_Text"><span class="f_Text">For example, in the script </span><span class="f_Text" style="font-style: italic;">ShapesCasting.mq5</span><span class="f_Text"> we have described a pointer to </span><span class="f_Text" style="font-style: italic;">Square</span><span class="f_Text"> and assigned it a pointer to </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">, which contains the object </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Square</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">s2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;RUNTIME&nbsp;ERROR</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s2</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error:&nbsp;Incorrect&nbsp;casting&nbsp;of&nbsp;pointers</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The terminal returns the &quot;Incorrect casting of pointers&quot; error. The pointer of a more specific type </span><span class="f_Text" style="font-style: italic;">Square</span><span class="f_Text"> is not capable of pointing to the parent object </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">To avoid runtime troubles and to prevent the program from crashing, MQL5 provides a special language construct </span><span class="f_Text" style="font-style: italic;">dynamic_cast</span><span class="f_Text">. With this construct, you can &quot;carefully&quot; check whether it is possible to cast a pointer to the required type. If the conversion is possible, then it will be made. And if not, we will get a null pointer (NULL) and we can process it in a special way (for example, using </span><span class="f_Text" style="font-style: italic;">if</span><span class="f_Text"> to somehow initialize or interrupt the execution of the function, but not the entire program).</span></p>
+<p class="p_Text"><span class="f_Text">The syntax of </span><span class="f_Text" style="font-style: italic;">dynamic_cast</span><span class="f_Text"> is as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">dynamic_cast</span><span class="f_CodeExample">&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Class</span><span class="f_CodeExample">&nbsp;*&nbsp;&gt;(&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pointer</span><span class="f_CodeExample">&nbsp;)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In our case, it is enough to write:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s2</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">dynamic_cast</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">Square</span><span class="f_CodeExample">&nbsp;*&gt;(</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;trying&nbsp;to&nbsp;cast&nbsp;type,&nbsp;and&nbsp;will&nbsp;get&nbsp;NULL&nbsp;if&nbsp;unsuccessful</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s2</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;0</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The program will run as expected.</span></p>
+<p class="p_Text"><span class="f_Text">In particular, we can try again to cast a rectangle into a circle and make sure that we get 0:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">dynamic_cast</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">Circle</span><span class="f_CodeExample">&nbsp;*&gt;(</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;trying&nbsp;to&nbsp;cast&nbsp;type,&nbsp;and&nbsp;will&nbsp;get&nbsp;NULL&nbsp;if&nbsp;unsuccessful</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;0</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">There is a special pointer type in MQL5 that can store any object. This type has the following notation: </span><span class="f_Text" style="font-style: italic;">void *</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Let's demonstrate how the variable </span><span class="f_Text" style="font-style: italic;">void *</span><span class="f_Text"> works with </span><span class="f_Text" style="font-style: italic;">dynamic_cast</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;set&nbsp;to&nbsp;the&nbsp;instance&nbsp;Square</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">dynamic_cast</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">&nbsp;*&gt;(</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">dynamic_cast</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">&nbsp;*&gt;(</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">dynamic_cast</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">Square</span><span class="f_CodeExample">&nbsp;*&gt;(</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">dynamic_cast</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">Circle</span><span class="f_CodeExample">&nbsp;*&gt;(</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">dynamic_cast</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">Triangle</span><span class="f_CodeExample">&nbsp;*&gt;(</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The first three lines will log the value of the pointer (a descriptor of the same object), and the last two will print 0.</span></p>
+<p class="p_Text"><span class="f_Text">Now, back to the example of the forward declaration in the <a href="3_2_13_classes_pointers.htm" class="topiclink">Indicators</a> section (see file </span><span class="f_Text" style="font-style: italic;">ThisCallback.mq5</span><span class="f_Text">), where the classes </span><span class="f_Text" style="font-style: italic;">Manager</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Element</span><span class="f_Text"> contained mutual pointers.</span></p>
+<p class="p_Text"><span class="f_Text">The pointer type </span><span class="f_Text" style="font-style: italic;">void *</span><span class="f_Text"> allows you to get rid of the preliminary declaration (</span><span class="f_Text" style="font-style: italic;">ThisCallbackVoid.mq5</span><span class="f_Text">). Let's comment out the line with it, and change the type of the field </span><span class="f_Text" style="font-style: italic;">owner</span><span class="f_Text"> with a pointer to the manager object to </span><span class="f_Text" style="font-style: italic;">void *</span><span class="f_Text">. In the constructor, we also change the type of the parameter.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//&nbsp;class&nbsp;Manager;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Element</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">owner</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;looking&nbsp;forward&nbsp;to&nbsp;being&nbsp;compatible&nbsp;with&nbsp;the&nbsp;Manager&nbsp;type&nbsp;*</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Element</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">NULL</span><span class="f_CodeExample">):&nbsp;</span><span class="f_CodeExample" style="color: #333333;">owner</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">)&nbsp;{&nbsp;}&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;was&nbsp;Element(Manager&nbsp;&amp;t)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">doMath</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1000000</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;get&nbsp;the&nbsp;desired&nbsp;type&nbsp;at&nbsp;runtime</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">dynamic_cast</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">Manager</span><span class="f_CodeExample">&nbsp;*&gt;(</span><span class="f_CodeExample" style="color: #333333;">owner</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;then&nbsp;everywhere&nbsp;you&nbsp;need&nbsp;to&nbsp;check&nbsp;ptr&nbsp;for&nbsp;NULL&nbsp;before&nbsp;using</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;%&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">20</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">NULL</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">progressNotify</span><span class="f_CodeExample">(&amp;</span><span class="f_CodeExample" style="color: #0000ff;">this</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">0f</span><span class="f_CodeExample">&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...&nbsp;lots&nbsp;of&nbsp;calculations</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">NULL</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">progressNotify</span><span class="f_CodeExample">(&amp;</span><span class="f_CodeExample" style="color: #0000ff;">this</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">0f</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This approach can provide more flexibility but requires more care because </span><span class="f_Text" style="font-style: italic;">dynamic_cast</span><span class="f_Text"> can return NULL. It is recommended, whenever possible, to use standard dispatch facilities (static and dynamic) with control of the types provided by the language.</span></p>
+<p class="p_Text"><span class="f_Text">Pointers </span><span class="f_Text" style="font-style: italic;">void *</span><span class="f_Text"> usually become necessary in exceptional cases. And the &quot;extra&quot; line with a preliminary description is not the case. It has been used here only as the simplest example of the universality of the pointer </span><span class="f_Text" style="font-style: italic;">void *</span><span class="f_Text">.</span></p>
+
+</div>
+
+</body>
+</html>

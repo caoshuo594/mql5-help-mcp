@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.5.13 Managing indicator visibility: TesterHideIndicators</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_5_tester.htm"> 6.5 Testing and optimization of Expert Advisors </a>/ 6.5.13 Managing indicator visibility: TesterHideIndicators
+          </td>
+          <td width="70" align="right">
+          <a href="6_5_12_tester_directives.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_5_14_tester_withdraw_deposit.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.5.13 Managing indicator visibility: TesterHideIndicators</span></p>
+<p class="p_Text"><span class="f_Text">By default, the visual testing chart shows all the indicators that are created in the Expert Advisor being tested. Also, these indicators are shown on the chart, which automatically opens at the end of testing. All this applies only to those indicators that are directly created in your code: nested indicators that can be used in the calculation of the main indicators do not apply here.</span></p>
+<p class="p_Text"><span class="f_Text">The visibility of indicators is not always desirable from the developer's point of view, who may want to hide the implementation details of an Expert Advisor. In such cases, the function </span><span class="f_Text" style="font-style: italic;">TesterHideIndicators</span><span class="f_Text"> will disable the display of the used indicators on the chart.</span></p>
+<p class="p_H4"><span class="f_H4">void TesterHideIndicators(bool hide)</span></p>
+<p class="p_Text"><span class="f_Text">Boolean parameter </span><span class="f_Text" style="font-style: italic;">hide</span><span class="f_Text"> instructs either to hide (by value </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or display (by value </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">) indicators. The set state is remembered by the MQL program execution environment until it is changed by calling the function again with the inverse parameter value. The current state of this setting affects all newly created indicators.</span></p>
+<p class="p_Text"><span class="f_Text">In other words, the function </span><span class="f_Text" style="font-style: italic;">TesterHideIndicators</span><span class="f_Text"> with the required flag value </span><span class="f_Text" style="font-style: italic;">hide</span><span class="f_Text"> should be called before creating descriptors of the corresponding indicators. In particular, after calling the function with the </span><span class="f_Text" style="font-style: italic;">true </span><span class="f_Text">parameter, new indicators will be marked with a hidden flag and will not be shown during visual testing and on the chart, which is automatically opened when testing is completed.</span></p>
+<p class="p_Text"><span class="f_Text">To disable the mode of hiding newly created indicators, call </span><span class="f_Text" style="font-style: italic;">TesterHideIndicators</span><span class="f_Text"> with </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The function is applicable only in the tester.</span></p>
+<p class="p_Text"><span class="f_Text">The function has some specifics related to its performance, provided that special tpl templates are created for the tester or Expert Advisor in the folder </span><span class="f_Text" style="font-style: italic;">/MQL5/Profiles/Templates</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">If there is a special template in the folder </span><span class="f_Text" style="font-style: italic;">&lt;expert_name&gt;.tpl</span><span class="f_Text">, then during visual testing and on the testing chart, only indicators from this template will be shown. In this case, no indicators used in the tested Expert Advisor will be displayed, even if the function was called in the Expert Advisor code </span><span class="f_Text" style="font-style: italic;">TesterHideIndicators</span><span class="f_Text"> with </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">If there is a template in the </span><span class="f_Text" style="font-style: italic;">tester.tpl</span><span class="f_Text"> folder, then during visual testing and on the testing chart, indicators from the </span><span class="f_Text" style="font-style: italic;">tester.tpl</span><span class="f_Text"> template will be shown, plus those indicators from the Expert Advisor that are not prohibited by the </span><span class="f_Text" style="font-style: italic;">TesterHideIndicators</span><span class="f_Text"> call. The </span><span class="f_Text" style="font-style: italic;">TesterHideIndicators</span><span class="f_Text"> function does not affect the indicators in the template.</span></p>
+<p class="p_Text"><span class="f_Text">If there is no template </span><span class="f_Text" style="font-style: italic;">tester.tpl</span><span class="f_Text">, but there is a template </span><span class="f_Text" style="font-style: italic;">default.tpl</span><span class="f_Text">, then the indicators from it are processed according to a similar principle.</span></p>
+<p class="p_Text"><span class="f_Text">We will demonstrate how the function works in the <a href="6_5_16_tester_example_ea.htm" class="topiclink">Big Expert Advisor example</a> a little later.</span></p>
+
+</div>
+
+</body>
+</html>

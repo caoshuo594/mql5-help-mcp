@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.2.1.2 The backward pass methods for Dropout.</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="6_improvement_realization.htm"> 6. Architectural solutions for improving model convergence </a> / <a class="h_m" href="6_2_dropout_realization.htm"> 6.2 Dropout </a> / <a class="h_m" href="6_2_1_dropout_mql.htm"> 6.2.1 Building Dropout in MQL5 </a>/ 6.2.1.2 Backpropagation methods for Dropout
+          </td>
+          <td width="70" align="right">
+          <a href="6_2_1_1_dropout_ff.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_2_1_3_dropout_save_load.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.2.1.2 Backpropagation methods for Dropout</span></p>
+<p class="p_Text"><span class="f_Text">Traditionally, after implementing the feed-forward algorithm, we move on to organizing the backpropagation process. As you know, in the base class of the neural layer, the backpropagation algorithm is implemented by four virtual methods:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic; font-weight: bold;">CalcOutputGradient</span><span class="f_li"> for calculating the error gradient at the output of a neural network</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic; font-weight: bold;">CalcHiddenGradient</span><span class="f_li"> for propagating a gradient through a hidden layer</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic; font-weight: bold;">CalcDeltaWeights</span><span class="f_li"> for the required calculation of weight correction values</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic; font-weight: bold;">UpdateWeights</span><span class="f_li"> for updating the weight matrix</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">All the above methods are overridden in new classes as needed. As mentioned earlier, our </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text"> layer does not contain trainable parameters. As a consequence, it does not contain a weight matrix. Thus, the last two methods are not relevant to our class. At the same time, we will have to override these methods to maintain the integrity of our model architecture because, during training, it will call these methods for all the neural layers used. If we do not override them, then when these methods are called, the operations of the inherited parent method will be performed. In this case, the absence of a buffer of the weight matrix and related objects can lead to critical errors. In the best-case scenario, as a result of our control operation, we will terminate the method with a false result, which will lead to the interruption of the training process. Therefore, we override these methods and replace them with empty methods that will always return a positive result.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CalcDeltaWeights</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CNeuronBase</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">read</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span><span class="f_CodeExample">&nbsp;{&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">true</span><span class="f_CodeExample">;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UpdateWeights</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">batch_size</span><span class="f_CodeExample">,&nbsp;</span><span class="f_Definition">TYPE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">learningRate</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Definition">VECTOR</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">Beta</span><span class="f_CodeExample">,&nbsp;</span><span class="f_Definition">VECTOR</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">Lambda</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span><span class="f_CodeExample">&nbsp;{&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">true</span><span class="f_CodeExample">;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_li" style="font-style: italic; font-weight: bold;">CalcOutputGradient</span><span class="f_li"> method is used only for the results layer. </span><span class="f_li" style="font-style: italic;">Dropout</span><span class="f_li"> operation principles do not imply its use as a results layer. Therefore, we do not override it.</span></p>
+<p class="p_Text"><span class="f_li">Thus, we only have one method left to override: the </span><span class="f_li" style="font-style: italic; font-weight: bold;">CalcHiddenGradient</span><span class="f_li"> method that propagates the gradient through the hidden layer. This method, like most of the previous ones, is declared as virtual in the base neural network class and is overridden in all new classes to establish the specific algorithm of the neural layer operation. In the parameters, the method receives a pointer to the object of the previous layer. Right within the method body, we set up a control block to verify the validity of pointers to objects used by the method. As in the feed-forward method, we check pointers to all used objects, both external and internal.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CNeuronDropout</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">CalcHiddenGradient</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CNeuronBase</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---control&nbsp;block</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">&nbsp;||&nbsp;!</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">GetGradients</span><span class="f_CodeExample">()&nbsp;||&nbsp;!</span><span class="f_CodeExample" style="color: #333333;">m_cGradients</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_li">After successfully passing the block of controls, we must create a branching of the algorithm depending on the computing device. As always, in this section, we will consider the implementation of the algorithm using MQL5 tools and will return to the multi-threaded implementation of the algorithm in the next section.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;branching&nbsp;of&nbsp;the&nbsp;algorithm&nbsp;depending&nbsp;on&nbsp;the&nbsp;execution&nbsp;device</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">total</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_cOutputs</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Total</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">m_cOpenCL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_li">In the implementation block using MQL5, we check the class operating mode. During operational use mode, we simply copy the data from the error gradient buffer of the current layer into a similar buffer of the previous layer.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;check&nbsp;the&nbsp;operating&nbsp;mode&nbsp;flag</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">m_bTrain</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">GetGradients</span><span class="f_CodeExample">().</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_cGradients</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">GetGradients</span><span class="f_CodeExample">().</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_cGradients</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">&nbsp;*</span>
+<br><span class="f_CodeExample" style="color: #333333;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m_cDropOutMultiplier</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">m_mMatrix</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OpenCL&nbsp;block</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_li">If the method operates in model training mode, according to the </span><span class="f_li" style="font-style: italic;">Dropout</span><span class="f_Text"> algorithm,</span><span class="f_li"> we need to multiply the error gradient buffer of the current layer element-by-element by the masking vector buffer. The matrix multiplication operation allows us to do this literally in one line of code.</span></p>
+<p class="p_Text"><span class="f_Text">As you can see, at this stage we have passed the error gradient into the buffer of the previous layer. Therefore, the task set for this method is completed, and we can finish the method execution. Now we add a stub in the block for organizing multi-threaded operations. We will return to it in one of the subsequent sections.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, we have fully implemented the </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text"> algorithm using standard MQL5 tools. At this stage, you can already create a model and obtain initial results using this approach. However, as we have discussed before, it is equally important to have the capability to restore the previously trained model functionality at any convenient time for the full functionality of any neural layer within the model. Therefore, in the next section, we will look at methods for saving neural layer data and restoring the functioning of the layer from previously saved data.</span></p>
+
+</div>
+
+</body>
+</html>

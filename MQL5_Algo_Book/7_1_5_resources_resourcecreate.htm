@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.1.5 Dynamic resource creation: ResourceCreate</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_1_resources.htm"> 7.1 Resources </a>/ 7.1.5 Dynamic resource creation: ResourceCreate
+          </td>
+          <td width="70" align="right">
+          <a href="7_1_4_resources_indicators.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_1_6_resources_resourcefree.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.1.5 Dynamic resource creation: ResourceCreate</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">#resource</span><span class="f_Text"> directives embed resources into the program at the compilation stage, and therefore they can be called static. However, it often becomes necessary to generate resources (create completely new or modify existing ones) at the stage of program execution. For these purposes, MQL5 provides the </span><span class="f_Text" style="font-style: italic;">ResourceCreate</span><span class="f_Text"> function. The resources created with the help of this function will be called dynamic.</span></p>
+<p class="p_Text"><span class="f_Text">The function has two forms: the first one allows you to load pictures and sounds from files, and the second one is designed to create bitmap images based on an array of pixels prepared in memory.</span></p>
+<p class="p_H4"><span class="f_H4">bool ResourceCreate(const string resource, const string filepath)</span></p>
+<p class="p_Text"><span class="f_Text">The function loads the resource named </span><span class="f_Text" style="font-style: italic;">resource</span><span class="f_Text"> from a file located at </span><span class="f_Text" style="font-style: italic;">filepath</span><span class="f_Text">. If the path starts with a backslash '\' (in constant strings it should be doubled: &quot;\\path\\name.ext&quot;), then the file is searched at this path relative to the MQL5 folder in the terminal data directory (for example, &quot;\\Files \\CustomSounds\\Hello.wav&quot; refers to </span><span class="f_Text" style="font-style: italic;">MQL5/Files/CustomSounds/Hello.wav</span><span class="f_Text">). If there is no backslash, then the resource is searched starting from the folder where the executable file from which we call the function is located.</span></p>
+<p class="p_Text"><span class="f_Text">The path can point to a static resource hardwired into a third-party or current MQL program. For example, a certain script is able to create a resource based on a picture from the indicator </span><span class="f_Text" style="font-style: italic;">BmpOwner.mq5</span><span class="f_Text"> discussed in the section on <a href="7_1_3_resources_variables.htm" class="topiclink">Resource variables</a>.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">ResourceCreate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;::MyImage&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;\\Indicators\\MQL5Book\\p7\\BmpOwner.ex5::search1.bmp&quot;</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The resource name in the </span><span class="f_Text" style="font-style: italic;">resource</span><span class="f_Text"> parameter may contain an initial double colon (although this is not required, because if it is not present, the &quot;::&quot; prefix will be added to the name automatically). This ensures the unification of the use of one line for declaring a resource in the </span><span class="f_Text" style="font-style: italic;">ResourceCreate</span><span class="f_Text"> call, as well as for subsequent access to it (for example, when setting the OBJPROP_BMPFILE property).</span></p>
+<p class="p_Text"><span class="f_Text">Of course, the above statement for creating a dynamic resource is redundant if we just want to load a third-party image resource into our object on the chart, since it is enough to directly assign the string &quot;\\Indicators\\MQL5Book\\p7\\BmpOwner.ex5:&quot; to the OBJPROP_BMPFILE property: search1.bmp&quot;. However, if you need to edit an image, a dynamic resource is indispensable. Next, we will show an example in the section <a href="7_1_7_resources_resourcereadimage.htm" class="topiclink">Reading and modifying resource data</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Dynamic resources are publicly available from other MQL programs by their full name, which includes the path and name of the program that created the resource. For example, if the previous </span><span class="f_Text" style="font-style: italic;">ResourceCreate</span><span class="f_Text"> call was produced by the script </span><span class="f_Text" style="font-style: italic;">MQL5/Scripts/MyExample.ex5</span><span class="f_Text">, then another MQL program can access the same resource using the full link &quot;\\Scripts\\MyExample.ex5::MyImage&quot;, and any other script in the same folder can access the shorthand &quot;MyExample.ex5::MyImage&quot; (here the relative path is simply degenerate). The rules for writing full (from the MQL5 root folder) and relative paths were given above.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">ResourceCreate</span><span class="f_Text"> function returns a boolean indicator of success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or error (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">) as a result of execution. The error code, as usual, can be found in the </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> variable. Specifically, you are likely to receive the following errors:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">ERR_RESOURCE_NAME_DUPLICATED (4015) – matching names of the dynamic and static resources</span></li>
+<li class="p_li"><span class="f_li">ERR_RESOURCE_NOT_FOUND (4016) – the given resource/file from the </span><span class="f_li" style="font-style: italic;">filepath</span><span class="f_li"> parameter is not found</span></li>
+<li class="p_li"><span class="f_li">ERR_RESOURCE_UNSUPPOTED_TYPE (4017) – unsupported resource type or size more than 2 GB</span></li>
+<li class="p_li"><span class="f_li">ERR_RESOURCE_NAME_IS_TOO_LONG (4018) – resource name exceeds 63 characters</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">All this applies not only to the first form of the function but also to the second.</span></p>
+<p class="p_H4"><span class="f_H4">bool ResourceCreate(const string resource, const uint &amp;data[], uint img_width, uint img_height, uint data_xoffset, uint data_yoffset, uint data_width, ENUM_COLOR_FORMAT color_format)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">resource</span><span class="f_Text"> parameter still means the name of the new resource, and the content of the image is given by the rest of the parameters.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> array may be one-dimensional (</span><span class="f_Text" style="font-style: italic;">data[]</span><span class="f_Text">) or two-dimensional (</span><span class="f_Text" style="font-style: italic;">data[][]</span><span class="f_Text">): it passes dots (pixels) of the raster. The parameters </span><span class="f_Text" style="font-style: italic;">img_width</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">img_height</span><span class="f_Text"> set the dimensions of the displayed image (in pixels). These sizes may be less than the physical size of the image in the </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> array, due to which the effect of framing is achieved when only a part of the original image is output. The </span><span class="f_Text" style="font-style: italic;">data_xoffset</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">data_yoffset</span><span class="f_Text"> parameters determine the coordinate of the upper left corner of the &quot;frame&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">data_width</span><span class="f_Text"> parameter means the full width of the original image (in the </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> array). A value of 0 implies that this width is the same as </span><span class="f_Text" style="font-style: italic;">img_width</span><span class="f_Text">. The </span><span class="f_Text" style="font-style: italic;">data_width</span><span class="f_Text"> parameter makes sense only when specifying a one-dimensional array in the </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> parameter, since for a two-dimensional array its dimensions are known in both dimensions (in this case, the </span><span class="f_Text" style="font-style: italic;">data_width</span><span class="f_Text"> parameter is ignored and is assumed equal to the second dimension of the </span><span class="f_Text" style="font-style: italic;">data[][]</span><span class="f_Text"> array).</span></p>
+<p class="p_Text"><span class="f_Text">In the most common case, when you want to display the image in full (&quot;as is&quot;), use the following syntax:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">ResourceCreate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">width</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">height</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;...);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For example, if the program has a static resource described as a two-dimensional </span><span class="f_Text" style="font-style: italic;">bitmap</span><span class="f_Text"> array:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#resource</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;static.bmp&quot;</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bitmap</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">[][]</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then the creation of a dynamic resource based on it can be performed in the following way:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">ResourceCreate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;dynamic&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayRange</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayRange</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;...);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Creating a dynamic resource based on a static one is in demand not only when direct editing is required, but also to control how colors are processed when displaying a resource. This mode is selected using the last parameter of the function: </span><span class="f_Text" style="font-style: italic;">color_format</span><span class="f_Text">. It uses the ENUM_COLOR_FORMAT enumeration.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">COLOR_FORMAT_XRGB_NOALPHA</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The alpha channel component (transparency) is ignored</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">COLOR_FORMAT_ARGB_RAW</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Color components are not processed by the terminal</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">COLOR_FORMAT_ARGB_NORMALIZE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Color components are processed by the terminal (see below)</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the COLOR_FORMAT_XRGB_NOALPHA mode, the image is displayed without effects: each point is displayed in a solid color (this is the fastest way to draw). The other two modes display pixels taking into account the transparency in the high byte of each pixel but have different effects. In the case of COLOR_FORMAT_ARGB_NORMALIZE, the terminal performs the following transformations of the color components of each point when preparing the raster at the time of the </span><span class="f_Text" style="font-style: italic;">ResourceCreate</span><span class="f_Text"> call:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">R</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">R</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">255</span>
+<br><span class="f_CodeExample" style="color: #333333;">G</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">G</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">255</span>
+<br><span class="f_CodeExample" style="color: #333333;">B</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">B</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">255</span>
+<br><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">A</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Static image resources in </span><span class="f_Text" style="font-style: italic;"><a href="7_1_1_resources_directive.htm" class="topiclink">#resource</a></span><span class="f_Text"> directives are connected with the help of COLOR_FORMAT_ARGB_NORMALIZE.</span></p>
+<p class="p_Text"><span class="f_Text">In a dynamic resource, the array size is limited by the value of INT_MAX bytes (2147483647, 2 Gb), which significantly exceeds the limit imposed by the compiler when processing the static directive </span><span class="f_Text" style="font-style: italic;">#resource</span><span class="f_Text">: the file size cannot exceed 128 Mb.</span></p>
+<p class="p_Text"><span class="f_Text">If the second version of the function is called to create a resource with the same name, but with changing other parameters (the contents of the pixel array, width, height, or offset), then the new resource is not recreated, but the existing one is simply updated. Only the program owning the resource (the program that created it in the first place) can modify a resource in this way.</span></p>
+<p class="p_Quote"><span class="f_Quote">If, when creating dynamic resources from different copies of the program running on different charts, you need your own resource in each copy, you should add </span><span class="f_Quote" style="font-style: italic;">ChartID</span><span class="f_Quote"> to the name of the resource.</span></p>
+<p class="p_Text"><span class="f_Text">To demonstrate the dynamic creation of images in various color schemes, we propose to disassemble the script </span><span class="f_Text" style="font-style: italic;">ARGBbitmap.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The image &quot;argb.bmp&quot; is statically attached to it.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#resource</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;argb.bmp&quot;</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bitmap</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Data</span><span class="f_CodeExample">[][]</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The user selects the color formatting method by the </span><span class="f_Text" style="font-style: italic;">ColorFormat</span><span class="f_Text"> parameter.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ENUM_COLOR_FORMAT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ColorFormat</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">COLOR_FORMAT_XRGB_NOALPHA</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The name of the object in which the image will be displayed and the name of the dynamic resource are described by the variables </span><span class="f_Text" style="font-style: italic;">BitmapObject</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ResName</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BitmapObject</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;BitmapObject&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ResName</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;::image&quot;</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Below is the main function of the script.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ResourceCreate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ResName</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayRange</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayRange</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ColorFormat</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectCreate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BitmapObject</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_BITMAP_LABEL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectSetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BitmapObject</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJPROP_XDISTANCE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">50</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectSetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BitmapObject</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJPROP_YDISTANCE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">50</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectSetString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BitmapObject</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJPROP_BMPFILE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ResName</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Press&nbsp;ESC&nbsp;to&nbsp;stop&nbsp;the&nbsp;demo&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">start</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_KEYSTATE_ESCAPE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">IsStopped</span><span class="f_CodeExample">()&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;waiting&nbsp;for&nbsp;the&nbsp;user's&nbsp;command&nbsp;to&nbsp;end&nbsp;the&nbsp;demo</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_KEYSTATE_ESCAPE</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">start</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Sleep</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectDelete</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BitmapObject</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ResourceFree</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ResName</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The script creates a new resource in the specified color mode and assigns it to the OBJPROP_BMPFILE property of an object of type OBJ_BITMAP_LABEL. Next, the script waits for the user to explicitly stop the script or press </span><span class="f_Text" style="font-style: italic;">Esc</span><span class="f_Text"> and then deletes the object (by calling </span><span class="f_Text" style="font-style: italic;">ObjectDelete</span><span class="f_Text">) and the resource using the </span><span class="f_Text" style="font-style: italic;">ResourceFree</span><span class="f_Text"> function. Note that deleting an object does not automatically delete the resource. That is why we need the </span><span class="f_Text" style="font-style: italic;">ResourceFree</span><span class="f_Text"> function which we will discuss in the <a href="7_1_6_resources_resourcefree.htm" class="topiclink">next section</a>.</span></p>
+<p class="p_Text"><span class="f_Text">If we don't call </span><span class="f_Text" style="font-style: italic;">ResourceFree</span><span class="f_Text">, then dynamic resources remain in the terminal's memory even after the MQL program terminates, right up until the terminal is closed. This makes it possible to use them as repositories or a means for exchanging information between MQL programs.</span></p>
+<p class="p_Text"><span class="f_Text">A dynamic resource created using the second form of </span><span class="f_Text" style="font-style: italic;">ResourceCreate</span><span class="f_Text"> does not have to carry an image. The </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> array may contain arbitrary data if we don't use it for rendering. In this case, it is important to set the COLOR_FORMAT_XRGB_NOALPHA scheme. We will show such an example at some point.</span></p>
+<p class="p_Text"><span class="f_Text">In the meantime, let's check how the </span><span class="f_Text" style="font-style: italic;">ARGBbitmap.mq5</span><span class="f_Text"> script works.</span></p>
+<p class="p_Text"><span class="f_Text">The above picture &quot;argb.bmp&quot; contains information about transparency: the upper left corner has a completely transparent background, and the transparency fades out diagonally towards the lower right corner.</span></p>
+<p class="p_Text"><span class="f_Text">The following images show the results of running the script in three different modes.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Image output in color format COLOR_FORMAT_XRGB_NOALPHA" title="Image output in color format COLOR_FORMAT_XRGB_NOALPHA" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="argb_noalpha.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Image output in color format COLOR_FORMAT_XRGB_NOALPHA</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Image output in color format COLOR_FORMAT_ARGB_RAW" title="Image output in color format COLOR_FORMAT_ARGB_RAW" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="argb_raw.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Image output in color format COLOR_FORMAT_ARGB_RAW</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Image output in color format COLOR_FORMAT_ARGB_NORMALIZE" title="Image output in color format COLOR_FORMAT_ARGB_NORMALIZE" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="argb_norm.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Image output in color format COLOR_FORMAT_ARGB_NORMALIZE</span></p>
+
+</div>
+
+</body>
+</html>

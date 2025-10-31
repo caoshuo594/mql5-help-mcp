@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.1.4 Testing the attention mechanism</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="5_transformer.htm"> 5. Attention mechanisms </a> / <a class="h_m" href="5_1_self-attention.htm"> 5.1 Self-Attention </a>/ 5.1.4 Testing the attention mechanism
+          </td>
+          <td width="70" align="right">
+          <a href="5_1_3_tr_opencl.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_2_mh_attention.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.1.4 Testing the attention mechanism</span></p>
+<p class="p_Text"><span class="f_Text">Unlike the </span><span class="f_Text" style="font-style: italic;">LSTM</span><span class="f_Text"> recurrent block discussed earlier, the attention block works only with current data. Therefore, to create a more representative sample between weight updates during the training of a neural network, we will use random patterns from the general training dataset. We used this approach when testing the fully connected perceptron and the convolutional model. In such a situation, it will be quite logical to take the <a href="4_1_5_cnn_realizations_comparison.htm" class="topiclink">convolution_test.mq5</a> script we used for testing the convolutional mode, re-save it with a new name </span><span class="f_Text" style="font-style: italic;">attention_test.mq5</span><span class="f_Text">, and make changes to the description of the created model accordingly.</span></p>
+<p class="p_Text"><span class="f_Text">Note that many changes were required to create the test script. We have removed the description blocks of the convolutional and pooling layers from the script. Instead of them, right after the input data, we will add a description of our attention block. To do this, as with any other neural layer, we will create a new instance of the </span><span class="f_Text" style="font-style: italic;">CLayerDescription</span><span class="f_Text"> neural layer description class and immediately check the result of the operation based on the obtained pointer to the object. Next, we need to provide descriptions for the created neural layer.</span></p>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> field, we will pass the </span><span class="f_Text" style="font-style: italic;">defNeuronAttention</span><span class="f_Text"> constant, which corresponds to the attention block to be created.</span></p>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> field, we must specify the number of elements of the sequence to be analyzed. We request it from the user when running the script and save it to the </span><span class="f_Text" style="font-style: italic;">BarsToLine</span><span class="f_Text"> variable. Therefore, in the description of the neural layer, we can pass the value of the variable.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text"> parameter was used to specify the size of the source data window when describing the convolutional layer. Here we will use it to specify the size of the description vector for one element of the input data sequence. Even though the descriptions are slightly different, the functions are similar. However, unlike the convolutional layer, we will not specify the step of the window, since in this case, it will be equal to the window itself. The number of neurons used to describe one candlestick is also requested from the user in the script parameters. This value is stored in the </span><span class="f_Text" style="font-style: italic;">NeuronsToBar</span><span class="f_Text"> variable. As in the previous field case, we simply pass the value from the variable to the specified field.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">Self-Attention</span><span class="f_Text"> algorithm does not provide data resizing. At the output of the block, we obtain a tensor of the same size as the original data. It turns out that the </span><span class="f_Text" style="font-style: italic;">window_out</span><span class="f_Text"> field in the description of the neural layer will remain unclaimed. But we'll use it to specify the size of the key vector of a single element in the </span><span class="f_Text" style="font-style: italic;">Key</span><span class="f_Text"> tensor. In practice, the size of the key is not always different from the size of the vector describing one element. Dimensionality reduction is employed when the size of the description vector for a single element is large to conserve computational resources during the calculation of the dependency coefficient matrix. In our case, when the description vector of one candlestick is only four elements, we will not lower the dimension and pass to the </span><span class="f_Text" style="font-style: italic;">window_out field</span><span class="f_Text"> the value of the </span><span class="f_Text" style="font-style: italic;">NeuronsToBar</span><span class="f_Text"> variable.</span></p>
+<p class="p_Text"><span class="f_Text">Additionally, we will specify the optimization method and its parameters. In the test case, I used the </span><span class="f_Text" style="font-style: italic;">Adam</span><span class="f_Text"> method, as I did in all previous tests.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CreateLayersDesc</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CArrayObj</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">layers</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CLayerDescription</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;create&nbsp;a&nbsp;source&nbsp;data&nbsp;layer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;.....</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;attention&nbsp;layer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!(</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CLayerDescription</span><span class="f_CodeExample">()))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Functions">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Error&nbsp;creating&nbsp;CLayerDescription:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_Functions">GetLastError</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_Definition">defNeuronAttention</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #b22222;">BarsToLine</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">window</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #b22222;">NeuronsToBar</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">window_out</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #b22222;">NeuronsToBar</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">optimization</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_Definition">Adam</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">activation_params</span><span class="f_CodeExample">[</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">layers</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Add</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Functions">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Error&nbsp;adding&nbsp;layer:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_Functions">GetLastError</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">delete</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---hidden&nbsp;layer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;.....</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Results&nbsp;layer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;.....</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After specifying all the parameters, we add the object to the dynamic array of neural layer descriptions. And, of course, we check the results of the operations. The rest of the script code remained unchanged.</span></p>
+<p class="p_Text"><span class="f_Text">As you can see, when using our library, changing the model configuration is not a very complex procedure. Thus, you will always be able to configure and test various architectural solutions to solve a specific task without making changes to the logic of the main program.</span></p>
+<p class="p_Text"><span class="f_Text">Testing the new model using the attention block was carried out while preserving all the other conditions used to test the previous models. This approach allows the accurate evaluation of how changes in the model architecture affect the training result.</span></p>
+<p class="p_Text"><span class="f_Text">The very first testing showed the superiority of the model with the attention mechanism over the previously considered models. On the training graph, the model using a single attention layer shows faster convergence compared to models using a convolutional layer and a recurrent </span><span class="f_Text" style="font-style: italic;">LSTM </span><span class="f_Text">block. &nbsp; </span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" alt="Testing the model using the attention block" title="Testing the model using the attention block" width="600" height="400" style="width:600px;height:400px;border:none" src="conv_lstm_attention1.png"/><p style="text-align:center"><span class="f_ImageCaption">Testing the model using the attention block</span></p></div></div>
+<p class="p_Text" style="text-align: center;"><span class="f_Text">&nbsp;</span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" alt="Testing the model using the attention block" title="Testing the model using the attention block" width="600" height="400" style="width:600px;height:400px;border:none" src="conv_lstm_attention2.png"/><p style="text-align:center"><span class="f_ImageCaption">Testing the model using the attention block</span></p></div></div>
+<p class="p_Text" style="text-align: center;"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">When we scale up the learning curve graph, we can see that the model using the attention method demonstrates lower error throughout the entire training process.</span></p>
+<p class="p_Text"><span class="f_Text">At the same time, it should be noted that using an attention block in this form is rarely encountered in practice. The architecture that has gained the most widespread use is the multi-head attention, which we will explore in the next section.</span></p>
+
+</div>
+
+</body>
+</html>

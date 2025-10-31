@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.4.8 Estimating the profit of a trading operation: OrderCalcProfit</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_4_experts.htm"> 6.4 Creating Expert Advisors </a>/ 6.4.8 Estimating the profit of a trading operation: OrderCalcProfit
+          </td>
+          <td width="70" align="right">
+          <a href="6_4_7_experts_ordercalcmargin.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_4_9_experts_mqltraderequest.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.4.8 Estimating the profit of a trading operation: OrderCalcProfit</span></p>
+<p class="p_Text"><span class="f_Text">One of the MQL5 API functions, </span><span class="f_Text" style="font-style: italic;">OrderCalcProfit</span><span class="f_Text">, allows you to pre-evaluate the financial result of a trading operation if the expected conditions are met. For example, using this function you can find out the amount of profit when reaching the </span><span class="f_Text" style="font-style: italic;">Take Profit</span><span class="f_Text"> level, and the amount of loss when </span><span class="f_Text" style="font-style: italic;">Stop Loss</span><span class="f_Text"> is triggered.</span></p>
+<p class="p_H4"><span class="f_H4">bool OrderCalcProfit(ENUM_ORDER_TYPE action, const string symbol, double volume,</span><br>
+<span class="f_H4"> &nbsp; double openPrice, double closePrice, double &amp;profit)</span></p>
+<p class="p_Text"><span class="f_Text">The function calculates the profit or loss in the account currency for the current market environment based on the passed parameters.</span></p>
+<p class="p_Text"><span class="f_Text">The order type is specified in the </span><span class="f_Text" style="font-style: italic;">action</span><span class="f_Text"> parameter. Only market orders ORDER_TYPE_BUY or ORDER_TYPE_SELL from the ENUM_ORDER_TYPE enumeration are allowed. The name of the financial instrument and its volume are passed in the parameters </span><span class="f_Text" style="font-style: italic;">symbol</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">volume</span><span class="f_Text">. The market entry and exit prices are set by the parameters </span><span class="f_Text" style="font-style: italic;">openPrice</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">closePrice</span><span class="f_Text">, respectively. The </span><span class="f_Text" style="font-style: italic;">profit</span><span class="f_Text"> variable is passed by reference as the last parameter, and the profit value will be written in it.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns an indicator of success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or error (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">The formula for calculating the financial result used inside </span><span class="f_Text" style="font-style: italic;">OrderCalcProfit</span><span class="f_Text"> depends on the symbol type.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:45%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Formula</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_FOREX</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">(ClosePrice - OpenPrice) * ContractSize * Lots</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_FOREX_NO_LEVERAGE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">(ClosePrice - OpenPrice) * ContractSize * Lots</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_CFD</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">(ClosePrice - OpenPrice) * ContractSize * Lots</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_CFDINDEX</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">(ClosePrice - OpenPrice) * ContractSize * Lots</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_CFDLEVERAGE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">(ClosePrice - OpenPrice) * ContractSize * Lots</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_STOCKS</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">(ClosePrice - OpenPrice) * ContractSize * Lots</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_STOCKS_MOEX</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">(ClosePrice - OpenPrice) * ContractSize * Lots</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_FUTURES</span></p>
+</td>
+<td class="table"><p class="p_fortableCondensed"><span class="f_fortableCondensed">(ClosePrice - OpenPrice) * Lots * TickPrice / TickSize</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_FUTURES</span></p>
+</td>
+<td class="table"><p class="p_fortableCondensed"><span class="f_fortableCondensed">(ClosePrice - OpenPrice) * Lots * TickPrice / TickSize</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_FUTURES_FORTS</span></p>
+</td>
+<td class="table"><p class="p_fortableCondensed"><span class="f_fortableCondensed">(ClosePrice - OpenPrice) * Lots * TickPrice / TickSize</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_BONDS</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * ContractSize * (ClosePrice * FaceValue + AccruedInterest)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_BONDS_MOEX</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * ContractSize * (ClosePrice * FaceValue + AccruedInterest)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_SERV_COLLATERAL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * ContractSize * MarketPrice * LiqudityRate</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The following notation is used in the formulas:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Lots – position volume in lots (contract shares)</span></li>
+<li class="p_li"><span class="f_li">ContractSize – contract size (one lot, <a href="6_1_13_symbols_volume.htm" class="topiclink">SYMBOL_TRADE_CONTRACT_SIZE</a>)</span></li>
+<li class="p_li"><span class="f_li">TickPrice – tick price (<a href="6_1_12_symbols_point_tick.htm" class="topiclink">SYMBOL_TRADE_TICK_VALUE</a>)</span></li>
+<li class="p_li"><span class="f_li">TickSize – tick size (<a href="6_1_12_symbols_point_tick.htm" class="topiclink">SYMBOL_TRADE_TICK_SIZE</a>)</span></li>
+<li class="p_li"><span class="f_li">MarketPrice – last known price </span><span class="f_li" style="font-style: italic;"><a href="6_1_20_symbols_tick_parts.htm" class="topiclink">Bid/Ask</a></span><span class="f_li"> depending on the type of transaction</span></li>
+<li class="p_li"><span class="f_li">OpenPrice – position opening price</span></li>
+<li class="p_li"><span class="f_li">ClosePrice – position closing price</span></li>
+<li class="p_li"><span class="f_li">FaceValue – face value of the bond (SYMBOL_TRADE_FACE_VALUE)</span></li>
+<li class="p_li"><span class="f_li">LiqudityRate – liquidity ratio (SYMBOL_TRADE_LIQUIDITY_RATE)</span></li>
+<li class="p_li"><span class="f_li">AccruedInterest – accumulated coupon income (SYMBOL_TRADE_ACCRUED_INTEREST)</span></li>
+</ul>
+<p class="p_Quote"><span class="f_Quote">The </span><span class="f_Quote" style="font-style: italic;">OrderCalcProfit</span><span class="f_Quote"> function can only be used in Expert Advisors and scripts. To calculate potential profit/loss in indicators, you need to implement an alternative method, for example, independent calculations using formulas.</span></p>
+<p class="p_Text"><span class="f_Text">To bypass the restriction on the use of the </span><span class="f_Text" style="font-style: italic;">OrderCalcProfit</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;"><a href="6_4_7_experts_ordercalcmargin.htm" class="topiclink">OrderCalcMargin</a></span><span class="f_Text"> functions in indicators, we have developed a set of functions that perform calculations using the formulas from this section, as well as the section <a href="6_1_16_symbols_margin.htm" class="topiclink">Margin requirements</a>. The functions are in the header file </span><span class="f_Text" style="font-style: italic;">MarginProfitMeter.mqh</span><span class="f_Text">, inside the common namespace </span><span class="f_Text" style="font-style: italic;">MPM</span><span class="f_Text"> (from &quot;Margin Profit Meter&quot;).</span></p>
+<p class="p_Text"><span class="f_Text">In particular, to calculate the financial result, it is important to have the value of one point of a particular instrument. In the above formulas, it indirectly participates in the difference between the opening and closing prices </span><span class="f_Text" style="font-style: italic;">(ClosePrice - OpenPrice)</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The function calculates the value of one price point </span><span class="f_Text" style="font-style: italic;">PointValue</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">namespace</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MPM</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PointValue</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ask</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">moment</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">point</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_POINT</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">contract</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_TRADE_CONTRACT_SIZE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_CALC_MODE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_CALC_MODE</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_TRADE_CALC_MODE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">At the beginning of the function, we request all the symbol properties needed for the calculation. Then, depending on the type of symbol, we obtain profit/loss in the currency of the profit of this instrument. Please note that there are no bonds here, the formulas of which take into account the nominal price and coupon income.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">switch</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_FOREX_NO_LEVERAGE</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_FOREX</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_CFD</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_CFDINDEX</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_CFDLEVERAGE</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_EXCH_STOCKS</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_EXCH_STOCKS_MOEX</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">point</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">contract</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">break</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_FUTURES</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_EXCH_FUTURES</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_EXCH_FUTURES_FORTS</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">point</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_TRADE_TICK_VALUE</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_TRADE_TICK_SIZE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">break</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">default</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Unsupported&nbsp;symbol&nbsp;%s&nbsp;trade&nbsp;mode:&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, we convert the amount to the account currency, if it differs.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">account</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">AccountInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">ACCOUNT_CURRENCY</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">current</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CURRENCY_PROFIT</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">current</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">account</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">Convert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">current</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">account</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ask</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">moment</span><span class="f_CodeExample">))&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The helper function </span><span class="f_Text" style="font-style: italic;">Convert</span><span class="f_Text"> is used to convert amounts. It, in turn, depends on the </span><span class="f_Text" style="font-style: italic;">FindExchangeRate</span><span class="f_Text"> function, which searches among all available symbols for one that contains the rate from the </span><span class="f_Text" style="font-style: italic;">current</span><span class="f_Text"> currency into the </span><span class="f_Text" style="font-style: italic;">account</span><span class="f_Text"> currency.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Convert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">current</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">account</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ask</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">margin</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">moment</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rate</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dir</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FindExchangeRate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">current</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">account</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rate</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dir</span><span class="f_CodeExample">&nbsp;==&nbsp;+</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">margin</span><span class="f_CodeExample">&nbsp;*=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">moment</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;?</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rate</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ask</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_BID</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_ASK</span><span class="f_CodeExample">)&nbsp;:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetHistoricPrice</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rate</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">moment</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ask</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dir</span><span class="f_CodeExample">&nbsp;==&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">margin</span><span class="f_CodeExample">&nbsp;/=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">moment</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;?</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rate</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ask</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_ASK</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_BID</span><span class="f_CodeExample">)&nbsp;:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetHistoricPrice</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rate</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">moment</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ask</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">once</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">once</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Can't&nbsp;convert&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">current</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;-&gt;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">account</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">once</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">FindExchangeRate</span><span class="f_Text"> function looks up characters in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> and returns the name of the first matching Forex symbol, if there are several of them, in the </span><span class="f_Text" style="font-style: italic;">result</span><span class="f_Text"> parameter. If the quote corresponds to the direct order of currencies &quot;</span><span class="f_Text" style="font-style: italic;">current/account</span><span class="f_Text">&quot;, the function will return +1, and if the opposite, it will be &quot;</span><span class="f_Text" style="font-style: italic;">account/current</span><span class="f_Text">&quot;, i.e. -1.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FindExchangeRate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">current</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">account</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolsTotal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_CALC_MODE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_CALC_MODE</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_TRADE_CALC_MODE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_FOREX</span><span class="f_CodeExample">&nbsp;||&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CALC_MODE_FOREX_NO_LEVERAGE</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">base</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CURRENCY_BASE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CURRENCY_PROFIT</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">base</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">current</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">account</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;+</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">base</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">account</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">current</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The full code of the functions can be found in the attached file </span><span class="f_Text" style="font-style: italic;">MarginProfitMeter.mqh</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Let's check the performance of the </span><span class="f_Text" style="font-style: italic;">OrderCalcProfit</span><span class="f_Text"> function and the group of functions </span><span class="f_Text" style="font-style: italic;">MPM</span><span class="f_Text"> with a test script </span><span class="f_Text" style="font-style: italic;">ProfitMeter.mq5</span><span class="f_Text">: we will calculate the profit/loss estimate for virtual trades for all symbols of the Market Watch, and we will do it using two methods: built-in and ours.</span></p>
+<p class="p_Text"><span class="f_Text">In the input parameters of the script, you can select the type of operation </span><span class="f_Text" style="font-style: italic;">Action</span><span class="f_Text"> (buy or sell), lot size </span><span class="f_Text" style="font-style: italic;">Lot</span><span class="f_Text"> and the position holding time in bars </span><span class="f_Text" style="font-style: italic;">Duration</span><span class="f_Text">. The financial result is calculated for the quotes of the last </span><span class="f_Text" style="font-style: italic;">Duration</span><span class="f_Text"> bars of the current timeframe.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">script_show_inputs</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_ORDER_TYPE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Action</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_BUY</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Action&nbsp;(only&nbsp;Buy/Sell&nbsp;allowed)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Lot</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Duration</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">20</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Duration&nbsp;(bar&nbsp;number&nbsp;in&nbsp;past)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the body of the script, we connect the header files and display the header with the parameters.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">MQL5Book</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">MarginProfitMeter</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">MQL5Book</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">Periods</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;guarantee&nbsp;that&nbsp;the&nbsp;operation&nbsp;will&nbsp;only&nbsp;be&nbsp;a&nbsp;buy&nbsp;or&nbsp;a&nbsp;sell</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_ORDER_TYPE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_ORDER_TYPE</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #333333;">Action</span><span class="f_CodeExample">&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">[]&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #008080;">&quot;buying&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;selling&quot;</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Profits/Losses&nbsp;for&nbsp;%s&nbsp;%s&nbsp;lots&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;of&nbsp;%d&nbsp;symbols&nbsp;in&nbsp;Market&nbsp;Watch&nbsp;on&nbsp;last&nbsp;%d&nbsp;bars&nbsp;%s&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">],&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">Lot</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolsTotal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Duration</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PeriodToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then, in a loop through symbols, we perform the calculations in two ways and print the results for comparison.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolsTotal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">enter</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Duration</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">exit</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit2</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;2&nbsp;adopted&nbsp;variables</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;standard&nbsp;method&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">OrderCalcProfit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Lot</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">enter</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">exit</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit1</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;OrderCalcProfit(%s)&nbsp;failed:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">continue</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;our&nbsp;own&nbsp;method&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">points</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">MathRound</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #333333;">exit</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">enter</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_POINT</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit2</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Lot</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">points</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MPM</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">PointValue</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit2</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">NormalizeDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">profit2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">AccountInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">ACCOUNT_CURRENCY_DIGITS</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_SELL</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit2</span><span class="f_CodeExample">&nbsp;*=&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;output&nbsp;to&nbsp;the&nbsp;log&nbsp;for&nbsp;comparison</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%s:&nbsp;%f&nbsp;%f&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">profit2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Try running the script for different accounts and instrument sets.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Profits/Losses&nbsp;for&nbsp;buying&nbsp;1.0&nbsp;lots&nbsp;of&nbsp;13&nbsp;symbols&nbsp;in&nbsp;Market&nbsp;Watch&nbsp;on&nbsp;last&nbsp;20&nbsp;bars&nbsp;H1</span>
+<br><span class="f_CodeExample">EURUSD:&nbsp;390.000000&nbsp;390.000000</span>
+<br><span class="f_CodeExample">GBPUSD:&nbsp;214.000000&nbsp;214.000000</span>
+<br><span class="f_CodeExample">USDCHF:&nbsp;-254.270000&nbsp;-254.270000</span>
+<br><span class="f_CodeExample">USDJPY:&nbsp;-57.930000&nbsp;-57.930000</span>
+<br><span class="f_CodeExample">USDCNH:&nbsp;-172.570000&nbsp;-172.570000</span>
+<br><span class="f_CodeExample">USDRUB:&nbsp;493.360000&nbsp;493.360000</span>
+<br><span class="f_CodeExample">AUDUSD:&nbsp;84.000000&nbsp;84.000000</span>
+<br><span class="f_CodeExample">NZDUSD:&nbsp;13.000000&nbsp;13.000000</span>
+<br><span class="f_CodeExample">USDCAD:&nbsp;-97.480000&nbsp;-97.480000</span>
+<br><span class="f_CodeExample">USDSEK:&nbsp;-682.910000&nbsp;-682.910000</span>
+<br><span class="f_CodeExample">XAUUSD:&nbsp;-1706.000000&nbsp;-1706.000000</span>
+<br><span class="f_CodeExample">SP500m:&nbsp;5300.000000&nbsp;5300.000000</span>
+<br><span class="f_CodeExample">XPDUSD:&nbsp;-84.030000&nbsp;-84.030000</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Ideally, the numbers in each line should match.</span></p>
+
+</div>
+
+</body>
+</html>

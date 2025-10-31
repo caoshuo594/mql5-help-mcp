@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.5.1 Sending Push Notifications</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_5_network.htm"> 7.5 Network functions </a>/ 7.5.1 Sending push notifications
+          </td>
+          <td width="70" align="right">
+          <a href="7_5_network.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_5_2_network_email.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.5.1 Sending push notifications</span></p>
+<p class="p_Text"><span class="f_Text">As you know, the terminal allows you to send push notifications from MetaQuotes services, the terminal itself, and MQL programs to a mobile device with <a href="https://www.metatrader5.com/en/mobile-trading/iphone/help/settings_messages" target="_blank" class="weblink" title="MetaTrader 5 documentation for iOS">iOS</a> or <a href="https://www.metatrader5.com/en/mobile-trading/android/help/messages" target="_blank" class="weblink" title="MetaTrader 5 documentation for Android">Android</a> operating systems. This technology uses MetaQuotes ID, a unique identifier of a user (see the note). MetaQuotes ID is allocated when installing the mobile version of the terminal on the user's device, after which the ID must be specified in the terminal settings, on the Notifications tab (several identifiers can be specified separated by commas). After that, the functionality for sending push notifications becomes available for MQL programs.</span></p>
+<p class="p_Quote"><span class="f_Quote">In fact, MetaQuotes ID does not identify a user, but a specific installation of a mobile terminal; a user can have several installations. The ID is not associated with the registration in the mql5.com community by default, although such a binding can be specified on the site. Do not confuse user registration in the community with MetaQuotes ID. To work with notifications, the terminal user is not required to log into the community.</span></p>
+<p class="p_H4"><span class="f_H4">bool SendNotification(const string text)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">SendNotification</span><span class="f_Text"> function sends push notifications with the specified text to all mobile terminals that have a MetaQuotes ID from the terminal settings. The message length is no more than 255 characters.</span></p>
+<p class="p_Text"><span class="f_Text">If the notification is successfully sent from the terminal, the function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">, and it returns </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> if an error occurs. Possible error codes in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> include:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">4515 – ERR_NOTIFICATION_SEND_FAILED – communication problems</span></li>
+<li class="p_li"><span class="f_li">4516 – ERR_NOTIFICATION_WRONG_PARAMETER – an invalid parameter, for example, an empty string</span></li>
+<li class="p_li"><span class="f_li">4517 – ERR_NOTIFICATION_WRONG_SETTINGS – MetaQuotes ID is incorrectly configured or missing</span></li>
+<li class="p_li"><span class="f_li">4518 – ERR_NOTIFICATION_TOO_FREQUENT – too frequent function calls</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">If there is a connection to the server, the message is sent instantly. If the user's device is online, the message should reach the addressee, but delivery cannot be guaranteed in the general case. There is no return notification to the program about the delivery of the message. The history of push messages on the server for deferred delivery is not saved.</span></p>
+<p class="p_Text"><span class="f_Text">The function has restrictions on the frequency of use: no more than 2 calls per second and no more than 10 per minute.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">SendNotification</span><span class="f_Text"> function is not executed in the strategy tester.</span></p>
+<p class="p_Text"><span class="f_Text">The book includes a simple script </span><span class="f_Text" style="font-style: italic;">NetNotification.mq5</span><span class="f_Text"> that sends a test notification when the settings are correct.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MQLInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">MQL_PROGRAM_NAME</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;runs&nbsp;on&nbsp;&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">AccountInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">ACCOUNT_SERVER</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">AccountInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">ACCOUNT_LOGIN</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Sending&nbsp;notification:&nbsp;&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SendNotification</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;INVALID_PARAMETER(4003)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SendNotification</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;NOTIFICATION_WRONG_SETTINGS(4517)&nbsp;or&nbsp;0&nbsp;(success)</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

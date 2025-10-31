@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.2.14 Virtual methods (virtual and override)</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_2_classes_and_interfaces.htm"> 3.2 Classes and interfaces </a>/ 3.2.14 Virtual methods (virtual and override)
+          </td>
+          <td width="70" align="right">
+          <a href="3_2_13_classes_pointers.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_2_15_classes_static.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.2.14 Virtual methods (virtual and override)</span></p>
+<p class="p_Text"><span class="f_Text">Classes are intended to describe external programming interfaces and provide their internal implementation. Since the functionality of our test program is to draw various shapes, we have described several variables in the class </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text"> and its descendants for future implementation, and also reserved the method </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> for the interface.</span></p>
+<p class="p_Text"><span class="f_Text">In the base class </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">, it shouldn't and can't do anything because </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text"> is not a concrete shape: we'll convert </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text"> to an abstract class later (we will talk more about <a href="3_2_18_classes_abstract_interfaces.htm" class="topiclink">abstract classes and interfaces</a> later).</span></p>
+<p class="p_Text"><span class="f_Text">Let's redefine the </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> method in the </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Ellipse</span><span class="f_Text"> and other derived classes (</span><span class="f_Text" style="font-style: italic;">Shapes3.mq5</span><span class="f_Text">). This involves copying the method and modifying its content accordingly. Although many refer to this process as &quot;overriding&quot;, we will distinguish between the two terms, reserving &quot;overriding&quot; exclusively for virtual methods, which will be discussed later.</span></p>
+<p class="p_Text"><span class="f_Text">Strictly speaking, redefining a method only requires the method name to match. However, to ensure consistent usage throughout the code, it is essential to maintain the same parameter list and return type.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">draw</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Drawing&nbsp;rectangle&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Since we don't know how to draw on the screen yet, we'll just output the message to the log.</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that by providing a new implementation of the method in the derived class, we thereby get 2 versions of the method: one refers to the built-in base object (inner </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">), and the other to the derived one (outer </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">The first will be called for a variable of type </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">, and the second one for a variable of type </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In a longer inheritance chain, a method can be redefined and propagated even more times.</span></p>
+<p class="p_Text"><span class="f_Text">You can change an access type of a new method, for example, make it public if it was protected, or vice versa. But in this case, we left the </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> method in the public section.</span></p>
+<p class="p_Text"><span class="f_Text">If necessary, the programmer can call the implementation of the method of any of the progenitor classes: for this, a special <a href="3_2_16_classes_namespace_context.htm" class="topiclink">context resolution operator</a> is used — two colons '::'. In particular, we could call the </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> implementation from the class </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text"> from the method </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> of the class </span><span class="f_Text" style="font-style: italic;">Square</span><span class="f_Text">: for this, we specify the name of the desired class, '::' and the method name, for example, </span><span class="f_Text" style="font-style: italic;">Rectangle::draw()</span><span class="f_Text">. Calling </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> without specifying the context implies a method of the current class, and therefore if you do it from the method </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> itself, you will get an infinite <a href="2_8_8_functions_recursive.htm" class="topiclink">recursion</a>, and ultimately, a stack overflow and program crash.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Square</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">draw</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">draw</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Drawing&nbsp;square&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then calling </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> on the object </span><span class="f_Text" style="font-style: italic;">Square</span><span class="f_Text"> would log two lines:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Square</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">200</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">50</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">clrGreen</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">draw</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Drawing&nbsp;rectangle</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Drawing&nbsp;square</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Binding a method to a class in which it is declared provides the static dispatch (or static binding): the compiler decides which method to call at the compilation stage and &quot;hardwires&quot; the found match into binary code.</span></p>
+<p class="p_Text"><span class="f_Text">During the decision process, the compiler looks for the method to be called in the object of the class for which the dereference ('.') is performed. If the method is present, it is called, and if not, the compiler checks the parent class for the presence of the method, and so on, through the inheritance chain until the method is found. If the method is not found in any of the classes in the chain, an &quot;undeclared identifier&quot; compilation error will occur.</span></p>
+<p class="p_Text"><span class="f_Text">In particular, the following code calls the </span><span class="f_Text" style="font-style: italic;">setColor</span><span class="f_Text"> method on the object </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">200</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">75</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">50</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">clrBlue</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">setColor</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">clrWhite</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">However, this method is defined only in the base class </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text"> and is built in once in all descendant classes, and therefore it will be executed here.</span></p>
+<p class="p_Text"><span class="f_Text">Let's try to start drawing arbitrary shapes from an array in the function </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> (recall that we have duplicated and modified the method </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> in all descendant classes).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shapes</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">draw</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Oddly enough, nothing is output to the log. This happens because the program calls the method </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> of the class </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">There is a major drawback of static dispatch here: when we use a pointer to a base class to store an object of a derived class, the compiler chooses a method based on the type of the pointer, not the object. The fact is that at the compilation stage, it is not yet known what class object it will point to during program execution.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, there is a need for a more flexible approach: a dynamic dispatch (or binding), which would defer the choice of a method (from among all the overridden versions of the method in the descendant chain) to runtime. The choice must be made based on analysis of the actual class of the object at the pointer. It is dynamic dispatching that provides the principle of <a href="3_2_4_classes_polymorphism.htm" class="topiclink">polymorphism</a>.</span></p>
+<p class="p_Text"><span class="f_Text">This approach is implemented in MQL5 using virtual methods. In the description of such a method, the keyword </span><span class="f_Text" style="font-style: italic;">virtual</span><span class="f_Text"> must be added at the beginning of the header.</span></p>
+<p class="p_Text"><span class="f_Text">Let's declare the method </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> in the class </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text"> (</span><span class="f_Text" style="font-style: italic;">Shapes4.mq5</span><span class="f_Text">) as virtual. This will automatically make all versions of it in derived classes virtual as well.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">draw</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Once a method is virtualized, modifying it in derived classes is called overriding rather than redefinition. Overriding requires the name, parameter types, and return value of the method to match (taking into account the presence/absence of </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> modifiers).</span></p>
+<p class="p_Quote"><span class="f_Quote">Note that overriding virtual functions is different from <a href="2_8_9_functions_overloading.htm" class="topiclink">function overloading</a>. Overloading uses the same function name, but with different parameters (in particular, we saw the possibility of overloading a constructor in the example of structures, see <a href="3_1_4_structs_ctor_dtor.htm" class="topiclink">Constructors and Destructors</a>), and overriding requires full matching of function signatures.</span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">Overridden functions must be defined in different classes that are related by inheritance relationships. Overloaded functions must be in the same class — otherwise, it will not be an overload but, most likely, a redefinition (and it will work differently, see further analysis of the example </span><span class="f_Quote" style="font-style: italic;">OverrideVsOverload.mq5</span><span class="f_Quote">).</span></p>
+<p class="p_Text"><span class="f_Text">If you run a new script, the expected lines will appear in the log, signaling calls to specific versions of the </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> method in each of the classes.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Drawing&nbsp;square</span>
+<br><span class="f_CodeExample">Drawing&nbsp;circle</span>
+<br><span class="f_CodeExample">Drawing&nbsp;triangle</span>
+<br><span class="f_CodeExample">Drawing&nbsp;ellipse</span>
+<br><span class="f_CodeExample">Drawing&nbsp;triangle</span>
+<br><span class="f_CodeExample">Drawing&nbsp;rectangle</span>
+<br><span class="f_CodeExample">Drawing&nbsp;square</span>
+<br><span class="f_CodeExample">Drawing&nbsp;triangle</span>
+<br><span class="f_CodeExample">Drawing&nbsp;square</span>
+<br><span class="f_CodeExample">Drawing&nbsp;triangle</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In derived classes where a virtual method is overridden, it is recommended to add the keyword </span><span class="f_Text" style="font-style: italic;">override</span><span class="f_Text"> to its header (although this is not required).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">draw</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Drawing&nbsp;rectangle&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This allows the compiler to know that we are overriding the method on purpose. If in the future the API of the base class suddenly changes and the overridden method is no longer virtual (or simply removed), the compiler will generate an error message: &quot;method is declared with 'override' specifier, but does not override any base class method&quot;. Keep in mind that even adding or removing the modifier </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> from a method changes its signature, and overriding may be broken due to this.</span></p>
+<p class="p_Text"><span class="f_Text">The keyword </span><span class="f_Text" style="font-style: italic;">virtual</span><span class="f_Text"> before an overridden method is also allowed but not required.</span></p>
+<p class="p_Text"><span class="f_Text">For dynamic dispatching to work, the compiler generates a table of virtual functions for each class. An implicit field is added to each object with a link to the given table of its class. The table is populated by the compiler based on information about all virtual methods and their overridden versions along the inheritance chain of a particular class.</span></p>
+<p class="p_Text"><span class="f_Text">A call to a virtual method is encoded in the binary image of the program in a special way: first, the table is looked up in search of a version for a class of a particular object (located at the pointer), and then a transition is made to the appropriate function.</span></p>
+<p class="p_Text"><span class="f_Text">As a result, dynamic dispatch is slower than static dispatch.</span></p>
+<p class="p_Text"><span class="f_Text">In MQL5, classes always contain a table of virtual functions, regardless of the presence of virtual methods.</span></p>
+<p class="p_Text"><span class="f_Text">If a virtual method returns a pointer to a class, then when it is overridden, it is possible to change (make it more specific, highly specialized) the object type of the return value. In other words, the type of the pointer can be not only the same as in the initial declaration of the virtual method but also any of its successors. Such types are called &quot;covariant&quot; or interchangeable.</span></p>
+<p class="p_Text"><span class="f_Text">For example, if we made the method </span><span class="f_Text" style="font-style: italic;">setColor</span><span class="f_Text"> virtual in the class </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">setColor</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">color</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">backgroundColor</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #0000ff;">this</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">we could override it in the class </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text"> like this (only as a demonstration of the technology):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">setColor</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">color</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;call&nbsp;original&nbsp;method</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;(by&nbsp;pre-lightening&nbsp;the&nbsp;color,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;no&nbsp;matter&nbsp;what&nbsp;for)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">setColor</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0x808080</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #0000ff;">this</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Note that the return type is a pointer to </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text"> instead of </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">It makes sense to use a similar trick if the overridden version of the method changes something in that part of the object that does not belong to the base class, so that the object, in fact, no longer corresponds to the allowed state (invariant) of the base class.</span></p>
+<p class="p_Text"><span class="f_Text">Our example with drawing shapes is almost ready. It remains to fill the virtual methods </span><span class="f_Text" style="font-style: italic;">draw</span><span class="f_Text"> with real content. We will do this in the chapter <a href="5_8_14_objects_color_style.htm" class="topiclink">Graphics</a> (see example </span><span class="f_Text" style="font-style: italic;">ObjectShapesDraw.mq5</span><span class="f_Text">), but we will improve it after studying <a href="7_1_8_resources_resourcesave.htm" class="topiclink">graphic resources</a>.</span></p>
+<p class="p_Quote"><span class="f_Quote">Taking into account the inheritance concept, the procedure by which the compiler chooses the appropriate method looks a bit confusing. Based on the method name and the specific list of arguments (their types) in the call instruction, a list of all available candidate methods is compiled.</span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">For non-virtual methods, at the beginning only methods of the current class are analyzed. If none of them matches, the compiler will continue searching the base class (and then more distant ancestors until it finds a match). If among the methods of the current class, there is a suitable one (even if the implicit conversion of argument types is necessary), it will be picked. If the base class had a method with more appropriate argument types (no conversion or fewer conversions), the compiler still won't get to it. In other words, non-virtual methods are analyzed starting from the class of the current object towards the ancestors to the first &quot;working&quot; match.</span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">For virtual methods, the compiler first finds the required method by name in the pointer class and then selects the implementation in the table of virtual functions for the most instantiated class (furthest descendant) in which this method is overridden in the chain between the pointer type and the object type. In this case, implicit argument conversion can also be used if there is no exact match between the types of arguments.</span></p>
+<p class="p_Text"><span class="f_Text">Let's consider the following example (</span><span class="f_Text" style="font-style: italic;">OverrideVsOverload.mq5</span><span class="f_Text">). There are 4 classes that are chained: </span><span class="f_Text" style="font-style: italic;">Base</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Derived</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Concrete</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Special</span><span class="f_Text">. All of them contain methods with type arguments </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">float</span><span class="f_Text">. In the function </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">, the integer </span><span class="f_Text" style="font-style: italic;">i</span><span class="f_Text"> and the real </span><span class="f_Text" style="font-style: italic;">f</span><span class="f_Text"> variables are used as arguments for all method calls.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">nonvirtual</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Derived</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">nonvirtual</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error:&nbsp;'Derived::process'&nbsp;method&nbsp;is&nbsp;declared&nbsp;with&nbsp;'override'&nbsp;specifier,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;but&nbsp;does&nbsp;not&nbsp;override&nbsp;any&nbsp;base&nbsp;class&nbsp;method</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Concrete</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Derived</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Special</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Concrete</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">First, we create an object of class </span><span class="f_Text" style="font-style: italic;">Concrete</span><span class="f_Text"> and a pointer to it </span><span class="f_Text" style="font-style: italic;">Base *ptr</span><span class="f_Text">. Then we call non-virtual and virtual methods for them. In the second part, the methods of the object </span><span class="f_Text" style="font-style: italic;">Special</span><span class="f_Text"> are called through the class pointers </span><span class="f_Text" style="font-style: italic;">Base</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Derived</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Concrete</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">&nbsp;=&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Static&nbsp;link&nbsp;tests</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">nonvirtual</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Base::nonvirtual(float),&nbsp;conversion&nbsp;int&nbsp;-&gt;&nbsp;float</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">nonvirtual</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Derived::nonvirtual(int)</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;warning:&nbsp;deprecated&nbsp;behavior,&nbsp;hidden&nbsp;method&nbsp;calling</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">nonvirtual</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Base::nonvirtual(float),&nbsp;because</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;method&nbsp;selection&nbsp;ended&nbsp;in&nbsp;Base,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Derived::nonvirtual(int)&nbsp;does&nbsp;not&nbsp;suit&nbsp;to&nbsp;f</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Dynamic&nbsp;link&nbsp;tests</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;attention:&nbsp;there&nbsp;is&nbsp;no&nbsp;method&nbsp;Base::process(int),&nbsp;also</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;there&nbsp;are&nbsp;no&nbsp;process(float)&nbsp;overrides&nbsp;in&nbsp;classes&nbsp;up&nbsp;to&nbsp;and&nbsp;including&nbsp;Concrete</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Base::process(float),&nbsp;conversion&nbsp;int&nbsp;-&gt;&nbsp;float</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Derived::process(int),&nbsp;because</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;there&nbsp;is&nbsp;no&nbsp;override&nbsp;in&nbsp;Concrete,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;and&nbsp;the&nbsp;override&nbsp;in&nbsp;Special&nbsp;does&nbsp;not&nbsp;count</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Special</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">&nbsp;=&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;attention:&nbsp;there&nbsp;is&nbsp;no&nbsp;method&nbsp;Base::process(int)&nbsp;in&nbsp;ptr</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Special::process(float),&nbsp;conversion&nbsp;int&nbsp;-&gt;&nbsp;float</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Special::process(float)</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Derived</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">d</span><span class="f_CodeExample">&nbsp;=&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Special::process(int)</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;warning:&nbsp;deprecated&nbsp;behavior,&nbsp;hidden&nbsp;method&nbsp;calling</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Special::process(float)</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The log output is shown below.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">void&nbsp;Base::nonvirtual(float)&nbsp;1.0</span>
+<br><span class="f_CodeExample">void&nbsp;Derived::nonvirtual(int)&nbsp;1</span>
+<br><span class="f_CodeExample">void&nbsp;Base::nonvirtual(float)&nbsp;2.0</span>
+<br><span class="f_CodeExample">void&nbsp;Base::process(float)&nbsp;1.0</span>
+<br><span class="f_CodeExample">void&nbsp;Derived::process(int)&nbsp;1</span>
+<br><span class="f_CodeExample">void&nbsp;Special::process(float)&nbsp;1.0</span>
+<br><span class="f_CodeExample">void&nbsp;Special::process(float)&nbsp;2.0</span>
+<br><span class="f_CodeExample">void&nbsp;Special::process(int)&nbsp;1</span>
+<br><span class="f_CodeExample">void&nbsp;Special::process(float)&nbsp;2.0</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">ptr.nonvirtual(i)</span><span class="f_Text"> call is made using static binding, and the integer </span><span class="f_Text" style="font-style: italic;">i</span><span class="f_Text"> is preliminarily cast to the parameter type, </span><span class="f_Text" style="font-style: italic;">float</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The call </span><span class="f_Text" style="font-style: italic;">c.nonvirtual(i)</span><span class="f_Text"> is also static, and since there is no </span><span class="f_Text" style="font-style: italic;">void nonvirtual(int)</span><span class="f_Text"> method in the class </span><span class="f_Text" style="font-style: italic;">Concrete</span><span class="f_Text">, the compiler finds such a method in the parent class </span><span class="f_Text" style="font-style: italic;">Derived</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Calling the function of the same name on the same object with a value of type </span><span class="f_Text" style="font-style: italic;">float</span><span class="f_Text"> leads the compiler to the method </span><span class="f_Text" style="font-style: italic;">Base::nonvirtual(float)</span><span class="f_Text"> because </span><span class="f_Text" style="font-style: italic;">Derived::nonvirtual(int)</span><span class="f_Text"> is not suitable (the conversion would lead to a loss of precision). Along the way, the compiler issues a &quot;deprecated behavior, hidden method calling&quot; warning.</span></p>
+<p class="p_Text"><span class="f_Text">Overloaded methods may look like overridden (have the same name but different parameters) but they are different because they are located in different classes. When a method in a derived class overrides a method in a parent class, it replaces the behavior of the parent class method which can sometimes cause unexpected effects. The programmer might expect the compiler to choose another suitable method (as in overloading), but instead the subclass is invoked.</span></p>
+<p class="p_Text"><span class="f_Text">To avoid potential warnings, if the implementation of the parent class is necessary, it should be written as exactly the same function in the derived class, and the base class should be called from it.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Derived</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;this&nbsp;override&nbsp;will&nbsp;suppress&nbsp;the&nbsp;warning</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;deprecated&nbsp;behavior,&nbsp;hidden&nbsp;method&nbsp;calling&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">nonvirtual</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">nonvirtual</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's go back to tests in </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Calling </span><span class="f_Text" style="font-style: italic;">ptr.process(i)</span><span class="f_Text"> demonstrates the confusion between overloading and overriding described above. The </span><span class="f_Text" style="font-style: italic;">Base</span><span class="f_Text"> class has a </span><span class="f_Text" style="font-style: italic;">process(float)</span><span class="f_Text"> virtual method, and the class </span><span class="f_Text" style="font-style: italic;">Derived</span><span class="f_Text"> adds a new virtual method </span><span class="f_Text" style="font-style: italic;">process(int),</span><span class="f_Text"> which is not overriding in this case because parameter types are different. The compiler selects a method by name in the base class and checks the virtual function table for overrides in the inheritance chain up to the </span><span class="f_Text" style="font-style: italic;">Concrete</span><span class="f_Text"> class (inclusive, this is the object class by pointer). Since no overrides were found, the compiler took </span><span class="f_Text" style="font-style: italic;">Base::process(float)</span><span class="f_Text"> and applied the type conversion of the argument to the parameter (</span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> to </span><span class="f_Text" style="font-style: italic;">float</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">If we followed the rule of always writing the word </span><span class="f_Text" style="font-style: italic;">override</span><span class="f_Text"> where redefining is implied and added it to </span><span class="f_Text" style="font-style: italic;">Derived</span><span class="f_Text">, we would get an error:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Derived</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error!</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The compiler would report &quot;'Derived::process' method is declared with 'override' specifier, but does not override any base class method&quot;. This would serve as a hint to fixing the problem.</span></p>
+<p class="p_Text"><span class="f_Text">Calling </span><span class="f_Text" style="font-style: italic;">process(i)</span><span class="f_Text"> on the </span><span class="f_Text" style="font-style: italic;">Concrete</span><span class="f_Text"> object is done with </span><span class="f_Text" style="font-style: italic;">Derived::process(int)</span><span class="f_Text">. Although we have an even further redefinition in the class </span><span class="f_Text" style="font-style: italic;">Special</span><span class="f_Text">, it is irrelevant because it's done in the inheritance chain after the </span><span class="f_Text" style="font-style: italic;">Concrete</span><span class="f_Text"> class.</span></p>
+<p class="p_Text"><span class="f_Text">When the pointer </span><span class="f_Text" style="font-style: italic;">ptr</span><span class="f_Text"> is later assigned to the </span><span class="f_Text" style="font-style: italic;">Special</span><span class="f_Text"> object, calls to </span><span class="f_Text" style="font-style: italic;">process(i)</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">process(f)</span><span class="f_Text"> are resolved by the compiler as </span><span class="f_Text" style="font-style: italic;">Special::process(float)</span><span class="f_Text"> because </span><span class="f_Text" style="font-style: italic;">Special</span><span class="f_Text"> overrides </span><span class="f_Text" style="font-style: italic;">Base::process(float)</span><span class="f_Text">. The choice of the </span><span class="f_Text" style="font-style: italic;">float</span><span class="f_Text"> parameter occurs for the same reason as described earlier: the method </span><span class="f_Text" style="font-style: italic;">Base::process(float)</span><span class="f_Text"> is overridden by </span><span class="f_Text" style="font-style: italic;">Special</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">If we apply the pointer </span><span class="f_Text" style="font-style: italic;">d</span><span class="f_Text"> of type </span><span class="f_Text" style="font-style: italic;">Derived</span><span class="f_Text">, then we finally get the expected call </span><span class="f_Text" style="font-style: italic;">Special::process(int)</span><span class="f_Text"> for the string </span><span class="f_Text" style="font-style: italic;">d.process(i)</span><span class="f_Text">. The point is that </span><span class="f_Text" style="font-style: italic;">process(int)</span><span class="f_Text"> is defined in </span><span class="f_Text" style="font-style: italic;">Derived</span><span class="f_Text">, and falls into the scope of the compiler's search.</span></p>
+<p class="p_Text"><span class="f_Text">Note that the </span><span class="f_Text" style="font-style: italic;">Special</span><span class="f_Text"> class not only overrides the inherited virtual methods but also overloads two methods in the class itself.</span></p>
+<p class="p_Quote"><span class="f_Quote">Do not call a virtual function from a constructor or destructor! While technically possible, the virtual behavior in the constructor and destructor is completely lost and you might get unexpected results. Not only explicit but also indirect calls should be avoided (for example, when a simple method is called from a constructor, which in turn calls a virtual one).</span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">Let's analyze the situation in more detail using the example of a constructor. The fact is that at the time of the constructor's work, the object is not yet fully assembled along the entire inheritance chain, but only up to the current class. All derived part have yet to be &quot;finished&quot; around the existing core. Therefore, all later virtual method overrides (if any) are not yet available at this point. As a result, the current version of the method will be called from the constructor.</span></p>
+
+</div>
+
+</body>
+</html>

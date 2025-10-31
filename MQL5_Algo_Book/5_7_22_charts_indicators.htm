@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.7.22 Managing indicators on the chart</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_7_charts.htm"> 5.7 Working with charts </a>/ 5.7.22 Managing indicators on the chart
+          </td>
+          <td width="70" align="right">
+          <a href="5_7_21_charts_set_symbol_period.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_7_23_charts_open_close.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.7.22 Managing indicators on the chart</span></p>
+<p class="p_Text"><span class="f_Text">As we have already found out, charts are the execution and visualization environment for indicators. Their close connection finds additional confirmation in the form of a whole group of built-in functions that provide control over indicators on charts. In one of the previous chapters, we already completed <a href="5_5_10_indicators_chart_review.htm" class="topiclink">an overview of these features</a>. Now we are ready to consider them in detail after getting acquainted with the charts.</span></p>
+<p class="p_Text"><span class="f_Text">All functions are united by the fact that the first two parameters are unified: this is the chart identifier (</span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text">) and window number (</span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text">). Zero values of the parameters denote the current chart and the main window, respectively.</span></p>
+<p class="p_H4"><span class="f_H4">int ChartIndicatorsTotal(long chartId, int window)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of all indicators attached to the specified chart window. It can be used to enumerate all the indicators attached to a given chart. The number of all chart windows can be obtained from the property <a href="5_7_8_charts_count_visibility.htm" class="topiclink">CHART_WINDOWS_TOTAL</a> using the function </span><span class="f_Text" style="font-style: italic;">ChartGetInteger</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">string ChartIndicatorName(long chartId, int window, int index)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the indicator's short name by the </span><span class="f_Text" style="font-style: italic;">index</span><span class="f_Text"> in the list of indicators located in the specified chart window. The short name is the name specified in the property <a href="5_4_12_indicators_caption_digits.htm" class="topiclink">INDICATOR_SHORTNAME</a> by the function </span><span class="f_Text" style="font-style: italic;">IndicatorSetString</span><span class="f_Text"> (if it is not set, then by default it is equal to the name of the indicator file).</span></p>
+<p class="p_H4"><span class="f_H4">int ChartIndicatorGet(long chartId, int window, const string shortname)</span></p>
+<p class="p_Text"><span class="f_Text">It returns the handle of the indicator with the specified short name in the specific chart window. We can say that the identification of the indicator in the function </span><span class="f_Text" style="font-style: italic;">ChartIndicatorGet</span><span class="f_Text"> is made exactly by the short name, and therefore it is recommended to compose it in such a way that it contains the values of all input parameters. If this is not possible for one reason or another, there is another way to identify an indicator instance through the list of its parameters, which can be obtained by a given descriptor using the </span><span class="f_Text" style="font-style: italic;"><a href="5_5_14_indicators_parameters.htm" class="topiclink">IndicatorParameters</a></span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">Getting a handle from a function </span><span class="f_Text" style="font-style: italic;">ChartIndicatorGet</span><span class="f_Text"> increases the internal counter for using this indicator. The terminal execution system keeps loaded all indicators whose counter is greater than zero. Therefore, an indicator that is no longer needed must be explicitly freed by calling </span><span class="f_Text" style="font-style: italic;"><a href="5_5_13_indicators_indicatorrelease.htm" class="topiclink">IndicatorRelease</a></span><span class="f_Text">. Otherwise, the indicator will remain idle and consume resources.</span></p>
+<p class="p_H4"><span class="f_H4">bool ChartIndicatorAdd(long chartId, int window, int handle)</span></p>
+<p class="p_Text"><span class="f_Text">The function adds an indicator with the descriptor passed in the last parameter to the specified chart window. The indicator and chart must have the same combination of symbol and timeframe. Otherwise, the error ERR_CHART_INDICATOR_CANNOT_ADD (4114) will occur.</span></p>
+<p class="p_Text"><span class="f_Text">To add an indicator to a new window, the </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text"> parameter must be by one greater than the index of the last existing window, that is, equal to the <a href="5_7_8_charts_count_visibility.htm" class="topiclink">CHART_WINDOWS_TOTAL</a> property received via the </span><span class="f_Text" style="font-style: italic;">ChartGetInteger </span><span class="f_Text">call. If the parameter value exceeds the value of </span><span class="f_Text" style="font-style: italic;">ChartGetInteger(ID,CHART_WINDOWS_TOTAL)</span><span class="f_Text">, a new window and indicator will not be created.</span></p>
+<p class="p_Quote"><span class="f_Quote">If an indicator is added to the main chart window, which should be drawn in a separate subwindow (for example, a built-in iMACD or a custom indicator with the specified property </span><span class="f_Quote" style="font-style: italic;">#property indicator_separate_window</span><span class="f_Quote">), then such an indicator may seem invisible, although it will be present in the list of indicators. This usually means that the values of this indicator do not fall within the displayed range of the price chart. The values of such an &quot;invisible&quot; indicator can be observed in the </span><span class="f_Quote" style="font-style: italic;">Data window</span><span class="f_Quote"> and read using functions from other MQL programs.</span></p>
+<p class="p_Text"><span class="f_Text">Adding an indicator to a chart increases the internal counter of its use due to its binding to the chart. If the MQL program keeps its descriptor and it is no longer needed, then it is worth deleting it by calling </span><span class="f_Text" style="font-style: italic;">IndicatorRelease</span><span class="f_Text">. This will actually decrease the counter, but the indicator will remain on the chart.</span></p>
+<p class="p_H4"><span class="f_H4">bool ChartIndicatorDelete(long chartId, int window, const string shortname)</span></p>
+<p class="p_Text"><span class="f_Text">The function removes the indicator with the specified short name from the window with the </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text"> number on the chart with </span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text">. If there are several indicators with the same short name in the specified chart subwindow, the first one in order will be deleted.</span></p>
+<p class="p_Text"><span class="f_Text">If other indicators are calculated using the values of the removed indicator on the same chart, they will also be removed.</span></p>
+<p class="p_Text"><span class="f_Text">Deleting an indicator from a chart does not mean that its calculated part will also be deleted from the terminal memory if the descriptor remains in the MQL program. To free the indicator handle, use the </span><span class="f_Text" style="font-style: italic;"><a href="5_5_13_indicators_indicatorrelease.htm" class="topiclink">IndicatorRelease</a></span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">ChartWindowFind</span><span class="f_Text"> function returns the number of the subwindow where the indicator is located. There are 2 forms designed to search for the current indicator on its chart or an indicator with a given short name on an arbitrary chart with the </span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text"> identifier.</span></p>
+<p class="p_H4"><span class="f_H4">int ChartWindowFind()</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">int ChartWindowFind(long chartId, string shortname)</span></p>
+<p class="p_Text"><span class="f_Text">The second form can be used in scripts and Experts Advisors.</span></p>
+<p class="p_Text"><span class="f_Text">As a first example demonstrating these functions, let's consider the full version of the script </span><span class="f_Text" style="font-style: italic;">ChartList.mq5</span><span class="f_Text">. We created and gradually refined it in the previous sections, up to the section <a href="5_7_8_charts_count_visibility.htm" class="topiclink">Getting the number and visibility of windows/subwindows</a>. Compared to </span><span class="f_Text" style="font-style: italic;">ChartList4.mq5</span><span class="f_Text"> presented there, we will add input variables to be able to list only charts with MQL programs and suppress the display of hidden windows.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">IncludeEmptyCharts</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">IncludeHiddenWindows</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">With the default value (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) the </span><span class="f_Text" style="font-style: italic;">IncludeEmptyCharts</span><span class="f_Text"> parameter instructs to include all charts into the list, including empty ones. The </span><span class="f_Text" style="font-style: italic;">IncludeHiddenWindows</span><span class="f_Text"> parameter sets the display of hidden windows by default. These settings correspond to the previous scripting logic </span><span class="f_Text" style="font-style: italic;">ChartListN</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">To calculate the total number of indicators and indicators in subwindows, we define the </span><span class="f_Text" style="font-style: italic;">indicators</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">subs</span><span class="f_Text"> variables.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ChartList</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">indicators</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">subs</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The working loop over the windows of the current chart has undergone major changes.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ChartList</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">win</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">visible</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_WINDOW_IS_VISIBLE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">visible</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;!</span><span class="f_CodeExample" style="color: #333333;">IncludeHiddenWindows</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">continue</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">visible</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;/Hidden&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartIndicatorsTotal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">temp</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">header</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;/&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;[I]&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartIndicatorName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">indicators</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">subs</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">temp</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here we have added </span><span class="f_Text" style="font-style: italic;">ChartIndicatorsTotal</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ChartIndicatorName</span><span class="f_Text"> calls. Now the list will mention MQL programs of all types: [E] – Expert Advisors, [S] – scripts, [I] – indicators.</span></p>
+<p class="p_Text"><span class="f_Text">Here is an example of the log entries generated by the script for the default settings.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Chart&nbsp;List</span>
+<br><span class="f_CodeExample">N,&nbsp;ID,&nbsp;Symbol,&nbsp;TF,&nbsp;#subwindows,&nbsp;*active,&nbsp;Windows&nbsp;handle</span>
+<br><span class="f_CodeExample">0&nbsp;132358585987782873&nbsp;EURUSD&nbsp;M15&nbsp;#1&nbsp;&nbsp;&nbsp;&nbsp;133538</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;1/0&nbsp;[I]&nbsp;ATR(11)</span>
+<br><span class="f_CodeExample">1&nbsp;132360375330772909&nbsp;EURUSD&nbsp;D1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;133514</span>
+<br><span class="f_CodeExample">2&nbsp;132544239145024745&nbsp;EURUSD&nbsp;M15&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;395646</span>
+<br><span class="f_CodeExample">&nbsp;[S]&nbsp;ChartList</span>
+<br><span class="f_CodeExample">3&nbsp;132544239145024732&nbsp;USDRUB&nbsp;D1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;395688</span>
+<br><span class="f_CodeExample">4&nbsp;132544239145024744&nbsp;EURUSD&nbsp;H1&nbsp;#2&nbsp;&nbsp;active&nbsp;&nbsp;2361730</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;1/0&nbsp;[I]&nbsp;%R(14)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;2/Hidden</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;2/0&nbsp;[I]&nbsp;Momentum(15)</span>
+<br><span class="f_CodeExample">5&nbsp;132544239145024746&nbsp;EURUSD&nbsp;H1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;133584</span>
+<br><span class="f_CodeExample">Total&nbsp;chart&nbsp;number:&nbsp;6,&nbsp;with&nbsp;MQL-programs:&nbsp;3</span>
+<br><span class="f_CodeExample">Experts:&nbsp;0,&nbsp;Scripts:&nbsp;1,&nbsp;Indicators:&nbsp;3&nbsp;(main:&nbsp;0&nbsp;/&nbsp;sub:&nbsp;3)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If set both input parameters to </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">, we get a reduced list.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Chart&nbsp;List</span>
+<br><span class="f_CodeExample">N,&nbsp;ID,&nbsp;Symbol,&nbsp;TF,&nbsp;#subwindows,&nbsp;*active,&nbsp;Windows&nbsp;handle</span>
+<br><span class="f_CodeExample">0&nbsp;132358585987782873&nbsp;EURUSD&nbsp;M15&nbsp;#1&nbsp;&nbsp;&nbsp;&nbsp;133538</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;1/0&nbsp;[I]&nbsp;ATR(11)</span>
+<br><span class="f_CodeExample">2&nbsp;132544239145024745&nbsp;EURUSD&nbsp;M15&nbsp;&nbsp;&nbsp;*&nbsp;active&nbsp;&nbsp;395646</span>
+<br><span class="f_CodeExample">&nbsp;[S]&nbsp;ChartList</span>
+<br><span class="f_CodeExample">4&nbsp;132544239145024744&nbsp;EURUSD&nbsp;H1&nbsp;#2&nbsp;&nbsp;&nbsp;&nbsp;2361730</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;1/0&nbsp;[I]&nbsp;%R(14)</span>
+<br><span class="f_CodeExample">Total&nbsp;chart&nbsp;number:&nbsp;6,&nbsp;with&nbsp;MQL-programs:&nbsp;3</span>
+<br><span class="f_CodeExample">Experts:&nbsp;0,&nbsp;Scripts:&nbsp;1,&nbsp;Indicators:&nbsp;2&nbsp;(main:&nbsp;0&nbsp;/&nbsp;sub:&nbsp;2)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As a second example, let's consider an interesting script </span><span class="f_Text" style="font-style: italic;">ChartIndicatorMove.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">When running several indicators on a chart, we often may need to change the order of the indicators. MetaTrader 5 does not have built-in tools for this, which forces you to delete some indicators and add them again, while it is important to save and restore the settings. The </span><span class="f_Text" style="font-style: italic;">ChartIndicatorMove.mq5</span><span class="f_Text"> script provides an option to automate this procedure. It is important to note that the script transfers only indicators: if you need to change the order of subwindows along with graphical objects (if they are inside), then you should use <a href="5_7_24_charts_tpl.htm" class="topiclink">tpl templates</a>.</span></p>
+<p class="p_Text"><span class="f_Text">The basis of operation of </span><span class="f_Text" style="font-style: italic;">ChartIndicatorMove.mq5</span><span class="f_Text"> is as follows. When the script is applied to a chart, it determines to which window/subwindow it was added, and starts listing the indicators found there to the user with a request to confirm the transfer. The user can agree, or continue the listing.</span></p>
+<p class="p_Text"><span class="f_Text">The direction of movement, up or down, is set in the </span><span class="f_Text" style="font-style: italic;">MoveDirection</span><span class="f_Text"> input variable. The DIRECTION enumeration will describe it.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">script_show_inputs</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">enum</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DIRECTION</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Up</span><span class="f_CodeExample">&nbsp;=&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Down</span><span class="f_CodeExample">&nbsp;=&nbsp;+</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DIRECTION</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MoveDirection</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Up</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To transfer the indicator not to the neighboring subwindow but to the next one, that is, to actually swap the subwindows with indicators in places (which is usually required), we introduce the </span><span class="f_Text" style="font-style: italic;">jumpover</span><span class="f_Text"> input variable.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">JumpOver</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The loop through the indicators of the target window obtained from </span><span class="f_Text" style="font-style: italic;">ChartWindowOnDropped</span><span class="f_Text"> starts in </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartWindowOnDropped</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MoveDirection</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Up</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Alert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Can't&nbsp;move&nbsp;up&nbsp;from&nbsp;window&nbsp;at&nbsp;index&nbsp;0&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartIndicatorsTotal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Inside the loop, we define the name of the next indicator, display a message to the user, and move the indicator from one window to another using a sequence of the following manipulations:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Get the handle by calling </span><span class="f_li" style="font-style: italic;">ChartIndicatorGet.</span></li>
+<li class="p_li"><span class="f_li">Add it to the window above or below the current one via </span><span class="f_li" style="font-style: italic;">ChartIndicatorAdd</span><span class="f_li">, in accordance with the selected direction, and when moving down, a new subwindow can be automatically created.</span></li>
+<li class="p_li"><span class="f_li">Remove the indicator from the previous window with </span><span class="f_li" style="font-style: italic;">ChartIndicatorDelete.</span></li>
+<li class="p_li"><span class="f_li">Release the descriptor, because we no longer need it in the program.</span></li>
+</ul>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartIndicatorName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">caption</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">MoveDirection</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">button</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MessageBox</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Move&nbsp;'&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;'&nbsp;&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">caption</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;?&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">caption</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MB_YESNOCANCEL</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">button</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">IDCANCEL</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">break</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">button</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">IDYES</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartIndicatorGet</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartIndicatorAdd</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MoveDirection</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartIndicatorDelete</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">IndicatorRelease</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">break</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The following image shows the result of swapping subwindows with indicators </span><span class="f_Text" style="font-style: italic;">WPR</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Momentum</span><span class="f_Text">. The script was launched by dropping it on the top sub-window with the </span><span class="f_Text" style="font-style: italic;">WPR</span><span class="f_Text"> indicator, the direction of movement was chosen downward (</span><span class="f_Text" style="font-style: italic;">Down</span><span class="f_Text">), jump (</span><span class="f_Text" style="font-style: italic;">JumpOver</span><span class="f_Text">) was enabled by default.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Swapping Indicators in subwindows" title="Swapping Indicators in subwindows" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="chart_ind_move.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Swapping Indicators in subwindows</span></p>
+<p class="p_Text"><span class="f_Text">Please note that if you move the indicator from the subwindow to the main window, its charts will most likely not be visible due to the values going beyond the displayed price range. If this happened by mistake, you can use the script to transfer the indicator back to the subwindow.</span></p>
+
+</div>
+
+</body>
+</html>

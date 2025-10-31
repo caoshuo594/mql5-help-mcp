@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.1.2 Threads</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_1_runtime.htm"> 5.1 General principles for executing MQL programs </a>/ 5.1.2 Threads
+          </td>
+          <td width="70" align="right">
+          <a href="5_1_1_runtime_features_by_progtype.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_1_3_runtime_events_overview.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.1.2 Threads</span></p>
+<p class="p_Text"><span class="f_Text">In a simplified form, a program can be represented as a sequence of statements that a developer has generated for a computer. The main executor of statements in a computer is the central processing unit. Modern computers are usually equipped with processors with multiple cores, which is equivalent to having multiple processors. However, the number of programs a user may want to run in parallel is virtually unlimited. Thus, the number of programs is always many times greater than the available cores/processors. Due to this, each core actually divides its working time between several different programs: it will allocate 1 millisecond for executing the statements of one program, then 1 millisecond for the statements of another, then for thirds, and so on, in a circle. Since the switching occurs very quickly, the user does not notice this, as it seems that all programs are executed in parallel and simultaneously.</span></p>
+<p class="p_Text"><span class="f_Text">For the processor to be able to suspend the execution of the statements of one program and then resume its work from the previous place (after it quietly switched to the statements of other &quot;parallel&quot; programs), it must be able to somehow save and restore the intermediate state of each program: the current statement, variables, possibly open files, network connections, and so on. This entire collection of resources and data that a program needs to run normally, along with its current position in the sequence of statements, is called the program's execution context. The operating system, in fact, is designed to create such contexts for each program at the request of the user (or other programs). Each such active context is called a thread. Many programs require many threads for themselves because their functionality involves maintaining several activities in parallel. MetaTrader 5 also requires multiple threads to load loading quotes for multiple symbols, plot charts, and respond to user actions. Furthermore, separate threads are also allocated to MQL programs.</span></p>
+<p class="p_Text"><span class="f_Text">The MQL program execution environment allocates no more than one thread to each program. Expert Advisors, scripts, and services receive strictly one thread each. As for indicators, one stream is allocated for all indicators working on one financial instrument. Moreover, the same thread is responsible for displaying the charts of the corresponding symbol, so it is not recommended to occupy it with heavy calculations. Otherwise, the user interface will become unresponsive: user actions will be processed with a delay, or the window will even become unresponsive. Threads of all other types of MQL programs are not tied to an interface and, therefore, can load the processor with any complex task.</span></p>
+<p class="p_Text"><span class="f_Text">One of the important properties of a thread follows from its definition and purpose: It only supports sequential execution of specified statements one after another. Only one statement is executed in one thread at a time. If an infinite loop is written in the program, the thread will get stuck on this instruction and never get to the instructions below it. Long calculations can also create the effect of an endless loop: they will load the processor and prevent other actions from being performed, the results of which the user may expect. That is why efficient calculations in indicators are important for the smooth operation of the graphical interface.</span></p>
+<p class="p_Text"><span class="f_Text">However, in other types of MQL programs, attention should be paid to thread arrangement. In the following sections, we will get familiar with the special event handling functions that are the entry points to MQL programs. A single-threaded model means that during the processing of one event, the program is immune to other events that could potentially occur at the same time. Therefore, the terminal organizes an event queue for each program. We will touch on this point in more detail in the next section.</span></p>
+<p class="p_Text"><span class="f_Text">In order to experience the effects of single-threading in practice, we will look at a simple example in the section <a href="5_4_19_indicators_limitations.htm" class="topiclink">Limitations and benefits of indicators</a> (</span><span class="f_Text" style="font-style: italic;">IndBarIndex.mq5</span><span class="f_Text">). We have chosen indicators for this purpose because they not only share one thread for each symbol but also display results directly on the chart, which makes the potential problem the most obvious.</span></p>
+
+</div>
+
+</body>
+</html>

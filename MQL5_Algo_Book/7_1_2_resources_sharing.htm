@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.1.2 Shared use of resources of different MQL programs</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_1_resources.htm"> 7.1 Resources </a>/ 7.1.2 Shared use of resources of different MQL programs
+          </td>
+          <td width="70" align="right">
+          <a href="7_1_1_resources_directive.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_1_3_resources_variables.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.1.2 Shared use of resources of different MQL programs</span></p>
+<p class="p_Text"><span class="f_Text">The resource name is unique throughout the terminal. Later we will learn how to create resources not at the compilation stage (by the </span><span class="f_Text" style="font-style: italic;">#resource</span><span class="f_Text"> directive) but dynamically, using the </span><span class="f_Text" style="font-style: italic;"><a href="7_1_5_resources_resourcecreate.htm" class="topiclink">ResourceCreate</a></span><span class="f_Text"> function. In any case, the resource is declared in the context of the program that creates it, so that the uniqueness of the full name is provided automatically by binding to the file system (path and name of a specific file </span><span class="f_Text" style="font-style: italic;">ex5</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">In addition to containing and using resources, an MQL program can also access the resources of another compiled program (ex5 file). This is possible provided that the program using the resource knows the location path and the name of another program containing the required resource, as well as the name of this resource.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, the terminal provides an important property of resources which is their shared use: resources from one ex5 file can be used in many other programs.</span></p>
+<p class="p_Text"><span class="f_Text">In order to use a resource from a third-party ex5 file, it must be specified in the form &quot;path_file_name.ex5::resource_name&quot;. For example, let's say the script </span><span class="f_Text" style="font-style: italic;">DrawingScript.mq5</span><span class="f_Text"> refers to a specified image resource in the file </span><span class="f_Text" style="font-style: italic;">triangle.bmp</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#resource</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;\\Files\\triangle.bmp&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then its name for use in the actual script will look like &quot;::Files\\triangle.bmp&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">To use the same resource from another program, for example, an Expert Advisor, the resource name should be preceded by the path of the ex5 script file relative to the MQL5 folder in the terminal data directory, as well as the name of the script itself (in the compiled form, </span><span class="f_Text" style="font-style: italic;">DrawingScript.ex5</span><span class="f_Text">). Let the script be in the standard </span><span class="f_Text" style="font-style: italic;">MQL5/Scripts/</span><span class="f_Text"> folder. In this case, the image should be accessed using the &quot;\\Scripts\\DrawingScript.ex5::Files\\triangle.bmp&quot; string. The &quot;.ex5&quot; extension is optional.</span></p>
+<p class="p_Text"><span class="f_Text">If, when accessing the resource of another ex5 file, the path to this file is not specified, then such a file is searched in the same folder where the program requesting the resource is located. For example, if we assume that the same Expert Advisor is in the standard </span><span class="f_Text" style="font-style: italic;">MQL5/Experts/</span><span class="f_Text"> folder, and it queries a resource without specifying the path (for example, &quot;DrawingScript.ex5::Files\\triangle.bmp&quot;), then </span><span class="f_Text" style="font-style: italic;">DrawingScript.ex5</span><span class="f_Text"> will be searched in the </span><span class="f_Text" style="font-style: italic;">MQL5/Experts/</span><span class="f_Text"> folder.</span></p>
+<p class="p_Text"><span class="f_Text">Due to the shared use of resources, their dynamic creation and updating can be used to exchange data between MQL programs. This happens right in memory and is therefore a good alternative to files or global variables.</span></p>
+<p class="p_Text"><span class="f_Text">Please note that to load a resource from an MQL program, you do not need to run it: to read resources, it is enough to have an ex5 file with resources.</span></p>
+<p class="p_Text"><span class="f_Text">An important exception during which report sharing is not possible is when a resource is described in the form of a <a href="7_1_3_resources_variables.htm" class="topiclink">resource variable</a>.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.2.5 Theoretical foundations of OOP: Composition (design)</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_2_classes_and_interfaces.htm"> 3.2 Classes and interfaces </a>/ 3.2.5 OOP fundamentals: Composition (design)
+          </td>
+          <td width="70" align="right">
+          <a href="3_2_4_classes_polymorphism.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_2_6_classes_definition.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.2.5 OOP fundamentals: Composition (design)</span></p>
+<p class="p_Text"><span class="f_Text">When designing programs using OOP, there is a problem of finding the optimal (according to some given characteristics) division into classes and relations between them. The term &quot;composition&quot; can be ambiguous and is often used with different meanings, including one of the special cases of &quot;composing&quot; classes. This digression is necessary because when reading other computer literature, you can find different interpretations of the term &quot;compositions&quot;: both in a generalized and in a narrower sense. We will try to explain this concept, specifying the meaning of the terms in each case (when it means the general &quot;design/project development&quot; of the software interface, and when it means &quot;compositional aggregation&quot;).</span></p>
+<p class="p_Text"><span class="f_Text">So, the class, as we know, consists of fields (properties) and methods. Properties, in turn, can be described by custom types, that is, they can be objects of another class. There are several ways to logically connect these objects:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-weight: bold;">Composition</span><span class="f_li"> (full </span><span class="f_li" style="font-weight: bold;">inclusion</span><span class="f_li"> or compositional aggregation) of objects-fields into an owner object. The relationship of such objects is described by the &quot;whole-part&quot; relationship, and the part cannot exist outside the whole. The owner object is said to &quot;have a&quot; property object, and the property object is a &quot;part of&quot; the owner object. The owner creates and destroys its parts. Deleting the owner removes all of its parts; the owner cannot exist without parts.</span></li>
+<li class="p_li"><span class="f_li" style="font-weight: bold;">Aggregation</span><span class="f_li"> of objects-fields by the owner object is a &quot;softer&quot; inclusion. Although the relationship is also described as &quot;whole-part&quot;, the owner only contains references to parts that can be assigned, changed, and exist in isolation from the whole. Moreover, one part can be used in several &quot;owners&quot;.</span></li>
+<li class="p_li"><span class="f_li" style="font-weight: bold;">Association</span><span class="f_li">, that is, a one- or two-way connection of independent objects that has an arbitrary applied meaning; one object is said to &quot;use&quot; another.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Another type of relationship to keep in mind is &quot;is a&quot;, discussed earlier in the <a href="3_2_3_classes_oop_inheritance.htm" class="topiclink">inheritance</a> section.</span></p>
+<p class="p_Text"><span class="f_Text">An example of a full inclusion is a car and its engine. Here, a car is understood as a full-fledged means of transportation. It's not like that without a motor. And a particular engine belongs to only one car at a time. Situations when there is no engine in the car yet (at the factory) or it no longer exists (in the car repair shop) are equivalent to the fact that we broke the source code of the program.</span></p>
+<p class="p_Text"><span class="f_Text">An example of aggregation is the composition of groups of students for studies of certain courses: a group for each course includes several students, and any of them can belong to other groups (if listening to several subjects). The group &quot;has&quot; listeners. The exit of a student from the group does not affect the educational process of the group (the rest continue to study).</span></p>
+<p class="p_Text"><span class="f_Text">Finally, to demonstrate the idea of association, consider a computer and a printer. We can say that the computer uses the printer to print. The printer can be turned on or off as needed, and the same printer can be used from different computers. All computers and printers exist independently of each other but can be shared.</span></p>
+<p class="p_Text"><span class="f_Text">As for the characteristics that are customary to guide the design of classes, the most famous include:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">DRY (Don't repeat yourself) – instead, move common parts into parent (possibly abstract) classes.</span></li>
+<li class="p_li"><span class="f_li">SRP (Single Responsibility Principle) – one class should perform one task, and if this is not the case, you need to split it into smaller ones.</span></li>
+<li class="p_li"><span class="f_li">OCP (Open-Closed Principle) – &quot;write code open for extension but closed for modification&quot;. If several calculation options are hardcoded in the X class and new ones may appear, make a base (abstract) class for a separate calculation and create specific options (&quot;extension&quot; of the functionality) on its basis,</span><span class="f_Text"> connected to class X without modifying it.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">These are just a few of the class design best practices. After mastering the basics of OOP within the scope of this book, it may be helpful to look at other specialized sources of information on the topic, as they provide ready-made solutions for object decomposition in many common situations.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.10.8 Products of matrices and vectors</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_10_matrices.htm"> 4.10 Matrices and vectors </a>/ 4.10.8 Products of matrices and vectors
+          </td>
+          <td width="70" align="right">
+          <a href="4_10_7_matrices_manipulations.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_10_9_matrices_decomposition.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.10.8 Products of matrices and vectors</span></p>
+<p class="p_Text"><span class="f_Text">Matrix multiplication is one of the basic operations in various numerical methods. For example, it is often used when implementing forward and backward propagation methods in neural network layers.</span></p>
+<p class="p_Text"><span class="f_Text">Various kinds of convolutions can also be attributed to the category of matrix products. The group of such functions in MQL5 looks like this:</span></p>
+<ul>
+<li class="p_li"><span class="f_li" style="font-style: italic;">MatMul</span><span class="f_li">: the matrix product of two matrices</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Power</span><span class="f_li">: raise a square matrix to the specified integer power</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Inner</span><span class="f_li">: the inner product of two matrices</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Outer</span><span class="f_li">: the outer product of two matrices or two vector</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Kron</span><span class="f_li">: the Kronecker product of two matrices, a matrix and a vector, a vector and a matrix, or two vectors</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">CorrCoef</span><span class="f_li">: calculate the Pearson correlation between rows or columns of a matrix, or between vectors</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Cov</span><span class="f_li">: calculate the covariance matrix of rows or columns of a matrix, or between two vectors</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Correlate</span><span class="f_li">: calculate the mutual correlation (cross-correlation) of two vectors</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Convolve</span><span class="f_li">: calculate discrete linear convolution of two vectors</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Dot</span><span class="f_li">: the scalar product of two vectors</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">To give a general idea of how to manage these methods, we will give their prototypes (in the following order: from matrix, through mixed matrix-vector, to vector).</span></p>
+<p class="p_H4"><span class="f_H4">matrix&lt;T&gt; matrix&lt;T&gt;::MatMul(const matrix&lt;T&gt; &amp;m)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">matrix&lt;T&gt; matrix&lt;T&gt;::Power(const int power)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">matrix&lt;T&gt; matrix&lt;T&gt;::Inner(const matrix&lt;T&gt; &amp;m)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">matrix&lt;T&gt; matrix&lt;T&gt;::Outer(const matrix&lt;T&gt; &amp;m)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">matrix&lt;T&gt; matrix&lt;T&gt;::Kron(const matrix&lt;T&gt; &amp;m)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">matrix&lt;T&gt; matrix&lt;T&gt;::Kron(const vector&lt;T&gt; &amp;v)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">matrix&lt;T&gt; matrix&lt;T&gt;::CorrCoef(const bool rows = true)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">matrix&lt;T&gt; matrix&lt;T&gt;::Cov(const bool rows = true)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">matrix&lt;T&gt; vector&lt;T&gt;::Cov(const vector&lt;T&gt; &amp;v)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;T vector&lt;T&gt;::CorrCoef(const vector&lt;T&gt; &amp;v)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">vector&lt;T&gt; vector&lt;T&gt;::Correlate(const vector&lt;T&gt; &amp;v, ENUM_VECTOR_CONVOLVE mode)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">vector&lt;T&gt; vector&lt;T&gt;::Convolve(const vector&lt;T&gt; &amp;v, ENUM_VECTOR_CONVOLVE mode)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">matrix&lt;T&gt; vector&lt;T&gt;::Outer(const vector&lt;T&gt; &amp;v)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">matrix&lt;T&gt; vector&lt;T&gt;::Kron(const matrix&lt;T&gt; &amp;m)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">matrix&lt;T&gt; vector&lt;T&gt;::Kron(const vector&lt;T&gt; &amp;v)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;T vector&lt;T&gt;::Dot(const vector&lt;T&gt; &amp;v)</span></p>
+<p class="p_Text"><span class="f_Text">Here is a simple example of the matrix product of two matrices using the </span><span class="f_Text" style="font-style: italic;">MatMul</span><span class="f_Text"> method:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">&nbsp;=&nbsp;{{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">},</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">}};</span>
+<br><span class="f_CodeExample" style="color: #333333;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">&nbsp;=&nbsp;{{</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">},</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">},</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">}};</span>
+<br><span class="f_CodeExample" style="color: #333333;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c1</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">MatMul</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #333333;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c2</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">MatMul</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;c1&nbsp;=&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;c2&nbsp;=&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;c1&nbsp;=&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[[4,1]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;[2,2]]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;c2&nbsp;=&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[[4,1,0]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;[2,2,0]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;[1,3,0]]</span>
+<br><span class="f_CodeExample" style="color: #808080;">*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Matrices of the form A[M,N] * B[N,K] = C[M,K] can be multiplied, i.e., the number of columns in the first matrix must be equal to the number of rows in the second matrix. If the dimensions are not consistent, the result is an empty matrix.</span></p>
+<p class="p_Text"><span class="f_Text">When multiplying a matrix and a vector, two options are allowed:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">The horizontal vector (row) is multiplied by the matrix on the right, the length of the vector is equal to the number of matrix rows</span></li>
+<li class="p_li"><span class="f_li">The matrix is multiplied by a vertical vector (column) on the right, the length of the vector is equal to the number of columns of the matrix</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Vectors can also be multiplied with each other. In </span><span class="f_Text" style="font-style: italic;">MatMul</span><span class="f_Text">, this is always equivalent to the dot product (the </span><span class="f_Text" style="font-style: italic;">Dot</span><span class="f_Text"> method) of a row vector by a column vector, and the option when a column vector is multiplied by a row vector and a matrix is obtained is supported by another method: </span><span class="f_Text" style="font-style: italic;">Outer</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Let's demonstrate the </span><span class="f_Text" style="font-style: italic;">Outer</span><span class="f_Text"> product of vector </span><span class="f_Text" style="font-style: italic;">v5</span><span class="f_Text"> by vector </span><span class="f_Text" style="font-style: italic;">v3</span><span class="f_Text">, and in reverse order. In both cases, a column vector is implied on the left, and a row vector is implied on the right.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">vector</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v3</span><span class="f_CodeExample">&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample" style="color: #333333;">vector</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v5</span><span class="f_CodeExample">&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;v5&nbsp;=&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v5</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;v3&nbsp;=&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v3</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;v5.Outer(v3)&nbsp;=&nbsp;m[5,3]&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v5</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Outer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">v3</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;v3.Outer(v5)&nbsp;=&nbsp;m[3,5]&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v3</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Outer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">v5</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;v5&nbsp;=</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1,2,3,4,5]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;v3&nbsp;=</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1,2,3]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;v5.Outer(v3)&nbsp;=&nbsp;m[5,3]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[[1,2,3]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;[2,4,6]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;[3,6,9]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;[4,8,12]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;[5,10,15]]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;v3.Outer(v5)&nbsp;=&nbsp;m[3,5]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[[1,2,3,4,5]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;[2,4,6,8,10]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;[3,6,9,12,15]]</span>
+<br><span class="f_CodeExample" style="color: #808080;">*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

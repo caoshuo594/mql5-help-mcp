@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.8.1 Logging messages</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_8_output.htm"> 4.8 User interaction </a>/ 4.8.1 Logging messages
+          </td>
+          <td width="70" align="right">
+          <a href="4_8_output.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_8_2_output_alert.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.8.1 Logging messages</span></p>
+<p class="p_Text"><span class="f_Text">Logging is the most common way to inform the user of current information about the program's operation. This may be the status of a regular completion, an indication of progress during a long calculation, or debugging data for finding and reproducing errors.</span></p>
+<p class="p_Text"><span class="f_Text">Unfortunately, no programmer is immune to errors in their code. Therefore, developers usually try to leave the so-called &quot;breadcrumb trail&quot;: logging the main stages of program execution (at least, the sequence of function calls).</span></p>
+<p class="p_Text"><span class="f_Text">We are already familiar with two logging functions &#8722; </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">PrintFormat</span><span class="f_Text">. We used them in the examples in previous sections. We had to &quot;put them into use&quot; ahead of time in a simplified mode since it is almost impossible to do without them.</span></p>
+<p class="p_Text"><span class="f_Text">One function call generates, as a rule, one record. However, if a newline character ('\n') is encountered in the output string, it will split the information into two parts.</span></p>
+<p class="p_Text"><span class="f_Text">Note that all </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">PrintFormat</span><span class="f_Text"> calls are transformed into log entries on the </span><span class="f_Text" style="font-style: italic;">Experts</span><span class="f_Text"> tab of the </span><span class="f_Text" style="font-style: italic;">Toolbox</span><span class="f_Text"> window. Although the tab is called </span><span class="f_Text" style="font-style: italic;">Experts</span><span class="f_Text">, it collects the results of all print instructions, regardless of the <a href="5_1_1_runtime_features_by_progtype.htm" class="topiclink">MQL program type</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Logs are stored in files organized according to the principle &quot;one day = one file&quot;: they have the names YYYYMMDD.log (Y for year, M for month, and D for day). Files are located in </span><span class="f_Text" style="font-style: italic;">&lt;data directory&gt;/MQL5/Logs</span><span class="f_Text"> (do not confuse them with the terminal system logs in the folder </span><span class="f_Text" style="font-style: italic;">&lt;data directory&gt;/Logs</span><span class="f_Text">).</span></p>
+<p class="p_Quote"><span class="f_Quote">Note that during bulk logging (if </span><span class="f_Quote" style="font-style: italic;">Print</span><span class="f_Quote"> function calls generate a large amount of information in a short time), the terminal displays only some entries in the window. This is done to optimize performance. In addition, the user is in any case not able to see all the messages on the go. In order to see the full version of the log, you need to run the </span><span class="f_Quote" style="font-style: italic;">View</span><span class="f_Quote"> command of the context menu. As a result, a window with a log will open.</span><br>
+<span class="f_Quote" style="font-style: italic;">&nbsp;</span><br>
+<span class="f_Quote">It should also be kept in mind that information from the log is cached when written to disk, that is, it is written to files in large blocks in a lazy mode, which is why at any given time the log file, as a rule, does not contain the most recent entries (although they are visible in a window). To initiate a cache flush to the disk, you can run the command </span><span class="f_Quote" style="font-style: italic;">View</span><span class="f_Quote"> or </span><span class="f_Quote" style="font-style: italic;">Open</span><span class="f_Quote"> in the log context menu.</span></p>
+<p class="p_Text"><span class="f_Text">Each log entry is preceded by a time to the nearest millisecond, as well as the name of the program (and its graphics) that generated or caused this message.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H4"><span class="f_H4">void Print(argument, ...)</span></p>
+<p class="p_Text"><span class="f_Text">The function prints one or more values to the expert log, in one line (if the output data does not contain the character '\n').</span></p>
+<p class="p_Text"><span class="f_Text">Arguments can be of any <a href="2_2_builtin_types.htm" class="topiclink">built-in type</a>. They are separated by commas. The number of parameters cannot exceed 64. Their variable number is indicated by an ellipsis in the prototype, but MQL5 does not allow you to describe your own functions with a similar characteristic: only some built-in API functions have a variable number of parameters (in particular, </span><span class="f_Text" style="font-style: italic;"><a href="4_2_7_strings_format.htm" class="topiclink">StringFormat</a></span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">PrintFormat</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;"><a href="4_8_3_output_comment.htm" class="topiclink">Comment</a></span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">For structures and classes, you should implement a built-in print method, or display their fields separately.</span></p>
+<p class="p_Text"><span class="f_Text">Also, the function is not capable of handling arrays. You can display them element by element, or use the function </span><span class="f_Text" style="font-style: italic;"><a href="4_3_1_arrays_print.htm" class="topiclink">ArrayPrint</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Values of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> are output by the function with an accuracy of up to 16 significant digits (together in the mantissa and the fractional part). A number can be displayed in either traditional or scientific format (with an exponent), whichever is more compact. Values of type </span><span class="f_Text" style="font-style: italic;">float</span><span class="f_Text"> are displayed with an accuracy of 7 decimal places. To display real numbers with a different precision, or to explicitly specify the format, you must use the </span><span class="f_Text" style="font-style: italic;">PrintFormat</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">Values of type </span><span class="f_Text" style="font-style: italic;">bool</span><span class="f_Text"> output as the strings &quot;true&quot; or &quot;false&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">Dates are displayed with the day and time specified with maximum accuracy (up to a second), in the format &quot;YYYY.MM.DD hh:mm:ss&quot;. To display the date in a different format, use the </span><span class="f_Text" style="font-style: italic;">TimeToString</span><span class="f_Text"> function (see section <a href="4_1_3_conversions_datetime.htm" class="topiclink">Date and time</a>).</span></p>
+<p class="p_Text"><span class="f_Text">Enumeration values are displayed as integers. To display element names use the </span><span class="f_Text" style="font-style: italic;">EnumToString</span><span class="f_Text"> function (see section <a href="4_1_6_conversions_enums.htm" class="topiclink">Enumerations</a>).</span></p>
+<p class="p_Text"><span class="f_Text">Single-byte and double-byte characters are also output as integers. To display symbols as characters or letters, use the functions </span><span class="f_Text" style="font-style: italic;">CharToString</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">ShortToString</span><span class="f_Text"> see section <a href="4_2_6_strings_codepages.htm" class="topiclink">Working with symbols and code pages</a>).</span></p>
+<p class="p_Text"><span class="f_Text">Values of the </span><span class="f_Text" style="font-style: italic;">color</span><span class="f_Text"> type are displayed either as a string with a triple of numbers indicating the intensity of each color component (&quot;R, G, B&quot;) or as a color name if this color is present in the color set.</span></p>
+<p class="p_Text"><span class="f_Text">For more information about converting values of different types to strings, see the chapter <a href="4_1_conversions.htm" class="topiclink">Data Conversion of Built-in Types</a> (particularly in sections <a href="4_1_1_conversions_numbers.htm" class="topiclink">Numbers to strings and vice versa</a>, <a href="4_1_3_conversions_datetime.htm" class="topiclink">Date and time</a>, <a href="4_1_4_conversions_color.htm" class="topiclink">Color</a>).</span></p>
+<p class="p_Text"><span class="f_Text">When working in the strategy tester in single pass mode (<a href="4_9_4_env_mode.htm" class="topiclink">testing</a> Expert Advisor or indicator), results of the function </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> are output to the test agent log.</span></p>
+<p class="p_Text"><span class="f_Text">When working in the strategy tester in the mode <a href="4_9_4_env_mode.htm" class="topiclink">optimization</a>, logging is suppressed for performance reasons, so the </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> function has no visible effect. However, all expressions given as arguments are evaluated.</span></p>
+<p class="p_Text"><span class="f_Text">All arguments, after being converted to a string representation, are concatenated into one common string without any delimiter characters. If required, such characters must be explicitly written in the argument list. For example,</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">z</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">z</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here, 3 variables are logged, separated by commas. If it were not for the intermediate literals &quot;, &quot;, the values of the variables would be stuck together in the log entry.</span></p>
+<p class="p_Text"><span class="f_Text">Lots of cases of applying </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> can be found starting from the very first sections of the book (for example, <a href="1_4_first_program.htm" class="topiclink">First program</a>, <a href="1_7_init_assign_express.htm" class="topiclink">Assignment and initialization, expressions and arrays</a>, and in others). &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">As a new way of working with </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> we will implement a simple class that will allow you to display a sequence of arbitrary values without specifying a separator character between each neighboring value. We use the '&lt;&lt;' operator overload approach, similar to what is used in the C++ I/O streams (std::cout).</span></p>
+<p class="p_Text"><span class="f_Text">The class definition will be placed in a separate header file </span><span class="f_Text" style="font-style: italic;">OutputStream.mqh</span><span class="f_Text">. A class is shown below in a simplified form.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OutputStream</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ushort</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">delimiter</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;add&nbsp;the&nbsp;next&nbsp;argument,&nbsp;separated&nbsp;by&nbsp;a&nbsp;separator&nbsp;(if&nbsp;any)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">appendWithDelimiter</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">delimiter</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ShortToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">delimiter</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OutputStream</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ushort</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">):&nbsp;</span><span class="f_CodeExample" style="color: #333333;">delimiter</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">d</span><span class="f_CodeExample">)&nbsp;{&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OutputStream</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #0000ff;">operator</span><span class="f_CodeExample">&lt;&lt;(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">appendWithDelimiter</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #0000ff;">this</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OutputStream</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #0000ff;">operator</span><span class="f_CodeExample">&lt;&lt;(</span><span class="f_CodeExample" style="color: #333333;">OutputStream</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">self</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(&amp;</span><span class="f_CodeExample" style="color: #0000ff;">this</span><span class="f_CodeExample">&nbsp;==&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">self</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">);</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;output&nbsp;of&nbsp;the&nbsp;composed&nbsp;string</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">line</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">NULL</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #0000ff;">this</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Its point is to accumulate in a string variable </span><span class="f_Text" style="font-style: italic;">line</span><span class="f_Text"> string representations of any arguments passed using the '&lt;&lt;' operator. If a separator character is specified in the class constructor, it will automatically be inserted between the arguments. Since the overloaded operator returns a pointer to an object, we can chainpass a sequence of arguments:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">OutputStream</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">out</span><span class="f_CodeExample">(',');</span>
+<br><span class="f_CodeExample" style="color: #333333;">out</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">z</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">out</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As an attribute of the end of data collection, and for the actual output of the content </span><span class="f_Text" style="font-style: italic;">line</span><span class="f_Text"> into the log, an overload of the same operator for the object itself is used.</span></p>
+<p class="p_Text"><span class="f_Text">The real class is somewhat more complicated. In particular, it allows you to set not only the separator character but also the accuracy of displaying real numbers, as well as flags for selecting fields in date and time values. In addition, the class supports character printing, </span><span class="f_Text" style="font-style: italic;">ushort</span><span class="f_Text">, in the form of characters (instead of integer codes), the simplified output of arrays (into a separate string), colors in hexadecimal format as a single value (and not a triple of numbers separated by commas, since the comma is often used as a separator character, and then the color components in the log look like 3 different variables).</span></p>
+<p class="p_Text"><span class="f_Text">A demonstration of using the class is given in the script </span><span class="f_Text" style="font-style: italic;">OutputStream.mq5</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OutputStream</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">os</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">,&nbsp;',');</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dt</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeCurrent</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">color</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clr</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">C</span><span class="f_CodeExample">'</span><span class="f_CodeExample" style="color: #333333;">127</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">128</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">129</span><span class="f_CodeExample">';</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[]&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">os</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;text&quot;</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">clrBlue</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dt</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clr</span><span class="f_CodeExample">&nbsp;&lt;&lt;&nbsp;'@'&nbsp;&lt;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">os</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;output&nbsp;example</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.14159,text,clrBlue,true</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[100,0,-100]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2021.09.07&nbsp;17:38,clr7F8081,@</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H4"><span class="f_H4">void PrintFormat(const string format, ...) &#8801; void printf(const string format, ...)</span></p>
+<p class="p_Text"><span class="f_Text">The function logs a set of arguments based on the specified format string. The </span><span class="f_Text" style="font-style: italic;">format</span><span class="f_Text"> parameter not only provides a free text output string template that is displayed &quot;as is&quot;, but can also contain escape sequences that describe how specific arguments are to be formatted.</span></p>
+<p class="p_Text"><span class="f_Text">The total number of parameters, including the format string, cannot exceed 64. Restrictions on parameter types are similar to functions </span><span class="f_Text" style="font-style: italic;">print</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text" style="font-style: italic;">PrintFormat</span><span class="f_Text"> working and formatting principles are identical to those described for the </span><span class="f_Text" style="font-style: italic;">StringFormat</span><span class="f_Text"> function (see section <a href="4_2_7_strings_format.htm" class="topiclink">Universal formatted data output to a string</a>). The only difference is that </span><span class="f_Text" style="font-style: italic;">StringFormat</span><span class="f_Text"> returns the formed string to the calling code, and </span><span class="f_Text" style="font-style: italic;">print format</span><span class="f_Text"> sends to the journal. We can say that </span><span class="f_Text" style="font-style: italic;">PrintFormat</span><span class="f_Text"> has the following conditional equivalent:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(&lt;</span><span class="f_CodeExample" style="color: #333333;">list</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">of</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">arguments</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">as</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">is</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">including</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">format</span><span class="f_CodeExample">&gt;))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In addition to the full name </span><span class="f_Text" style="font-style: italic;">PrintFormat</span><span class="f_Text"> you can use a shorter alias </span><span class="f_Text" style="font-style: italic;">printf</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Like the </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> function, </span><span class="f_Text" style="font-style: italic;">PrintFormat</span><span class="f_Text"> has some specific features when working in the tester in the optimization mode: its output to the log is suppressed to improve performance.</span></p>
+<p class="p_Text"><span class="f_Text">We have already met in many sections scripts that use </span><span class="f_Text" style="font-style: italic;">PrintFormat</span><span class="f_Text">, for example, <a href="2_7_12_statements_return.htm" class="topiclink">Return transition</a>, <a href="4_1_4_conversions_color.htm" class="topiclink">Color</a>, <a href="4_3_2_arrays_dynamic.htm" class="topiclink">Dynamic arrays</a>, <a href="4_5_4_files_handles.htm" class="topiclink">File descriptor management</a>, <a href="4_6_3_globals_list.htm" class="topiclink">Getting a list of global variables</a>.</span></p>
+
+</div>
+
+</body>
+</html>

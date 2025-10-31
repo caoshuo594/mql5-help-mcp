@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.5.3 Testing visualization: chart, objects, indicators</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_5_tester.htm"> 6.5 Testing and optimization of Expert Advisors </a>/ 6.5.3 Testing visualization: chart, objects, indicators
+          </td>
+          <td width="70" align="right">
+          <a href="6_5_2_tester_time.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_5_4_tester_multicurrency_sync.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.5.3 Testing visualization: chart, objects, indicators</span></p>
+<p class="p_Text"><span class="f_Text">The tester allows testing in two different ways: with and without visualization. The method is selected by choosing a corresponding option on the main settings tab of the tester. </span></p>
+<p class="p_Text"><span class="f_Text">When visualization is enabled, the tester opens a separate window in which it reproduces trading operations and displays indicators and objects. Though it is visual, we don't need to see it for every case, but only for programs with a user interface (for example, trading panels or controlled markup made by graphical objects). For other Expert Advisors, only the execution of the algorithm according to the established strategy is important. This can be checked without visualization, which can significantly speed up the process. By the way, it is in this mode that test runs are made during optimization.</span></p>
+<p class="p_Text"><span class="f_Text">During such &quot;background&quot; testing and optimization, no graphical objects are built. Therefore, when accessing the properties of objects, the Expert Advisor will receive zero values. Thus, you can check the work with objects and the chart only when testing in the visual mode.</span></p>
+<p class="p_Text"><span class="f_Text">Previously, in the <a href="5_4_18_indicators_test.htm" class="topiclink">Testing indicators</a> section, we have seen the specific behavior of indicators in the tester. To increase the efficiency of non-visual testing and optimization of Expert Advisors (using indicators), indicators can be calculated not on every tick, but only when we request data from them. Recalculation on each tick occurs only if there are </span><span class="f_Text" style="font-style: italic;">EventChartCustom</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">OnChartEvent</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">OnTimer</span><span class="f_Text"> functions or </span><span class="f_Text" style="font-style: italic;">tester_everytick_calculate</span><span class="f_Text"> directives in the indicator (see <a href="6_5_12_tester_directives.htm" class="topiclink">Preprocessor directives for the tester</a>). In the visual tester window online indicators always receive </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> events on every tick.</span></p>
+<p class="p_Text"><span class="f_Text">If testing is carried out in a non-visual mode, after its completion, the symbol chart automatically opens in the terminal, which displays completed deals and indicators that were used in the Expert Advisor. This helps to correlate the market entry and exit moments with indicator values. However, here we mean only indicators that work on the symbol and timeframe of testing. If the Expert Advisor created indicators on other symbols or timeframes, they will not be shown.</span></p>
+<p class="p_Quote"><span class="f_Quote">It is important to note that the indicators displayed on the chart automatically opened after testing is completed are recalculated after the end of testing. This happens even if these indicators were used in the tested Expert Advisor and were previously calculated &quot;on the go&quot;, as the bars were forming.</span></p>
+<p class="p_Text"><span class="f_Text">In some cases, the programmer may need to hide information about which indicators are used in the trading algorithm, and therefore their visualization on the chart is undesirable. The </span><span class="f_Text" style="font-style: italic;"><a href="5_5_13_indicators_indicatorrelease.htm" class="topiclink">IndicatorRelease</a></span><span class="f_Text"> function can be used for this.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">IndicatorRelease</span><span class="f_Text"> function is originally intended to release the calculated part of the indicator if it is no longer needed. This saves memory and processor resources. Its second purpose is to prohibit the display of the indicator on the testing chart after completing a single run.</span></p>
+<p class="p_Text"><span class="f_Text">To disable the display of the indicator on the chart at the end of testing, just call </span><span class="f_Text" style="font-style: italic;">IndicatorRelease</span><span class="f_Text"> with the indicator handle in the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> handler. The </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> function is always called in Expert Advisors after completion and before displaying the test chart. Neither OnDeinit nor the destructors of global and static objects are called in the indicators themselves in the tester – this is what the developers of MetaTrader 5 agreed on.</span></p>
+<p class="p_Text"><span class="f_Text">In addition, the MQL5 API includes a special function </span><span class="f_Text" style="font-style: italic;"><a href="6_5_13_tester_testerhideindicators.htm" class="topiclink">TesterHideIndicators</a></span><span class="f_Text"> with a similar purpose, which we will consider later.</span></p>
+<p class="p_Text"><span class="f_Text">At the same time, it should be taken into account that tpl templates (if they are created) can additionally influence the external representation of the testing graph.</span></p>
+<p class="p_Text"><span class="f_Text">So if there is a </span><span class="f_Text" style="font-style: italic;">tester.tpl</span><span class="f_Text"> template in the </span><span class="f_Text" style="font-style: italic;">MQL5/Profiles/Templates</span><span class="f_Text"> directory, it will be applied to the opened chart. If the Expert Advisor used other indicators in its work and did not prohibit their display, then the indicators from the template and from the Expert Advisor will be combined on the chart.</span></p>
+<p class="p_Text"><span class="f_Text">When </span><span class="f_Text" style="font-style: italic;">tester.tpl</span><span class="f_Text"> is absent, the default template (</span><span class="f_Text" style="font-style: italic;">default.tpl</span><span class="f_Text">) is applied.</span></p>
+<p class="p_Text"><span class="f_Text">If the </span><span class="f_Text" style="font-style: italic;">MQL5/Profiles/Templates</span><span class="f_Text"> folder contains a tpl template with the same name as the Expert Advisor (for example, </span><span class="f_Text" style="font-style: italic;">ExpertMACD.tpl</span><span class="f_Text">), then during visual testing or on the chart opened after testing, only indicators from this template will be shown. In this case, no indicators used in the tested Expert Advisor will be shown.</span></p>
+
+</div>
+
+</body>
+</html>

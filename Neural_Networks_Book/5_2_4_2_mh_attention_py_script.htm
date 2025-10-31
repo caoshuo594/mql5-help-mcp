@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.2.4.2 Creating a script to test Multi-Head Self-Attention</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="5_transformer.htm"> 5. Attention mechanisms </a> / <a class="h_m" href="5_2_mh_attention.htm"> 5.2 Multi-Head attention </a> / <a class="h_m" href="5_2_4_mh_attention_python.htm"> 5.2.4 Building Multi-Head Self-Attention in Python </a>/ 5.2.4.2 Creating a script to test Multi-Head Self-Attention
+          </td>
+          <td width="70" align="right">
+          <a href="5_2_4_1_mh_attention_py_class.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_2_5_mh_attention_comparison.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.2.4.2 Creating a script to test Multi-Head Self-Attention</span></p>
+<p class="p_Text"><span class="f_Text">To test the operation of our new class of the </span><span class="f_Text" style="font-style: italic;">Multi-Head Self-Attention</span><span class="f_Text"> neural layer, we will create a script with the implementation of the neural network model, in which we will use the new type of neural layer. We will create our script based on the </span><span class="f_Text" style="font-style: italic;"><a href="4_2_4_rnn_py.htm" class="topiclink">lstm.py</a></span><span class="f_Text"> script, which we used earlier to test recurrent models. Before we start, let's create a copy of the specified script with the file name </span><span class="f_Text" style="font-style: italic;">attention.py</span><span class="f_Text">. In the new copy of the script, we will delete the previously created models, leaving only the convolution model and the best recurrent model. They will serve as a basis for comparing new models.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;A&nbsp;model&nbsp;with&nbsp;a&nbsp;2-dimensional&nbsp;convolutional&nbsp;layer</span>
+<br><span class="f_CodeExample">model3&nbsp;=&nbsp;keras.Sequential([keras.Input(shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;into&nbsp;a&nbsp;4-dimensional&nbsp;one.</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Specify&nbsp;3&nbsp;dimensions,&nbsp;as&nbsp;the&nbsp;4th&nbsp;dimension&nbsp;is&nbsp;determined&nbsp;by&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;packet</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Reshape((-</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">4</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;A&nbsp;convolution&nbsp;layer&nbsp;with&nbsp;8&nbsp;filters</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Conv2D(</span><span class="f_CodeExample" style="color: #008100;">8</span><span class="f_CodeExample">,(</span><span class="f_CodeExample" style="color: #008100;">3</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">),</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Subsample&nbsp;layer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.MaxPooling2D((</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">),strides=</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">),&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;to&nbsp;2-dimensional&nbsp;for&nbsp;fully&nbsp;connected&nbsp;layers</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Flatten(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targerts,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;LSTM&nbsp;block&nbsp;model&nbsp;with&nbsp;no&nbsp;fully&nbsp;connected&nbsp;layers</span>
+<br><span class="f_CodeExample">model4&nbsp;=&nbsp;keras.Sequential([keras.Input(shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;into&nbsp;3-dimensional.</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Specify&nbsp;2&nbsp;dimensions,&nbsp;as&nbsp;the&nbsp;3rd&nbsp;dimension&nbsp;is&nbsp;determined&nbsp;by&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;batch</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Reshape((-</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">4</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;2&nbsp;consecutive&nbsp;LSTM&nbsp;blocks</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;1&nbsp;contains&nbsp;40&nbsp;elements&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.LSTM(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return_sequences=</span><span class="f_CodeExample" style="color: #ff0000;">False</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;2nd&nbsp;gives&nbsp;the&nbsp;result&nbsp;instead&nbsp;of&nbsp;a&nbsp;fully&nbsp;connected&nbsp;layer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Reshape((-</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.LSTM(targerts)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To build the initial model, we created a fairly simple architecture consisting of one attention layer, three fully connected hidden layers, and one fully connected output layer. We used almost the same model architecture above to build the convolutional model. The use of similar models enables the accurate evaluation of the impact of new solutions on the overall performance of the model.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">heads=</span><span class="f_CodeExample" style="color: #008100;">8</span>
+<br><span class="f_CodeExample">key_dimension=</span><span class="f_CodeExample" style="color: #008100;">4</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">model5&nbsp;=&nbsp;keras.Sequential([keras.layers.InputLayer(input_shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;into&nbsp;3-dimensional.&nbsp;Specify&nbsp;2&nbsp;dimensions,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;as&nbsp;the&nbsp;3rd&nbsp;dimension&nbsp;is&nbsp;determined&nbsp;by&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;batch</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;first&nbsp;dimension&nbsp;is&nbsp;for&nbsp;sequence&nbsp;elements</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;second&nbsp;dimension&nbsp;is&nbsp;for&nbsp;the&nbsp;vector&nbsp;describing&nbsp;of&nbsp;one&nbsp;element</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Reshape((-</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">4</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MHAttention(key_dimension,heads),</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Since our attention layer returns a tensor of the same size as its input, we need to reshape the data into a two-dimensional space before using the block of fully connected layers.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;to&nbsp;2-dimensional&nbsp;for&nbsp;fully&nbsp;connected&nbsp;layers</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Flatten(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targerts,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It should be noted that despite the external similarity of the models, the model utilizing the attention mechanism layer uses five times fewer parameters.</span></p>
+<p class="p_Text"><span class="f_Text">However, using a single attention layer is a simplified model and is employed solely for comparative experimentation purposes. In practice, it's more common to use multiple consecutive attention layers. I suggest evaluating the impact of multiple attention layers used in the model on real-world data. To conduct such an experiment, we will sequentially add three more attention layers with the same parameters to our previous model.</span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:468px"><img class="help" alt="Model using the Multi-Heads Self-Attention layer" title="Model using the Multi-Heads Self-Attention layer" width="468" height="339" style="width:468px;height:339px;border:none" src="attention_summary.png"/><p style="text-align:center"><span class="f_ImageCaption">Model using the Multi-Heads Self-Attention layer</span></p></div></div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">model6&nbsp;=&nbsp;keras.Sequential([keras.layers.InputLayer(input_shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;into&nbsp;3-dimensional.&nbsp;Specify&nbsp;2&nbsp;dimensions,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;as&nbsp;the&nbsp;3rd&nbsp;dimension&nbsp;is&nbsp;determined&nbsp;by&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;package</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;first&nbsp;dimension&nbsp;is&nbsp;for&nbsp;sequence&nbsp;elements</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;second&nbsp;dimension&nbsp;is&nbsp;for&nbsp;the&nbsp;vector&nbsp;describing&nbsp;one&nbsp;element</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Reshape((-</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">4</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MHAttention(key_dimension,heads),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MHAttention(key_dimension,heads),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MHAttention(key_dimension,heads),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MHAttention(key_dimension,heads),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;to&nbsp;2-dimensional&nbsp;for&nbsp;fully&nbsp;connected&nbsp;layers</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Flatten(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targerts,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We will compile all neural models with the same parameters: the </span><span class="f_Text" style="font-style: italic;">Adam</span><span class="f_Text"> optimization method, standard deviation as the network error, and an additional </span><span class="f_Text" style="font-style: italic;">accuracy</span><span class="f_Text"> metric.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">model3.</span><span class="f_CodeExample" style="color: #ff0000;">compile</span><span class="f_CodeExample">(optimizer=</span><span class="f_CodeExample" style="color: #008080;">'Adam'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss=</span><span class="f_CodeExample" style="color: #008080;">'mean_squared_error'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metrics=[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We compiled neural network models with the same parameters as before.</span></p>
+<p class="p_Text"><span class="f_Text">Recurrent models are sensitive to the sequence of input signals provided. Therefore, when training a recurrent neural network, unlike the other models, you cannot shuffle the input data. Exactly for this purpose, when launching a recurrent model, we set the </span><span class="f_Text" style="font-style: italic;">shuffle</span><span class="f_Text"> parameter to </span><span class="f_Text" style="font-style: italic;">False</span><span class="f_Text">. The convolution model and models using the attention layer have this parameter set to </span><span class="f_Text" style="font-style: italic;">True</span><span class="f_Text">. The remaining training parameters for the models remain unchanged, including the early stopping criterion when reaching a minimum error on the training dataset.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">callback&nbsp;=&nbsp;tf.keras.callbacks.EarlyStopping(monitor=</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">,&nbsp;patience=</span><span class="f_CodeExample" style="color: #008100;">20</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">history3&nbsp;=&nbsp;model3.fit(train_data,&nbsp;train_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0.01</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After slightly training the models, we visualize the results. We plot two graphs. On one of them, we will display the dynamics of error changes during the training and validation process.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Plot&nbsp;the&nbsp;results&nbsp;of&nbsp;model&nbsp;training</span>
+<br><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.plot(history3.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Conv2D&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history3.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Conv2D&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history4.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;only&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history4.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;only&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history5.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history5.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history6.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention&nbsp;4&nbsp;layers&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history6.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention&nbsp;4&nbsp;layers&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$MSE$&nbsp;$loss$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'upper&nbsp;right'</span><span class="f_CodeExample">,&nbsp;ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the second graph, we plot similar results for </span><span class="f_Text" style="font-style: italic;">Accuracy</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.plot(history3.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Conv2D&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history3.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Conv2D&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history4.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;only&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history4.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;only&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history5.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history5.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history6.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention&nbsp;4&nbsp;layers&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history6.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention&nbsp;4&nbsp;layers&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$Accuracy$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'lower&nbsp;right'</span><span class="f_CodeExample">,&nbsp;ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then we will load the test dataset and evaluate the performance of the pretrained models on it.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Load&nbsp;testing&nbsp;dataset</span>
+<br><span class="f_CodeExample">test_filename&nbsp;=&nbsp;os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'test_data.csv'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">test&nbsp;=&nbsp;np.asarray(&nbsp;pd.read_table(test_filename,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sep=</span><span class="f_CodeExample" style="color: #008080;">','</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;header=</span><span class="f_CodeExample" style="color: #ff0000;">None</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skipinitialspace=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;encoding=</span><span class="f_CodeExample" style="color: #008080;">'utf-8'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float_precision=</span><span class="f_CodeExample" style="color: #008080;">'high'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dtype=np.float64,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;low_memory=</span><span class="f_CodeExample" style="color: #ff0000;">False</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Split&nbsp;the&nbsp;test&nbsp;sample&nbsp;into&nbsp;input&nbsp;data&nbsp;and&nbsp;targets</span>
+<br><span class="f_CodeExample">test_data=test[:,</span><span class="f_CodeExample" style="color: #008100;">0</span><span class="f_CodeExample">:inputs]</span>
+<br><span class="f_CodeExample">test_target=test[:,inputs:]</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Validation&nbsp;of&nbsp;model&nbsp;results&nbsp;on&nbsp;a&nbsp;test&nbsp;sample</span>
+<br><span class="f_CodeExample">test_loss3,&nbsp;test_acc3&nbsp;=&nbsp;model3.evaluate(test_data,&nbsp;test_target,&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss4,&nbsp;test_acc4&nbsp;=&nbsp;model4.evaluate(test_data,&nbsp;test_target,&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss5,&nbsp;test_acc5&nbsp;=&nbsp;model5.evaluate(test_data,&nbsp;test_target,&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss6,&nbsp;test_acc6&nbsp;=&nbsp;model6.evaluate(test_data,&nbsp;test_target,&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The results of the model's performance on the test sample will be numerically logged and visualized on the graph.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Output&nbsp;test&nbsp;results&nbsp;to&nbsp;the&nbsp;log</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Conv2D&nbsp;model'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;accuracy:'</span><span class="f_CodeExample">,&nbsp;test_acc3)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;loss:'</span><span class="f_CodeExample">,&nbsp;test_loss3)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;only&nbsp;model'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;accuracy:'</span><span class="f_CodeExample">,&nbsp;test_acc4)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;loss:'</span><span class="f_CodeExample">,&nbsp;test_loss4)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention&nbsp;model'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;accuracy:'</span><span class="f_CodeExample">,&nbsp;test_acc5)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;loss:'</span><span class="f_CodeExample">,&nbsp;test_loss5)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention&nbsp;4l&nbsp;Model'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;accuracy:'</span><span class="f_CodeExample">,&nbsp;test_acc5)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;loss:'</span><span class="f_CodeExample">,&nbsp;test_loss5)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.bar([</span><span class="f_CodeExample" style="color: #008080;">'Conv2D'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'LSTM'</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention\n4&nbsp;layers'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[test_loss3,test_loss4,test_loss5,test_loss6])</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$MSE$&nbsp;$loss$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;results'</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.bar([</span><span class="f_CodeExample" style="color: #008080;">'Conv2D'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'LSTM'</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'MH&nbsp;Attention\n4&nbsp;layers'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[test_acc3,test_acc4,test_acc5,test_acc6])</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$Accuracy$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;results'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.show()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We finalize our work on the </span><span class="f_Text" style="font-style: italic;">Multi-Head Self-Attention</span><span class="f_Text"> mechanism. We have recreated this mechanism by means of MQL5 and in Python. In this section, we have prepared a Python script that creates a total of four neural network models:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Convolution model</span></li>
+<li class="p_li"><span class="f_li">Recurrent neural network</span></li>
+<li class="p_li"><span class="f_li">Two models using </span><span class="f_Text" style="font-style: italic;">Multi-Head Self-Attention</span><span class="f_li"> technology</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">While running the script, we will conduct a brief training session for all four models using the same dataset. We will compare the performance of the trained models on the test dataset and analyze the results. This will allow us to compare the performance of various architectural solutions on real-world data. The test results will be provided in the next chapter.</span></p>
+
+</div>
+
+</body>
+</html>

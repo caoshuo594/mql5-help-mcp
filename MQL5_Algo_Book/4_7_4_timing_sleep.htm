@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.7.4 Pausing a Program</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_7_timing.htm"> 4.7 Functions for working with time </a>/ 4.7.4 Pausing a program
+          </td>
+          <td width="70" align="right">
+          <a href="4_7_3_timing_gmt.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_7_5_timing_count.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.7.4 Pausing a Program</span></p>
+<p class="p_Text"><span class="f_Text">As we saw earlier in the examples, programs sometimes need to repeat certain actions periodically, either on a simple schedule or after previous attempts have failed. When this is done in a loop, it is recommended to pause the program regularly to prevent too frequent requests and unnecessary load on the CPU, as well as to allow time for external &quot;players&quot; to do their work (for example, if we are waiting for data from another program, loading the history of quotes, etc.).</span></p>
+<p class="p_Text"><span class="f_Text">For this purpose, MQL5 provides the </span><span class="f_Text" style="font-style: italic;">Sleep</span><span class="f_Text"> function. This section gives its formal description, and an example will be given in the next section, along with the functions for <a href="4_7_5_timing_count.htm" class="topiclink">time interval measurements</a>.</span></p>
+<p class="p_H4"><span class="f_H4">void Sleep(int milliseconds)</span></p>
+<p class="p_Text"><span class="f_Text">The function pauses the execution of the MQL program for the specified number of milliseconds. After their expiration, the instructions following the </span><span class="f_Text" style="font-style: italic;">Sleep</span><span class="f_Text"> call will continue to be executed.</span></p>
+<p class="p_Text"><span class="f_Text">It makes sense to use the function in the first place in <a href="5_2_1_scripts.htm" class="topiclink">scripts</a> and <a href="5_2_2_services.htm" class="topiclink">services</a> because these types of programs have no other way to wait.</span></p>
+<p class="p_Text"><span class="f_Text">In Expert Advisors and indicators, it is recommended to use <a href="5_6_timer.htm" class="topiclink">timers</a> and the </span><span class="f_Text" style="font-style: italic;"><a href="5_6_2_timer_ontimer.htm" class="topiclink">OnTimer</a></span><span class="f_Text"> event. In this scheme, the MQL program returns control to the terminal and will be called after a specified interval.</span></p>
+<p class="p_Text"><span class="f_Text">Moreover, the </span><span class="f_Text" style="font-style: italic;">Sleep</span><span class="f_Text"> function cannot be called from indicators, since they are executed in terminal interface threads, the suspension of which will affect the rendering of charts.</span></p>
+<p class="p_Text"><span class="f_Text">If the user interrupts the MQL program from the terminal interface while it is waiting for the call to complete </span><span class="f_Text" style="font-style: italic;">Sleep</span><span class="f_Text">, the exit from the function occurs immediately (within 100ms), i.e., the pause ends ahead of schedule. This will set the stop flag </span><span class="f_Text" style="font-style: italic;">_StopFlag</span><span class="f_Text"> (also available via the function </span><span class="f_Text" style="font-style: italic;"><a href="4_9_13_env_stop.htm" class="topiclink">IsStopped</a></span><span class="f_Text">), and the program should stop execution as quickly and correctly as possible.</span></p>
+
+</div>
+
+</body>
+</html>

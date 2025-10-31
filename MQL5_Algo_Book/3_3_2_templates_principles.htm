@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.3.2 General principles of templates' performance</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_3_templates.htm"> 3.3 Templates </a>/ 3.3.2 General template operation principles
+          </td>
+          <td width="70" align="right">
+          <a href="3_3_1_templates_header.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_3_3_templates_vs_macro.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.3.2 General template operation principles</span></p>
+<p class="p_Text"><span class="f_Text">Let's recall <a href="2_8_9_functions_overloading.htm" class="topiclink">functions overload</a>. It consists in defining several versions of a function with different parameters, including situations when the number of parameters is the same, but their types are different. Often an algorithm of such functions is the same for parameters of different types. For example, MQL5 has a built-in function </span><span class="f_Text" style="font-style: italic;"><a href="4_4_2_maths_max_min.htm" class="topiclink">MathMax</a></span><span class="f_Text"> that returns the largest of the two values passed to it:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MathMax</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Although a prototype is only provided for the type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">, the function is actually capable of working with argument pairs of other numeric types, such as </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text">. In other words, the function is an overloaded kernel for built-in numerical types. If we wanted to achieve the same effect in our source code, we would have to overload the function by duplicating it with different parameters, like so:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Max</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Max</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Max</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">All implementations (function bodies) are the same. Only the parameter types change.</span></p>
+<p class="p_Text"><span class="f_Text">This is when templates are useful. By using them, we can describe one sample of the algorithm with the required implementation, and the compiler itself will generate several instances of it for the specific types involved in the program. Generation occurs on the fly during compilation and is imperceptible to the programmer (unless there is an error in the template) The source code obtained automatically is not inserted into the program text, but is directly converted into binary code (ex5 file).</span></p>
+<p class="p_Text"><span class="f_Text">In the template, one or more parameters are formal designations of types, for which, at the compilation stage, according to special type inference rules, real types will be selected from among built-in or user-defined ones. For example, the </span><span class="f_Text" style="font-style: italic;">Max</span><span class="f_Text"> function can be described using the following template with the T type parameter:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Max</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value1</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">And then - apply it for variables of various types (see </span><span class="f_Text" style="font-style: italic;">TemplatesMax.mq5</span><span class="f_Text">):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d2</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t1</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">'</span><span class="f_CodeExample" style="color: #333333;">2020</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">',&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t2</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">'</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">';</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Max</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d2</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Max</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">t1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t2</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In this case, the compiler will automatically generate variants of the function </span><span class="f_Text" style="font-style: italic;">Max</span><span class="f_Text"> for the types </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The template itself does not generate source code. To do this, you need to create an instance of the template in one way or another: call a template function or mention the name of a template class with specific types to create an object or a derived class.</span></p>
+<p class="p_Text"><span class="f_Text">Until this is done, the entire pattern is ignored by the compiler. For example, we can write the following supposedly template function, which actually contains syntactically incorrect code. However, the compilation of a module with this function will succeed as long as it is not called anywhere.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">function</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;it's&nbsp;not&nbsp;a&nbsp;comment,&nbsp;but&nbsp;it's&nbsp;not&nbsp;source&nbsp;code&nbsp;either</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;!%^&amp;*</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For each use of the template, the compiler determines the real types that match the formal parameters of the template. Based on this information, template source code is automatically generated for each unique combination of parameters. This is the instance.</span></p>
+<p class="p_Text"><span class="f_Text">So, in the given example of the </span><span class="f_Text" style="font-style: italic;">Max</span><span class="f_Text"> function, we called the template function twice: for the pair of variables of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">, and for the pair of variables of type </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text">. This resulted in two instances of the </span><span class="f_Text" style="font-style: italic;">Max</span><span class="f_Text"> function with source code for the matches </span><span class="f_Text" style="font-style: italic;">T=double</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">T=datetime</span><span class="f_Text">. Of course, if the same template is called in other parts of the code for the same types, no new instances will be generated. A new instance of the template is required only if the template is applied to another type (or set of types, if there is more than 1 parameter).</span></p>
+<p class="p_Text"><span class="f_Text">Please note that the template </span><span class="f_Text" style="font-style: italic;">Max</span><span class="f_Text"> has one parameter, and it sets the type for two input parameters of the function and its return value at once. In other words, the template declaration is capable of imposing certain restrictions on the types of valid arguments.</span></p>
+<p class="p_Text"><span class="f_Text">If we were to call </span><span class="f_Text" style="font-style: italic;">Max</span><span class="f_Text"> on variables of different types, the compiler would not be able to determine the type to instantiate the template and would throw the error &quot;ambiguous template parameters, must be 'double' or 'datetime'&quot;:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Max</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">d1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;template&nbsp;parameter&nbsp;ambiguous,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;could&nbsp;be&nbsp;'double'&nbsp;or&nbsp;'datetime'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This process of discovering the actual types for template parameters based on the context in which the template is used is called type deduction. In MQL5, type inference is available only for function and method templates.</span></p>
+<p class="p_Text"><span class="f_Text">For classes, structures, and unions, a different way of binding types to template parameters is used: the required types are explicitly specified in angle brackets when creating a template instance (if there are several parameters, then the corresponding number of types is indicated as a comma-separated list). For more on this, see the section <a href="3_3_6_templates_objects.htm" class="topiclink">Object type templates</a>.</span></p>
+<p class="p_Text"><span class="f_Text">The same explicit method can be applied to functions as an alternative to automatic type inference.</span></p>
+<p class="p_Text"><span class="f_Text">For example, we can generate and call an instance of </span><span class="f_Text" style="font-style: italic;">Max</span><span class="f_Text"> for type </span><span class="f_Text" style="font-style: italic;">ulong</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Max</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&gt;(</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10000000</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In this case, if not for the explicit indication, the template function would be associated with the type </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> (based on the values &#8203;&#8203;of integer constants).</span></p>
+
+</div>
+
+</body>
+</html>

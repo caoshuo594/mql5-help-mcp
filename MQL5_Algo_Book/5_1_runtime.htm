@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.1 General principles for executing MQL programs</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a>/ 5.1 General principles for executing MQL programs
+          </td>
+          <td width="70" align="right">
+          <a href="part5.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_1_1_runtime_features_by_progtype.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">5.1 General principles for executing MQL programs</span></p>
+<p class="p_Text"><span class="f_Text">All MQL programs can be broadly divided into several groups depending on their capabilities and features.</span></p>
+<p class="p_Text"><span class="f_Text">Most programs, such as Expert Advisors, indicators, and scripts, work in the context of a chart. In other words, they start executing only after they are attached to one of the open charts by using the </span><span class="f_Text" style="font-style: italic;">Attach to Chart</span><span class="f_Text"> context menu command in the </span><span class="f_Text" style="font-style: italic;">Navigator</span><span class="f_Text"> tree or by dragging and dropping from </span><span class="f_Text" style="font-style: italic;">Navigator</span><span class="f_Text"> to the chart.</span></p>
+<p class="p_Text"><span class="f_Text">In contrast, services cannot be placed on the chart, as they are designed to perform long, cyclic actions in the background. For example, in a service, you can create a <a href="7_2_custom_symbols.htm" class="topiclink">custom symbol</a> and then receive its data and keep updating it in an endless loop using network functions. Another logical application of a service is monitoring the trading account and the network connection, as a part of a solution that notifies the user about communication problems.</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that indicators and Expert Advisors are saved on the chart between terminal working sessions. In other words, if, for example, a user runs an indicator on the chart and then, without explicitly deleting it, closes MetaTrader 5, then the next time the terminal starts, the indicator will be restored along with the chart, including all its settings.</span></p>
+<p class="p_Text"><span class="f_Text">By the way, linking indicators and Expert Advisors to the chart is the basis for templates (see the <a href="https://www.metatrader5.com/en/terminal/help/charts_advanced/templates_profiles" target="_blank" class="weblink" title="documentation on mql5.com">Documentation</a>). The user can create a set of programs to be used on a chart, configure them and save the set in a special file with the </span><span class="f_Text" style="font-style: italic;">tpl</span><span class="f_Text"> extension. This is done using the context menu command </span><span class="f_Text" style="font-style: italic;">Templates -&gt; Save</span><span class="f_Text">. After that, you can apply the template to any new chart (command </span><span class="f_Text" style="font-style: italic;">Templates -&gt; Upload</span><span class="f_Text">) and run all linked programs. Templates are stored in the directory </span><span class="f_Text" style="font-style: italic;">MQL5/Profiles/Templates/</span><span class="f_Text"> by default.</span></p>
+<p class="p_Text"><span class="f_Text">Another consequence of attaching to a chart is that closing a chart results in unloading all MQL programs that were placed on it. However, MetaTrader 5 saves all closed charts in a specific way (at least for a while) and therefore, if the chart was closed by accident, it can be restored along with all programs (and <a href="5_8_objects.htm" class="topiclink">graphic objects</a>) using the command </span><span class="f_Text" style="font-style: italic;">File -&gt; Open Remote</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">If for some reason the terminal fails to load chart files, the entire state of MQL programs (settings and location) will be lost. Basically, the same applies to <a href="5_8_objects.htm" class="topiclink">graphic objects</a> – programs can add them for their own needs and expect that these objects are located on the chart. Make backup copies of charts. Each chart is a file with the extension </span><span class="f_Text" style="font-style: italic;">chr</span><span class="f_Text">. Such files are stored by default in the directory </span><span class="f_Text" style="font-style: italic;">MQL5/Profiles/Charts/Default/</span><span class="f_Text">. This is the standard profile created when the platform is installed. You can create other profiles with the menu command </span><span class="f_Text" style="font-style: italic;">File -&gt; Profiles</span><span class="f_Text"> and then switch between them (see the <a href="https://www.metatrader5.com/en/terminal/help/charts_advanced/templates_profiles" target="_blank" class="weblink" title="documentation on mql5.com">Documentation</a>).</span></p>
+<p class="p_Text"><span class="f_Text">If necessary, you can stop an Expert Advisor and remove it from the chart using the context menu command </span><span class="f_Text" style="font-style: italic;">Expert list</span><span class="f_Text"> (called by pressing the right mouse button in the chart window). It opens the </span><span class="f_Text" style="font-style: italic;">Experts</span><span class="f_Text"> dialog with a list of all Expert Advisors running in the terminal. In this list, select an Expert Advisor that you no longer need and press </span><span class="f_Text" style="font-style: italic;">Remove</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Indicators can also be removed explicitly, using a similar context menu command </span><span class="f_Text" style="font-style: italic;">Indicator List</span><span class="f_Text">. It opens a dialog with a list of indicators running on the current chart, in which you can select a specific indicator and click the button </span><span class="f_Text" style="font-style: italic;">Remove</span><span class="f_Text">. In addition, most indicators display various graphical constructions, such as lines and histograms, on the chart, which can also be deleted using the relevant context menu commands.</span></p>
+<p class="p_Text"><span class="f_Text">In contrast to indicators and Expert Advisors, scripts are not permanently attached to a chart. In standard mode, the script is removed from the chart automatically after the task assigned to it is completed, if this is a one-time action. If a script has a loop for periodic, repetitive actions, it will, of course, continue its work until the loop is interrupted in one way or another, but no longer than until the end of the session. Closing the terminal causes the script to become detached from the chart. After restarting MetaTrader 5, scripts are not restored on charts.</span></p>
+<p class="p_Quote"><span class="f_Quote">Please note that if you switch the chart to another symbol or timeframe, the script running on it will be unloaded. But indicators and Expert Advisors will continue to work, however, they will be re-initialized. Initialization rules for them are different. These details will be discussed in the section <a href="5_1_4_runtime_lifecycle.htm" class="topiclink">Features of starting and stopping programs of various types</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Only one Expert Advisor, only one script, and any number of indicators can be placed on the chart. The Expert Advisor, the script, and all indicators will work in parallel (simultaneously).</span></p>
+<p class="p_Text"><span class="f_Text">As for services, their created and running instances are automatically restored after loading the terminal. The service instance can be stopped or deleted using the context menu in the </span><span class="f_Text" style="font-style: italic;">Services</span><span class="f_Text"> section of the </span><span class="f_Text" style="font-style: italic;">Navigator</span><span class="f_Text"> window.</span></p>
+<p class="p_Text"><span class="f_Text">The following table summarizes the properties described above in a summary form.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Program&nbsp;type</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Link&nbsp;to&nbsp;chart</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Quantity</span><br>
+<span class="f_BoldTitlesInTables">on&nbsp;the&nbsp;chart</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Recovery&nbsp;of&nbsp;the&nbsp;</span><br>
+<span class="f_BoldTitlesInTables">session</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Indicator</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Required</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Multiple</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">With chart or template</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Expert Advisor</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Required</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Maximum 1</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">With chart or template</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Script</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Required</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Maximum 1</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Not supported</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Service</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Not supported</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">With terminal</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">All MQL programs are executed in the client terminal and therefore work only while the terminal is open. For constant program control over the account, use a VPS.</span></p>
+
+</div>
+
+</body>
+</html>

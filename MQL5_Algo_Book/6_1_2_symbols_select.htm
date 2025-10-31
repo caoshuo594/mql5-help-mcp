@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1.2 Editing the Market Watch list</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_1_symbols.htm"> 6.1 Financial instruments and Market Watch </a>/ 6.1.2 Editing the Market Watch list
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_1_symbols_list.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_3_symbols_exist.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.1.2 Editing the Market Watch list</span></p>
+<p class="p_Text"><span class="f_Text">Using the </span><span class="f_Text" style="font-style: italic;">SymbolSelect</span><span class="f_Text"> function, the MQL program developer can add a specific symbol to </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> or remove it from there.</span></p>
+<p class="p_H4"><span class="f_H4">bool SymbolSelect(const string name, bool select)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">name</span><span class="f_Text"> parameter contains the name of the symbol being affected by this operation. Depending on the value of the </span><span class="f_Text" style="font-style: italic;">select</span><span class="f_Text"> parameter, a symbol is added to </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or removed from it. Symbol names are case-sensitive: for example, &quot;EURUSD.m&quot; is not equal to &quot;EURUSD.M&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns an indication of success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or error (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">). The error code can be found in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">.</span></p>
+<p class="p_Quote"><span class="f_Quote">A symbol cannot be removed if there are open charts or open positions for this symbol. In addition, you cannot delete a symbol that is explicitly used in the formula for calculating a synthetic (custom) instrument added to </span><span class="f_Quote" style="font-style: italic;">Market Watch</span><span class="f_Quote">.</span></p>
+<p class="p_Text"><span class="f_Text">It should be kept in mind that even if there are no open charts and positions for a symbol, it can be indirectly used by MQL programs: for example, they can read its history of quotes or ticks. Removing such a symbol may cause problems in these programs.</span></p>
+<p class="p_Text"><span class="f_Text">The following script </span><span class="f_Text" style="font-style: italic;">SymbolRemoveUnused.mq5</span><span class="f_Text"> is able to hide all symbols that are not used explicitly, so it is recommended to check it on a demo account or save the current symbols set through the context menu first.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">MQL5Book</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">MqlError</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PUSH</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">V</span><span class="f_CodeExample">)&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">)&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">V</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;request&nbsp;user&nbsp;confirmation&nbsp;for&nbsp;deletion</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">IDOK</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MessageBox</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;This&nbsp;script&nbsp;will&nbsp;remove&nbsp;all&nbsp;unused&nbsp;symbols&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;from&nbsp;the&nbsp;Market&nbsp;Watch.&nbsp;Proceed?&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Please,&nbsp;confirm&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MB_OKCANCEL</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolsTotal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ResetLastError</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">removed</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;go&nbsp;through&nbsp;the&nbsp;symbols&nbsp;of&nbsp;the&nbsp;Market&nbsp;Watch&nbsp;in&nbsp;reverse&nbsp;order</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&gt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;--</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SymbolSelect</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;remember&nbsp;what&nbsp;was&nbsp;deleted</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PUSH</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">removed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;in&nbsp;case&nbsp;of&nbsp;an&nbsp;error,&nbsp;display&nbsp;the&nbsp;reason</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Can't&nbsp;remove&nbsp;'%s':&nbsp;%s&nbsp;(%d)&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">E2S</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">removed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&nbsp;out&nbsp;of&nbsp;%d&nbsp;symbols&nbsp;removed&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">removed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After the user confirms the analysis of the list of symbols, the program attempts to hide each symbol sequentially by calling </span><span class="f_Text" style="font-style: italic;">SymbolSelect(s, false)</span><span class="f_Text">. This only works for instruments that are not used explicitly. The enumeration of symbols is performed in the reverse order so as not to violate the indexing. All successfully removed symbols are collected in the </span><span class="f_Text" style="font-style: italic;">removed</span><span class="f_Text"> array. The log displays statistics and the array itself.</span></p>
+<p class="p_Text"><span class="f_Text">If </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> is changed, the user is then given the opportunity to restore all deleted symbols by calling </span><span class="f_Text" style="font-style: italic;">SymbolSelect(removed[i], true)</span><span class="f_Text"> in a loop.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;it&nbsp;is&nbsp;possible&nbsp;to&nbsp;return&nbsp;the&nbsp;deleted&nbsp;symbols&nbsp;back&nbsp;to&nbsp;the&nbsp;Market&nbsp;Watch</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;(at&nbsp;this&nbsp;point,&nbsp;the&nbsp;window&nbsp;displays&nbsp;a&nbsp;reduced&nbsp;list)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">IDOK</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MessageBox</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Do&nbsp;you&nbsp;want&nbsp;to&nbsp;restore&nbsp;removed&nbsp;symbols&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;in&nbsp;the&nbsp;Market&nbsp;Watch?&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Please,&nbsp;confirm&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MB_OKCANCEL</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">restored</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&gt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;--</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">restored</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolSelect</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">removed</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&nbsp;symbols&nbsp;restored&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">restored</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here's what the log output might look like.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Can't&nbsp;remove&nbsp;'EURUSD':&nbsp;MARKET_SELECT_ERROR&nbsp;(4305)</span>
+<br><span class="f_CodeExample">Can't&nbsp;remove&nbsp;'XAUUSD':&nbsp;MARKET_SELECT_ERROR&nbsp;(4305)</span>
+<br><span class="f_CodeExample">Can't&nbsp;remove&nbsp;'BTCUSD':&nbsp;MARKET_SELECT_ERROR&nbsp;(4305)</span>
+<br><span class="f_CodeExample">Can't&nbsp;remove&nbsp;'GBPUSD':&nbsp;MARKET_SELECT_ERROR&nbsp;(4305)</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">Can't&nbsp;remove&nbsp;'USDRUB':&nbsp;MARKET_SELECT_ERROR&nbsp;(4305)</span>
+<br><span class="f_CodeExample">2&nbsp;out&nbsp;of&nbsp;10&nbsp;symbols&nbsp;removed</span>
+<br><span class="f_CodeExample">&quot;NZDUSD&quot;&nbsp;&quot;USDCAD&quot;</span>
+<br><span class="f_CodeExample">2&nbsp;symbols&nbsp;restored</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Please note that although the symbols are restored in their original order, as they were in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> relative to each other, the addition occurs at the end of the list, after the remaining symbols. Thus, all &quot;busy&quot; symbols will be at the beginning of the list, and all the restored will follow them. Such is the specific operation of </span><span class="f_Text" style="font-style: italic;">SymbolSelect</span><span class="f_Text">: a symbol is always added to the end of the list, that is, it is impossible to insert a symbol in a specific position. So, the rearrangement of the list elements is available only for manual editing.</span></p>
+
+</div>
+
+</body>
+</html>

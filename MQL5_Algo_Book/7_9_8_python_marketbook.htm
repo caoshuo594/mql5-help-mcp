@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.9.8 Order book subscription</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_9_python.htm"> 7.9 Native python support </a>/ 7.9.8 Subscribing to order book changes
+          </td>
+          <td width="70" align="right">
+          <a href="7_9_7_python_symbols.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_9_9_python_copyrates.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.9.8 Subscribing to order book changes</span></p>
+<p class="p_Text"><span class="f_Text">The Python API includes three functions for working with the <a href="6_2_marketbook.htm" class="topiclink">order book</a>.</span></p>
+<p class="p_H4"><span class="f_H4">bool market_book_add(symbol)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">market_book_add</span><span class="f_Text"> function subscribes to receive events about order book changes for the specified symbol. The name of the required financial instrument is indicated in a single unnamed parameter.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns a boolean success indication.</span></p>
+<p class="p_Text"><span class="f_Text">The function is an analog of </span><span class="f_Text" style="font-style: italic;"><a href="6_2_1_marketbook_add_release.htm" class="topiclink">MarketBookAdd</a></span><span class="f_Text">. After completing work with the order book, the subscription should be canceled by calling </span><span class="f_Text" style="font-style: italic;">market_book_release</span><span class="f_Text"> (see further).</span></p>
+<p class="p_H4"><span class="f_H4">tuple[] market_book_get(symbol)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">market_book_get</span><span class="f_Text"> function requests the current contents of the order book for the specified symbol. The result is returned as a tuple (array) of </span><span class="f_Text" style="font-style: italic;">BookInfo</span><span class="f_Text"> records. Each entry is an analog of the </span><span class="f_Text" style="font-style: italic;">MqlBookInfo</span><span class="f_Text"> structure, and from the Python point of view, this is a named tuple with the fields &quot;type&quot;, &quot;price&quot;, &quot;volume&quot;, &quot;volume_real&quot;. In case of an error, the </span><span class="f_Text" style="font-style: italic;">None</span><span class="f_Text"> value is returned.</span></p>
+<p class="p_Quote"><span class="f_Quote">Note that for some reason in Python, the field is called </span><span class="f_Quote" style="font-style: italic;">volume_dbl</span><span class="f_Quote">, although in MQL5 the corresponding field is called </span><span class="f_Quote" style="font-style: italic;">volume_real</span><span class="f_Quote">.</span></p>
+<p class="p_Text"><span class="f_Text">To work with this function, you must first subscribe to receive order book events using the </span><span class="f_Text" style="font-style: italic;">market_book_add</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">The function is an analog of </span><span class="f_Text" style="font-style: italic;"><a href="6_2_3_marketbook_get.htm" class="topiclink">MarketBookGet</a></span><span class="f_Text">. Please note that a Python script cannot receive </span><span class="f_Text" style="font-style: italic;">OnBookEvent</span><span class="f_Text"> events directly and should poll the contents of the glass in a loop.</span></p>
+<p class="p_H4"><span class="f_H4">bool market_book_release(symbol)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">market_book_release</span><span class="f_Text"> function cancels the subscription for order book change events for the specified symbol. On success, the function returns </span><span class="f_Text" style="font-style: italic;">True</span><span class="f_Text">. The function is an analog of </span><span class="f_Text" style="font-style: italic;"><a href="6_2_1_marketbook_add_release.htm" class="topiclink">MarketBookRelease</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Let's take a simple example (see </span><span class="f_Text" style="font-style: italic;">MQL5/Scripts/MQL5Book/Python/eurusdbook.py</span><span class="f_Text">).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;MetaTrader5&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;mt5</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;connect&nbsp;a&nbsp;pack&nbsp;for&nbsp;the&nbsp;pause</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;let's&nbsp;establish&nbsp;a&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;mt5.initialize():</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;initialize()&nbsp;failed,&nbsp;error&nbsp;code&nbsp;=&quot;</span><span class="f_CodeExample">,&nbsp;mt5.last_error())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;mt5.shutdown()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;subscribe&nbsp;to&nbsp;receive&nbsp;DOM&nbsp;updates&nbsp;for&nbsp;the&nbsp;EURUSD&nbsp;symbol</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;mt5.market_book_add(</span><span class="f_CodeExample" style="color: #0000ff;">'EURUSD'</span><span class="f_CodeExample">):</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;run&nbsp;10&nbsp;times&nbsp;a&nbsp;loop&nbsp;to&nbsp;read&nbsp;data&nbsp;from&nbsp;the&nbsp;order&nbsp;book</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;i&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">range</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">10</span><span class="f_CodeExample">):</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;get&nbsp;the&nbsp;contents&nbsp;of&nbsp;the&nbsp;order&nbsp;book</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;items&nbsp;=&nbsp;mt5.market_book_get(</span><span class="f_CodeExample" style="color: #0000ff;">'EURUSD'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;display&nbsp;the&nbsp;entire&nbsp;order&nbsp;book&nbsp;in&nbsp;one&nbsp;line&nbsp;as&nbsp;is</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(items)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;now&nbsp;display&nbsp;each&nbsp;price&nbsp;level&nbsp;separately&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;dictionary,&nbsp;for&nbsp;clarity</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;it&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;items&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">or</span><span class="f_CodeExample">&nbsp;[]:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(it._asdict())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;let's&nbsp;pause&nbsp;for&nbsp;5&nbsp;seconds&nbsp;before&nbsp;the&nbsp;next&nbsp;request&nbsp;for&nbsp;data&nbsp;from&nbsp;the&nbsp;order&nbsp;book</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;time.sleep(</span><span class="f_CodeExample" style="color: #0000ff;">5</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;unsubscribe&nbsp;to&nbsp;order&nbsp;book&nbsp;changes</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;mt5.market_book_release(</span><span class="f_CodeExample" style="color: #0000ff;">'EURUSD'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">else</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;mt5.market_book_add('EURUSD')&nbsp;failed,&nbsp;error&nbsp;code&nbsp;=&quot;</span><span class="f_CodeExample">,&nbsp;mt5.last_error())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;complete&nbsp;the&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample">mt5.shutdown()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">An example of the result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">(BookInfo(type=1,&nbsp;price=1.20036,&nbsp;volume=250,&nbsp;volume_dbl=250.0),&nbsp;BookInfo(type=1,&nbsp;price=1.20029,&nbsp;volume=100,&nbsp;volume...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.20036,&nbsp;'volume':&nbsp;250,&nbsp;'volume_dbl':&nbsp;250.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.20029,&nbsp;'volume':&nbsp;100,&nbsp;'volume_dbl':&nbsp;100.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.20028,&nbsp;'volume':&nbsp;50,&nbsp;'volume_dbl':&nbsp;50.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.20026,&nbsp;'volume':&nbsp;36,&nbsp;'volume_dbl':&nbsp;36.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20023,&nbsp;'volume':&nbsp;36,&nbsp;'volume_dbl':&nbsp;36.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20022,&nbsp;'volume':&nbsp;50,&nbsp;'volume_dbl':&nbsp;50.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20021,&nbsp;'volume':&nbsp;100,&nbsp;'volume_dbl':&nbsp;100.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20014,&nbsp;'volume':&nbsp;250,&nbsp;'volume_dbl':&nbsp;250.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">(BookInfo(type=1,&nbsp;price=1.20035,&nbsp;volume=250,&nbsp;volume_dbl=250.0),&nbsp;BookInfo(type=1,&nbsp;price=1.20029,&nbsp;volume=100,&nbsp;volume...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.20035,&nbsp;'volume':&nbsp;250,&nbsp;'volume_dbl':&nbsp;250.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.20029,&nbsp;'volume':&nbsp;100,&nbsp;'volume_dbl':&nbsp;100.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.20027,&nbsp;'volume':&nbsp;50,&nbsp;'volume_dbl':&nbsp;50.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.20025,&nbsp;'volume':&nbsp;36,&nbsp;'volume_dbl':&nbsp;36.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20023,&nbsp;'volume':&nbsp;36,&nbsp;'volume_dbl':&nbsp;36.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20022,&nbsp;'volume':&nbsp;50,&nbsp;'volume_dbl':&nbsp;50.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20021,&nbsp;'volume':&nbsp;100,&nbsp;'volume_dbl':&nbsp;100.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20014,&nbsp;'volume':&nbsp;250,&nbsp;'volume_dbl':&nbsp;250.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">(BookInfo(type=1,&nbsp;price=1.20037,&nbsp;volume=250,&nbsp;volume_dbl=250.0),&nbsp;BookInfo(type=1,&nbsp;price=1.20031,&nbsp;volume=100,&nbsp;volume...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.20037,&nbsp;'volume':&nbsp;250,&nbsp;'volume_dbl':&nbsp;250.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.20031,&nbsp;'volume':&nbsp;100,&nbsp;'volume_dbl':&nbsp;100.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.2003,&nbsp;'volume':&nbsp;50,&nbsp;'volume_dbl':&nbsp;50.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;1,&nbsp;'price':&nbsp;1.20028,&nbsp;'volume':&nbsp;36,&nbsp;'volume_dbl':&nbsp;36.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20025,&nbsp;'volume':&nbsp;36,&nbsp;'volume_dbl':&nbsp;36.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20023,&nbsp;'volume':&nbsp;50,&nbsp;'volume_dbl':&nbsp;50.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20022,&nbsp;'volume':&nbsp;100,&nbsp;'volume_dbl':&nbsp;100.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{'type':&nbsp;2,&nbsp;'price':&nbsp;1.20016,&nbsp;'volume':&nbsp;250,&nbsp;'volume_dbl':&nbsp;250.0}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">...</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

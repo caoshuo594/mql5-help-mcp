@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>2.6.1. Implicit type conversion</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part2.htm"> Part 2. Programming fundamentals </a> / <a class="h_m" href="2_6_conversion.htm"> 2.6 Type conversion </a>/ 2.6.1. Implicit type conversion
+          </td>
+          <td width="70" align="right">
+          <a href="2_6_conversion.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="2_6_2_conversion_arithmetic.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">2.6.1. Implicit type conversion</span></p>
+<p class="p_Text"><span class="f_Text">Type conversion occurs automatically if one type is used at some point in the source code, but another is expected, and there are conversion rules between them. Such conversion is called an implicit type conversion and may not always correspond to the programmer's intent. In addition, some conversion operations have side effects, and the compiler, not knowing whether their use is intentional, highlights the corresponding lines of code with warnings. To solve these problems, there is an explicit type conversion syntax (see <a href="2_6_3_conversion_explicit.htm" class="topiclink">Explicit type casting</a>).</span></p>
+<p class="p_Text"><span class="f_Text">We have already seen several rules for implicit type conversion while studying types and variables.</span></p>
+<p class="p_Text"><span class="f_Text">Specifically, if a value of type other than boolean is assigned to a </span><span class="f_Text" style="font-style: italic;">bool </span><span class="f_Text">variable, then the value 0 is regarded as </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">, and all the rest as </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">. In the more general case, all expressions that assume the presence of logical conditions are converted to type </span><span class="f_Text" style="font-style: italic;">bool</span><span class="f_Text">. For example, the first operand of a ternary conditional operator is always converted into a </span><span class="f_Text" style="font-style: italic;">bool</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">But if a value of type </span><span class="f_Text" style="font-style: italic;">bool</span><span class="f_Text"> is assigned to a numeric type, then </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> becomes 1, and </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> becomes 0.</span></p>
+<p class="p_Text"><span class="f_Text">When a real number is assigned to an integer type variable, the fractional part is discarded (the compiler issues a warning). When an integer, on the other hand, is assigned to a variable of real type, precision can be lost (the compiler also issues a warning). We have already talked about this in the sections on <a href="2_2_1_integer_numbers.htm" class="topiclink">Integer numbers</a> and <a href="2_2_2_float_numbers.htm" class="topiclink">Real numbers</a>.</span></p>
+<p class="p_Text"><span class="f_Text">If we have integer and floating point numbers, everything is converted to floating point numbers of the maximum size used (usually </span><span class="f_Text" style="font-style: italic;">double,</span><span class="f_Text"> unless you explicitly specify </span><span class="f_Text" style="font-style: italic;">float</span><span class="f_Text"> or the numeric literal has a suffix 'f', for example1234.56789f).</span></p>
+<p class="p_Text"><span class="f_Text">For integers of different sizes, there are also conversion rules: they expand if necessary, which means that they increase to the size of the largest integer type used in the expression (see <a href="2_6_2_conversion_arithmetic.htm" class="topiclink">Arithmetic type conversions</a>).</span></p>
+<p class="p_Text"><span class="f_Text">In addition to expressions, we often need to implicitly convert types during initialization and assignment, when the types to the right and left of the '=' sign do not match. The same conversion rules apply when passing values through function parameters and returning results from functions (for further details please see the <a href="2_8_functions.htm" class="topiclink">Functions</a> section).</span></p>
+<p class="p_Text"><span class="f_Text">Considering the above, a large number of conversions can be performed in one line of code. If this causes compiler warnings, it's a good idea to make sure the conversion is intentional and eliminate warnings by inserting an explicit type conversion.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">short</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In this example, when performing a multiplication, the type of the variable </span><span class="f_Text" style="font-style: italic;">s</span><span class="f_Text"> is extended to the type of the second operand </span><span class="f_Text" style="font-style: italic;">long</span><span class="f_Text"> and an intermediate result of type </span><span class="f_Text" style="font-style: italic;">long</span><span class="f_Text"> is obtained. Because the constant 1.0 is of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">, the result of the product is converted to </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> before addition. The overall result is also of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">; however, the variable </span><span class="f_Text" style="font-style: italic;">p</span><span class="f_Text"> is of type </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> and therefore an implicit conversion from </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> to </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> is performed.</span></p>
+<p class="p_Text"><span class="f_Text">The special types </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">color</span><span class="f_Text"> are processed according to the rules of integers with lengths of 8 and 4 bytes, respectively. But for date and time, there is a stricter limit on the maximum value - 32535244799, which corresponds to D'3000.12.31 23:59:59'.</span></p>
+<p class="p_Text"><span class="f_Text">Most types can be implicitly converted to and from strings, but the results are not always adequate, so the compiler issues warnings &quot;implicit conversion from 'number' to 'string'&quot; and &quot;implicit conversion from 'string' to 'number'&quot; so that the programmer can check them. For example, converting a string to an integer allows the string to contain only digits and '+'/'-' characters at the beginning. Converting from a string to a real allows, in addition to numbers, the presence of a dot '.' and notation with &quot;exponent&quot; ('e' or 'E', e.g. +1.2345e-1). If an unsupported character (for example, a letter) is encountered in the string, the rest of the string is discarded in full.</span></p>
+<p class="p_Text"><span class="f_Text">For example, the string date and time (&quot;2021.12.12 00:00&quot;) cannot be assigned without losses to a variable of type </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text"> because </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text"> is an integer (number of seconds). In this case, reading the number from the string will end when the first point is reached, i.e. the number will get the value 2021. This number of seconds corresponds to the 34th minute of the year 1970.</span></p>
+<p class="p_Text"><span class="f_Text">There are special functions for such conversions (see section <a href="4_1_1_conversions_numbers.htm" class="topiclink">Data Transformation</a>).</span></p>
+<p class="p_Text"><span class="f_Text">The only direction of implicit and explicit type conversion that is forbidden is from </span><span class="f_Text" style="font-style: italic;">string</span><span class="f_Text"> to </span><span class="f_Text" style="font-style: italic;">bool</span><span class="f_Text">. The compiler in such cases shows the error message &quot;cannot implicitly convert type 'string' to 'bool'&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">Examples from this chapter are provided in </span><span class="f_Text" style="font-style: italic;">TypeConversion.mq5</span><span class="f_Text">.</span></p>
+
+</div>
+
+</body>
+</html>

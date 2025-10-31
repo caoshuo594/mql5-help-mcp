@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1.10 Price type for building symbol charts</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_1_symbols.htm"> 6.1 Financial instruments and Market Watch </a>/ 6.1.10 Price type for building symbol charts
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_9_symbols_state.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_11_symbols_currencies.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.1.10 Price type for building symbol charts</span></p>
+<p class="p_Text"><span class="f_Text">Bars on MetaTrader 5 price charts can be plotted based on </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">Last</span><span class="f_Text"> prices, and the plotting type is indicated in the specification of each instrument. An MQL program can find this characteristic by calling the </span><span class="f_Text" style="font-style: italic;">SymbolInfoInteger</span><span class="f_Text"> function for the SYMBOL_CHART_MODE property. The return value is a member of the ENUM_SYMBOL_CHART_MODE enumeration.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">SYMBOL_CHART_MODE_BID</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Bars are built at Bid prices</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">SYMBOL_CHART_MODE_LAST</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Bars are built at Last prices</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The mode with </span><span class="f_Text" style="font-style: italic;">Last</span><span class="f_Text"> prices is used for symbols traded on exchanges (as opposed to the decentralized Forex market), and the <a href="6_2_marketbook.htm" class="topiclink">Depth of Market</a> is available for such symbols. The depth of the market can be found based on the <a href="6_1_22_symbols_market_depth.htm" class="topiclink">SYMBOL_TICKS_BOOKDEPTH</a> property.</span></p>
+<p class="p_Text"><span class="f_Text">The SYMBOL_CHART_MODE property is useful for adjusting the signals of indicators or strategies that are built, for example, at the chart's </span><span class="f_Text" style="font-style: italic;">Last</span><span class="f_Text"> prices, while orders will be executed &quot;at the market price&quot;, that is, at </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> prices depending on direction.</span></p>
+<p class="p_Text"><span class="f_Text">Also, the price type is required when calculating bars of the <a href="7_2_custom_symbols.htm" class="topiclink">custom instrument</a>: if it depends on standard symbols, it may make sense to consider their settings by price type. When the user enters the formula of the <a href="https://www.metatrader5.com/en/terminal/help/trading_advanced/custom_instruments#synthetic" target="_blank" class="weblink" title="MQL5 documentation">synthetic instrument</a> in the </span><span class="f_Text" style="font-style: italic;">Custom Symbol</span><span class="f_Text"> window (opened by selecting </span><span class="f_Text" style="font-style: italic;">Create Symbol</span><span class="f_Text"> in the </span><span class="f_Text" style="font-style: italic;">Symbols</span><span class="f_Text"> dialogue), it is possible to select price types according to the specifications of the respective standard symbols used. However, when the calculation algorithm is formed in an MQL program, precisely it is responsible for the correct choice of the price type.</span></p>
+<p class="p_Text"><span class="f_Text">First, let's collect statistics on the use of </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Last</span><span class="f_Text"> prices to build charts on a specific account. This is what the script </span><span class="f_Text" style="font-style: italic;">SymbolStatsByPriceType.mq5</span><span class="f_Text"> will do.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MarketWatchOnly</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolsTotal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">MarketWatchOnly</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;loop&nbsp;through&nbsp;all&nbsp;available&nbsp;characters</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SymbolName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MarketWatchOnly</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CHART_MODE</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CHART_MODE_LAST</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Symbols&nbsp;in&nbsp;total:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Symbols&nbsp;using&nbsp;price&nbsp;types:&nbsp;Bid=%d,&nbsp;Last=%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Try it on different accounts (some may not have stock symbols). Here's what the result might look like:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;Symbols&nbsp;in&nbsp;total:&nbsp;52304</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;Symbols&nbsp;using&nbsp;price&nbsp;types:&nbsp;Bid=229,&nbsp;Last=52075</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">A more practical example is the indicator </span><span class="f_Text" style="font-style: italic;">SymbolBidAskChart.mq5</span><span class="f_Text">, designed to draw a diagram in the form of bars formed based on prices of the specified type. This will allow you to compare candlesticks of a chart that uses prices from the SYMBOL_CHART_MODE property for its construction with bars on an alternative price type. For example, you can see bars at the </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> price on the instrument chart at the price </span><span class="f_Text" style="font-style: italic;">Last</span><span class="f_Text"> or get bars for the </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> price, which the standard terminal charts do not support.</span></p>
+<p class="p_Text"><span class="f_Text">As a basis for a new indicator, we will take a ready-made indicator </span><span class="f_Text" style="font-style: italic;">IndDeltaVolume.mq5</span><span class="f_Text"> presented in the section <a href="5_4_15_indicators_wait_none.htm" class="topiclink">Waiting for data and managing visibility</a>. In that indicator, we downloaded a tick history for a certain number of bars </span><span class="f_Text" style="font-style: italic;">BarCount</span><span class="f_Text"> and calculated the delta of volumes, that is, separately buy and sell volumes. In the new indicator, we only need to replace the calculation algorithm with the search for </span><span class="f_Text" style="font-style: italic;">Open</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">High</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Low</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">Close</span><span class="f_Text"> prices based on ticks inside each bar.</span></p>
+<p class="p_Text"><span class="f_Text">Indicator settings include four buffers and one bar chart (DRAW_BARS) displayed in the main window.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_chart_window</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_buffers</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_plots</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_type1</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">DRAW_BARS</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_color1</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">clrDodgerBlue</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_width1</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_label1</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Open;High;Low;Close;&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The display as bars is chosen to make them easier to read when run over the main chart candlesticks so that both versions of each bar are visible.</span></p>
+<p class="p_Text"><span class="f_Text">The new </span><span class="f_Text" style="font-style: italic;">ChartMode</span><span class="f_Text"> input parameter allows the user to select one of three price types (note that </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> is our addition compared to the standard set of elements in ENUM_SYMBOL_CHART_MODE).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">enum</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ENUM_SYMBOL_CHART_MODE_EXTENDED</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_SYMBOL_CHART_MODE_BID</span><span class="f_CodeExample">,&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;SYMBOL_CHART_MODE_BID</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_SYMBOL_CHART_MODE_LAST</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;SYMBOL_CHART_MODE_LAST</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_SYMBOL_CHART_MODE_ASK</span><span class="f_CodeExample">,&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;SYMBOL_CHART_MODE_ASK*</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BarCount</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">COPY_TICKS</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TickType</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">INFO_TICKS</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ENUM_SYMBOL_CHART_MODE_EXTENDED</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ChartMode</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_SYMBOL_CHART_MODE_BID</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The former </span><span class="f_Text" style="font-style: italic;">CalcDeltaVolume</span><span class="f_Text"> class changed its name to </span><span class="f_Text" style="font-style: italic;">CalcCustomBars</span><span class="f_Text"> but remained almost unchanged. The differences include a new set of four buffers and the </span><span class="f_Text" style="font-style: italic;">chartMode</span><span class="f_Text"> field which is initialized in the constructor from the input variable </span><span class="f_Text" style="font-style: italic;">ChartMode</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CalcCustomBars</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">limit</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">COPY_TICKS</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">tickType</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ENUM_SYMBOL_CHART_MODE_EXTENDED</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">chartMode</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">open</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">high</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">low</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CalcCustomBars</span><span class="f_CodeExample">(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bars</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">COPY_TICKS</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ENUM_SYMBOL_CHART_MODE_EXTENDED</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">mode</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">limit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">bars</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">tickType</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">chartMode</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">mode</span><span class="f_CodeExample">)&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;register&nbsp;arrays&nbsp;as&nbsp;indicator&nbsp;buffers</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">open</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">high</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">low</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">defTitle</span><span class="f_CodeExample">[]&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #008080;">&quot;Open;High;Low;Close;&quot;</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">types</span><span class="f_CodeExample">[]&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #008080;">&quot;Bid&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Last&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Ask&quot;</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">defTitle</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringReplace</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">types</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">chartMode</span><span class="f_CodeExample">]&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;;&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PLOT_LABEL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">IndicatorSetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">INDICATOR_DIGITS</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Digits</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Depending on the mode of </span><span class="f_Text" style="font-style: italic;">chartMode</span><span class="f_Text">, the auxiliary method </span><span class="f_Text" style="font-style: italic;">price</span><span class="f_Text"> returns a specific price type from each tick.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlTick</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">switch</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">chartMode</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_SYMBOL_CHART_MODE_BID</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">bid</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_SYMBOL_CHART_MODE_LAST</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">last</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">case</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_SYMBOL_CHART_MODE_ASK</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">ask</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Using the </span><span class="f_Text" style="font-style: italic;">price</span><span class="f_Text"> method, we can easily implement the modification of the main calculation method </span><span class="f_Text" style="font-style: italic;">calc</span><span class="f_Text"> which fills the buffers for the bar numbered </span><span class="f_Text" style="font-style: italic;">i</span><span class="f_Text"> based on an array of </span><span class="f_Text" style="font-style: italic;">ticks</span><span class="f_Text"> for this bar.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">calc</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlTick</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">ticks</span><span class="f_CodeExample">[],&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">skip</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ticks</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">skip</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ticks</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">]);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">open</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">EMPTY_VALUE</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">open</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">high</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;||&nbsp;</span><span class="f_CodeExample" style="color: #333333;">high</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">EMPTY_VALUE</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">high</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">low</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">low</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The remaining fragments of the source code and the principles of their work correspond to the description of </span><span class="f_Text" style="font-style: italic;">IndDeltaVolume.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> handler, we additionally display the current price type of the chart and return a warning if the user decides to build an indicator based on the </span><span class="f_Text" style="font-style: italic;">Last</span><span class="f_Text"> price type for the instrument where the </span><span class="f_Text" style="font-style: italic;">Last</span><span class="f_Text"> is absent.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_CHART_MODE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">mode</span><span class="f_CodeExample">&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_CHART_MODE</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">SymbolInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CHART_MODE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Chart&nbsp;mode:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">mode</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">mode</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_CHART_MODE_BID</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ChartMode</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_SYMBOL_CHART_MODE_LAST</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Alert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Last&nbsp;price&nbsp;is&nbsp;not&nbsp;available&nbsp;for&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_SUCCEEDED</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Below is a screenshot of an instrument with the chart plotting mode based on the </span><span class="f_Text" style="font-style: italic;">Last</span><span class="f_Text"> price; an indicator with the price type </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> is laid over the chart.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Indicator with bars at Bid prices on the chart at Last prices" title="Indicator with bars at Bid prices on the chart at Last prices" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="afks_chartmodebid.png"/><br>
+<span class="f_ImageCaption">Indicator with bars at Bid prices on the chart at Last prices</span></p>
+<p class="p_Text"><span class="f_Text">It is also interesting to look at the bars for the </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> price running over a regular </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> price chart.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Indicator with bars at Ask prices on the chart at Bid prices" title="Indicator with bars at Ask prices on the chart at Bid prices" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="eurusd_chartmodeask.png"/><br>
+<span class="f_ImageCaption">Indicator with bars at Ask prices on the chart at Bid prices</span></p>
+<p class="p_Text"><span class="f_Text">During hours of low liquidity, when the spread widens, you can see a significant difference between </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Ask </span><span class="f_Text">charts.</span></p>
+
+</div>
+
+</body>
+</html>

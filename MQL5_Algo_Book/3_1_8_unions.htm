@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.1.8 Unions</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_1_structs_and_unions.htm"> 3.1 Structures and unions </a>/ 3.1.8 Unions
+          </td>
+          <td width="70" align="right">
+          <a href="3_1_7_structs_access.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_2_classes_and_interfaces.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.1.8 Unions</span></p>
+<p class="p_Text"><span class="f_Text">A union is a user-defined type composed of fields located in the same memory area, due to which they overlap each other. This makes it possible to write a value of one type to a union, and then read its internal representation (at the bit level) in the interpretation for another type. Thus it is possible to provide non-standard conversion from one type to another.</span></p>
+<p class="p_Text"><span class="f_Text">Union fields can be of any built-in type, except for strings, dynamic arrays, and pointers. Also, in unions, you can use structures with the same simple field types and without constructors/destructors.</span></p>
+<p class="p_Text"><span class="f_Text">The compiler allocates for the union a memory cell with a size equal to the maximum size among the types of all elements. So, for the union with fields like </span><span class="f_Text" style="font-style: italic;">long</span><span class="f_Text"> (8 bytes) and </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> (4 bytes), 8 bytes will be allocated.</span></p>
+<p class="p_Text"><span class="f_Text">All fields of the union are located at the same memory address, that is, they are aligned at the beginning of the union (they have an offset of 0, which can be checked using offsetof, see section <a href="3_1_5_structs_pack_dll.htm" class="topiclink">Packing Structures</a>).</span></p>
+<p class="p_Text"><span class="f_Text">The syntax for describing a union is similar to the structure but uses the </span><span class="f_Text" style="font-style: italic;">union</span><span class="f_Text"> keyword. It is followed by an identifier and then a block of code with a list of fields.</span></p>
+<p class="p_Text"><span class="f_Text">For example, an algorithm might use an array of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> to store various settings, simply because the type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> is one of those with a maximum size in bytes equal to 8. Let's say among the settings there are numbers like </span><span class="f_Text" style="font-style: italic;">ulong</span><span class="f_Text">. Since the type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> is not guaranteed to accurately reproduce large </span><span class="f_Text" style="font-style: italic;">ulong</span><span class="f_Text"> values, you need to use a union to &quot;pack&quot; the </span><span class="f_Text" style="font-style: italic;">ulong</span><span class="f_Text"> into a </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> and &quot;unpack&quot; it back.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MAX_LONG_IN_DOUBLE</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">9007199254740992</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;FYI:&nbsp;ULONG_MAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;18446744073709551615</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">union</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ulong2double</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">U</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;8&nbsp;bytes</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;8&nbsp;bytes</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample" style="color: #333333;">ulong2double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">converter</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">sizeof</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ulong2double</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;8</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MAX_LONG_IN_DOUBLE</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;possible&nbsp;loss&nbsp;of&nbsp;data&nbsp;due&nbsp;to&nbsp;type&nbsp;conversion</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">d</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;possible&nbsp;loss&nbsp;of&nbsp;data&nbsp;due&nbsp;to&nbsp;type&nbsp;conversion</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">d</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;/&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;-&gt;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;9007199254740992.0&nbsp;/&nbsp;9007199254740993&nbsp;-&gt;&nbsp;9007199254740992</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">converter</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">U</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">converter</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;4.450147717014403e-308</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">offsetof</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ulong2double</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">U</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">offsetof</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ulong2double</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;0&nbsp;0</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The size of the structure </span><span class="f_Text" style="font-style: italic;">ulong2double</span><span class="f_Text"> is equal to 8 since both its fields have this size. Thus, the fields U and D overlap completely.</span></p>
+<p class="p_Text"><span class="f_Text">In the realm of integers, 9007199254740992 is the largest value that is guaranteed with robust storage in </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">. In this example, we are trying to store one more number in </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The standard conversion from </span><span class="f_Text" style="font-style: italic;">ulong</span><span class="f_Text"> to </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> results in loss of precision: after writing 9007199254740993 into a variable </span><span class="f_Text" style="font-style: italic;">d</span><span class="f_Text"> of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> we read from its already &quot;rounded&quot; value 9007199254740992 (for additional information about the subtleties of storing numbers in the type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">, see. section <a href="2_2_2_float_numbers.htm" class="topiclink">Real numbers</a>).</span></p>
+<p class="p_Text"><span class="f_Text">When using the converter, the number 9007199254740993 is written to the union &quot;as is&quot;, without conversions, since we are assigning it to a U field of type </span><span class="f_Text" style="font-style: italic;">ulong</span><span class="f_Text">. Its representation in terms of </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> is available, again without conversions, from field D. We can copy it to other variables and arrays like </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> without worrying.</span></p>
+<p class="p_Text"><span class="f_Text">Although the resulting value </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> looks strange, it exactly matches the original integer if it needs to be extracted by reverse conversion: write to a D field of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">, then read from a U field of type </span><span class="f_Text" style="font-style: italic;">ulong</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">A union can have constructors and destructors, as well as methods. By default, union members have public access rights, but this can be adjusted using access modifiers, as in the structure.</span></p>
+
+</div>
+
+</body>
+</html>

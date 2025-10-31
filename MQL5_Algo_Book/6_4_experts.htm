@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.4 Creating Expert Advisors</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a>/ 6.4 Creating Expert Advisors
+          </td>
+          <td width="70" align="right">
+          <a href="6_3_8_account_state.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_4_1_experts_ontick.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">6.4 Creating Expert Advisors</span></p>
+<p class="p_Text"><span class="f_Text">In this chapter, we begin to study the MQL5 trading API used to implement Expert Advisors. This type of program is perhaps the most complex and demanding in terms of error-free coding and the number and variety of technologies involved. In particular, we will need to utilize many of the skills acquired from the previous chapters, ranging from OOP to the applied aspects of working with graphical objects, indicators, symbols, and software environment settings.</span></p>
+<p class="p_Text"><span class="f_Text">Depending on the chosen trading strategy, the Expert Advisor developer may need to pay special attention to the following:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Decision-making and order-sending speed (for HFT, High-Frequency Trading)</span></li>
+<li class="p_li"><span class="f_li">Selecting the optimal portfolio of instruments based on their correlations and volatility (for cluster trading)</span></li>
+<li class="p_li"><span class="f_li">Dynamically calculating lots and distance between orders (for martingale and grid strategies)</span></li>
+<li class="p_li"><span class="f_li">Analysis of news or external data sources (this will be discussed in the 7th part of the book)</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">All such features should be optimally applied by the developer to the described trading mechanisms provided by the MQL5 API.</span></p>
+<p class="p_Text"><span class="f_Text">Next, we will consider in detail built-in functions for managing trading activity, the Expert Advisor event model, and specific data structures, and recall the basic principles of interaction between the terminal and the server, as well as the basic concepts for algorithmic trading in MetaTrader 5: order, deal, and position.</span></p>
+<p class="p_Text"><span class="f_Text">At the same time, due to the versatility of the material, many important nuances of Expert Advisor development, such as testing and optimization, are highlighted in the next chapter.</span></p>
+<p class="p_Text"><span class="f_Text">We have previously considered the <a href="5_1_1_runtime_features_by_progtype.htm" class="topiclink">Design of MQL programs of various types</a>, including Expert Advisors, as well as started <a href="5_1_4_runtime_lifecycle.htm" class="topiclink">Features of starting and stopping programs</a>. Despite the fact that an Expert Advisor is launched on a specific chart, for which a working symbol is defined, there are no obstacles to centrally manage trading of an arbitrary set of financial instruments. Such Expert Advisors are traditionally referred to as multicurrency, although in fact, their portfolio may include CFDs, stocks, commodities, and tickers of other markets.</span></p>
+<p class="p_Text"><span class="f_Text">In Expert Advisors, as well as in indicators, there are <a href="5_1_5_runtime_oninit_ondeinit.htm" class="topiclink">Key events </a></span><span class="f_Text" style="font-style: italic;"><a href="5_1_5_runtime_oninit_ondeinit.htm" class="topiclink">OnInit</a></span><span class="f_Text"><a href="5_1_5_runtime_oninit_ondeinit.htm" class="topiclink"> and </a></span><span class="f_Text" style="font-style: italic;"><a href="5_1_5_runtime_oninit_ondeinit.htm" class="topiclink">OnDeinit</a></span><span class="f_Text">. They are not mandatory, but, as a rule, they are present in the code for the preparation and regular completion of the program: we used them and will continue using them in the examples. In a separate section, we provided an <a href="5_1_3_runtime_events_overview.htm" class="topiclink">Overview of all event handling functions</a>: we have already studied some of them in detail by now (for example, </span><span class="f_Text" style="font-style: italic;"><a href="5_4_2_indicators_oncalculate.htm" class="topiclink">OnCalculate</a></span><span class="f_Text"> indicator events and the </span><span class="f_Text" style="font-style: italic;"><a href="5_6_2_timer_ontimer.htm" class="topiclink">OnTimer</a></span><span class="f_Text"> timer). &nbsp;Expert Advisor-specific events (</span><span class="f_Text" style="font-style: italic;"><a href="6_4_1_experts_ontick.htm" class="topiclink">OnTick</a></span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;"><a href="6_4_36_experts_ontrade.htm" class="topiclink">ontrade</a></span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;"><a href="6_4_34_experts_ontradetransaction.htm" class="topiclink">OnTradeTransaction</a></span><span class="f_Text">) will be described in this chapter.</span></p>
+<p class="p_Text"><span class="f_Text">Expert Advisors can use the widest range of source data as trading signals: <a href="5_3_6_timeseries_copy_funcs_overview.htm" class="topiclink">quotes</a>, <a href="5_3_11_timeseries_ticks_mqltick.htm" class="topiclink">tics</a>, <a href="6_2_marketbook.htm" class="topiclink">depth of market</a>, <a href="6_4_30_experts_history_select.htm" class="topiclink">trading account history</a>, or indicator readings. In the latter case, the principles of creating indicator instances and reading values from their buffers are no different from those discussed in the chapter <a href="5_5_indicators_use.htm" class="topiclink">Using ready-made indicators from MQL programs</a>. In the Expert Advisor examples in the following sections, we will demonstrate most of these tricks.</span></p>
+<p class="p_Text"><span class="f_Text">It should be noted that trading functions can be used not only in Expert Advisors but also in scripts. We will see examples for both options.</span></p>
+
+</div>
+
+</body>
+</html>

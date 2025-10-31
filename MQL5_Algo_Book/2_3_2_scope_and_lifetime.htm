@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>2.3.2 Context, scope, and lifetime of variables</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part2.htm"> Part 2. Programming fundamentals </a> / <a class="h_m" href="2_3_variables.htm"> 2.3 Variables </a>/ 2.3.2 Context, scope, and lifetime of variables
+          </td>
+          <td width="70" align="right">
+          <a href="2_3_1_define_vs_declare.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="2_3_3_initialization.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">2.3.2 Context, scope, and Lifetime of variables</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 belongs to programming languages that use braces to group statements into code blocks.</span></p>
+<p class="p_Text"><span class="f_Text">Recall that a program consists of blocks with statements, and one block must exist definitely. In the script samples from Part 1, we saw the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function. The body of this function (the brace-enclosed text following the function name) is exactly such a necessary code block.</span></p>
+<p class="p_Text"><span class="f_Text">Inside each block, the local context is formed, i.e., a region that limits the visibility and lifetime of variables described inside it. So far we have only encountered examples where braces define the body of functions. However, they can also be used to form <a href="2_7_1_statements_compound.htm" class="topiclink">compound operators</a>, in the syntax of <a href="3_2_6_classes_definition.htm" class="topiclink">the description of classes</a> and <a href="3_2_16_classes_namespace_context.htm" class="topiclink">namespaces</a>. All these methods also define visibility regions and will be considered in the relevant sections. At this stage, we only consider one type of local blocks, namely those inside of functions.</span></p>
+<p class="p_Text"><span class="f_Text">Along local regions, every program also has one global context, i.e., a region with the definitions of variables, functions, and other entities made beyond other blocks.</span></p>
+<p class="p_Text"><span class="f_Text">On the simple script side, in which the MQL Wizard has created the only void function </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">, then there will only be 2 regions in it: A global one and a local one (inside the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function body, although it is empty). The script below illustrates this with comments.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//&nbsp;GLOBAL&nbsp;SCOPE</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;LOCAL&nbsp;SCOPE&nbsp;&quot;OnStart&quot;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;GLOBAL&nbsp;SCOPE</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Please note that the global region stretches everywhere apart from function </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> (both before and after it). Basically, it includes everything beyond any functions (if there were many), but there is nothing in this script, apart from </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">We can describe variables, such as </span><span class="f_Text" style="font-style: italic;">i, j, k</span><span class="f_Text">, on the top of the file, and they will become global.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//&nbsp;GLOBAL&nbsp;SCOPE</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;LOCAL&nbsp;SCOPE&nbsp;&quot;OnStart&quot;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;GLOBAL&nbsp;SCOPE</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Global variables are created immediately upon starting an MQL program in the terminal and exist for the entire period of program execution.</span></p>
+<p class="p_Text"><span class="f_Text">The programmer can record and read the contents of global variables from any place in the program.</span></p>
+<p class="p_Text"><span class="f_Text">It is basically recommended to describe global variables just at the top, but it is necessary. If we move the declaration below the entire function </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">, nothing will change basically. It will just be difficult for other programmers to immediately make sense of the code with variables, the definitions of which one has still to get to.</span></p>
+<p class="p_Text"><span class="f_Text">Interestingly, the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function itself is declared in the global context, too. If we add another function, it will also be declared in the global context. Recall how we created the </span><span class="f_Text" style="font-style: italic;">Greeting</span><span class="f_Text"> function in Part 1 and called it from the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function. This is the effect of the function name and the method of referencing to it (how to execute it) being known throughout the source code. <a href="3_2_16_classes_namespace_context.htm" class="topiclink">Namespaces</a> add some niceties to it; however, we will learn them later.</span></p>
+<p class="p_Text"><span class="f_Text">A local region inside each function only belongs to it: One local region is inside </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">, and another is inside </span><span class="f_Text" style="font-style: italic;">Greeting</span><span class="f_Text">, which is its own and differs from both the local region of </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> and the global one.</span></p>
+<p class="p_Text"><span class="f_Text">Variables described in the function body are called local. They are created according to their descriptions as of calling the relevant function during the program execution. Local variables can be only used inside the block that contains them. They are not visible or accessible from the outside. When leaving the function, local variables are destroyed.</span></p>
+<p class="p_Text"><span class="f_Text">Example of describing local variables </span><span class="f_Text" style="font-style: italic;">x, y, z</span><span class="f_Text"> inside function </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//&nbsp;GLOBAL&nbsp;SCOPE</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;LOCAL&nbsp;SCOPE&nbsp;&quot;OnStart&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">z</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;GLOBAL&nbsp;SCOPE</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It should be noted that pairs of braces can be used in both describing the function and other statements and as themselves to form the internal code block. Unit nesting is unlimited.</span></p>
+<p class="p_Text"><span class="f_Text">Nested blocks are usually added to minimize the scope of variables used in a logically isolated small code location (if it is not set by a function for one reason or another). This allows the reduction of the probability of a false modification of the variable where it was not provided for or some undesired side effects due to the attempt to re-purpose the same variable for various needs (it is not a good practice).</span></p>
+<p class="p_Text"><span class="f_Text">Below is a sample function where unit nesting level is 2 (if we consider the block with the function body to be the first level), and 2 such blocks are created and will be executed consecutively.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;LOCAL&nbsp;SCOPE&nbsp;&quot;OnStart&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">z</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;LOCAL&nbsp;SUBSCOPE&nbsp;1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...&nbsp;use&nbsp;p&nbsp;for&nbsp;task&nbsp;1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;LOCAL&nbsp;SUBSCOPE&nbsp;2</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;y&nbsp;=&nbsp;p;&nbsp;//&nbsp;error:&nbsp;'p'&nbsp;-&nbsp;undeclared&nbsp;identifier</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;from&nbsp;now&nbsp;'p'&nbsp;is&nbsp;declared</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...&nbsp;use&nbsp;p&nbsp;for&nbsp;task&nbsp;2</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;p&nbsp;=&nbsp;x;&nbsp;//&nbsp;error:&nbsp;'p'&nbsp;-&nbsp;undeclared&nbsp;identifier</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Inside both blocks, variable </span><span class="f_Text" style="font-style: italic;">p</span><span class="f_Text"> is described, which is used for various purposes in them. In fact, these are two different variables, although having the same name visible inside each block.</span></p>
+<p class="p_Text"><span class="f_Text">If the variable were taken out to the initial list of the local variables of the function, it could contain some remaining value upon exiting from the first block, thus breaking the operation of the second block. Moreover, the programmer could occasionally involve </span><span class="f_Text" style="font-style: italic;">p</span><span class="f_Text"> in something else at the very beginning of the function, and then the side effects could take place in the first block.</span></p>
+<p class="p_Text"><span class="f_Text">Beyond either of the two nested blocks, variable </span><span class="f_Text" style="font-style: italic;">p</span><span class="f_Text"> is unknown and therefore, an attempt to refer to it from the common block of the function leads to a compilation error (&quot;undeclared identifier&quot;).</span></p>
+<p class="p_Text"><span class="f_Text">It should also be noted that a variable can be described not at the very beginning of the block, but in its middle or even closer to the end. Then it is defined not throughout the block, but only below its definition. Therefore, when referring to the variable above its description, the same error will occur.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, the variable scope region may differ from the context (the entire block).</span></p>
+<p class="p_Text"><span class="f_Text">Both versions of the problem are illustrated in an example: Try to include any of the strings with statements </span><span class="f_Text" style="font-style: italic;">p = x</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">y = p</span><span class="f_Text"> and compile the source code.</span></p>
+<p class="p_Text"><span class="f_Text">Memory is allocated for all the local variables of the function as soon as the control is passed inside the function. However, this is not the end of their creation. Then they are initialized (initial values are set), initialization being defined explicitly by the programmer or implicitly by the default values of the compiler. At the same time, context is of the essence, in which the variables are described.</span></p>
+
+</div>
+
+</body>
+</html>

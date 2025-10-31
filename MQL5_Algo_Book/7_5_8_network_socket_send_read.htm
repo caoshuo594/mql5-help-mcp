@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.5.8 Reading, writing data over an insecure socket connection</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_5_network.htm"> 7.5 Network functions </a>/ 7.5.8 Reading and writing data over an insecure socket connection
+          </td>
+          <td width="70" align="right">
+          <a href="7_5_7_network_socket_timeouts.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_5_9_network_socket_tls_handshake_cert.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.5.8 Reading and writing data over an insecure socket connection</span></p>
+<p class="p_Text"><span class="f_Text">Historically, sockets provide data transfer over a simple connection by default. Data transmission in an open form allows technical means to analyze all traffic. In recent years, security issues have been taken more seriously and therefore TLS (Transport Layer Security) technology has been implemented almost everywhere: it provides on-the-fly encryption of all data between the sender and the recipient. In particular, for Internet connections, the difference lies in the HTTP (simple connection) and HTTPS (secure) protocols.</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 provides different sets of </span><span class="f_Text" style="font-style: italic;">Socket</span><span class="f_Text"> functions for working with simple and secure connections. In this section, we will get acquainted with the simple mode, and later we will move to the protected one.</span></p>
+<p class="p_Text"><span class="f_Text">To read data from a socket, use the </span><span class="f_Text" style="font-style: italic;">SocketRead</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">int SocketRead(int socket, uchar &amp;buffer[], uint maxlen, uint timeout)</span></p>
+<p class="p_Text"><span class="f_Text">The socket descriptor is obtained from </span><span class="f_Text" style="font-style: italic;"><a href="7_5_5_network_socket_create_connect.htm" class="topiclink">SocketCreate</a></span><span class="f_Text"> and connected to a network resource using </span><span class="f_Text" style="font-style: italic;"><a href="7_5_5_network_socket_create_connect.htm" class="topiclink">Socket Connect</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">buffer</span><span class="f_Text"> parameter is a reference to the array into which the data will be read. If the array is dynamic, its size increases by the number of bytes read, but it cannot exceed INT_MAX (2147483647). You can limit the number of read bytes in the </span><span class="f_Text" style="font-style: italic;">maxlen</span><span class="f_Text"> parameter. Data that does not fit will remain in the socket's internal buffer: it can be obtained by the following call </span><span class="f_Text" style="font-style: italic;">SocketRead</span><span class="f_Text">. The value of </span><span class="f_Text" style="font-style: italic;">maxlen</span><span class="f_Text"> must be between 1 and INT_MAX (2147483647).</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">timeout</span><span class="f_Text"> parameter specifies the time (in milliseconds) to wait for the read to complete. If no data is received within this time, the attempts are terminated and the function exits with the result -1.</span></p>
+<p class="p_Text"><span class="f_Text">-1 is also returned on error, while the error code in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">, for example, 5273 (ERR_NETSOCKET_IO_ERROR), means that the connection established via </span><span class="f_Text" style="font-style: italic;">SocketConnect</span><span class="f_Text"> is now broken.</span></p>
+<p class="p_Text"><span class="f_Text">If successful, the function returns the number of bytes read.</span></p>
+<p class="p_Text"><span class="f_Text">When setting the read timeout to 0, the default value of 120000 (2 minutes) is used.</span></p>
+<p class="p_Text"><span class="f_Text">To write data to a socket, use the </span><span class="f_Text" style="font-style: italic;">SocketSend</span><span class="f_Text"> function.</span></p>
+<p class="p_Quote"><span class="f_Quote">Unfortunately, the function names </span><span class="f_Quote" style="font-style: italic;">SocketRead</span><span class="f_Quote"> and </span><span class="f_Quote" style="font-style: italic;">SocketSend</span><span class="f_Quote"> are not &quot;symmetric&quot;: the reverse operation for &quot;read&quot; is &quot;write&quot;, and for &quot;send&quot; is &quot;receive&quot;. This may be unfamiliar to developers with experience who worked with networking APIs on other platforms.</span></p>
+<p class="p_H4"><span class="f_H4">int SocketSend(int socket, const uchar &amp;buffer[], uint maxlen)</span></p>
+<p class="p_Text"><span class="f_Text">The first parameter is a handle to a previously created and opened socket. When passing an invalid handle, </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> receives error 5270 (ERR_NETSOCKET_INVALIDHANDLE). The </span><span class="f_Text" style="font-style: italic;">buffer</span><span class="f_Text"> array contains the data to be sent with the data size being specified in the </span><span class="f_Text" style="font-style: italic;">maxlen</span><span class="f_Text"> parameter (the parameter was introduced for the convenience of sending part of the data from a fixed array).</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of bytes written to the socket on success and -1 on error.</span></p>
+<p class="p_Text"><span class="f_Text">System-level errors (5273, ERR_NETSOCKET_IO_ERROR) indicate a disconnect.</span></p>
+<p class="p_Text"><span class="f_Text">The script </span><span class="f_Text" style="font-style: italic;">SocketReadWriteHTTP.mq5</span><span class="f_Text"> demonstrates how sockets can be used to implement work over the HTTP protocol, that is, request information about a page from a web server. This is a small part of what the </span><span class="f_Text" style="font-style: italic;"><a href="7_5_4_network_http.htm" class="topiclink">WebRequest</a></span><span class="f_Text"> function does for us &quot;behind the scenes&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">Let's leave the default address in the input parameters: the site &quot;www.mql5.com&quot;. The port number was chosen to be 80 because that is the default value for non-secure HTTP connections (although some servers may use a different port: 81, 8080, etc.). Ports reserved for secure connections (in particular, the most popular 443) are not yet supported by this example. Also, in the </span><span class="f_Text" style="font-style: italic;">Server</span><span class="f_Text"> parameter, it is important to enter the name of the domain and not a specific page because the script can only request the main page, i.e., the root path &quot;/&quot;.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Server</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;www.mql5.com&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Port</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">80</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the main function of the script, we will create a socket and open a connection on it with the specified parameters (the timeout is 5 seconds).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Server</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Port</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SocketCreate</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SocketConnect</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Server</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Port</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5000</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's take a look at how the HTTP protocol works. The client sends requests in the form of specially designed headers (strings with predefined names and values), including, in particular, the web page address, and the server sends the entire web page or operation status in response, also using special headers for this. The client can request a web page with a GET request, send some data with a POST request, or check the status of the web page with a frugal HEAD request. In theory, there are many more HTTP methods – you can learn about them in the HTTP protocol specification.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, the script must generate and send an HTTP header over the socket connection. In its simplest form, the following HEAD request allows you to get meta information about the page (we could replace HEAD with GET to request the entire page but there are some complications; we will discuss this later).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">HEAD&nbsp;/&nbsp;HTTP/1.1</span>
+<br><span class="f_CodeExample">Host:&nbsp;</span><span class="f_CodeExample" style="font-style: italic;">_server_</span>
+<br><span class="f_CodeExample">User-Agent:&nbsp;MetaTrader&nbsp;5</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&lt;-&nbsp;two&nbsp;newlines&nbsp;in&nbsp;a&nbsp;row&nbsp;\r\n\r\n</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The forward slash after &quot;HEAD&quot; (or another method) is the shortest possible path on any server to the root directory, which usually results in the main page being displayed. If we wanted a specific web page, we could write something like &quot;GET /en/forum/ HTTP/1.1&quot; and get the table of contents of the English language forums from </span><span class="f_Text" style="font-style: italic;">mql5.com</span><span class="f_Text">. Specify a real domain instead of the &quot;_server_&quot; string.</span></p>
+<p class="p_Text"><span class="f_Text">Although the presence of &quot;User-Agent:&quot; is optional, it allows the program to &quot;introduce itself&quot; to the server, without which some servers may reject the request.</span></p>
+<p class="p_Text"><span class="f_Text">Notice the two empty lines: they mark the end of the heading. In our script, it is convenient to form the title with the following expression:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;HEAD&nbsp;/&nbsp;HTTP/1.1\r\nHost:&nbsp;%s\r\n\r\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Server</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now we just have to send it to the server. For this purpose, we have written a simple function </span><span class="f_Text" style="font-style: italic;">HTTPSend</span><span class="f_Text">. It receives a socket descriptor and a header line.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">HTTPSend</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">request</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">char</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">req</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">len</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">request</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">req</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">)&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">len</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SocketSend</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">req</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">len</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">len</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Internally, we convert the string to a byte array and call </span><span class="f_Text" style="font-style: italic;">SocketSend</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Next, we need to accept the server response, for which we have written the </span><span class="f_Text" style="font-style: italic;">HTTPRecv</span><span class="f_Text"> function. It also expects a socket descriptor and a reference to a string where the data should be placed but is more complex.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">HTTPRecv</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">timeout</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">char</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">response</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">len</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;signed&nbsp;integer&nbsp;needed&nbsp;for&nbsp;error&nbsp;flag&nbsp;-1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">start</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">GetTickCount</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">do</span><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ResetLastError</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!(</span><span class="f_CodeExample" style="color: #333333;">len</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">SocketIsReadable</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Sleep</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;wait&nbsp;for&nbsp;data&nbsp;or&nbsp;timeout</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;read&nbsp;the&nbsp;data&nbsp;in&nbsp;the&nbsp;available&nbsp;volume</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #333333;">len</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SocketRead</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">response</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">len</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">timeout</span><span class="f_CodeExample">))&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">CharArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">response</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">len</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;NB:&nbsp;without&nbsp;CP_UTF8&nbsp;only&nbsp;'HEAD'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringFind</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n\r\n&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;HTTP&nbsp;header&nbsp;ends&nbsp;with&nbsp;a&nbsp;double&nbsp;newline,&nbsp;use&nbsp;this</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;to&nbsp;make&nbsp;sure&nbsp;the&nbsp;entire&nbsp;header&nbsp;is&nbsp;received</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;HTTP-header&nbsp;found&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringSetLength</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;cut&nbsp;off&nbsp;the&nbsp;body&nbsp;of&nbsp;the&nbsp;document&nbsp;(in&nbsp;case&nbsp;of&nbsp;a&nbsp;GET&nbsp;request)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GetTickCount</span><span class="f_CodeExample">()&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">start</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">timeout</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;!</span><span class="f_CodeExample" style="color: #0000ff;">IsStopped</span><span class="f_CodeExample">()&nbsp;&amp;&amp;&nbsp;!</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">)&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here we are checking in a loop the appearance of data within the specified timeout and reading it into the </span><span class="f_Text" style="font-style: italic;">response</span><span class="f_Text"> buffer. The occurrence of an error terminates the loop.</span></p>
+<p class="p_Text"><span class="f_Text">Buffer bytes are immediately converted to a string and concatenated into a full response in the </span><span class="f_Text" style="font-style: italic;">result</span><span class="f_Text"> variable. It is important to note that we can only use the </span><span class="f_Text" style="font-style: italic;">CharArrayToString</span><span class="f_Text"> function with the default encoding for the HTTP header because only Latin letters and a few special characters from ANSI are allowed in it.</span></p>
+<p class="p_Text"><span class="f_Text">To receive a complete web document, which, as a rule, has UTF-8 encoding (but potentially has another non-Latin one, which is indicated just in the HTTP header), more tricky processing will be required: first, you need to collect all the sent blocks in one common buffer and then convert the whole thing into a string indicating CP_UTF8 (otherwise, any character encoded in two bytes can be &quot;cut&quot; when sent, and will arrive in different blocks; that is why we cannot expect a correct UTF-8 byte stream in individual fragment). We will improve this example in the following sections.</span></p>
+<p class="p_Text"><span class="f_Text">Having functions </span><span class="f_Text" style="font-style: italic;">HTTPSend</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">HTTPRecv</span><span class="f_Text">, we complete the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> code.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">HTTPSend</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;HEAD&nbsp;/&nbsp;HTTP/1.1\r\nHost:&nbsp;%s&nbsp;\r\n&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;User-Agent:&nbsp;MetaTrader&nbsp;5\r\n\r\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Server</span><span class="f_CodeExample">))))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">response</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">HTTPRecv</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">response</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5000</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">response</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the HTTP header received from the server, the following lines may be of interest:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">'Content-Length:' – the total length of the document in bytes</span></li>
+<li class="p_li"><span class="f_li">'Content-Language:' – document language (for example, &quot;de-DE, ru&quot;)</span></li>
+<li class="p_li"><span class="f_li">'Content-Type:' – document encoding (for example, &quot;text/html; charset=UTF-8&quot;)</span></li>
+<li class="p_li"><span class="f_li">'Last-Modified:' – the time of the last modification of the document, so as not to download what is already there (in principle, we can add the 'If-Modified-Since:' header in our HTTP request)</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">We will talk about finding out the document length (data size) in more detail because almost all headers are optional, that is, they are reported by the server at will, and in their absence, alternative mechanisms are used. The size is important to know when to close the connection, i.e., to make sure that all the data has been received.</span></p>
+<p class="p_Text"><span class="f_Text">Running the script with default parameters produces the following result.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Server=www.mql5.com&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">Port=80&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">SocketCreate()=1&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">SocketConnect(socket,Server,Port,5000)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">HTTPSend(socket,StringFormat(HEAD&nbsp;/&nbsp;HTTP/1.1</span>
+<br><span class="f_CodeExample">Host:&nbsp;%s</span>
+<br><span class="f_CodeExample">,Server))=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">HTTP-header&nbsp;found</span>
+<br><span class="f_CodeExample">HTTPRecv(socket,response,5000)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">HTTP/1.1&nbsp;301&nbsp;Moved&nbsp;Permanently</span>
+<br><span class="f_CodeExample">Server:&nbsp;nginx</span>
+<br><span class="f_CodeExample">Date:&nbsp;Sun,&nbsp;31&nbsp;Jul&nbsp;2022&nbsp;10:24:00&nbsp;GMT</span>
+<br><span class="f_CodeExample">Content-Type:&nbsp;text/html</span>
+<br><span class="f_CodeExample">Content-Length:&nbsp;162</span>
+<br><span class="f_CodeExample">Connection:&nbsp;keep-alive</span>
+<br><span class="f_CodeExample">Location:&nbsp;https://www.mql5.com/</span>
+<br><span class="f_CodeExample">Strict-Transport-Security:&nbsp;max-age=31536000;&nbsp;includeSubDomains;&nbsp;preload</span>
+<br><span class="f_CodeExample">X-Frame-Options:&nbsp;SAMEORIGIN</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Please note that this site, like most sites today, redirects our request to a secure connection: this is achieved with the status code &quot;301 Moved Permanently&quot; and the new address &quot;Location: https://www.mql5.com/&quot; (protocol is important here &quot; https&quot;). To retry a TLS-enabled request, several other functions must be used, and we will discuss them later.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.8.6 Finding objects</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_8_objects.htm"> 5.8 Graphical objects </a>/ 5.8.6 Finding objects
+          </td>
+          <td width="70" align="right">
+          <a href="5_8_5_objects_delete.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_8_7_objects_properties_get_set.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.8.6 Finding objects</span></p>
+<p class="p_Text"><span class="f_Text">There are three functions to search for objects on the chart. The first two, the </span><span class="f_Text" style="font-style: italic;">ObjectsTotal</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ObjectName</span><span class="f_Text">, allow you to sort through objects by name, and then, if necessary, use the name of each object to analyze its other properties (we will describe how this is done in the next section). The third function, </span><span class="f_Text" style="font-style: italic;">ObjectFind</span><span class="f_Text">, allows you to check the existence of an object by a known name. The same could be done by simply requesting some property via the </span><span class="f_Text" style="font-style: italic;">ObjectGet</span><span class="f_Text"> function: if there is no object with the passed name, we will get an error in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">, but this is less convenient than calling </span><span class="f_Text" style="font-style: italic;">ObjectFind</span><span class="f_Text">. Besides, the function immediately returns the number of the window in which the object is located.</span></p>
+<p class="p_H4"><span class="f_H4">int ObjectsTotal(long chartId, int window = -1, int type = -1)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of objects on the chart with the </span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text"> identifier (0 means current chart). Only objects in the subwindow with the specified </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text"> number are considered in the calculation (0 represents the main window, -1 represents the main window and all subwindows). Note that only objects of the specific type specified in the </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> parameter are taken into account (-1 indicates all types by default). The value of </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> can be an element from the ENUM_OBJECT enumeration.</span></p>
+<p class="p_Text"><span class="f_Text">The function is executed synchronously, that is, it blocks the execution of the calling MQL program until the result is received.</span></p>
+<p class="p_H4"><span class="f_H4">string ObjectName(long chartId, int index, int window = -1, int type = -1)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the name of the object under the </span><span class="f_Text" style="font-style: italic;">index</span><span class="f_Text"> number on the chart with the </span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text"> identifier. When compiling the internal list, within which the object is searched, the specified subwindow number (</span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text">) and object type (</span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text">) are taken into account. The list is sorted by object names in lexicographic order, that is, in particular, alphabetically, case sensitive.</span></p>
+<p class="p_Text"><span class="f_Text">Like </span><span class="f_Text" style="font-style: italic;">ObjectsTotal</span><span class="f_Text">, during its execution, </span><span class="f_Text" style="font-style: italic;">ObjectName</span><span class="f_Text"> waits for the entire queue of chart commands to be fetched, and then returns the name of the object from the updated list of objects.</span></p>
+<p class="p_Text"><span class="f_Text">In case of an error, an empty string will be obtained, and the OBJECT_NOT_FOUND (4202) error code will be stored in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">To test the functionality of these two functions, let's create a script called </span><span class="f_Text" style="font-style: italic;">ObjectFinder.mq5</span><span class="f_Text"> that logs all objects on all charts. It uses <a href="5_7_3_charts_list.htm" class="topiclink">chart iteration</a> functions (</span><span class="f_Text" style="font-style: italic;">ChartFirst</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ChartNext</span><span class="f_Text">), as well as functions for getting <a href="5_7_4_charts_symbol_period.htm" class="topiclink">chart properties</a> (</span><span class="f_Text" style="font-style: italic;">ChartSymbol</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">ChartPeriod</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">ChartGetInteger</span><span class="f_Text">).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">MQL5Book</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">Periods</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartFirst</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;loop&nbsp;through&nbsp;charts</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">&nbsp;!=&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%s&nbsp;%s&nbsp;(%lld)&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartSymbol</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PeriodToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartPeriod</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">)),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">win</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_WINDOWS_TOTAL</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;loop&nbsp;through&nbsp;windows</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">win</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&nbsp;Window&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectsTotal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;loop&nbsp;through&nbsp;objects</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_OBJECT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_OBJECT</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">ObjectGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJPROP_TYPE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&nbsp;&nbsp;&nbsp;%s&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartNext</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&nbsp;objects&nbsp;found&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For each chart, we determine the number of subwindows (</span><span class="f_Text" style="font-style: italic;">ChartGetInteger(id, CHART_WINDOWS_TOTAL)</span><span class="f_Text">), call </span><span class="f_Text" style="font-style: italic;">ObjectsTotal</span><span class="f_Text"> for each subwindow, and call </span><span class="f_Text" style="font-style: italic;">ObjectName</span><span class="f_Text"> in the inner loop. Next, by name, we find the type of object and display them together in the log.</span></p>
+<p class="p_Text"><span class="f_Text">Below is a version of the possible result of the script (with abbreviations).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">EURUSD&nbsp;H1&nbsp;(132358585987782873)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;Window&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_FIBO&nbsp;H1&nbsp;Fibo&nbsp;58513</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_TEXT&nbsp;H1&nbsp;Text&nbsp;40688</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_TREND&nbsp;H1&nbsp;Trendline&nbsp;3291</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_VLINE&nbsp;H1&nbsp;Vertical&nbsp;Line&nbsp;28732</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_VLINE&nbsp;H1&nbsp;Vertical&nbsp;Line&nbsp;33752</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_VLINE&nbsp;H1&nbsp;Vertical&nbsp;Line&nbsp;35549</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;Window&nbsp;1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;Window&nbsp;2</span>
+<br><span class="f_CodeExample">EURUSD&nbsp;D1&nbsp;(132360375330772909)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;Window&nbsp;0</span>
+<br><span class="f_CodeExample">EURUSD&nbsp;M15&nbsp;(132544239145024745)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;Window&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_VLINE&nbsp;H1&nbsp;Vertical&nbsp;Line&nbsp;27032</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">XAUUSD&nbsp;D1&nbsp;(132544239145024746)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;Window&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_EVENT&nbsp;ObjShow-2021.11.25&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_TEXT&nbsp;ObjShow-2021.11.26&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_ARROW_SELL&nbsp;ObjShow-2021.11.29&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_ARROW_BUY&nbsp;ObjShow-2021.11.30&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_ARROW_RIGHT_PRICE&nbsp;ObjShow-2021.12.01&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_ARROW_LEFT_PRICE&nbsp;ObjShow-2021.12.02&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_ARROW_CHECK&nbsp;ObjShow-2021.12.03&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_ARROW_STOP&nbsp;ObjShow-2021.12.06&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_ARROW_DOWN&nbsp;ObjShow-2021.12.07&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_ARROW_UP&nbsp;ObjShow-2021.12.08&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_ARROW_THUMB_DOWN&nbsp;ObjShow-2021.12.09&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_ARROW_THUMB_UP&nbsp;ObjShow-2021.12.10&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_HLINE&nbsp;ObjShow-2021.12.13&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;OBJ_VLINE&nbsp;ObjShow-2021.12.14&nbsp;00:00:00</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">35&nbsp;objects&nbsp;found</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here, in particular, you can see that on the XAUUSD, D1 chart there are objects generated by the </span><span class="f_Text" style="font-style: italic;">ObjectSimpleShowcase.mq5</span><span class="f_Text"> script. There are no objects in some charts and in some subwindows.</span></p>
+<p class="p_H4"><span class="f_H4">int ObjectFind(long chartId, const string name)</span></p>
+<p class="p_Text"><span class="f_Text">The function searches for an object by name on the chart specified by the identifier and, if successful, returns the number of the window where it was found.</span></p>
+<p class="p_Text"><span class="f_Text">If the object is not found, the function returns a negative number. Like the previous functions in this section, the </span><span class="f_Text" style="font-style: italic;">ObjectFind</span><span class="f_Text"> function uses a synchronous call.</span></p>
+<p class="p_Text"><span class="f_Text">We will see an example of using this function in the </span><span class="f_Text" style="font-style: italic;">ObjectCopy.mq5</span><span class="f_Text"> script in the next section.</span></p>
+
+</div>
+
+</body>
+</html>

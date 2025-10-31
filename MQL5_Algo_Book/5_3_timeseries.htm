@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.3 Timeseries</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a>/ 5.3 Timeseries
+          </td>
+          <td width="70" align="right">
+          <a href="5_2_3_script_service_limitations.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_3_1_timeseries_symbol_period.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">5.3 Timeseries</span></p>
+<p class="p_Text"><span class="f_Text">Time series are arrays of data in which the indexes of the elements correspond to ordered time samples. Due to the application specifics of the terminal, almost all the information a trader needs is provided in the form of time series. These include, in particular, arrays of quotes, ticks, readings of technical indicators, and others. The vast majority of MQL programs also work with this data, and therefore a group of functions in the MQL5 API has been allocated for them, which we will consider in this section.</span></p>
+<p class="p_Text"><span class="f_Text">The way of accessing arrays in MQL5 enables developers to set one of two indexing directions:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Normal (forward) – the numbering of elements goes from the beginning of the array to the end (from old counts to new ones)</span></li>
+<li class="p_li"><span class="f_li">Reverse (timeseries) – the numbering goes from the end of the array to the beginning (from new counts to old ones)</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">We have already covered this issue in the section <a href="4_3_8_arrays_as_series.htm" class="topiclink">Array indexing direction as in timeseries</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Changing the indexing mode is performed using the </span><span class="f_Text" style="font-style: italic;">ArraySetAsSeries</span><span class="f_Text"> function and does not affect the physical layout of the array in memory. Only the way of accessing elements by number changes: in the normal indexing we get the i-th element as </span><span class="f_Text" style="font-style: italic;">array[i]</span><span class="f_Text">, while in the timeseries mode the equivalent formula is </span><span class="f_Text" style="font-style: italic;">array[N - i - 1]</span><span class="f_Text">, where N is the size of the array (it is called &quot;equivalent&quot; because the application developer does not need to do such a recalculation everywhere as it is automatically done by the terminal if the timeseries indexing mode is set for the array). This is illustrated by the following table (for a character array of 10 elements).</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">Array elements</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">A</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">B</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">C</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">D</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">E</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">F</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">G</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">H</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">I</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">J</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">Regular index</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">0</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">1</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">2</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">3</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">4</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">5</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">6</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">7</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">8</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">9</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">Index as in timeseries</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">9</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">8</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">7</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">6</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">5</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">4</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">3</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">2</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">1</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">0</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Recall that array indexing always starts from zero.</span></p>
+<p class="p_Text"><span class="f_Text">When it comes to arrays of quotes and other constantly updated data, new elements are physically appended to the end of the array. However, from a trading point of view, the most recent data should be taken into account and taken as a starting point when analyzing history. That is why it is convenient to always have the current (last) bar under index 0, and count the previous ones from it into the past. Thus, we get the timeseries indexing.</span></p>
+<p class="p_Text"><span class="f_Text">By default, arrays are indexed from left to right. If we imagine that such an array is displayed on a standard MetaTrader 5 chart, then purely visually, the element with index 0 will be at the extreme left position and the last one at the extreme right. In timeseries with reverse indexing, the 0th element corresponds to the rightmost position, and the last element corresponds to the leftmost position. Since timeseries store the history of price data for financial instruments in relation to time, the most recent data in them is always to the right of the old ones.</span></p>
+<p class="p_Text"><span class="f_Text">The element with the zero index in the timeseries array contains information about the latest symbol quote. The zero bar is usually incomplete as it continues to form.</span></p>
+<p class="p_Text"><span class="f_Text">Another characteristic of a quote timeseries is its period, that is, the time interval between adjacent readings. This period is also called &quot;timeframe&quot; and can be reformulated more precisely. The timeframe is a period of time during which one bar of quotes is formed, and its beginning and end are aligned in absolute time with the same step. For example, in the &quot;1 hour&quot; (H1) timeframe, the bars start strictly at 0 minutes of every hour of the day. The beginning of each such period is included in the current bar, and the end belongs to the next bar.</span></p>
+<p class="p_Text"><span class="f_Text">The <a href="5_3_1_timeseries_symbol_period.htm" class="topiclink">Symbols and timeframes</a> chapter provides a complete list of standard timeframes.</span></p>
+<p class="p_Text"><span class="f_Text">Within the framework of the timeseries concept, as a rule, buffers of technical <a href="5_4_indicators_make.htm" class="topiclink">indicators</a> also work, but we will study their features later.</span></p>
+<p class="p_Text"><span class="f_Text">If necessary, in any MQL program, you can request the values of timeseries for any symbol and timeframe, as well as the values of indicators calculated for any symbol and timeframe. This data is obtained by using </span><span class="f_Text" style="font-style: italic;"><a href="5_3_6_timeseries_copy_funcs_overview.htm" class="topiclink">Copy</a></span><span class="f_Text"><a href="5_3_6_timeseries_copy_funcs_overview.htm" class="topiclink"> functions</a>, among which there are several reading arrays of prices of different types separately (for example, </span><span class="f_Text" style="font-style: italic;">Open</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">High</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Low</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Close</span><span class="f_Text">) or </span><span class="f_Text" style="font-style: italic;"><a href="5_3_7_timeseries_mqlrates.htm" class="topiclink">MqlRates</a></span><span class="f_Text"> structure arrays containing all characteristics of each bar.</span></p>
+<p class="p_Quote"><span class="f_Quote" style="font-weight: bold;">Bars and ticks</span><br>
+<span class="f_Quote" style="font-weight: bold;">&nbsp;</span><br>
+<span class="f_Quote">In addition to bars with quotes, MetaTrader 5 provides users and MQL programs with the ability to analyze ticks, which are elementary price changes, on the basis of which bars are built. Each tick contains time accurate to the millisecond, several types of prices (</span><span class="f_Quote" style="font-style: italic;">Bid</span><span class="f_Quote">, </span><span class="f_Quote" style="font-style: italic;">Ask</span><span class="f_Quote">, </span><span class="f_Quote" style="font-style: italic;">Last</span><span class="f_Quote">), and flags describing the essence of the changes, as well as the trading volume of the transaction. We will study the corresponding structure </span><span class="f_Quote" style="font-style: italic;">MqlTick</span><span class="f_Quote"> a little later, in the chapter <a href="5_3_11_timeseries_ticks_mqltick.htm" class="topiclink">Working with arrays of real ticks</a>.</span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">Depending on the type of trading instrument, bars can be built based on </span><span class="f_Quote" style="font-style: italic;">Bid</span><span class="f_Quote"> or </span><span class="f_Quote" style="font-style: italic;">Last</span><span class="f_Quote"> prices. In particular, </span><span class="f_Quote" style="font-style: italic;">Last</span><span class="f_Quote"> prices are available for exchange-traded instruments, which also broadcast the <a href="6_2_marketbook.htm" class="topiclink">Depth of Market prices</a>. For non-exchange instruments such as Forex or CFDs, the </span><span class="f_Quote" style="font-style: italic;">Bid</span><span class="f_Quote"> price is used.</span><br>
+<span class="f_Quote" style="font-style: italic;">&nbsp;</span><br>
+<span class="f_Quote">The periods during which there were no price changes do not generate bars. This is how the price is presented in MetaTrader 5. For example, if the timeframe is equal to 1 day (D1), then a couple of bars for the weekend, as a rule, are absent, and Monday immediately follows Friday.</span><br>
+<span class="f_Quote" style="font-style: italic;">&nbsp;</span><br>
+<span class="f_Quote">A quote bar appears if at least one tick has occurred in the corresponding time interval. At the same time, the bar opening time is always aligned strictly with the period border, even if the first tick arrived later (as it usually happens). For example, the first M1 bar of the day can be formed at 00:05 if there were no ticks for 4 minutes after midnight, and then the price change happened at 00:05:15 (that is, at the 15th second of the fifth minute). Thus, a tick is included in a particular bar based on the following ratio of timestamps: T</span><span class="f_Quote" style="font-size: 7pt; vertical-align: sub;">open</span><span class="f_Quote"> &lt;=T</span><span class="f_Quote" style="font-size: 7pt; vertical-align: sub;">tick</span><span class="f_Quote"> &lt; T</span><span class="f_Quote" style="font-size: 7pt; vertical-align: sub;">open</span><span class="f_Quote"> + P, where T</span><span class="f_Quote" style="font-size: 7pt; vertical-align: sub;">open</span><span class="f_Quote"> is the bar opening time, T</span><span class="f_Quote" style="font-size: 7pt; vertical-align: sub;">tick</span><span class="f_Quote"> is the tick time, T</span><span class="f_Quote" style="font-size: 7pt; vertical-align: sub;">open</span><span class="f_Quote"> + P is the opening time of the next potential bar after the period P (&quot;potential&quot; bar is called because its presence depends on other ticks).</span></p>
+
+</div>
+
+</body>
+</html>

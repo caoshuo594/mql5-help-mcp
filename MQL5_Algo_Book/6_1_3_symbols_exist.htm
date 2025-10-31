@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1.3 Checking if a symbol exists</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_1_symbols.htm"> 6.1 Financial instruments and Market Watch </a>/ 6.1.3 Checking if a symbol exists
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_2_symbols_select.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_4_symbols_sync.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.1.3 Checking if a symbol exists</span></p>
+<p class="p_Text"><span class="f_Text">Instead of looking through the entire list of symbols, an MQL program can check for the presence of a particular symbol by its name. For this purpose, there is the </span><span class="f_Text" style="font-style: italic;">SymbolExist</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">bool SymbolExist(const string name, bool &amp;isCustom)</span></p>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">name</span><span class="f_Text"> parameter, you should pass the name of the desired symbol. The </span><span class="f_Text" style="font-style: italic;">isCustom</span><span class="f_Text"> parameter passed by reference will be set by the function according to whether the specified symbol is standard (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">) or custom (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> if the symbol is not found in either the standard or custom symbols.</span></p>
+<p class="p_Text"><span class="f_Text">A partial analog of this function is the <a href="6_1_9_symbols_state.htm" class="topiclink">SYMBOL_EXIST</a> property query.</span></p>
+<p class="p_Text"><span class="f_Text">Let's analyze the simple script </span><span class="f_Text" style="font-style: italic;">SymbolExists.mq5</span><span class="f_Text"> to test this feature. In its parameter, the user can specify the name, which is then passed to </span><span class="f_Text" style="font-style: italic;">SymbolExist</span><span class="f_Text">, and the result is logged. If an empty string is input, the working symbol of the current chart will be checked. By default, the parameter is set to &quot;XYZ&quot;, which presumably does not match any of the available symbols.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">script_show_inputs</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolToCheck</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;XYZ&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_SymbolToCheck</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolToCheck</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolToCheck</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">custom</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Symbol&nbsp;'%s'&nbsp;is&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_SymbolToCheck</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">SymbolExist</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">_SymbolToCheck</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">custom</span><span class="f_CodeExample">)&nbsp;?&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">custom</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;custom&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;standard&quot;</span><span class="f_CodeExample">)&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;missing&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When the script is run two times, first with the default value and then with an empty line on the EURUSD chart, we will get the following entries in the log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Symbol&nbsp;'XYZ'&nbsp;is&nbsp;missing</span>
+<br><span class="f_CodeExample">Symbol&nbsp;'EURUSD'&nbsp;is&nbsp;standard</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If you already have custom symbols or create a new one with a simple calculation formula, you can make sure the custom variable is populated. For example, if you open the </span><span class="f_Text" style="font-style: italic;">Symbols</span><span class="f_Text"> window in the terminal and press the </span><span class="f_Text" style="font-style: italic;">Create symbol</span><span class="f_Text"> button, you can enter &quot;SP500/FTSE100&quot; (index names may differ for your broker) in the </span><span class="f_Text" style="font-style: italic;">Synthetic tool formula</span><span class="f_Text"> field and &quot;GBPUSD.INDEX&quot; in the field with the </span><span class="f_Text" style="font-style: italic;">Symbol</span><span class="f_Text"> name. A click on </span><span class="f_Text" style="font-style: italic;">OK</span><span class="f_Text"> will create a custom instrument for which you can open a chart, and our script should display the following on it:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Symbol&nbsp;'GBPUSD.INDEX'&nbsp;is&nbsp;custom</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When setting up your own symbol, do not forget to set not only the formula but also sufficiently &quot;small&quot; values for the point size and the price change step (tick). Otherwise, the series of synthetic quotes may turn out to be &quot;stepped&quot;, or even degenerate into a straight line.</span></p>
+
+</div>
+
+</body>
+</html>

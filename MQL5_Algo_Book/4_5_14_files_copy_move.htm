@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.5.14 Copying and moving files</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_5_files.htm"> 4.5 Working with files </a>/ 4.5.14 Copying and moving files
+          </td>
+          <td width="70" align="right">
+          <a href="4_5_13_files_exist_delete.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_5_15_files_find.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.5.14 Copying and moving files</span></p>
+<p class="p_Text"><span class="f_Text">The main operations on files at the file system level are copying and moving. For these purposes, MQL5 implements two functions with identical prototypes.</span></p>
+<p class="p_H4"><span class="f_H4">bool FileCopy(const string source, int flag, const string destination, int mode)</span></p>
+<p class="p_Text"><span class="f_Text">The function copies the </span><span class="f_Text" style="font-style: italic;">source</span><span class="f_Text"> file to the </span><span class="f_Text" style="font-style: italic;">destination</span><span class="f_Text"> file. Both mentioned parameters can contain only file names, or names together with prefixing paths (folder hierarchies) in MQL5 sandboxes. The </span><span class="f_Text" style="font-style: italic;">flag</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">mode</span><span class="f_Text"> parameters determine, in which working folder the source file is searched and which working folder is the target: 0 means it is a folder of the local current instance of the terminal (or the tester agent, if the program is running in the tester), and the value FILE_COMMON means the common folder for all terminals.</span></p>
+<p class="p_Text"><span class="f_Text">In addition, in the </span><span class="f_Text" style="font-style: italic;">mode</span><span class="f_Text"> parameter, you can optionally specify the FILE_REWRITE constant (if you need to combine FILE_REWRITE and FILE_COMMON, this is done using the bitwise operator OR (|)). In the absence of FILE_REWRITE, copying over an existing file is prohibited. In other words, if the file with the path and name specified in the </span><span class="f_Text" style="font-style: italic;">destination</span><span class="f_Text"> parameter already exists, you must confirm your intention to overwrite it by setting FILE_REWRITE. If this is not done, the function call will fail.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> upon successful completion or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> in case of an error.</span></p>
+<p class="p_Text"><span class="f_Text">Copying may fail if the source or destination file is occupied (opened) by another process.</span></p>
+<p class="p_Quote"><span class="f_Quote">When copying files, their metadata (creation time, access rights, alternative data streams) is usually saved. If you need to perform &quot;pure&quot; copying of only the data of the file itself, you can use successive calls </span><span class="f_Quote" style="font-style: italic;">FileLoad</span><span class="f_Quote"> and </span><span class="f_Quote" style="font-style: italic;">FileSave</span><span class="f_Quote">, see <a href="4_5_2_files_save_load.htm" class="topiclink">Writing and reading files in simplified mode</a>.</span></p>
+<p class="p_H4"><span class="f_H4">bool FileMove(const string source, int flag, const string destination, int mode)</span></p>
+<p class="p_Text"><span class="f_Text">The function moves or renames a file. The source path and name are specified in the </span><span class="f_Text" style="font-style: italic;">source</span><span class="f_Text"> parameter and the target path and name are specified in </span><span class="f_Text" style="font-style: italic;">destination</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The list of parameters and their operating principles are the same as for the </span><span class="f_Text" style="font-style: italic;">FileCopy</span><span class="f_Text"> function. Roughly speaking, </span><span class="f_Text" style="font-style: italic;">FileMove</span><span class="f_Text"> does the same work as </span><span class="f_Text" style="font-style: italic;">FileCopy</span><span class="f_Text">, but it additionally deletes the original file after a successful copy.</span></p>
+<p class="p_Text"><span class="f_Text">Let's learn how to work with functions in practice using the script </span><span class="f_Text" style="font-style: italic;">FileCopy.mq5</span><span class="f_Text">. It has two variables with the file names. Both files do not exist when the script is run.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5Book/source&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">destination</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5Book/destination&quot;</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">, we perform a sequence of actions according to a simple scenario. First, we try to copy the </span><span class="f_Text" style="font-style: italic;">source</span><span class="f_Text"> file from the local working directory to the </span><span class="f_Text" style="font-style: italic;">destination</span><span class="f_Text"> file of the general directory. As expected, we get </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">, and the error code in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> will be 5019 (FILE_NOT_EXIST).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">destination</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_COMMON</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false&nbsp;/&nbsp;FILE_NOT_EXIST(5019)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Therefore, we will create a source file in the usual way, write some data and flush it onto the disk.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_TXT</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_WRITE</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileWriteString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Test&nbsp;Text\n&quot;</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;22</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileFlush</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Since the file was left open and the FILE_SHARE_READ permission was not specified when opening, access to it in other ways (bypassing the handle) is still blocked. Hence, the next copy attempt will fail again.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">destination</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_COMMON</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false&nbsp;/&nbsp;CANNOT_OPEN_FILE(5004)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's close the file and try again. But first, let's output the properties of the resulting file to the log: when it was created and modified. Both properties will contain the current timestamp of your computer.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_CREATE_DATE</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1629757115,&nbsp;example</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_MODIFY_DATE</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1629757115,&nbsp;example</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's wait for 3 seconds before calling </span><span class="f_Text" style="font-style: italic;">FileCopy</span><span class="f_Text">. This will allow you to see the difference in the properties of the original file and its copy. This pause has nothing to do with the previous lock on the file: we could copy immediately after we closed the file, or even while writing it if the FILE_SHARE_READ option was enabled.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Sleep</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">3000</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's copy the file. This time the operation succeeds. Let's see the copy properties.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">destination</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_COMMON</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">destination</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_CREATE_DATE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1629757118,&nbsp;+3&nbsp;seconds</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">destination</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_MODIFY_DATE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1629757115,&nbsp;example</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Each file has its own creation time (for a copy it is 3 seconds later than for the original), but the modification time is the same (the copy has inherited the properties of the original).</span></p>
+<p class="p_Text"><span class="f_Text">Now let's try to move the copy back to the local folder. It cannot be done without the FILE_REWRITE option because there is no permission to overwrite the original file.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileMove</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">destination</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_COMMON</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false&nbsp;/&nbsp;FILE_CANNOT_REWRITE(5020)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">By changing the value of the parameter, we will achieve a successful file transfer.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileMove</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">destination</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_COMMON</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_REWRITE</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, the original file is also deleted to leave a clean environment for new experiments with this script.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileDelete</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">source</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.9.13 Getting the number and list of active orders</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_9_python.htm"> 7.9 Native python support </a>/ 7.9.13 Getting the number and list of active orders
+          </td>
+          <td width="70" align="right">
+          <a href="7_9_12_python_ordercheck_ordersend.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_9_14_python_positions.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.9.13 Getting the number and list of active orders</span></p>
+<p class="p_Text"><span class="f_Text">The Python API provides the following functions for working with active orders.</span></p>
+<p class="p_H4"><span class="f_H4">int orders_total()</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">orders_total</span><span class="f_Text"> function returns the number of active orders.</span></p>
+<p class="p_Text"><span class="f_Text">The function is an analog of </span><span class="f_Text" style="font-style: italic;"><a href="6_4_22_experts_order_list.htm" class="topiclink">Orders Total</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Detailed information about each order can be obtained using the </span><span class="f_Text" style="font-style: italic;">orders_get</span><span class="f_Text"> function, which has several options with the ability to filter by symbol or ticket. Either way, the function returns the array of named tuples </span><span class="f_Text" style="font-style: italic;">TradeOrder</span><span class="f_Text"> (field names match <a href="6_4_23_experts_order_properties.htm" class="topiclink">ENUM_ORDER_PROPERTY_enumerations</a> without the &quot;ORDER_&quot; prefix and reduced to lowercase). In case of an error, the result is </span><span class="f_Text" style="font-style: italic;">None</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">namedtuple[] orders_get()</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">namedtuple[] orders_get(symbol = &lt;&quot;SYMBOL&quot;&gt;)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">namedtuple[] orders_get(group = &lt;&quot;PATTERN&quot;&gt;)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">namedtuple[] orders_get(ticket = &lt;TICKET&gt;)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">orders_get</span><span class="f_Text"> function without parameters returns orders for all symbols.</span></p>
+<p class="p_Text"><span class="f_Text">The optional named parameter </span><span class="f_Text" style="font-style: italic;">symbol</span><span class="f_Text"> makes it possible to specify a specific symbol name for order selection.</span></p>
+<p class="p_Text"><span class="f_Text">The optional named parameter </span><span class="f_Text" style="font-style: italic;">group</span><span class="f_Text"> is intended for specifying a search pattern using the wildcard character '*' (as a substitute for an arbitrary number of any characters, including zero characters in the given place of the pattern) and the condition logical negation character '!'. The filter template operation principle was described in the section <a href="7_9_7_python_symbols.htm" class="topiclink">Getting information about financial instruments</a>.</span></p>
+<p class="p_Text"><span class="f_Text">If the </span><span class="f_Text" style="font-style: italic;">ticket</span><span class="f_Text"> parameter is specified, a certain order is searched.</span></p>
+<p class="p_Text"><span class="f_Text">In one function call, you can get all active orders. It is an analog of the combined use of </span><span class="f_Text" style="font-style: italic;"><a href="6_4_22_experts_order_list.htm" class="topiclink">OrdersTotal</a></span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;"><a href="6_4_22_experts_order_list.htm" class="topiclink">OrderSelect</a>,</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;"><a href="6_4_24_experts_orderget_funcs.htm" class="topiclink">OrderGet</a></span><span class="f_Text"><a href="6_4_24_experts_orderget_funcs.htm" class="topiclink"> functions</a>.</span></p>
+<p class="p_Text"><span class="f_Text">In the next example (</span><span class="f_Text" style="font-style: italic;">MQL5/Scripts/MQL5Book/Python/ordersget.py</span><span class="f_Text">), we request information about orders using different ways.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;MetaTrader5&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;mt5</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;pandas&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;pd</span>
+<br><span class="f_CodeExample">pd.set_option(</span><span class="f_CodeExample" style="color: #0000ff;">'display.max_columns'</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">500</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;how&nbsp;many&nbsp;columns&nbsp;to&nbsp;show</span>
+<br><span class="f_CodeExample">pd.set_option(</span><span class="f_CodeExample" style="color: #0000ff;">'display.width'</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">1500</span><span class="f_CodeExample">)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;max.&nbsp;table&nbsp;width&nbsp;to&nbsp;display</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;let's&nbsp;establish&nbsp;a&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;mt5.initialize():&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;initialize()&nbsp;failed,&nbsp;error&nbsp;code&nbsp;=&quot;</span><span class="f_CodeExample">,&nbsp;mt5.last_error())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;display&nbsp;information&nbsp;about&nbsp;active&nbsp;orders&nbsp;on&nbsp;the&nbsp;GBPUSD&nbsp;symbol</span>
+<br><span class="f_CodeExample">orders&nbsp;=&nbsp;mt5.orders_get(symbol&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;GBPUSD&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;orders&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">is</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">None</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;No&nbsp;orders&nbsp;on&nbsp;GBPUSD,&nbsp;error&nbsp;code={}&quot;</span><span class="f_CodeExample">.format(mt5.last_error()))</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">else</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;Total&nbsp;orders&nbsp;on&nbsp;GBPUSD:&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">len</span><span class="f_CodeExample">(orders))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;display&nbsp;all&nbsp;active&nbsp;orders</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;order&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;orders:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(order)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;getting&nbsp;a&nbsp;list&nbsp;of&nbsp;orders&nbsp;on&nbsp;symbols&nbsp;whose&nbsp;names&nbsp;contain&nbsp;&quot;*GBP*&quot;</span>
+<br><span class="f_CodeExample">gbp_orders&nbsp;=&nbsp;mt5.orders_get(group=</span><span class="f_CodeExample" style="color: #0000ff;">&quot;*GBP*&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;gbp_orders&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">is</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">None</span><span class="f_CodeExample">:&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;No&nbsp;orders&nbsp;with&nbsp;group=\&quot;*GBP*\&quot;,&nbsp;error&nbsp;code={}&quot;</span><span class="f_CodeExample">.format(mt5.last_error()))</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">else</span><span class="f_CodeExample">:&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;orders_get(group=\&quot;*GBP*\&quot;)={}&quot;</span><span class="f_CodeExample">.format(</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">len</span><span class="f_CodeExample">(gbp_orders)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;display&nbsp;orders&nbsp;as&nbsp;a&nbsp;table&nbsp;using&nbsp;pandas.DataFrame</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;df&nbsp;=&nbsp;pd.DataFrame(</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">list</span><span class="f_CodeExample">(gbp_orders),&nbsp;columns&nbsp;=&nbsp;gbp_orders[</span><span class="f_CodeExample" style="color: #0000ff;">0</span><span class="f_CodeExample">]._asdict().keys())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;df.drop([</span><span class="f_CodeExample" style="color: #0000ff;">'time_done'</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">'time_done_msc'</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">'position_id'</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">'position_by_id'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">'reason'</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">'volume_initial'</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">'price_stoplimit'</span><span class="f_CodeExample">],&nbsp;axis&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">1</span><span class="f_CodeExample">,&nbsp;inplace&nbsp;=&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">True</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;df[</span><span class="f_CodeExample" style="color: #0000ff;">'time_setup'</span><span class="f_CodeExample">]&nbsp;=&nbsp;pd.to_datetime(df[</span><span class="f_CodeExample" style="color: #0000ff;">'time_setup'</span><span class="f_CodeExample">],&nbsp;unit&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">'s'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(df)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;complete&nbsp;the&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample">mt5.shutdown()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The sample result is below:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Total&nbsp;orders&nbsp;on&nbsp;GBPUSD:&nbsp;2&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">TradeOrder(ticket=554733548,&nbsp;time_setup=1585153667,&nbsp;time_setup_msc=1585153667718,&nbsp;time_done=0,&nbsp;time_done_msc=0,&nbsp;time_expiration=0,&nbsp;type=3,&nbsp;type_time=0,&nbsp;...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">TradeOrder(ticket=554733621,&nbsp;time_setup=1585153671,&nbsp;time_setup_msc=1585153671419,&nbsp;time_done=0,&nbsp;time_done_msc=0,&nbsp;time_expiration=0,&nbsp;type=2,&nbsp;type_time=0,&nbsp;...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">orders_get(group=&quot;*GBP*&quot;)=4&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ticket&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;time_setup&nbsp;&nbsp;time_setup_msc&nbsp;&nbsp;type&nbsp;...&nbsp;volume_current&nbsp;&nbsp;price_open&nbsp;&nbsp;&nbsp;sl&nbsp;&nbsp;&nbsp;tp&nbsp;&nbsp;price_current&nbsp;&nbsp;symbol&nbsp;comment&nbsp;external_id&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">0&nbsp;&nbsp;554733548&nbsp;2020-03-25&nbsp;16:27:47&nbsp;&nbsp;&nbsp;1585153667718&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.25379&nbsp;&nbsp;0.0&nbsp;&nbsp;0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.16803&nbsp;&nbsp;GBPUSD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">1&nbsp;&nbsp;554733621&nbsp;2020-03-25&nbsp;16:27:51&nbsp;&nbsp;&nbsp;1585153671419&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.14370&nbsp;&nbsp;0.0&nbsp;&nbsp;0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.16815&nbsp;&nbsp;GBPUSD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2&nbsp;&nbsp;554746664&nbsp;2020-03-25&nbsp;16:38:14&nbsp;&nbsp;&nbsp;1585154294401&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.93851&nbsp;&nbsp;0.0&nbsp;&nbsp;0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.92428&nbsp;&nbsp;EURGBP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">3&nbsp;&nbsp;554746710&nbsp;2020-03-25&nbsp;16:38:17&nbsp;&nbsp;&nbsp;1585154297022&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.90527&nbsp;&nbsp;0.0&nbsp;&nbsp;0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.92449&nbsp;&nbsp;EURGBP&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

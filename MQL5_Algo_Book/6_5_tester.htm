@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.5 Testing and optimization of Expert Advisors</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a>/ 6.5 Testing and optimization of Expert Advisors
+          </td>
+          <td width="70" align="right">
+          <a href="6_4_40_experts_wizard.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_5_1_tester_ticks.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">6.5 Testing and optimization of Expert Advisors</span></p>
+<p class="p_Text"><span class="f_Text">Development of Expert Advisors implies not only and not so much the implementation of a trading strategy in MQL5 but to a greater extent testing its financial performance, finding optimal settings, and debugging (searching for and correcting errors) in various situations. All this can be done in the integrated MetaTrader 5 tester.</span></p>
+<p class="p_Text"><span class="f_Text">The tester works for various currencies and supports several tick generation modes: based on opening prices of the selected timeframe, on OHLC prices of the M1 timeframe, on artificially generated ticks, and on the real tick history. This way you can choose the optimal ratio of speed and accuracy of trading simulation.</span></p>
+<p class="p_Text"><span class="f_Text">The tester settings allow you to set the testing time interval in the past, the size of the deposit, and the leverage; they are used to emulate requotes and specific account features (including the size of commissions, margins, session schedules, limiting the number of lots). All the details of working with the tester from the user's point of view can be found in <a href="https://www.metatrader5.com/en/terminal/help/algotrading/testing" target="_blank" class="weblink" title="terminal documentation">terminal documentation</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Earlier, we already briefly discussed working with the tester, in particular, in the section <a href="5_4_18_indicators_test.htm" class="topiclink">Testing indicators</a>. Let's recall that the tester control functions and their optimization are not available for indicators, unlike for Expert Advisors. However, personally, I would like to see an option of adaptive self-tuning of indicators: all that is needed is to support the </span><span class="f_Text" style="font-style: italic;">OnTester</span><span class="f_Text"> handler in them, which we will present in a <a href="6_5_7_tester_ontester.htm" class="topiclink">separate section</a>.</span></p>
+<p class="p_Text"><span class="f_Text">As you know, various modes are available for optimization, such as direct enumeration of combinations of Expert Advisor input parameters, accelerated genetic algorithm, mathematical calculations, or sequential runs through symbols in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text">. As an optimization criterion, you can use both well-known metrics such as profitability, Sharpe ratio, recovery factor, and expected payoff, as well as &quot;custom&quot; variables embedded in the source code by the developer of the Expert Advisor. In the context of this book, it is assumed that the reader is already familiar with the principles of setting up, running, and interpreting optimization results because in this chapter we will begin to study the tester control API. Those interested can refresh their knowledge with the help of the relevant section of <a href="https://www.metatrader5.com/en/terminal/help/algotrading/strategy_optimization" target="_blank" class="weblink" title="strategy optimization">documentation</a>.</span></p>
+<p class="p_Text"><span class="f_Text">A particularly important function of the tester is multi-threaded optimization, which can be performed using local and distributed (network) agent programs, including those in the MQL5 Cloud Network. A single testing run (with specific input parameters) launched manually by the user, or one of the many runs called during optimization (when we implement enumeration of parameter values in given ranges) is performed in a separate program – the agent. Technically, this is a metatester64.exe file, and the copies of its processes can be seen in the Windows Task Manager during testing and optimization. It is due to this that the tester is multi-threaded.</span></p>
+<p class="p_Text"><span class="f_Text">The terminal is a dispatcher that distributes tasks to local and remote agents. It launches local agents if necessary. When optimizing, by default, several agents are launched; their quantity corresponds to the number of processor cores. After executing the next task for testing an Expert Advisor with the specified parameters, the agent returns the results to the terminal.</span></p>
+<p class="p_Text"><span class="f_Text">Each agent creates its own trading and software environment. All agents are isolated from each other and from the client terminal.</span></p>
+<p class="p_Text"><span class="f_Text">In particular, the agent has its own global variables and its own <a href="4_5_files.htm" class="topiclink">file sandbox</a>, including the folder where detailed agent logs are written: </span><span class="f_Text" style="font-style: italic;">Tester/Agent-IPaddress-Port/Logs</span><span class="f_Text">. Here </span><span class="f_Text" style="font-style: italic;">Tester</span><span class="f_Text"> is the tester installation directory (during a standard installation together with MetaTrader 5, this is the subfolder where the terminal is installed). The name of the directory </span><span class="f_Text" style="font-style: italic;">Agent-IPaddress-Port</span><span class="f_Text">, instead of </span><span class="f_Text" style="font-style: italic;">IPaddress</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Port</span><span class="f_Text">, will contain the specific network address and port values that are used to communicate with the terminal. For local agents, this is the address 127.0.0.1 and the range of ports, by default, starting from 3000 (for example, on a computer with 4 cores, we will see agents on ports 3000, 3001, 3002, 3003).</span></p>
+<p class="p_Text"><span class="f_Text">When testing an Expert Advisor, all file operations are performed in the </span><span class="f_Text" style="font-style: italic;">Tester/Agent-IPaddress-Port/MQL5/Files</span><span class="f_Text"> folder. However, it is possible to implement interaction between local agents and the client terminal (as well as between different copies of the terminal on the same computer) via a <a href="4_5_files.htm" class="topiclink">shared folder</a>. For this, when opening a file with the </span><span class="f_Text" style="font-style: italic;"><a href="4_5_3_files_open_close.htm" class="topiclink">FileOpen</a></span><span class="f_Text"> function, the FILE_COMMON flag must be specified. Another way to transfer data from agents to the terminal is provided by the <a href="6_5_10_tester_frameadd.htm" class="topiclink">frames</a> mechanism.</span></p>
+<p class="p_Text"><span class="f_Text">The agent's local sandbox is automatically cleared before each test due to security reasons (to prevent different Expert Advisors from reading each other's data).</span></p>
+<p class="p_Text"><span class="f_Text">A folder with the quotes history is created next to the file sandbox for each agent: </span><span class="f_Text" style="font-style: italic;">Tester/Agent-IPaddress-Port/bases/ServerName/Symbol/</span><span class="f_Text">. In the next section, we briefly remind you how it is formed.</span></p>
+<p class="p_Text"><span class="f_Text">The results of individual test runs and optimizations are stored by the terminal in a special cache which can be found in the installation directory, in the subfolder </span><span class="f_Text" style="font-style: italic;">Tester/cache/</span><span class="f_Text">. Test results are stored in files with the extension </span><span class="f_Text" style="font-style: italic;">tst</span><span class="f_Text">, and the optimization results are stored in </span><span class="f_Text" style="font-style: italic;">opt</span><span class="f_Text"> files. Both formats are open-sourced by MetaQuotes developers, so you can implement your own batch analytical data processing, or use ready-made source codes from the codebase on the mql5.com website.</span></p>
+<p class="p_Text"><span class="f_Text">In this chapter, first, we will consider the basic principles of how MQL programs work in the tester, and then we will learn how to interact with it in practice.</span></p>
+
+</div>
+
+</body>
+</html>

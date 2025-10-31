@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.1.5 Structures</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_1_conversions.htm"> 4.1 Built-in type conversions </a>/ 4.1.5 Structures
+          </td>
+          <td width="70" align="right">
+          <a href="4_1_4_conversions_color.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_1_6_conversions_enums.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.1.5 Structures</span></p>
+<p class="p_Text"><span class="f_Text">When integrating MQL programs with external systems, in particular, when sending or receiving data via the Internet, it becomes necessary to convert data structures into byte arrays. For these purposes, the MQL5 API provides two functions: </span><span class="f_Text" style="font-style: italic;">StructToCharArray</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">CharArrayToStruct</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In both cases, it is assumed that a structure contains only simple <a href="2_2_builtin_types.htm" class="topiclink">built-in types</a>, that is, all built-in types except <a href="2_2_4_strings.htm" class="topiclink">lines</a> and dynamic <a href="2_4_1_arrays_overview.htm" class="topiclink">arrays</a>. A structure can also contain other simple structures. Class objects and pointers are not allowed. Such structures are also called POD (Plain Old Data).</span></p>
+<p class="p_H4"><span class="f_H4">bool StructToCharArray(const void &amp;object, uchar &amp;array[], uint pos = 0)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">StructToCharArray</span><span class="f_Text"> function copies the POD structure </span><span class="f_Text" style="font-style: italic;">object</span><span class="f_Text"> into the </span><span class="f_Text" style="font-style: italic;">array</span><span class="f_Text"> array of type </span><span class="f_Text" style="font-style: italic;">uchar</span><span class="f_Text">. Optionally, using the parameter </span><span class="f_Text" style="font-style: italic;">pos</span><span class="f_Text"> you can specify the position in the array, starting from which the bytes will be placed. By default, copying goes to the beginning of the array, and the dynamic array will be automatically increased in size if its current size is not enough for the entire structure.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns a success indicator (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or errors (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">Let's check its performance with the script </span><span class="f_Text" style="font-style: italic;">ConversionStruct.mq5</span><span class="f_Text">. Let's create a new structure type </span><span class="f_Text" style="font-style: italic;">DateTimeMsc</span><span class="f_Text">, which includes the standard structure </span><span class="f_Text" style="font-style: italic;">MqlDateTime</span><span class="f_Text"> (field </span><span class="f_Text" style="font-style: italic;">mdt</span><span class="f_Text">) and an additional field </span><span class="f_Text" style="font-style: italic;">msc</span><span class="f_Text"> of type </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> to store milliseconds.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DateTimeMsc</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlDateTime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">mdt</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">msc</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DateTimeMsc</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">MqlDateTime</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">init</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">msc</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">mdt</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">init</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Inside the </span><span class="f_Text" style="font-style: italic;">OnStart </span><span class="f_Text">function, let's convert a test value </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text"> to our structure, and then to the byte array.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">MqlDateTime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TimeToStructInplace</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dt</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlDateTime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">TimeToStruct</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dt</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;the&nbsp;error&nbsp;code,&nbsp;_LastError,&nbsp;can&nbsp;be&nbsp;displayed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;but&nbsp;here&nbsp;we&nbsp;just&nbsp;return&nbsp;zero&nbsp;time</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlDateTime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">z</span><span class="f_CodeExample">&nbsp;=&nbsp;{};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">z</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MDT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TimeToStructInplace</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DateTimeMsc</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">test</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">MDT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">'</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">15</span><span class="f_CodeExample">'),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">123</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StructToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">test</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We will get the following result in the log (the array is reformatted with additional line breaks to emphasize the correspondence of bytes to each of the fields):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;36</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;229&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;10&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;10&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;15&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;123&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H4"><span class="f_H4">bool CharArrayToStruct(void &amp;object, const uchar &amp;array[], uint pos = 0)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">CharArrayToStruct</span><span class="f_Text"> function copies the </span><span class="f_Text" style="font-style: italic;">array</span><span class="f_Text"> array of the </span><span class="f_Text" style="font-style: italic;">uchar</span><span class="f_Text"> type to the POD structure </span><span class="f_Text" style="font-style: italic;">object</span><span class="f_Text">. Using the </span><span class="f_Text" style="font-style: italic;">pos</span><span class="f_Text"> parameter, you can specify the position in the array from which to start reading bytes.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns a success indicator (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or errors (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">Continuing the same example (</span><span class="f_Text" style="font-style: italic;">ConversionStruct.mq5</span><span class="f_Text">), we can restore the original date and time from the byte array.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DateTimeMsc</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">receiver</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CharArrayToStruct</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">receiver</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StructToTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">receiver</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mdt</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;'&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">receiver</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">msc</span><span class="f_CodeExample">);&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;2021.01.01&nbsp;10:10:15'123</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

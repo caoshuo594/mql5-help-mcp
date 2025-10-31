@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.3.1 Logging arrays</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_3_arrays.htm"> 4.3 Working with arrays </a>/ 4.3.1 Logging arrays
+          </td>
+          <td width="70" align="right">
+          <a href="4_3_arrays.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_3_2_arrays_dynamic.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.3.1 Logging arrays</span></p>
+<p class="p_Text"><span class="f_Text">Printing variables, arrays, and messages about the status of an MQL program to the log is the simplest means for informing the user, debugging, and diagnosing problems. As for the array, we can implement element-wise printing using the </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> function which we already know from demo scripts. We will formally describe it a little later, in the section on <a href="4_8_output.htm" class="topiclink">interaction with the user</a>.</span></p>
+<p class="p_Text"><span class="f_Text">However, it is more convenient to entrust the whole routine related to iteration over elements and their accurate formatting to the MQL5 environment. The API provides a special </span><span class="f_Text" style="font-style: italic;">ArrayPrint </span><span class="f_Text">function for this purpose.</span></p>
+<p class="p_Text"><span class="f_Text">We have already seen examples of working with this function in the <a href="2_4_3_arrays_usage.htm" class="topiclink">Using arrays</a> section. Now let's talk about its capabilities in more detail.</span></p>
+<p class="p_H4"><span class="f_H4">void ArrayPrint(const void &amp;array[], uint digits = _Digits, const string separator = NULL,</span><br>
+<span class="f_H4"> &nbsp; ulong start = 0, ulong count = WHOLE_ARRAY,</span><br>
+<span class="f_H4"> &nbsp; ulong flags = </span><span class="f_H4" style="letter-spacing: -1px;">ARRAYPRINT_HEADER | ARRAYPRINT_INDEX | ARRAYPRINT_LIMIT | ARRAYPRINT_DATE | ARRAYPRINT_SECONDS</span><span class="f_H4">)</span></p>
+<p class="p_Text"><span class="f_Text">The function logs an array using the specified settings. The array must be one of the built-in types or a simple structure type. A simple structure is a structure with fields of built-in types, with the exception of strings and dynamic arrays. The presence of class objects and pointers in the composition of the structure takes it out of the simple category.</span></p>
+<p class="p_Text"><span class="f_Text">The array must have a dimension of 1 or 2. The formatting automatically adjusts to the array configuration and, if possible, displays it in a visual form (see below). Despite the fact that MQL5 supports arrays with dimensions of up to 4, the function does not display arrays with 3 or more dimensions, because it is difficult to represent them in a &quot;flat&quot; form. This happens without generating errors at the program compilation or execution step.</span></p>
+<p class="p_Text"><span class="f_Text">All parameters except the first one can be omitted, and default values are defined for them.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">digits</span><span class="f_Text"> parameter is used for arrays of real numbers and for numeric fields of structures. It sets the number of displayed characters in the fractional part of numbers. The default value is one of the <a href="5_7_1_charts_main_properties.htm" class="topiclink">predefined chart variables</a>, namely </span><span class="f_Text" style="font-style: italic;">_Digits</span><span class="f_Text"> which is the number of decimal places in the current chart's symbol price.</span></p>
+<p class="p_Text"><span class="f_Text">The separating character </span><span class="f_Text" style="font-style: italic;">separator</span><span class="f_Text"> is used to designate columns when displaying fields in an array of structures. With the default value (NULL), the function uses a space as a separator.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> parameters set the number of the starting element and the number of elements to be printed, respectively. By default, the function prints the entire array, but the result can be additionally affected by the presence of the ARRAYPRINT_LIMIT flag (see below).</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text"> parameter accepts a combination of flags that control various display features. Here are some of them:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">ARRAYPRINT_HEADER outputs the header with the names of the fields of the structure before the array of structures; it does not affect arrays of non-structures.</span></li>
+<li class="p_li"><span class="f_li">ARRAYPRINT_INDEX outputs indexes of elements by dimensions (for one-dimensional arrays, indexes are displayed on the left, for two-dimensional arrays they are displayed on the left and above).</span></li>
+<li class="p_li"><span class="f_li">ARRAYPRINT_LIMIT is used for large arrays, and the output is limited to the first hundred and last hundred records (this limit is enabled by default).</span></li>
+<li class="p_li"><span class="f_li">ARRAYPRINT_DATE is used for values of the </span><span class="f_li" style="font-style: italic;">datetime</span><span class="f_li"> type to display the date.</span></li>
+<li class="p_li"><span class="f_li">ARRAYPRINT_MINUTES is used for values of the </span><span class="f_li" style="font-style: italic;">datetime</span><span class="f_li"> type to display the time to the nearest minute.</span></li>
+<li class="p_li"><span class="f_li">ARRAYPRINT_SECONDS is used for values of the </span><span class="f_li" style="font-style: italic;">datetime</span><span class="f_li"> type to display the time to the nearest second.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Values of the </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text"> </span><span class="f_li">type </span><span class="f_Text">are output by default in the format ARRAYPRINT_DATE | ARRAYPRINT_SECONDS.</span></p>
+<p class="p_Text"><span class="f_Text">Values of type </span><span class="f_Text" style="font-style: italic;">color</span><span class="f_Text"> are output in hexadecimal format.</span></p>
+<p class="p_Text"><span class="f_Text">Enumeration values are displayed as integers.</span></p>
+<p class="p_Text"><span class="f_Text">The function does not output nested arrays, structures, and pointers to objects. Three dots are displayed instead of those.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">ArrayPrint.mq5</span><span class="f_Text"> script demonstrates how the function works. </span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function provides definitions of several arrays (one-, two- and three-dimensional), which are output using </span><span class="f_Text" style="font-style: italic;">ArrayPrint</span><span class="f_Text"> (with default settings).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array1D</span><span class="f_CodeExample">[]&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">7</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">9</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array2D</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">]&nbsp;=&nbsp;{{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">7</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">9</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">}};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array3D</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">]&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">},&nbsp;{&nbsp;</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">7</span><span class="f_CodeExample">,&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">,&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">9</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">11</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">13</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">14</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">15</span><span class="f_CodeExample">}},</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{</span><span class="f_CodeExample" style="color: #333333;">16</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">17</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">18</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">19</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">20</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">21</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">22</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">23</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">24</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">25</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">26</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">27</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">28</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">29</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">30</span><span class="f_CodeExample">}},</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;array1D&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array1D</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;array2D&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array2D</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;array3D&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array3D</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We will get the following lines in the log:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">array1D</span>
+<br><span class="f_CodeExample">&nbsp;1&nbsp;&nbsp;2&nbsp;&nbsp;3&nbsp;&nbsp;4&nbsp;&nbsp;5&nbsp;&nbsp;6&nbsp;&nbsp;7&nbsp;&nbsp;8&nbsp;&nbsp;9&nbsp;10</span>
+<br><span class="f_CodeExample">array2D</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,2]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,3]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,4]</span>
+<br><span class="f_CodeExample">[0,]&nbsp;&nbsp;1.00000&nbsp;&nbsp;2.00000&nbsp;&nbsp;3.00000&nbsp;&nbsp;4.00000&nbsp;&nbsp;5.00000</span>
+<br><span class="f_CodeExample">[1,]&nbsp;&nbsp;6.00000&nbsp;&nbsp;7.00000&nbsp;&nbsp;8.00000&nbsp;&nbsp;9.00000&nbsp;10.00000</span>
+<br><span class="f_CodeExample">array3D</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">array1D</span><span class="f_Text"> array is not large enough (it fits in one row), so indexes are not shown for it.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">array2D</span><span class="f_Text"> array has multiple rows (indexes), and therefore their indexes are displayed (ARRAYPRINT_INDEX is enabled by default).</span></p>
+<p class="p_Text"><span class="f_Text">Please note that since the script was run on the EURUSD chart with five-digit prices, </span><span class="f_Text" style="font-style: italic;">_Digits=5</span><span class="f_Text">, which affects the formatting of values of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">array3D</span><span class="f_Text"> array is ignored: no rows were output for it.</span></p>
+<p class="p_Text"><span class="f_Text">Additionally, the </span><span class="f_Text" style="font-style: italic;">Pair</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">SimpleStruct </span><span class="f_Text">structures are defined in the script:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Pair</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SimpleStruct</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ENUM_APPLIED_PRICE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">color</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clr</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">details</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Pair</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pair</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text" style="font-style: italic;">SimpleStruct</span><span class="f_Text"> contains fields of built-in types, a pointer to </span><span class="f_Text" style="font-style: italic;">void</span><span class="f_Text">, as well as a field of type </span><span class="f_Text" style="font-style: italic;">Pair</span><span class="f_Text">. </span></p>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function, an array of type </span><span class="f_Text" style="font-style: italic;">SimpleStruct</span><span class="f_Text"> is created and output using </span><span class="f_Text" style="font-style: italic;">ArrayPrint</span><span class="f_Text"> in two modes: with default settings and with custom ones (the number of digits after the &quot;comma&quot; is 3, the separator is &quot;;&quot;, the format for </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text"> is date only).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SimpleStruct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">simple</span><span class="f_CodeExample">[]&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">57839</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">'</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">07</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">23</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">11</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">15</span><span class="f_CodeExample">',&nbsp;</span><span class="f_CodeExample" style="color: #333333;">22345</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRICE_MEDIAN</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">clrBlue</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;text&nbsp;message&quot;</span><span class="f_CodeExample">},</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">135</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">82949</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">'</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">06</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">20</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">23</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">45</span><span class="f_CodeExample">',&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8569</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRICE_TYPICAL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">clrAzure</span><span class="f_CodeExample">},</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1087</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">576</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">'</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">05</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">15</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #333333;">30</span><span class="f_CodeExample">',&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">3298</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRICE_WEIGHTED</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">clrYellow</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;note&quot;</span><span class="f_CodeExample">},</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;SimpleStruct&nbsp;(default)&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">simple</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;SimpleStruct&nbsp;(custom)&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">simple</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ARRAYPRINT_DATE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This produces the following result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">SimpleStruct&nbsp;(default)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[value]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[time]&nbsp;[count]&nbsp;[type]&nbsp;&nbsp;&nbsp;&nbsp;[clr]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[details]&nbsp;[ptr]&nbsp;[pair]</span>
+<br><span class="f_CodeExample">[0]&nbsp;&nbsp;&nbsp;12.57839&nbsp;2021.07.23&nbsp;11:15:00&nbsp;&nbsp;&nbsp;22345&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;00FF0000&nbsp;&quot;text&nbsp;message&quot;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[1]&nbsp;&nbsp;135.82949&nbsp;2021.06.20&nbsp;23:45:00&nbsp;&nbsp;&nbsp;&nbsp;8569&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6&nbsp;00FFFFF0&nbsp;null&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">[2]&nbsp;1087.57600&nbsp;2021.05.15&nbsp;10:01:30&nbsp;&nbsp;&nbsp;-3298&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7&nbsp;0000FFFF&nbsp;&quot;note&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">SimpleStruct&nbsp;(custom)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;12.578;2021.07.23;&nbsp;&nbsp;22345;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5;00FF0000;&quot;text&nbsp;message&quot;;&nbsp;&nbsp;...;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;135.829;2021.06.20;&nbsp;&nbsp;&nbsp;8569;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6;00FFFFF0;null&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;&nbsp;&nbsp;...;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">1087.576;2021.05.15;&nbsp;&nbsp;-3298;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7;0000FFFF;&quot;note&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;&nbsp;&nbsp;...;&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Quote"><span class="f_Quote">Please note that the log that we use in this case and in the previous sections is generated in the terminal and is available to the user in the tab </span><span class="f_Quote" style="font-style: italic;">Experts</span><span class="f_Quote"> of the </span><span class="f_Quote" style="font-style: italic;">Toolbox </span><span class="f_Quote">window. However, in the future we will get acquainted with the tester, which provides the same execution environment for certain types of MQL programs (indicators and Expert Advisors) as the terminal itself. If they are launched in the tester, the </span><span class="f_Quote" style="font-style: italic;">ArrayPrint</span><span class="f_Quote"> function and other related functions, which are described in the section <a href="4_8_output.htm" class="topiclink">User interaction</a>, will output messages to the log of <a href="6_5_tester.htm" class="topiclink">testing agents</a>.</span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">Until now, we have worked, and will continue to work for some time, only with scripts, and they can only be executed in the terminal.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.4.7 Buffer and chart mapping rules</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_4_indicators_make.htm"> 5.4 Creating custom indicators </a>/ 5.4.7 Buffer and chart mapping rules
+          </td>
+          <td width="70" align="right">
+          <a href="5_4_6_indicators_plotindexsetinteger.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_4_8_indicators_properties.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.4.7 Buffer and chart mapping rules</span></p>
+<p class="p_Text"><span class="f_Text">When registering diagrams using </span><span class="f_Text" style="font-style: italic;">PlotIndexSetInteger(i, PLOT_DRAW_TYPE, type)</span><span class="f_Text">, each call sequentially assigns a certain number of buffers to the i-th diagram according to their required number for the rendering </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> (see table ENUM_DRAW_TYPE in the <a href="5_4_6_indicators_plotindexsetinteger.htm" class="topiclink">previous section</a>). Thus, this number of buffers is taken out of consideration when linking buffers to the following diagrams (during the next </span><span class="f_Text" style="font-style: italic;">PlotIndexSetInteger</span><span class="f_Text"> calls).</span></p>
+<p class="p_Text"><span class="f_Text">For example, if the first plot (under index 0) is DRAW_CANDLES, which requires 4 indicator buffers, then exactly this number will be associated with it. Thus, buffers indexed 0 through 3 inclusive will get bound, and the next free buffer to bind will be the buffer indexed 4.</span></p>
+<p class="p_Text"><span class="f_Text">If a simple line chart DRAW_LINE is registered next (its index in the chart sequence is 1), it will only take 1 buffer – just at index 4.</span></p>
+<p class="p_Text"><span class="f_Text">If a DRAW_ZIGZAG chart is further configured (the next chart index is 2), then since it uses two buffers, buffers with indexes 5 and 6 will go to it.</span></p>
+<p class="p_Text"><span class="f_Text">Of course, the number of buffers must be sufficient for all registered plots. The above example is illustrated in the following table. It has only 7 buffers and 3 plots (diagrams).</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<tr class="table">
+<td class="table" style="width:25%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Buffer index in SetIndexBuffer</span></p>
+</td>
+<td class="table" style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">0</span></p>
+</td>
+<td class="table" style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">1</span></p>
+</td>
+<td class="table" style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">2</span></p>
+</td>
+<td class="table" style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">3</span></p>
+</td>
+<td class="table" style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">4</span></p>
+</td>
+<td class="table" style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">5</span></p>
+</td>
+<td class="table" style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">6</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:25%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable" style="letter-spacing: -1px;">Chart Index</span><span class="f_fortable"> in PlotIndexSetInteger</span></p>
+</td>
+<td class="table" colspan="4"  style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">0</span></p>
+</td>
+<td class="table" style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">1</span></p>
+</td>
+<td class="table" colspan="2"  style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">2</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="vertical-align:middle; width:25%;"><p class="p_fortable" style="text-align: left;"><span class="f_fortable">Rendering Type</span></p>
+</td>
+<td class="table" colspan="4"  style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">DRAW_CANDLES</span></p>
+</td>
+<td class="table" style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="letter-spacing: -1px;">DRAW</span><br>
+<span class="f_fortable" style="letter-spacing: -1px;">_LINE</span></p>
+</td>
+<td class="table" colspan="2"  style="vertical-align:middle;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">DRAW_ZIGZAG</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Buffer and chart indexing is independent, that is, the buffer index does not have to be the same as the chart index. At the same time, as chart indexes increase, the indexes of the buffers bound to them increase, and the discrepancy in indexing can become larger and larger if you use rendering types that take more than one buffer for themselves.</span></p>
+<p class="p_Text"><span class="f_Text">Although it is customary to call functions </span><span class="f_Text" style="font-style: italic;">SetIndexBuffer</span><span class="f_Text"> before </span><span class="f_Text" style="font-style: italic;">PlotIndexSetInteger</span><span class="f_Text">, it's not obligatory. The only important thing is the correct correspondence of buffer indexes and diagram indexes. When using directives (see the <a href="5_4_8_indicators_properties.htm" class="topiclink">next section</a>), which are an alternative to calling </span><span class="f_Text" style="font-style: italic;">PlotIndexSetInteger</span><span class="f_Text">, directives are executed in any case before the </span><span class="f_Text" style="font-style: italic;">OnInit </span><span class="f_Text">handler.</span></p>
+<p class="p_Text"><span class="f_Text">To demonstrate the difference between buffer and chart indexing, consider a simple example of </span><span class="f_Text" style="font-style: italic;">IndHighLowClose.mq5</span><span class="f_Text">. In this file, we will draw the range of each candle between </span><span class="f_Text" style="font-style: italic;">High</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Low</span><span class="f_Text"> in the form of a histogram of the DRAW_HISTOGRAM2 type and underline the </span><span class="f_Text" style="font-style: italic;">Close</span><span class="f_Text"> price with a simple line DRAW_LINE. To access timeseries of prices of different types, we also need to change the </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> form from simplified to complete.</span></p>
+<p class="p_Text"><span class="f_Text">Since the histogram requires 2 buffers, then, together with the buffer for the </span><span class="f_Text" style="font-style: italic;">Close</span><span class="f_Text"> line, we should describe three buffers.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_chart_window</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_buffers</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_plots</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">highs</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lows</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">closes</span><span class="f_CodeExample">[];</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Register them in </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> in order of priority.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;arrays&nbsp;for&nbsp;buffers&nbsp;for&nbsp;3&nbsp;price&nbsp;types</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">highs</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lows</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">closes</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;drawing&nbsp;a&nbsp;histogram&nbsp;between&nbsp;the&nbsp;High&nbsp;and&nbsp;Low&nbsp;candles&nbsp;under&nbsp;index&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PLOT_DRAW_TYPE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">DRAW_HISTOGRAM2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PLOT_LINE_WIDTH</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PLOT_LINE_COLOR</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">clrBlue</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;drawing&nbsp;the&nbsp;line&nbsp;Close&nbsp;at&nbsp;index&nbsp;1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PLOT_DRAW_TYPE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">DRAW_LINE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PLOT_LINE_WIDTH</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PLOT_LINE_COLOR</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">clrRed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_SUCCEEDED</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Along the way, the histogram width is set to 5 pixels, and the line width is set to 2. Styles are not explicitly assigned, and default to STYLE_SOLID.</span></p>
+<p class="p_Text"><span class="f_Text">Now let's have a look at the actual </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> function.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnCalculate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">open</span><span class="f_CodeExample">[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">high</span><span class="f_CodeExample">[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">low</span><span class="f_CodeExample">[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">tick_volume</span><span class="f_CodeExample">[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">volume</span><span class="f_CodeExample">[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">spread</span><span class="f_CodeExample">[])</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;on&nbsp;each&nbsp;new&nbsp;bar&nbsp;or&nbsp;set&nbsp;of&nbsp;bars&nbsp;(including&nbsp;the&nbsp;first&nbsp;calculation)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;fill&nbsp;in&nbsp;all&nbsp;new&nbsp;bars</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">highs</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">high</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">lows</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">low</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">closes</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ticks&nbsp;on&nbsp;the&nbsp;current&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;update&nbsp;the&nbsp;last&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">highs</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">high</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lows</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">low</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">closes</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;return&nbsp;the&nbsp;number&nbsp;of&nbsp;processed&nbsp;bars&nbsp;for&nbsp;the&nbsp;next&nbsp;call</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The result of this indicator is shown in the following image:</span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" alt="High-Low Histogram and Close Line" title="High-Low Histogram and Close Line" width="600" height="400" style="width:600px;height:400px;border:none" src="eurusdh1-ihlc.png"/><p style="text-align:center"><span class="f_ImageCaption">High-Low histogram and Close line</span></p></div></div>
+<p class="p_Text"><span class="f_Text">Pay attention to one important point. Diagrams are plotted on the chart in the order corresponding to their indexes, as a result of which some are visually higher than others (overlap them). In this case, a histogram with index 0 is drawn first, and then a line with index 1 is drawn on top of it. Sometimes it makes sense to change the order of registration of charts in order to provide better visibility of smaller graphical constructions, which may be covered by larger (wider) plots.</span></p>
+<p class="p_Text"><span class="f_Text">Setting such priorities along the imaginary Z-axis, going deep into the screen (perpendicular to the screen) is called the Z-order. We will encounter this technique again when studying <a href="5_8_objects.htm" class="topiclink">graphic objects</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Also, recall that by default indicators are displayed on top of the price chart, but this behavior can be changed in the settings: </span><span class="f_Text" style="font-style: italic;">Chart Properties</span><span class="f_Text"> dialog, </span><span class="f_Text" style="font-style: italic;">Common</span><span class="f_Text"> tab, </span><span class="f_Text" style="font-style: italic;">Chart on foreground</span><span class="f_Text"> option. There is a similar option in the software interface (</span><span class="f_Text" style="font-style: italic;">ChartSetInteger(CHART_FOREGROUND)</span><span class="f_Text">, see section <a href="5_7_9_charts_mode.htm" class="topiclink">Chart display modes</a>).</span></p>
+
+</div>
+
+</body>
+</html>

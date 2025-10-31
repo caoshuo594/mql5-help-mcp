@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.4.5 Assigning an array as a buffer: SetIndexBuffer</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_4_indicators_make.htm"> 5.4 Creating custom indicators </a>/ 5.4.5 Assigning an array as a buffer: SetIndexBuffer
+          </td>
+          <td width="70" align="right">
+          <a href="5_4_4_indicators_buffers_plots.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_4_6_indicators_plotindexsetinteger.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.4.5 Assigning an array as a buffer: SetIndexBuffer</span></p>
+<p class="p_Text"><span class="f_Text">The role of indicator buffers can be performed by any <a href="2_4_1_arrays_overview.htm" class="topiclink">dynamic arrays</a> of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> over the lifetime from the program start to its stop. The most common way to define such an array is at the global level. But in some cases, it is more convenient to set arrays as members of classes and then create global objects with arrays. We will consider examples of such an approach when implementing a multi-currency indicator (see example </span><span class="f_Text" style="font-style: italic;">IndUnityPercent.mq5</span><span class="f_Text"> in the section <a href="5_4_16_indicators_multisymbol.htm" class="topiclink">Multicurrency and multitimeframe indicators</a>) and indicator of delta volume (see </span><span class="f_Text" style="font-style: italic;">IndDeltaVolume.mq5</span><span class="f_Text"> in the section <a href="5_4_15_indicators_wait_none.htm" class="topiclink">Waiting for data and managing visibility</a>).</span></p>
+<p class="p_Text"><span class="f_Text">So, let's describe a dynamic array </span><span class="f_Text" style="font-style: italic;">buffer</span><span class="f_Text"> at the global level (without sizing).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">buffer</span><span class="f_CodeExample">[];</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It can be registered as a buffer using the special </span><span class="f_Text" style="font-style: italic;">SetIndexBuffer</span><span class="f_Text"> function in the terminal. As a rule, it is called in the </span><span class="f_Text" style="font-style: italic;">OnInit </span><span class="f_Text">handler, like many other functions for setting up the indicator, which we will discuss later.</span></p>
+<p class="p_H4"><span class="f_H4">bool SetIndexBuffer(int index, double buffer[],</span><br>
+<span class="f_H4"> &nbsp; ENUM_INDEXBUFFER_TYPE mode = INDICATOR_DATA)</span></p>
+<p class="p_Text"><span class="f_Text">The function links the indicator buffer specified by </span><span class="f_Text" style="font-style: italic;">index</span><span class="f_Text"> with the </span><span class="f_Text" style="font-style: italic;">buffer</span><span class="f_Text"> dynamic array. The value of </span><span class="f_Text" style="font-style: italic;">index</span><span class="f_Text"> must be between 0 and N - 1, where N is the number of buffers specified by the directive </span><span class="f_Text" style="font-style: italic;"><a href="5_4_4_indicators_buffers_plots.htm" class="topiclink">#property indicator_buffers</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Immediately after the binding, the array is not yet ready to work with data and does not even change its size, so initialization and all calculations should be performed in the </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> function. You cannot change the size of a dynamic array after it has been assigned as an indicator buffer. For indicator buffers, all resizing operations are performed by the terminal itself.</span></p>
+<p class="p_Text"><span class="f_Text">The direction of indexing after linking an array with an indicator buffer is set by default as in ordinary arrays. If necessary, it can be changed using the </span><span class="f_Text" style="font-style: italic;"><a href="4_3_8_arrays_as_series.htm" class="topiclink">ArraySetAsSeries</a></span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">SetIndexBuffer</span><span class="f_Text"> function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> on success and </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> on error.</span></p>
+<p class="p_Text"><span class="f_Text">The optional </span><span class="f_Text" style="font-style: italic;">mode</span><span class="f_Text"> parameter tells the system how the buffer will be used. The possible values are provided in the ENUM_INDEXBUFFER_TYPE enum.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:33%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">INDICATOR_DATA</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Data to render</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">INDICATOR_COLOR_INDEX</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Rendering colors</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">INDICATOR_CALCULATIONS</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Internal results of intermediate calculations</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">By default, the indicator buffer is intended for drawing data (INDICATOR_DATA). This value has another effect besides displaying the array on the chart: the value of each buffer for the bar under the mouse cursor is shown in the </span><span class="f_Text" style="font-style: italic;">Data window</span><span class="f_Text">. However, this behavior can be changed by some indicator settings (see PLOT_SHOW_DATA property in the <a href="5_4_6_indicators_plotindexsetinteger.htm" class="topiclink">Graphic plot setting</a> section). Most of the examples in this chapter refer to the INDICATOR_DATA mode.</span></p>
+<p class="p_Text"><span class="f_Text">If the indicator calculation requires storing intermediate results for each bar, an auxiliary non-displayed buffer (INDICATOR_CALCULATIONS) can be allocated for them. This is more convenient than using an ordinary array for the same purpose since then the programmer must independently control its size. This chapter will present two examples with INDICATOR_CALCULATIONS: </span><span class="f_Text" style="font-style: italic;">IndTripleEMA.mq5</span><span class="f_Text"> (see <a href="5_4_14_indicators_begin.htm" class="topiclink">Skip drawing on initial bars</a>) and </span><span class="f_Text" style="font-style: italic;">IndSubChartSimple.mq5</span><span class="f_Text"> (see <a href="5_4_16_indicators_multisymbol.htm" class="topiclink">Multicurrency and multitimeframe indicators</a>).</span></p>
+<p class="p_Text"><span class="f_Text">Some constructions allow setting the display color for each bar. Color buffers (INDICATOR_COLOR_INDEX) are used to store color information. Color is represented by integer type </span><span class="f_Text" style="font-style: italic;">color</span><span class="f_Text">, but all indicator buffers must have the type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">, and in this case, they store the color number from a special palette set by the developer (see section <a href="5_4_13_indicators_color.htm" class="topiclink">Element-by-element coloring of diagrams</a> and example indicator </span><span class="f_Text" style="font-style: italic;">IndColorWPR.mq5</span><span class="f_Text"> in it).</span></p>
+<p class="p_Text"><span class="f_Text">Color and auxiliary buffer values are not displayed in the </span><span class="f_Text" style="font-style: italic;">Data window</span><span class="f_Text">, and they cannot be obtained using the </span><span class="f_Text" style="font-style: italic;">CopyBuffer</span><span class="f_Text"> function which we will explore later in the chapter on <a href="5_5_4_indicators_copybuffer.htm" class="topiclink">Using built-in and custom indicators</a> from MQL5.</span></p>
+<p class="p_Text"><span class="f_Text">The indicator buffer is not initialized with any values. If some of its elements are not calculated for one reason or another (for example, in the indicator settings there is a limit on the maximum number of bars or the graphical construction itself implies rare significant elements between which there should be gaps, like between ZigZag vertices), then they should be explicitly filled with a special &quot;empty&quot; value. The empty value is not displayed on the chart and is not displayed in the </span><span class="f_Text" style="font-style: italic;">Data Window</span><span class="f_Text">. By default, there is an EMPTY_VALUE (DBL_MAX) constant for it, but if necessary, it can be replaced with any other, for example, with 0. This is done using the </span><span class="f_Text" style="font-style: italic;"><a href="5_4_10_indicators_empty_value.htm" class="topiclink">PlotIndexSetDouble</a></span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">Given the new knowledge about the function </span><span class="f_Text" style="font-style: italic;">SetIndexBuffer</span><span class="f_Text">, let's complete our next example </span><span class="f_Text" style="font-style: italic;">IndReplica1.mq5</span><span class="f_Text">, which we started in the previous section. In particular, we need the </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> handler.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_chart_window</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_buffers</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_plots</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">MQL5Book</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">PRTF</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">buffer</span><span class="f_CodeExample">[];&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;global&nbsp;dynamic&nbsp;array</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;register&nbsp;an&nbsp;array&nbsp;as&nbsp;an&nbsp;indicator&nbsp;buffer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">buffer</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;the&nbsp;second&nbsp;incorrect&nbsp;call&nbsp;is&nbsp;made&nbsp;here&nbsp;intentionally&nbsp;to&nbsp;show&nbsp;an&nbsp;error</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">buffer</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false&nbsp;/&nbsp;BUFFERS_WRONG_INDEX(4602)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;check&nbsp;size:&nbsp;still&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">buffer</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_SUCCEEDED</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The number of buffers is defined by the directive equal to 1, so the array assignment for a single buffer uses index 0 (the first parameter </span><span class="f_Text" style="font-style: italic;">SetIndexBuffer</span><span class="f_Text">). The second function call is erroneous and is only added to demonstrate the problem: since index 1 implies two declared buffers, it generates a BUFFERS_WRONG_INDEX (4602) error.</span></p>
+<p class="p_Text"><span class="f_Text">At the very beginning of the </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> function, let's print the size of the array again. In this place, it will already be distributed according to the number of bars.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnCalculate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">begin</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">[])</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;after&nbsp;starting,&nbsp;check&nbsp;that&nbsp;the&nbsp;platform&nbsp;automatically&nbsp;manages&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;array</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">buffer</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;10189&nbsp;-&nbsp;actual&nbsp;number&nbsp;of&nbsp;bars</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now let's turn to the question of what our indicator will calculate. As already mentioned, we will not put complex formulas into it yet, but simply try to copy the passed timeseries from the </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> parameter to the buffer. This is reflected in the name of the indicator.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;on&nbsp;each&nbsp;new&nbsp;bar&nbsp;or&nbsp;set&nbsp;of&nbsp;bars&nbsp;(including&nbsp;the&nbsp;first&nbsp;calculation)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;fill&nbsp;in&nbsp;all&nbsp;new&nbsp;bars</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">buffer</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ticks&nbsp;on&nbsp;the&nbsp;current&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;update&nbsp;the&nbsp;last&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">buffer</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;we&nbsp;report&nbsp;the&nbsp;number&nbsp;of&nbsp;processed&nbsp;bars&nbsp;to&nbsp;ourselves&nbsp;in&nbsp;the&nbsp;future</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now the indicator is compiled without any warnings. We can run it on the chart, and with the default settings, it should duplicate the values of the closing prices of the bars in the buffer. This is due to the short form of </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text">, we considered this aspect in the section <a href="5_4_2_indicators_oncalculate.htm" class="topiclink">Main indicator event: OnCalculate</a>.</span></p>
+<p class="p_Text"><span class="f_Text">However, there is a strange thing: our buffer is displayed in the </span><span class="f_Text" style="font-style: italic;">Data window</span><span class="f_Text"> and it contains the correct values, but there is no line on the chart. This is a consequence of the fact that graphical constructions, and not buffers, are responsible for the display. In the current version of the indicator, we have configured only the buffer. In the next section, we will create a new version </span><span class="f_Text" style="font-style: italic;">IndReplica2.mq5</span><span class="f_Text"> and supplement it with the necessary instructions.</span></p>
+<p class="p_Text"><span class="f_Text">At the same time, the described effect can be useful for creating &quot;hidden&quot; indicators that do not display their lines on the chart but are available for programmatic reading from other MQL programs. If desired, the developer will be able to hide even the mention of indicator buffers from </span><span class="f_Text" style="font-style: italic;">Data windows</span><span class="f_Text"> (see PLOT_SHOW_DATA in the next section).</span></p>
+<p class="p_Text"><span class="f_Text">How to manage indicators from MQL5 code will be discussed in the <a href="5_5_indicators_use.htm" class="topiclink">next chapter</a>.</span></p>
+
+</div>
+
+</body>
+</html>

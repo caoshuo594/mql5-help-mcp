@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.9.7 Obtaining information about financial instruments</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_9_python.htm"> 7.9 Native python support </a>/ 7.9.7 Getting information about financial instruments
+          </td>
+          <td width="70" align="right">
+          <a href="7_9_6_python_terminal_info.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_9_8_python_marketbook.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.9.7 Getting information about financial instruments</span></p>
+<p class="p_Text"><span class="f_Text">The group of functions of the MetaTrader5 package provides information about financial instruments.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">symbol_info</span><span class="f_Text"> function returns information about one financial instrument as a named tuple structure.</span></p>
+<p class="p_H4"><span class="f_H4">namedtuple symbol_info(symbol)</span></p>
+<p class="p_Text"><span class="f_Text">The name of the desired financial instrument is specified in the </span><span class="f_Text" style="font-style: italic;">symbol</span><span class="f_Text"> parameter.</span></p>
+<p class="p_Text"><span class="f_Text">One call provides all the information that can be obtained using three MQL5 functions </span><span class="f_Text" style="font-style: italic;"><a href="6_1_8_symbols_info.htm" class="topiclink">SymbolInfoInteger</a></span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;"><a href="6_1_8_symbols_info.htm" class="topiclink">SymbolInfoDouble</a>,</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;"><a href="6_1_8_symbols_info.htm" class="topiclink">SymbolInfoString</a> </span><span class="f_Text">with all properties. The names of the fields in the named tuple are the same as the names of the enumeration elements used in the specified functions but without the &quot;SYMBOL_&quot; prefix and in lowercase.</span></p>
+<p class="p_Text"><span class="f_Text">In case of an error, the function returns </span><span class="f_Text" style="font-style: italic;">None</span><span class="f_Text">.</span></p>
+<p class="p_Quote"><span class="f_Quote">Attention! To ensure successful function execution, the requested symbol must be selected in </span><span class="f_Quote" style="font-style: italic;">Market Watch</span><span class="f_Quote">. This can be done from Python by calling </span><span class="f_Quote" style="font-style: italic;">symbol_select</span><span class="f_Quote"> (see further).</span></p>
+<p class="p_Text"><span class="f_Text">Example (</span><span class="f_Text" style="font-style: italic;">MQL5/Scripts/MQL5Book/Python/eurjpy.py</span><span class="f_Text">):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;MetaTrader5&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;mt5</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;let's&nbsp;establish&nbsp;a&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;mt5.initialize():</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;initialize()&nbsp;failed,&nbsp;error&nbsp;code&nbsp;=&quot;</span><span class="f_CodeExample">,&nbsp;mt5.last_error())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;make&nbsp;sure&nbsp;EURJPY&nbsp;is&nbsp;present&nbsp;in&nbsp;the&nbsp;Market&nbsp;Watch,&nbsp;or&nbsp;abort&nbsp;the&nbsp;algorithm</span>
+<br><span class="f_CodeExample">selected&nbsp;=&nbsp;mt5.symbol_select(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;EURJPY&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">True</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;selected:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;Failed&nbsp;to&nbsp;select&nbsp;EURJPY&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;mt5.shutdown()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;display&nbsp;the&nbsp;properties&nbsp;of&nbsp;the&nbsp;EURJPY&nbsp;symbol</span>
+<br><span class="f_CodeExample">symbol_info&nbsp;=&nbsp;mt5.symbol_info(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;EURJPY&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;symbol_info&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">None</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;display&nbsp;the&nbsp;data&nbsp;as&nbsp;is&nbsp;(as&nbsp;a&nbsp;tuple)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(symbol_info)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;output&nbsp;a&nbsp;couple&nbsp;of&nbsp;specific&nbsp;properties</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;EURJPY:&nbsp;spread&nbsp;=&quot;</span><span class="f_CodeExample">,&nbsp;symbol_info.spread,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;,&nbsp;digits&nbsp;=&quot;</span><span class="f_CodeExample">,&nbsp;symbol_info.digits)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;output&nbsp;symbol&nbsp;properties&nbsp;as&nbsp;a&nbsp;dictionary</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;Show&nbsp;symbol_info(\&quot;EURJPY\&quot;)._asdict():&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;symbol_info_dict&nbsp;=&nbsp;mt5.symbol_info(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;EURJPY&quot;</span><span class="f_CodeExample">)._asdict()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;prop&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;symbol_info_dict:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;{}={}&quot;</span><span class="f_CodeExample">.format(prop,&nbsp;symbol_info_dict[prop]))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;complete&nbsp;the&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample">mt5.shutdown()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">SymbolInfo(custom=False,&nbsp;chart_mode=0,&nbsp;select=True,&nbsp;visible=True,&nbsp;session_deals=0,&nbsp;session_buy_orders=0,&nbsp;session_sell_orders=0,&nbsp;...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">EURJPY:&nbsp;spread&nbsp;=&nbsp;17,&nbsp;digits&nbsp;=&nbsp;3&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Show&nbsp;symbol_info()._asdict():&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;custom=False&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;chart_mode=0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;select=True&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;visible=True&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;time=1585069682&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;digits=3&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;spread=17&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;spread_float=True&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;ticks_bookdepth=10&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;trade_calc_mode=0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;trade_mode=4&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;trade_exemode=1&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;swap_mode=1&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;swap_rollover3days=3&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_hedged_use_leg=False&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;expiration_mode=7&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;filling_mode=1&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;order_mode=127&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;order_gtc_mode=0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;bid=120.024&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;ask=120.041&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;last=0.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;point=0.001&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;trade_tick_value=0.8977708350166538&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;trade_tick_value_profit=0.8977708350166538&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;trade_tick_value_loss=0.8978272580355541&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;trade_tick_size=0.001&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;trade_contract_size=100000.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;volume_min=0.01&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;volume_max=500.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;volume_step=0.01&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;volume_limit=0.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;swap_long=-0.2&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;swap_short=-1.2&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_initial=0.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_maintenance=0.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;margin_hedged=100000.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;currency_base=EUR&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;currency_profit=JPY&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;currency_margin=EUR&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_H4"><span class="f_H4">bool symbol_select(symbol, enable = None)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">symbol_select</span><span class="f_Text"> function adds the specified symbol to </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> or removes it. The symbol is specified in the first parameter. The second parameter is passed as </span><span class="f_Text" style="font-style: italic;">True</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">False</span><span class="f_Text">, which means showing or hiding the symbol, respectively.</span></p>
+<p class="p_Text"><span class="f_Text">If the second optional unnamed parameter is omitted, then by Python's type casting rules, </span><span class="f_Text" style="font-style: italic;">bool(none)</span><span class="f_Text"> is equivalent to </span><span class="f_Text" style="font-style: italic;">False</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The function is an analog of </span><span class="f_Text" style="font-style: italic;"><a href="6_1_2_symbols_select.htm" class="topiclink">SymbolSelect</a></span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">int symbols_total()</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">symbols_total</span><span class="f_Text"> function returns the number of all instruments in the MetaTrader 5 terminal, taking into account custom symbols and those not currently shown in the </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> window. This is the analog of the function </span><span class="f_Text" style="font-style: italic;"><a href="6_1_1_symbols_list.htm" class="topiclink">SymbolsTotal(false)</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Next </span><span class="f_Text" style="font-style: italic;">symbols_get</span><span class="f_Text"> function returns an array of tuples with information about all instruments or favorite instruments with names matching the specified filter in the optional named parameter </span><span class="f_Text" style="font-style: italic;">group</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">tuple[] symbols_get(group = &quot;PATTERN&quot;)</span></p>
+<p class="p_Text"><span class="f_Text">Each element in the array tuple is a named tuple with a full set of symbol properties (we saw a similar tuple above in the context of the description of the </span><span class="f_Text" style="font-style: italic;">symbol_info</span><span class="f_Text"> function).</span></p>
+<p class="p_Text"><span class="f_Text">Since there is only one parameter, its name can be omitted when calling the function.</span></p>
+<p class="p_Text"><span class="f_Text">In case of an error, the function will return a special value of </span><span class="f_Text" style="font-style: italic;">None</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">group</span><span class="f_Text"> parameter allows you to select symbols by name, optionally using the substitution (wildcard) character '*' at the beginning and/or end of the searched string. '*' means 0 or any number of characters. Thus, you can organize a search for a substring that occurs in the name with an arbitrary number of other characters before or after the specified fragment. For example, &quot;EUR*&quot; means symbols that start with &quot;EUR&quot; and have any name extension (or just &quot;EUR&quot;). The &quot;*EUR*&quot; filter will return symbols with the names containing the &quot;EUR&quot; substring anywhere.</span></p>
+<p class="p_Text"><span class="f_Text">Also, the </span><span class="f_Text" style="font-style: italic;">group</span><span class="f_Text"> parameter may contain multiple conditions separated by commas. Each condition can be specified as a mask using '*'. To exclude symbols, you can use the logical negation sign '!'. In this case, all conditions are applied sequentially, i.e., first you need to specify the inclusion conditions, and then the exclusion conditions. For example, group=&quot;*, !*EUR*&quot; means that we need to select all symbols first and then exclude those that contain &quot;EUR&quot; in the name (anywhere).</span></p>
+<p class="p_Text"><span class="f_Text">For example, to display information about cross-currency rates, except for the 4 major Forex currencies, you can run the following query:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">crosses&nbsp;=&nbsp;mt5.symbols_get(group&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;*,!*USD*,!*EUR*,!*JPY*,!*GBP*&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">'len(*,!*USD*,!*EUR*,!*JPY*,!*GBP*):'</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">len</span><span class="f_CodeExample">(crosses))&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;resulting&nbsp;array&nbsp;-&nbsp;the&nbsp;number&nbsp;of&nbsp;crosses</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;s&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;crosses:&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(s.name,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;:&quot;</span><span class="f_CodeExample">,&nbsp;s)&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">An example of the result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">len(*,!*USD*,!*EUR*,!*JPY*,!*GBP*):&nbsp;&nbsp;10&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">AUDCAD&nbsp;:&nbsp;SymbolInfo(custom=False,&nbsp;chart_mode=0,&nbsp;select=True,&nbsp;visible=True,&nbsp;session_deals=0,&nbsp;session_buy_orders=0,&nbsp;session...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">AUDCHF&nbsp;:&nbsp;SymbolInfo(custom=False,&nbsp;chart_mode=0,&nbsp;select=True,&nbsp;visible=True,&nbsp;session_deals=0,&nbsp;session_buy_orders=0,&nbsp;session...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">AUDNZD&nbsp;:&nbsp;SymbolInfo(custom=False,&nbsp;chart_mode=0,&nbsp;select=True,&nbsp;visible=True,&nbsp;session_deals=0,&nbsp;session_buy_orders=0,&nbsp;session...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">CADCHF&nbsp;:&nbsp;SymbolInfo(custom=False,&nbsp;chart_mode=0,&nbsp;select=False,&nbsp;visible=False,&nbsp;session_deals=0,&nbsp;session_buy_orders=0,&nbsp;sessi...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">NZDCAD&nbsp;:&nbsp;SymbolInfo(custom=False,&nbsp;chart_mode=0,&nbsp;select=False,&nbsp;visible=False,&nbsp;session_deals=0,&nbsp;session_buy_orders=0,&nbsp;sessi...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">NZDCHF&nbsp;:&nbsp;SymbolInfo(custom=False,&nbsp;chart_mode=0,&nbsp;select=False,&nbsp;visible=False,&nbsp;session_deals=0,&nbsp;session_buy_orders=0,&nbsp;sessi...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">NZDSGD&nbsp;:&nbsp;SymbolInfo(custom=False,&nbsp;chart_mode=0,&nbsp;select=False,&nbsp;visible=False,&nbsp;session_deals=0,&nbsp;session_buy_orders=0,&nbsp;sessi...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">CADMXN&nbsp;:&nbsp;SymbolInfo(custom=False,&nbsp;chart_mode=0,&nbsp;select=False,&nbsp;visible=False,&nbsp;session_deals=0,&nbsp;session_buy_orders=0,&nbsp;sessi...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">CHFMXN&nbsp;:&nbsp;SymbolInfo(custom=False,&nbsp;chart_mode=0,&nbsp;select=False,&nbsp;visible=False,&nbsp;session_deals=0,&nbsp;session_buy_orders=0,&nbsp;sessi...&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">NZDMXN&nbsp;:&nbsp;SymbolInfo(custom=False,&nbsp;chart_mode=0,&nbsp;select=False,&nbsp;visible=False,&nbsp;session_deals=0,&nbsp;session_buy_orders=0,&nbsp;sessi...&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">symbol_info_tick</span><span class="f_Text"> function can be used to get the last tick for the specified financial instrument.</span></p>
+<p class="p_H4"><span class="f_H4">tuple symbol_info_tick(symbol)</span></p>
+<p class="p_Text"><span class="f_Text">The only mandatory parameter specifies the name of the financial instrument.</span></p>
+<p class="p_Text"><span class="f_Text">The information is returned as a tuple with the same fields as in the </span><span class="f_Text" style="font-style: italic;">MqlTick</span><span class="f_Text"> structure. The function is an analog of </span><span class="f_Text" style="font-style: italic;"><a href="6_1_5_symbols_tick.htm" class="topiclink">SymbolInfoTick</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text" style="font-style: italic;">None</span><span class="f_Text"> is returned if an error occurs.</span></p>
+<p class="p_Text"><span class="f_Text">For the function to work properly, the symbol must be enabled in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text">. Let's demonstrate it in the script </span><span class="f_Text" style="font-style: italic;">MQL5/Scripts/MQL5Book/Python/gbpusdtick.py</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;MetaTrader5&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;mt5</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;let's&nbsp;establish&nbsp;a&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;mt5.initialize():</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;initialize()&nbsp;failed,&nbsp;error&nbsp;code&nbsp;=&quot;</span><span class="f_CodeExample">,&nbsp;mt5.last_error())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;try&nbsp;to&nbsp;include&nbsp;the&nbsp;GBPUSD&nbsp;symbol&nbsp;in&nbsp;the&nbsp;Market&nbsp;Watch</span>
+<br><span class="f_CodeExample">selected=mt5.symbol_select(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;GBPUSD&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">True</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;selected:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;Failed&nbsp;to&nbsp;select&nbsp;GBPUSD&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;mt5.shutdown()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;display&nbsp;the&nbsp;last&nbsp;tick&nbsp;of&nbsp;the&nbsp;GBPUSD&nbsp;symbol&nbsp;as&nbsp;a&nbsp;tuple</span>
+<br><span class="f_CodeExample">lasttick&nbsp;=&nbsp;mt5.symbol_info_tick(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;GBPUSD&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(lasttick)</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;display&nbsp;the&nbsp;values&nbsp;of&nbsp;the&nbsp;tick&nbsp;fields&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;dictionary</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;Show&nbsp;symbol_info_tick(\&quot;GBPUSD\&quot;)._asdict():&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">symbol_info_tick_dict&nbsp;=&nbsp;lasttick._asdict()</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;prop&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;symbol_info_tick_dict:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;{}={}&quot;</span><span class="f_CodeExample">.format(prop,&nbsp;symbol_info_tick_dict[prop]))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;complete&nbsp;the&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample">mt5.shutdown()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The result should be as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Tick(time=1585070338,&nbsp;bid=1.17264,&nbsp;ask=1.17279,&nbsp;last=0.0,&nbsp;volume=0,&nbsp;time_msc=1585070338728,&nbsp;flags=2,&nbsp;volume_real=0.0)&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Show&nbsp;symbol_info_tick._asdict():&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;time=1585070338&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;bid=1.17264&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;ask=1.17279&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;last=0.0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;volume=0&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;time_msc=1585070338728&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;flags=2&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;volume_real=0.0</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.7 Development and connection of binary format libraries</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a>/ 7.7 Development and connection of binary format libraries
+          </td>
+          <td width="70" align="right">
+          <a href="7_6_16_sqlite_example_ts.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_7_1_libraries_export.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">7.7 Development and connection of binary format libraries</span></p>
+<p class="p_Text"><span class="f_Text">In addition to the specialized types of MQL programs &#8722; </span><span class="f_Text" style="font-style: italic;"><a href="6_4_experts.htm" class="topiclink">Expert Advisors</a></span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;"><a href="5_4_indicators_make.htm" class="topiclink">indicators</a></span><span class="f_Text">, <a href="5_2_script_service.htm" class="topiclink">scripts, and services</a> – the MetaTrader 5 platform allows you to create and connect independent binary modules with arbitrary functionality, compiled as ex5 files or commonly used DLLs (Dynamic Link Library), standard for Windows. These can be analytical algorithms, graphical visualization, network interaction with web services, control of external programs, or the operating system itself. In any case, such libraries work in the terminal not as independent MQL programs but in conjunction with a program of any of the above 4 types.</span></p>
+<p class="p_Text"><span class="f_Text">The idea of integrating the library and the main (parent) program is that the library exports certain functions, i.e., declares them available for use from the outside, and the program imports their prototypes. It is the description of prototypes – sets of names, lists of parameters, and return values – that allows you to call these functions in the code without having their implementation.</span></p>
+<p class="p_Text"><span class="f_Text">Then, during the launch of the MQL program, the early dynamic linking is performed. This implies loading the library after the main program and establishing correspondence between the imported prototypes and the exported functions available in the library. Establishing one-to-one correspondences by names, parameter lists, and return types is a prerequisite for successful loading. If no corresponding exported implementation can be found for the import description of at least one function, the execution of the MQL program will be canceled (it will end with an error at the startup stage).</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Communication-component diagram of an MQL program with libraries" title="Communication-component diagram of an MQL program with libraries" width="600" height="360" style="margin:0 auto 0 auto;width:600px;height:360px;border:none" src="lib.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Communication-component diagram of an MQL program with libraries</span></p>
+<p class="p_Text"><span class="f_Text">You cannot select an included library when starting an MQL program. This linking is set by the developer when compiling the main program along with library imports. However, the user can manually replace one ex5/dll file with another between program starts (provided that the prototypes of the implemented exported functions match in the libraries). This can be used, for example, to switch the user interface language if the libraries contain labeled string resources. However, libraries are most often used as a commercial product with some know-how, which the author is not ready to distribute in the form of open header files.</span></p>
+<p class="p_Text"><span class="f_Text">For programmers who have come to MQL5 from other environments and are already familiar with the DLL technology, we would like to add a note about late dynamic linking, which is one of the advantages of DLLs. Full dynamic connection of one MQL program (or DLL module) to another MQL program during execution is impossible. The only similar action that MQL5 allows you to do &quot;on the go&quot; is linking an Expert Advisor and an indicator via </span><span class="f_Text" style="font-style: italic;"><a href="5_5_2_indicators_icustom.htm" class="topiclink">iCustom</a></span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;"><a href="5_5_8_indicators_indicatorcreate.htm" class="topiclink">IndicatorCreate</a></span><span class="f_Text">, where the indicator acts as a dynamically linked library (however, programmatic interaction with has to be done through the indicators API, which means increased overhead for </span><span class="f_Text" style="font-style: italic;">CopyBuffer</span><span class="f_Text">, compared to direct function calls via </span><span class="f_Text" style="font-style: italic;">export/#import</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">Note that in normal cases, when an MQL program is compiled from sources without importing external functions, static linking is used, that is, the generated binary code directly refers to the called functions since they are known at the time of compilation.</span></p>
+<p class="p_Text"><span class="f_Text">Strictly speaking, a library can also rely on other libraries, i.e., it can import some of the functions. In theory, the chain of such dependencies can be even longer: for example, an MQL program includes library A, library A uses library B, and library B, in turn, uses library C. However, such chains are undesirable because they complicate the distribution and installation of the product, as well as make identifying the causes of potential startup problems more difficult. Therefore, libraries are usually connected directly to the parent MQL program.</span></p>
+<p class="p_Text"><span class="f_Text">In this chapter, we will describe the process of creating libraries in MQL5, exporting and importing functions (including restrictions on the data types used in them), as well as connecting external (ready-made) DLLs. DLL development is beyond the scope of this book.</span></p>
+
+</div>
+
+</body>
+</html>

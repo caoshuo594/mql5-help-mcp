@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.5.10 Managing position in a file</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_5_files.htm"> 4.5 Working with files </a>/ 4.5.10 Managing position in a file
+          </td>
+          <td width="70" align="right">
+          <a href="4_5_9_files_txt_atomic.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_5_11_files_properties.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.5.10 Managing position in a file</span></p>
+<p class="p_Text"><span class="f_Text">As we already know, the system associates a certain pointer with each open file: it determines the place in the file (offset from its beginning) where data will be written or read from the next time any I/O function is called. After the function is executed, the pointer is shifted by the size of the written or read data.</span></p>
+<p class="p_Text"><span class="f_Text">In some cases, you want to change the position of the pointer without I/O operations. In particular, when we need to append data to the end of a file, we open it in &quot;mixed&quot; mode FILE_READ | FILE_WRITE, and then we must somehow end up at the end of the file (otherwise we will start overwriting the data from the beginning). We could call the read functions while there is something to read (thus shifting the pointer), but this is not efficient. It is better to use the special function FileSeek. And the </span><span class="f_Text" style="font-style: italic;">FileTell</span><span class="f_Text"> function allows getting the actual value of the pointer (position in the file).</span></p>
+<p class="p_Text"><span class="f_Text">In this section, we'll explore these and a couple of other functions related to the current position in a file. Some of them work the same way for files in text and binary mode, while others are different.</span></p>
+<p class="p_H4"><span class="f_H4">bool FileSeek(int handle, long offset, ENUM_FILE_POSITION origin)</span></p>
+<p class="p_Text"><span class="f_Text">The function moves the file pointer by the </span><span class="f_Text" style="font-style: italic;">offset</span><span class="f_Text"> number of bytes using </span><span class="f_Text" style="font-style: italic;">origin</span><span class="f_Text"> as a reference which is one of the predefined positions described in the ENUM_FILE_POSITION enumeration. The </span><span class="f_Text" style="font-style: italic;">offset</span><span class="f_Text"> can be either positive (moving to the end of the file and beyond) or negative (moving to the beginning). ENUM_FILE_POSITION has the following members:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">SEEK_SET for the file beginning</span></li>
+<li class="p_li"><span class="f_li">SEEK_CUR for the current position</span></li>
+<li class="p_li"><span class="f_li">SEEK_END for the file end</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">If the calculation of the new position relative to the anchor point gave a negative value (i.e., an offset to the left of the beginning of the file is requested), then the file pointer will be set to the beginning of the file.</span></p>
+<p class="p_Text"><span class="f_Text">If you set the position beyond the end of the file (the value is greater than the file size), then the subsequent writing to the file will be made not from the end of the file, but from the set position. In this case, undefined values will be written between the previous end of the file and the given position (see below).</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> on success and </span><span class="f_Text" style="font-style: italic;">false </span><span class="f_Text">in case of an error.</span></p>
+<p class="p_H4"><span class="f_H4">ulong FileTell(int handle)</span></p>
+<p class="p_Text"><span class="f_Text">For a file opened with the </span><span class="f_Text" style="font-style: italic;">handle</span><span class="f_Text"> descriptor, the function returns the current position of the internal pointer (an offset relative to the beginning of the file). In case of an error, ULONG_MAX ((ulong)-1) will be returned. The error code is available in the </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> variable, or through the </span><span class="f_Text" style="font-style: italic;"><a href="4_9_15_env_last_error.htm" class="topiclink">GetLastError</a></span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">bool FileIsEnding(int handle)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns an indication of whether the pointer is at the end of the </span><span class="f_Text" style="font-style: italic;">handle</span><span class="f_Text"> file. If so, the result is </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">bool FileIsLineEnding(int handle)</span></p>
+<p class="p_Text"><span class="f_Text">For a text file with the </span><span class="f_Text" style="font-style: italic;">handle</span><span class="f_Text"> descriptor, the function returns a sign of whether the file pointer is at the end of the line (immediately after the newline characters '\n' or '\r\n'). In other words, the return value </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> means that the current position is at the beginning of the next line (or at the end of the file). For binary files, the result is always </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The test script for the aforementioned functions is called </span><span class="f_Text" style="font-style: italic;">FileCursor.mq5</span><span class="f_Text">. It works with three files: two binary and one text.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fileraw</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5Book/cursor.raw&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filetxt</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5Book/cursor.csv&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">file100</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5Book/k100.raw&quot;</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To simplify logging of the current position, along with the end-of-file (End-Of-File, EOF) and end-of-line (End-Of-Line, EOL) signs, we have created a helper function </span><span class="f_Text" style="font-style: italic;">FileState</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FileState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;P:%I64d,&nbsp;F:%s,&nbsp;L:%s&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileTell</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">FileIsEnding</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">FileIsLineEnding</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The scenario for testing the functions on a binary file includes the following steps.</span></p>
+<p class="p_Text"><span class="f_Text">Create a new or open an existing </span><span class="f_Text" style="font-style: italic;">fileraw</span><span class="f_Text"> file (&quot;MQL5Book/cursor.raw&quot;) in read/write mode. Immediately after opening, and then after each operation, we output the current state of the file by calling </span><span class="f_Text" style="font-style: italic;">FileState</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;\n&nbsp;*&nbsp;Phase&nbsp;I.&nbsp;Binary&nbsp;file&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fileraw</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_BIN</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_WRITE</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_READ</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FileState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Move the pointer to the end of the file, which will allow us to append data to this file every time the script is executed (and not overwrite it from the beginning). The most obvious way to refer to the file end: null </span><span class="f_Text" style="font-style: italic;">offset</span><span class="f_Text"> relative to </span><span class="f_Text" style="font-style: italic;">origin=SEEK_END</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSeek</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SEEK_END</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FileState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If the file is no longer empty (not new), we can read existing data at its arbitrary position (relative or absolute). In particular, if the </span><span class="f_Text" style="font-style: italic;">origin</span><span class="f_Text"> parameter of the </span><span class="f_Text" style="font-style: italic;">FileSeek</span><span class="f_Text"> function is equal to SEEK_CUR, that means that with a negative </span><span class="f_Text" style="font-style: italic;">offset</span><span class="f_Text"> the current position will move the corresponding number of bytes back (to the left), and with positive it will move forward (to the right).</span></p>
+<p class="p_Text"><span class="f_Text">In this example, we are trying to step back by the size of one value of type </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text">. A little later we will see that in this place there should be a field </span><span class="f_Text" style="font-style: italic;">day_of_year</span><span class="f_Text"> (last field) of the structure </span><span class="f_Text" style="font-style: italic;"><a href="4_1_3_conversions_datetime.htm" class="topiclink">MqlDateTime</a></span><span class="f_Text">, because we write it to a file in subsequent instructions, and this data is available from the file on the next run. The read value is logged for comparison with what was previously saved.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSeek</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">sizeof</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SEEK_CUR</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FileState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileReadInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In a new empty file, the </span><span class="f_Text" style="font-style: italic;">FileSeek</span><span class="f_Text"> call will end with error 4003 (INVALID_PARAMETER), and the </span><span class="f_Text" style="font-style: italic;">if</span><span class="f_Text"> statement block will not be executed.</span></p>
+<p class="p_Text"><span class="f_Text">Next, the file is filled with data. First, the current local time of the computer (8 bytes of </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text">) is written with </span><span class="f_Text" style="font-style: italic;">FileWriteLong</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeLocal</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileWriteLong</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FileState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then we try to step back from the current location by 4 bytes (-4) and read </span><span class="f_Text" style="font-style: italic;">long</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSeek</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SEEK_CUR</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileReadLong</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FileState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This attempt will end with error 5015 (FILE_READERROR), because we were at the end of the file and after shifting 4 bytes to the left, we cannot read 8 bytes from the right (size </span><span class="f_Text" style="font-style: italic;">long</span><span class="f_Text">). However, as we will see from the log, as a result of this unsuccessful attempt, the pointer will still move back to the end of the file.</span></p>
+<p class="p_Text"><span class="f_Text">If you step back by 8 bytes (-8), the subsequent reading of the </span><span class="f_Text" style="font-style: italic;">long</span><span class="f_Text"> value will be successful, and both time values, including the original and one received from the file, must match.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSeek</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SEEK_CUR</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FileState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileReadLong</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, write the </span><span class="f_Text" style="font-style: italic;">MqlDateTime</span><span class="f_Text"> structure filled with the same time to the file. The position in the file will increase by 32 (the size of the structure in bytes).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlDateTime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">mdt</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeToStruct</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">mdt</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StructPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">mdt</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;display&nbsp;the&nbsp;date/time&nbsp;in&nbsp;the&nbsp;log&nbsp;visually</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileWriteStruct</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">mdt</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;32&nbsp;=&nbsp;sizeof(MqlDateTime)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FileState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After the first run of the script for the scenario with the file </span><span class="f_Text" style="font-style: italic;">fileraw</span><span class="f_Text"> (MQL5Book/cursor.raw) we get something like the following (the time will be different):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">first&nbsp;run&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;*&nbsp;Phase&nbsp;I.&nbsp;Binary&nbsp;file</span>
+<br><span class="f_CodeExample">FileOpen(fileraw,FILE_BIN|FILE_WRITE|FILE_READ)=1&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:0,&nbsp;F:true,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileSeek(handle,0,SEEK_END)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:0,&nbsp;F:true,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileSeek(handle,-1*sizeof(int),SEEK_CUR)=false&nbsp;/&nbsp;INVALID_PARAMETER(4003)</span>
+<br><span class="f_CodeExample">FileWriteLong(handle,now)=8&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:8,&nbsp;F:true,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileSeek(handle,-4,SEEK_CUR)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileReadLong(handle)=0&nbsp;/&nbsp;FILE_READERROR(5015)</span>
+<br><span class="f_CodeExample">P:8,&nbsp;F:true,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileSeek(handle,-8,SEEK_CUR)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:0,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileReadLong(handle)=1629683392&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">(now==x)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;2021&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp;23&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;49&nbsp;&nbsp;&nbsp;&nbsp;52&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;234</span>
+<br><span class="f_CodeExample">FileWriteStruct(handle,mdt)=32&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:40,&nbsp;F:true,&nbsp;L:false</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">According to the status, the file size is initially zero because the position is &quot;P:0&quot; after the shift to the end of the file (&quot;F:true&quot;). After each recording (using </span><span class="f_Text" style="font-style: italic;">FileWriteLong</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">FileWriteStruct</span><span class="f_Text">) the position P is increased by the size of the written data.</span></p>
+<p class="p_Text"><span class="f_Text">After the second run of the script, you can notice some changes in the log:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">second&nbsp;run</span>
+<br><span class="f_CodeExample">&nbsp;*&nbsp;Phase&nbsp;I.&nbsp;Binary&nbsp;file</span>
+<br><span class="f_CodeExample">FileOpen(fileraw,FILE_BIN|FILE_WRITE|FILE_READ)=1&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:0,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileSeek(handle,0,SEEK_END)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:40,&nbsp;F:true,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileSeek(handle,-1*sizeof(int),SEEK_CUR)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:36,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileReadInteger(handle)=234&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileWriteLong(handle,now)=8&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:48,&nbsp;F:true,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileSeek(handle,-4,SEEK_CUR)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileReadLong(handle)=0&nbsp;/&nbsp;FILE_READERROR(5015)</span>
+<br><span class="f_CodeExample">P:48,&nbsp;F:true,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileSeek(handle,-8,SEEK_CUR)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:40,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileReadLong(handle)=1629683397&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">(now==x)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;2021&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp;23&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;49&nbsp;&nbsp;&nbsp;&nbsp;57&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;234</span>
+<br><span class="f_CodeExample">FileWriteStruct(handle,mdt)=32&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:80,&nbsp;F:true,&nbsp;L:false</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">First, the size of the file after opening is 40 (according to the position &quot;P:40&quot; after the shift to the end of the file). Each time the script is run, the file will grow by 40 bytes.</span></p>
+<p class="p_Text"><span class="f_Text">Second, since the file is not empty, it is possible to navigate through it and read the &quot;old&quot; data. In particular, after retreating to </span><span class="f_Text" style="font-style: italic;">-1*sizeof(int)</span><span class="f_Text"> from the current position (which is also the end of the file), we successfully read the value 234 which is the last field of the structure </span><span class="f_Text" style="font-style: italic;">MqlDateTime</span><span class="f_Text"> (it is the number of the day in a year and it will most likely be different for you).</span></p>
+<p class="p_Text"><span class="f_Text">The second test scenario works with the text csv file </span><span class="f_Text" style="font-style: italic;">filetxt</span><span class="f_Text"> (MQL5Book/cursor.csv). We will also open it in the combined read and write mode, but will not move the pointer to the end of the file. Because of this, every run of the script will overwrite the data, starting from the beginning of the file. To make it easy to spot the differences, the numbers in the first column of the CSV are randomly generated. In the second column, the same strings are always substituted from the template in the </span><span class="f_Text" style="font-style: italic;">StringFormat</span><span class="f_Text"> function.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;*&nbsp;Phase&nbsp;II.&nbsp;Text&nbsp;file&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">srand</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GetTickCount</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;create&nbsp;a&nbsp;new&nbsp;file&nbsp;or&nbsp;open&nbsp;an&nbsp;existing&nbsp;file&nbsp;for&nbsp;writing/overwriting</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;from&nbsp;the&nbsp;very&nbsp;beginning&nbsp;and&nbsp;subsequent&nbsp;reading;&nbsp;inside&nbsp;CSV&nbsp;data&nbsp;(Unicode)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">filetxt</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_CSV</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_WRITE</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_READ</span><span class="f_CodeExample">,&nbsp;','));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;three&nbsp;rows&nbsp;of&nbsp;data&nbsp;(number,string&nbsp;pair&nbsp;in&nbsp;each),&nbsp;separated&nbsp;by&nbsp;'\n'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;note&nbsp;that&nbsp;the&nbsp;last&nbsp;element&nbsp;does&nbsp;not&nbsp;end&nbsp;with&nbsp;a&nbsp;newline&nbsp;'\n'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;this&nbsp;is&nbsp;optional,&nbsp;but&nbsp;allowed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">content</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;%02d,abc\n%02d,def\n%02d,ghi&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">rand</span><span class="f_CodeExample">()&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">rand</span><span class="f_CodeExample">()&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">rand</span><span class="f_CodeExample">()&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;'\n'&nbsp;will&nbsp;be&nbsp;replaced&nbsp;with&nbsp;'\r\n'&nbsp;automatically,&nbsp;thanks&nbsp;to&nbsp;FileWriteString</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileWriteString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">content</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here is an example of generated data:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">34,abc</span>
+<br><span class="f_CodeExample">20,def</span>
+<br><span class="f_CodeExample">02,ghi</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then we return to the beginning of the file and read it in a loop with </span><span class="f_Text" style="font-style: italic;">FileReadString</span><span class="f_Text">, constantly logging the status.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSeek</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SEEK_SET</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FileState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;count&nbsp;the&nbsp;lines&nbsp;in&nbsp;the&nbsp;file&nbsp;using&nbsp;the&nbsp;FileIsLineEnding&nbsp;feature</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lineCount</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">FileIsEnding</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileReadString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FileState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;FileIsLineEnding&nbsp;also&nbsp;equals&nbsp;true&nbsp;when&nbsp;FileIsEnding&nbsp;equals&nbsp;true,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;even&nbsp;if&nbsp;there&nbsp;is&nbsp;no&nbsp;trailing&nbsp;'\n'&nbsp;character</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileIsLineEnding</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">))&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lineCount</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">lineCount</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Below are the logs for the file </span><span class="f_Text" style="font-style: italic;">filetxt</span><span class="f_Text"> after the first and second run of the script. First one first:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">first&nbsp;run</span>
+<br><span class="f_CodeExample">&nbsp;*&nbsp;Phase&nbsp;II.&nbsp;Text&nbsp;file</span>
+<br><span class="f_CodeExample">FileOpen(filetxt,FILE_CSV|FILE_WRITE|FILE_READ,',')=1&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileWriteString(handle,content)=44&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileSeek(handle,0,SEEK_SET)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:0,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileReadString(handle)=08&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:8,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileReadString(handle)=abc&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:18,&nbsp;F:false,&nbsp;L:true</span>
+<br><span class="f_CodeExample">FileReadString(handle)=37&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:24,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileReadString(handle)=def&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:34,&nbsp;F:false,&nbsp;L:true</span>
+<br><span class="f_CodeExample">FileReadString(handle)=96&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:40,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileReadString(handle)=ghi&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:46,&nbsp;F:true,&nbsp;L:true</span>
+<br><span class="f_CodeExample">lineCount=3&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">And here is the second one:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">second&nbsp;run</span>
+<br><span class="f_CodeExample">&nbsp;*&nbsp;Phase&nbsp;II.&nbsp;Text&nbsp;file</span>
+<br><span class="f_CodeExample">FileOpen(filetxt,FILE_CSV|FILE_WRITE|FILE_READ,',')=1&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileWriteString(handle,content)=44&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileSeek(handle,0,SEEK_SET)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:0,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileReadString(handle)=34&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:8,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileReadString(handle)=abc&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:18,&nbsp;F:false,&nbsp;L:true</span>
+<br><span class="f_CodeExample">FileReadString(handle)=20&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:24,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileReadString(handle)=def&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:34,&nbsp;F:false,&nbsp;L:true</span>
+<br><span class="f_CodeExample">FileReadString(handle)=02&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:40,&nbsp;F:false,&nbsp;L:false</span>
+<br><span class="f_CodeExample">FileReadString(handle)=ghi&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">P:46,&nbsp;F:true,&nbsp;L:true</span>
+<br><span class="f_CodeExample">lineCount=3&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As you can see, the file does not change in size, but different numbers are written at the same offsets. Because this CSV file has two columns, after every second value we read, we see an EOL flag (&quot;L:true&quot;) cocked.</span></p>
+<p class="p_Text"><span class="f_Text">The number of detected lines is 3, despite the fact that there are only 2 newline characters in the file: the last (third) line ends with the file.</span></p>
+<p class="p_Text"><span class="f_Text">Finally, the last test scenario uses the file </span><span class="f_Text" style="font-style: italic;">file100</span><span class="f_Text"> (MQL5Book/k100.raw) to move the pointer past the end of the file (to the mark of 1000000 bytes), and thereby increase its size (reserves disk space for potential future write operations).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;*&nbsp;Phase&nbsp;III.&nbsp;Allocate&nbsp;large&nbsp;file&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file100</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_BIN</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FILE_WRITE</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSeek</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1000000</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SEEK_END</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;to&nbsp;change&nbsp;the&nbsp;size,&nbsp;you&nbsp;need&nbsp;to&nbsp;write&nbsp;at&nbsp;least&nbsp;something</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileWriteInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0xFF</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileTell</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">FileClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The log output for this script does not change from run to run, however, the random data that ends up in the space allocated for the file may differ (its contents are not shown here: use an external binary viewer).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;*&nbsp;Phase&nbsp;III.&nbsp;Allocate&nbsp;large&nbsp;file</span>
+<br><span class="f_CodeExample">FileOpen(file100,FILE_BIN|FILE_WRITE)=1&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileSeek(handle,1000000,SEEK_END)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileWriteInteger(handle,0xFF,1)=1&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileTell(handle)=1000001&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

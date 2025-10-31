@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.8.7 Client programs for echo and chat services in MQL5</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_8_project.htm"> 7.8 Projects </a>/ 7.8.7 Client programs for echo and chat services in MQL5
+          </td>
+          <td width="70" align="right">
+          <a href="7_8_6_project_websocket_mql5.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_8_8_project_trade_signal_server.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.8.7 Client programs for echo and chat services in MQL5</span></p>
+<p class="p_Text"><span class="f_Text">Let's write a simple script to connect to the echo service </span><span class="f_Text" style="font-style: italic;">MQL5/Experts/MQL5Book/p7/wsEcho/wsecho.mq5</span><span class="f_Text"> (note that this is a script, but we placed it inside the folder </span><span class="f_Text" style="font-style: italic;">MQL5/Experts/MQL5Book/p7/</span><span class="f_Text">, making it a single container for web-related MQL programs, since all subsequent examples will be Experts Advisors). Since in this chapter, we are considering the creation of software complexes within projects, we will design the script as part of an mqproj project, which will also include the server component.</span></p>
+<p class="p_Text"><span class="f_Text">The input parameters of the script allow you to specify the address of the service and the text of the message. The default is an unsecured connection. If you are going to launch the server </span><span class="f_Text" style="font-style: italic;">wsecho.js</span><span class="f_Text"> with TLS support, you need to change the protocol to the secure </span><span class="f_Text" style="font-style: italic;">wss</span><span class="f_Text">. Keep in mind that establishing a secure connection takes longer (by a couple of seconds) than usual.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Server</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ws://localhost:9000/&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Message</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;My&nbsp;outbound&nbsp;message&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">MQL5Book</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">AutoPtr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">MQL5Book</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">ws</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">wsclient</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function, we create an instance of the WebSocket client (</span><span class="f_Text" style="font-style: italic;">wss</span><span class="f_Text">) for the given address and call the </span><span class="f_Text" style="font-style: italic;">open</span><span class="f_Text"> method. In case of a successful connection, we wait for a welcome message from the service by calling </span><span class="f_Text" style="font-style: italic;">wss.readMessage</span><span class="f_Text"> in blocking mode (wait up to 5 seconds, by default). We use an autopointer on the resulting object so as not to call </span><span class="f_Text" style="font-style: italic;">delete</span><span class="f_Text"> manually at the end.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;\n&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WebSocketClient</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #ff0000;">Hybi</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Server</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Opening...&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">open</span><span class="f_CodeExample">())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Waiting&nbsp;for&nbsp;welcome&nbsp;message&nbsp;(if&nbsp;any)&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">AutoPtr</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">IWebSocketMessage</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">welcome</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">readMessage</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">WebSocketClient</span><span class="f_Text"> class contains event handler stubs, including the simple method </span><span class="f_Text" style="font-style: italic;">onMessage</span><span class="f_Text">, which will print the greeting to the log.</span></p>
+<p class="p_Text"><span class="f_Text">Then we send our message and again wait for a response from the server. The echo message will also be logged.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Sending&nbsp;message...&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">send</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Message</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Receiving&nbsp;echo...&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">AutoPtr</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">IWebSocketMessage</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">echo</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">readMessage</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, we close the connection.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">isConnected</span><span class="f_CodeExample">())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Closing...&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Based on the script file, let's create a project file (</span><span class="f_Text" style="font-style: italic;">wsecho.mqproj</span><span class="f_Text">). We fill in the project properties with the version number (1.0), copyright, and description. Let's add echo service server files to the </span><span class="f_Text" style="font-style: italic;">Settings and Files</span><span class="f_Text"> branch (this will at least remind the developer that there is a test server). After compilation, dependencies (header files) will appear in the hierarchy.</span></p>
+<p class="p_Text"><span class="f_Text">Everything should look like in the screenshot below.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Echo service project, client script and server" title="Echo service project, client script and server" width="600" height="358" style="margin:0 auto 0 auto;width:600px;height:358px;border:none" src="wsechopr.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Echo service project, client script and server</span></p>
+<p class="p_Text"><span class="f_Text">If the script was located inside the folder </span><span class="f_Text" style="font-style: italic;">Shared Projects</span><span class="f_Text">, for example, in </span><span class="f_Text" style="font-style: italic;">MQL5/Shared Projects/MQL5Book/wsEcho/</span><span class="f_Text">, then after successful compilation, its ex5 file would be automatically moved to the folder </span><span class="f_Text" style="font-style: italic;">MQL5/Scripts/Shared Projects/MQL5Book/wsEcho/</span><span class="f_Text">, and the corresponding entry would be displayed in the compilation log. This is the standard behavior for compiling any MQL programs in shared projects.</span></p>
+<p class="p_Text"><span class="f_Text">In all examples of this chapter, do not forget to start the server before testing the MQL script. In this case, run the command: </span><span class="f_Text" style="font-style: italic;">node.exe wsecho.js</span><span class="f_Text"> while in the </span><span class="f_Text" style="font-style: italic;">web</span><span class="f_Text"> folder.</span></p>
+<p class="p_Text"><span class="f_Text">Next, let's run the script </span><span class="f_Text" style="font-style: italic;">wsecho.ex5</span><span class="f_Text">. The log will show the actions that are taking place, as well as the message notifications.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Opening...</span>
+<br><span class="f_CodeExample">Connecting&nbsp;to&nbsp;localhost:9000</span>
+<br><span class="f_CodeExample">Buffer:&nbsp;'HTTP/1.1&nbsp;101&nbsp;Switching&nbsp;Protocols</span>
+<br><span class="f_CodeExample">Upgrade:&nbsp;websocket</span>
+<br><span class="f_CodeExample">Connection:&nbsp;Upgrade</span>
+<br><span class="f_CodeExample">Sec-WebSocket-Accept:&nbsp;mIpas63g5xGMqJcKtreHKpSbY1w=</span>
+<br><span class="f_CodeExample">'</span>
+<br><span class="f_CodeExample">Headers:&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,1]</span>
+<br><span class="f_CodeExample">[0,]&nbsp;&quot;upgrade&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;websocket&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">[1,]&nbsp;&quot;connection&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Upgrade&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">[2,]&nbsp;&quot;sec-websocket-accept&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;mIpas63g5xGMqJcKtreHKpSbY1w=&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&gt;&nbsp;Connected&nbsp;ws://localhost:9000/</span>
+<br><span class="f_CodeExample">Waiting&nbsp;for&nbsp;welcome&nbsp;message&nbsp;(if&nbsp;any)</span>
+<br><span class="f_CodeExample">&nbsp;&gt;&nbsp;Message&nbsp;ws://localhost:9000/&nbsp;server#Hello,&nbsp;user1</span>
+<br><span class="f_CodeExample">Sending&nbsp;message...</span>
+<br><span class="f_CodeExample">Receiving&nbsp;echo...</span>
+<br><span class="f_CodeExample">&nbsp;&gt;&nbsp;Message&nbsp;ws://localhost:9000/&nbsp;user1#My&nbsp;outbound&nbsp;message</span>
+<br><span class="f_CodeExample">Closing...</span>
+<br><span class="f_CodeExample">Close&nbsp;requested</span>
+<br><span class="f_CodeExample">Waiting...</span>
+<br><span class="f_CodeExample">SocketRead&nbsp;failed:&nbsp;5273&nbsp;Available:&nbsp;1</span>
+<br><span class="f_CodeExample">&nbsp;&gt;&nbsp;Disconnected&nbsp;ws://localhost:9000/</span>
+<br><span class="f_CodeExample">Server&nbsp;close&nbsp;ack</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The above HTTP headers are the server's response during the handshake process. If we look into the console window where the server is running, we will find the HTTP headers received by the server from our client.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Echo service server log" title="Echo service server log" width="540" height="170" style="margin:0 auto 0 auto;width:540px;height:170px;border:none" src="wsechott.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Echo service server log</span></p>
+<p class="p_Text"><span class="f_Text">Also, the user's connection, message, and disconnection are indicated here.</span></p>
+<p class="p_Text"><span class="f_Text">Let's do a similar job for the chat service: create a WebSocket client in MQL5, a project for it, and test it. This time the type of the client program will be an Expert Advisor because the chat needs support for interactive events from the keyboard on the chart. The Expert Advisor is attached to the book in a folder </span><span class="f_Text" style="font-style: italic;">MQL5/MQL5Book/p7/wsChat/wschat.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">To demonstrate the technology of receiving events in handler methods, let's define our own class </span><span class="f_Text" style="font-style: italic;">MyWebSocket</span><span class="f_Text">, derived from </span><span class="f_Text" style="font-style: italic;">WebSocketClient</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MyWebSocket</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WebSocketClient</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #ff0000;">Hybi</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MyWebSocket</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">address</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">compress</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">):</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WebSocketClient</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">address</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">compress</span><span class="f_CodeExample">)&nbsp;{&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*&nbsp;void&nbsp;onConnected()&nbsp;override&nbsp;{&nbsp;}&nbsp;*/</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">onDisconnect</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;we&nbsp;can&nbsp;do&nbsp;something&nbsp;else&nbsp;and&nbsp;call&nbsp;(or&nbsp;not&nbsp;call)&nbsp;the&nbsp;legacy&nbsp;code</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WebSocketClient</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #ff0000;">Hybi</span><span class="f_CodeExample">&gt;::</span><span class="f_CodeExample" style="color: #333333;">onDisconnect</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">onMessage</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">IWebSocketMessage</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">msg</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;TODO:&nbsp;we&nbsp;could&nbsp;truncate&nbsp;copies&nbsp;of&nbsp;our&nbsp;own&nbsp;messages,</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;but&nbsp;they&nbsp;are&nbsp;left&nbsp;for&nbsp;debugging</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Alert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">msg</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getString</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">delete</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">msg</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When a message is received, we will display it not in the log, but as an alert, after which the object should be deleted.</span></p>
+<p class="p_Text"><span class="f_Text">In the global context, we describe the object of our </span><span class="f_Text" style="font-style: italic;">wss</span><span class="f_Text"> class and the </span><span class="f_Text" style="font-style: italic;">message</span><span class="f_Text"> string where the user input from the keyboard will be accumulated.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">MyWebSocket</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Server</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> function contains the necessary preparation, in particular, starts a timer and opens a connection.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartSetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_QUICK_NAVIGATION</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EventSetTimer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">setTimeOut</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Opening...&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">open</span><span class="f_CodeExample">()&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_SUCCEEDED</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_FAILED</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The timer is needed to check for new messages from other users.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTimer</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">checkMessages</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;use&nbsp;a&nbsp;non-blocking&nbsp;check&nbsp;in&nbsp;the&nbsp;timer</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnChartEvent</span><span class="f_Text"> handler, we respond to keystrokes: all alphanumeric keys are translated into characters and attached to the </span><span class="f_Text" style="font-style: italic;">message</span><span class="f_Text"> string. If necessary, you can press </span><span class="f_Text" style="font-style: italic;">Backspace</span><span class="f_Text"> to remove the last character. All typed text is updated in the chart comment. When the message is complete, press </span><span class="f_Text" style="font-style: italic;">Enter</span><span class="f_Text"> to send it to the server.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnChartEvent</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">lparam</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">dparam</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">sparam</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHARTEVENT_KEYDOWN</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">lparam</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">VK_RETURN</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">longmessage</span><span class="f_CodeExample">&nbsp;=&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;long&quot;</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">send</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">longmessage</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;bye&quot;</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">send</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">lparam</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">VK_BACK</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringSetLength</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">)&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ResetLastError</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">short</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TranslateKey</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">lparam</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ShortToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If we enter the text &quot;long&quot;, the program will send a specially prepared rather long text. If the message text is &quot;bye&quot;, the program closes the connection. Also, the connection will be closed when the program exits.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnDeinit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">isConnected</span><span class="f_CodeExample">())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Closing...&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wss</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's create a project for the Expert Advisor (file </span><span class="f_Text" style="font-style: italic;">wschat.mqproj</span><span class="f_Text">), fill in its properties, and add the backend to the branch </span><span class="f_Text" style="font-style: italic;">Settings and Files</span><span class="f_Text">. This time we will show how the project file looks from the inside. In the mqproj file, the </span><span class="f_Text" style="font-style: italic;">Dependencies</span><span class="f_Text"> branch is stored in the &quot;files&quot; property, and the </span><span class="f_Text" style="font-style: italic;">Settings and Files</span><span class="f_Text"> branch is in the &quot;tester&quot; property.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;platform&quot;&nbsp;&nbsp;&nbsp;&nbsp;:&quot;mt5&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;program_type&quot;:&quot;expert&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;copyright&quot;&nbsp;&nbsp;&nbsp;:&quot;Copyright&nbsp;2022,&nbsp;MetaQuotes&nbsp;Ltd.&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;version&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&quot;1.0&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;description&quot;&nbsp;:&quot;WebSocket-client&nbsp;for&nbsp;chat-service.\r\nType&nbsp;and&nbsp;send&nbsp;text&nbsp;messages&nbsp;for&nbsp;all&nbsp;connected&nbsp;users.\r\nShow&nbsp;alerts&nbsp;with&nbsp;messages&nbsp;from&nbsp;others.&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;optimize&quot;&nbsp;&nbsp;&nbsp;&nbsp;:&quot;1&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;fpzerocheck&quot;&nbsp;:&quot;1&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;tester_no_cache&quot;:&quot;0&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;tester_everytick_calculate&quot;:&quot;0&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;unicode_character_set&quot;:&quot;0&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;static_libraries&quot;:&quot;0&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;files&quot;:</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;[</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;wschat.mq5&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;compile&quot;:true,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:true</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;MQL5\\Include\\MQL5Book\\ws\\wsclient.mqh&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;compile&quot;:false,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:false</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;MQL5\\Include\\MQL5Book\\URL.mqh&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;compile&quot;:false,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:false</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;MQL5\\Include\\MQL5Book\\ws\\wsframe.mqh&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;compile&quot;:false,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:false</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;MQL5\\Include\\MQL5Book\\ws\\wstools.mqh&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;compile&quot;:false,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:false</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;MQL5\\Include\\MQL5Book\\ws\\wsinterfaces.mqh&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;compile&quot;:false,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:false</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;MQL5\\Include\\MQL5Book\\ws\\wsmessage.mqh&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;compile&quot;:false,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:false</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;MQL5\\Include\\MQL5Book\\ws\\wstransport.mqh&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;compile&quot;:false,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:false</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;MQL5\\Include\\MQL5Book\\ws\\wsprotocol.mqh&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;compile&quot;:false,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:false</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;MQL5\\Include\\VirtualKeys.mqh&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;compile&quot;:false,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:false</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;],</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&quot;tester&quot;:</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;[</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;type&quot;:&quot;file&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;..\\Web\\MQL5Book.crt&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:true</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;type&quot;:&quot;file&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;..\\Web\\MQL5Book.key&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:true</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;type&quot;:&quot;file&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;..\\Web\\wschat.htm&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:true</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;type&quot;:&quot;file&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;..\\Web\\wschat.js&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:true</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;},</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;{</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;type&quot;:&quot;file&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;path&quot;:&quot;..\\Web\\wschat_client.js&quot;,</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;relative_to_project&quot;:true</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;}</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;]</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If the Expert Advisor were inside the </span><span class="f_Text" style="font-style: italic;">Shared Projects</span><span class="f_Text"> folder, for example, in </span><span class="f_Text" style="font-style: italic;">MQL5/Shared Projects/MQL5Book/wsChat/</span><span class="f_Text">, after successful compilation, its ex5 file would be automatically moved to the folder </span><span class="f_Text" style="font-style: italic;">MQL5/Experts/Shared Projects/MQL5Book/wsChat/</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Starting the server </span><span class="f_Text" style="font-style: italic;">node.exe wschat.js</span><span class="f_Text">. Now you can run a couple of copies of the Expert Advisor on different charts. Basically, the service involves &quot;communication&quot; between different terminals and even different computers, but you can also test it from one terminal.</span></p>
+<p class="p_Text"><span class="f_Text">Here is an example of communication between the EURUSD and GBPUSD charts.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Opening...</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Connecting&nbsp;to&nbsp;localhost:9000</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Buffer:&nbsp;'HTTP/1.1&nbsp;101&nbsp;Switching&nbsp;Protocols</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Upgrade:&nbsp;websocket</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Connection:&nbsp;Upgrade</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Sec-WebSocket-Accept:&nbsp;Dg+aQdCBwNExE5mEQsfk5w9J+uE=</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;'</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Headers:&nbsp;</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,1]</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;[0,]&nbsp;&quot;upgrade&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;websocket&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;[1,]&nbsp;&quot;connection&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Upgrade&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;[2,]&nbsp;&quot;sec-websocket-accept&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Dg+aQdCBwNExE5mEQsfk5w9J+uE=&quot;</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&gt;&nbsp;Connected&nbsp;ws://localhost:9000/</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Alert:&nbsp;server#Hello,&nbsp;user1</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Opening...</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Connecting&nbsp;to&nbsp;localhost:9000</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Buffer:&nbsp;'HTTP/1.1&nbsp;101&nbsp;Switching&nbsp;Protocols</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Upgrade:&nbsp;websocket</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Connection:&nbsp;Upgrade</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Sec-WebSocket-Accept:&nbsp;NZENnc8p05T4amvngeop/e/+gFw=</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;'</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Headers:&nbsp;</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,1]</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;[0,]&nbsp;&quot;upgrade&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;websocket&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;[1,]&nbsp;&quot;connection&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Upgrade&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;[2,]&nbsp;&quot;sec-websocket-accept&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;NZENnc8p05T4amvngeop/e/+gFw=&quot;</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&gt;&nbsp;Connected&nbsp;ws://localhost:9000/</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Alert:&nbsp;server#Hello,&nbsp;user2</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Alert:&nbsp;user1#I'm&nbsp;typing&nbsp;this&nbsp;on&nbsp;EURUSD&nbsp;chart</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Alert:&nbsp;user1#I'm&nbsp;typing&nbsp;this&nbsp;on&nbsp;EURUSD&nbsp;chart</span>
+<br><span class="f_CodeExample">(GBPUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Alert:&nbsp;user2#Got&nbsp;it&nbsp;on&nbsp;GBPUSD&nbsp;chart!</span>
+<br><span class="f_CodeExample">(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Alert:&nbsp;user2#Got&nbsp;it&nbsp;on&nbsp;GBPUSD&nbsp;chart!</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Since our messages are sent to everyone, including the sender, they are duplicated in the log, but on different charts.</span></p>
+<p class="p_Text"><span class="f_Text">Communication is visible on the server side as well.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Chat service server log" title="Chat service server log" width="540" height="270" style="margin:0 auto 0 auto;width:540px;height:270px;border:none" src="wschattt.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Chat service server log</span></p>
+<p class="p_Text"><span class="f_Text">Now we have all the technical components for organizing the trading signals service.</span></p>
+
+</div>
+
+</body>
+</html>

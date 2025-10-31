@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.7.4 Specifics of connecting DLL libraries</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_7_libraries.htm"> 7.7 Development and connection of binary format libraries </a>/ 7.7.4 DLL connection specifics
+          </td>
+          <td width="70" align="right">
+          <a href="7_7_3_libraries_path_lookup.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_7_5_libraries_class_template.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.7.4 DLL connection specifics</span></p>
+<p class="p_Text"><span class="f_Text">The following entities cannot be passed as parameters into functions imported from a DLL:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Classes (objects and pointers to them)</span></li>
+<li class="p_li"><span class="f_li">Structures containing dynamic arrays, strings, classes, and other complex structures</span></li>
+<li class="p_li"><span class="f_li">Arrays of strings or the above complex objects</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">All simple type parameters are passed by value unless explicitly stated that they are passed by reference. When passing a string, the buffer address of the copied string is passed; if the string is passed by reference, then the buffer address of this particular string is passed to the function imported from the DLL without copying.</span></p>
+<p class="p_Text"><span class="f_Text">When passing an array to DLL, the address of the data buffer beginning is always passed (regardless of the <a href="4_3_8_arrays_as_series.htm" class="topiclink">AS_SERIES</a> flag). The function inside the DLL knows nothing about the AS_SERIES flag, the passed array is an array of unknown length, and an additional parameter is needed to specify its size.</span></p>
+<p class="p_Text"><span class="f_Text">When describing the prototype of an imported function, you can use parameters with default values.</span></p>
+<p class="p_Text"><span class="f_Text">When importing DLLs, you should give permission to use them in the properties of a specific MQL program or in the general settings of the terminal. In this regard, in the <a href="4_9_5_env_permissions.htm" class="topiclink">Permissions</a> section, we presented the script </span><span class="f_Text" style="font-style: italic;">EnvPermissions.mq5</span><span class="f_Text">, which, in particular, has a function for reading the contents of the Windows system clipboard using system DLLs. This function was provided optionally: its call was commented out because we did not know how to work with libraries. Now, we will transfer it to a separate script </span><span class="f_Text" style="font-style: italic;">LibClipboard.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Running the script may prompt the user for confirmation (since DLLs are disabled by default for security reasons). If necessary, enable the option in the dialog, on the tab with dependencies.</span></p>
+<p class="p_Text"><span class="f_Text">Header files are provided in the directory </span><span class="f_Text" style="font-style: italic;">MQL5/Include/WinApi</span><span class="f_Text">, which also includes </span><span class="f_Text" style="font-style: italic;">#import</span><span class="f_Text"> directives for much-needed system functions such as clipboard management (</span><span class="f_Text" style="font-style: italic;">openclipboard</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">GetClipboardData</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">CloseClipboard</span><span class="f_Text">), memory management (</span><span class="f_Text" style="font-style: italic;">GlobalLock</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">GlobalUnlock</span><span class="f_Text">), Windows windows, and many others. We will include only two files: </span><span class="f_Text" style="font-style: italic;">winuser.mqh</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">winbase.mqh</span><span class="f_Text">. They contain the required import directives and, indirectly, through the connection to </span><span class="f_Text" style="font-style: italic;">windef.mqh</span><span class="f_Text">, Windows term macros (HANDLE and PVOID):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PVOID</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#import</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;user32.dll&quot;</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OpenClipboard</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">wnd_new_owner</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #333333;">HANDLE</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetClipboardData</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">format</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CloseClipboard</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#import</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#import</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;kernel32.dll&quot;</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample" style="color: #333333;">PVOID</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GlobalLock</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">mem</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GlobalUnlock</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">mem</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#import</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In addition, we import the </span><span class="f_Text" style="font-style: italic;">lstrcatW</span><span class="f_Text"> function from the </span><span class="f_Text" style="font-style: italic;">kernel32.dll</span><span class="f_Text"> library because we are not satisfied with its description in </span><span class="f_Text" style="font-style: italic;">winbase.mqh</span><span class="f_Text"> provided by default: this gives the function a second prototype, suitable for passing the PVOID value in the first parameter.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">WinApi</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">winuser</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">WinApi</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">winbase</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CF_UNICODETEXT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">13</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;one&nbsp;of&nbsp;the&nbsp;standard&nbsp;exchange&nbsp;formats&nbsp;-&nbsp;Unicode&nbsp;text</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#import</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;kernel32.dll&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lstrcatW</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PVOID</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">string1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">string2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#import</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The essence of working with the clipboard is to &quot;capture&quot; access to it using </span><span class="f_Text" style="font-style: italic;">OpenClipboard</span><span class="f_Text">, after which you should get a data handle (</span><span class="f_Text" style="font-style: italic;">GetClipboardData</span><span class="f_Text">), convert it to a memory address (</span><span class="f_Text" style="font-style: italic;">GlobalLock</span><span class="f_Text">), and finally copy the data from system memory to your variable (</span><span class="f_Text" style="font-style: italic;">lstrcatW</span><span class="f_Text">). Next, the occupied resources are released in reverse order (</span><span class="f_Text" style="font-style: italic;">GlobalUnlock</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">CloseClipboard</span><span class="f_Text">).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ReadClipboard</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">OpenClipboard</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetClipboardData</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">CF_UNICODETEXT</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PVOID</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GlobalLock</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lstrcatW</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Clipboard:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GlobalUnlock</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CloseClipboard</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Try copying the text to the clipboard and then running the script: the contents of the clipboard should be logged. If the buffer contains an image or other data that does not have a textual representation, the result will be empty.</span></p>
+<p class="p_Text"><span class="f_Text">Functions imported from a DLL follow the binary executable linking convention of Windows API functions. To ensure this convention, compiler-specific keywords are used in the source text of programs, such as, for example, </span><span class="f_Text" style="font-style: italic;">__stdcall</span><span class="f_Text"> in C or C++. These linking rules imply the following:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">The calling function (in our case, the MQL program) must see the prototype of the called (imported from the DLL) function in order to correctly stack the parameters on the stack.</span></li>
+<li class="p_li"><span class="f_li">The calling function (in our case, the MQL program) stacks parameters in reverse order, from right to left – this is the order in which the imported function reads the parameters passed to it.</span></li>
+<li class="p_li"><span class="f_li">Parameters are passed by value, except for those that are explicitly passed by reference (in our case, strings).</span></li>
+<li class="p_li"><span class="f_li">The imported function reads the parameters passed to it and clears the stack.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Here is another example of a script that uses a DLL – </span><span class="f_Text" style="font-style: italic;">LibWindowTree.mq5</span><span class="f_Text">. Its task is to go through the tree of all terminal windows and get their class names (according to registration in the system using WinApi) and titles. By windows here we mean the standard elements of the Windows interface, which also include controls. This procedure can be useful for automating work with the terminal: emulating button presses in windows, switching modes that are not available via MQL5, and so on.</span></p>
+<p class="p_Text"><span class="f_Text">To import the required system functions, let's include the header file </span><span class="f_Text" style="font-style: italic;">WinUser.mqh</span><span class="f_Text"> that uses </span><span class="f_Text" style="font-style: italic;">user32.dll</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">WinAPI</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">WinUser</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">You can get the name of the window class and its title using the functions </span><span class="f_Text" style="font-style: italic;">GetClassNameW</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">GetWindowTextW</span><span class="f_Text">: they are called in the function </span><span class="f_Text" style="font-style: italic;">GetWindowData</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetWindowData</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">clazz</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">title</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ushort</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">receiver</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #ff0000;">MAX_PATH</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">GetWindowTextW</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">receiver</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MAX_PATH</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">title</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ShortArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">receiver</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">GetClassNameW</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">receiver</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MAX_PATH</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clazz</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ShortArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">receiver</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The 'W' suffix in function names means that they are intended for Unicode format strings (2 bytes per character), which are the most commonly used today (the 'A' suffix for ANSI strings makes sense to use only for backward compatibility with old libraries).</span></p>
+<p class="p_Text"><span class="f_Text">Given some initial handle to a Windows window, traversing up the hierarchy of its parent windows is provided by the function </span><span class="f_Text" style="font-style: italic;">TraverseUp</span><span class="f_Text">: its operation is based on the system function </span><span class="f_Text" style="font-style: italic;">GetParent</span><span class="f_Text">. For each found window, </span><span class="f_Text" style="font-style: italic;">TraverseUp</span><span class="f_Text"> calls </span><span class="f_Text" style="font-style: italic;">GetWindowData</span><span class="f_Text"> and outputs the resulting class name and title to the log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TraverseUp</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clazz</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">title</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetWindowData</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clazz</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">title</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;'&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clazz</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;'&nbsp;'&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">title</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;'&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetParent</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Traversing deep into the hierarchy is performed by the function </span><span class="f_Text" style="font-style: italic;">TraverseDown</span><span class="f_Text">: the system function </span><span class="f_Text" style="font-style: italic;">FindWindowExW</span><span class="f_Text"> is used to enumerate child windows.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TraverseDown</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">level</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;request&nbsp;first&nbsp;child&nbsp;window&nbsp;(if&nbsp;any)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">child</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FindWindowExW</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">child</span><span class="f_CodeExample">)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;oop&nbsp;while&nbsp;there&nbsp;are&nbsp;child&nbsp;windows</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clazz</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">title</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetWindowData</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">child</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clazz</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">title</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%*s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">level</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;'&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clazz</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;'&nbsp;'&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">title</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;'&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TraverseDown</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">child</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">level</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;requesting&nbsp;next&nbsp;child&nbsp;window</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">child</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FindWindowExW</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">child</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">child</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function, we find the main terminal window by traversing the windows up from the handle of the current chart on which the script is running. Then we build the entire tree of terminal windows.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">HANDLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TraverseUp</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_WINDOW_HANDLE</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Main&nbsp;window&nbsp;handle:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TraverseDown</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We can also search for the required windows by class name and/or title, and therefore the main window could be immediately obtained by calling </span><span class="f_Text" style="font-style: italic;">FindWindowW</span><span class="f_Text">, since its attributes are known.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FindWindowW</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;MetaQuotes::MetaTrader::5.00&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">);&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here is an example log (snippet):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;'AfxFrameOrView140su'&nbsp;''</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;'Afx:000000013F110000:b:0000000000010003:0000000000000006:00000000000306BA'&nbsp;'EURUSD,H1'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;'MDIClient'&nbsp;''</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;'MetaQuotes::MetaTrader::5.00'&nbsp;'12345678&nbsp;-&nbsp;MetaQuotes-Demo:&nbsp;Demo&nbsp;Account&nbsp;-&nbsp;Hedge&nbsp;-&nbsp;...'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Main&nbsp;window&nbsp;handle:&nbsp;263576</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;'msctls_statusbar32'&nbsp;'For&nbsp;Help,&nbsp;press&nbsp;F1'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;'AfxControlBar140su'&nbsp;'Standard'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;'ToolbarWindow32'&nbsp;'Timeframes'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;'ToolbarWindow32'&nbsp;'Line&nbsp;Studies'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;'ToolbarWindow32'&nbsp;'Standard'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;'AfxControlBar140su'&nbsp;'Toolbox'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;'Afx:000000013F110000:b:0000000000010003:0000000000000000:0000000000000000'&nbsp;'Toolbox'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'AfxWnd140su'&nbsp;''</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'ToolbarWindow32'&nbsp;''</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;'MDIClient'&nbsp;''</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;'Afx:000000013F110000:b:0000000000010003:0000000000000006:00000000000306BA'&nbsp;'EURUSD,H1'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'AfxFrameOrView140su'&nbsp;''</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Edit'&nbsp;'0.00'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;'Afx:000000013F110000:b:0000000000010003:0000000000000006:00000000000306BA'&nbsp;'XAUUSD,Daily'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'AfxFrameOrView140su'&nbsp;''</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Edit'&nbsp;'0.00'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;'Afx:000000013F110000:b:0000000000010003:0000000000000006:00000000000306BA'&nbsp;'EURUSD,M15'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'AfxFrameOrView140su'&nbsp;''</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Edit'&nbsp;'0.00'</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

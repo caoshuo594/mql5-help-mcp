@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.4.3 Two types of indicators: for main window and subwindow</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_4_indicators_make.htm"> 5.4 Creating custom indicators </a>/ 5.4.3 Two types of indicators: for main window and subwindow
+          </td>
+          <td width="70" align="right">
+          <a href="5_4_2_indicators_oncalculate.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_4_4_indicators_buffers_plots.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.4.3 Two types of indicators: for main window and subwindow</span></p>
+<p class="p_Text"><span class="f_Text">As you know, indicators in MetaTrader 5 can display their lines in two places: in the main chart window on top of the quotes or in a separate window created below the price chart. These two modes are mutually exclusive: each indicator is designed either for the main window or for a subwindow, but cannot combine both methods.</span></p>
+<p class="p_Text"><span class="f_Text">There are several alternative solutions for the cases when the program is required to visualize data in both windows. For example, a project can be implemented in the form of two interacting indicators (the technical side of the interaction remains open: these can be <a href="7_1_resources.htm" class="topiclink">resources</a>, <a href="4_5_files.htm" class="topiclink">files</a>, <a href="7_6_sqlite.htm" class="topiclink">DBMS</a>, or shared memory accessed via a DLL). Another approach involves using indicator buffers in one of the windows, for example, in the bottom panel, and performing visualization on the main chart using <a href="5_8_objects.htm" class="topiclink">graphic objects</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Multiple indicators can be applied both in the main window and in the subwindow. If the indicator is designed to work in a separate window, then dragging it with the mouse from the Navigator to the main window will automatically create a new window for this indicator. However, if the window already has a subwindow with another indicator, then the new one can be dragged to the same place, thereby aligning two or more indicators. In this case, various modes of scaling indicators in one window are possible. By default, the constructions of each indicator are scaled automatically and independently of each other to the full height of the panel, but this can be changed (see example </span><span class="f_Text" style="font-style: italic;">SubScaler.mq5</span><span class="f_Text"> in the <a href="5_9_4_events_keyboard.htm" class="topiclink">section about keyboard events</a>).</span></p>
+<p class="p_Text"><span class="f_Text">The indicator display window is selected using one of two compilation directives.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_chart_window</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;display&nbsp;the&nbsp;indicator&nbsp;in&nbsp;the&nbsp;chart&nbsp;window</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_separate_window</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;display&nbsp;the&nbsp;indicator&nbsp;in&nbsp;a&nbsp;separate&nbsp;window</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The indicator developer should insert one of them at the beginning of the source code. If none of the directives is present, the default option will output it to the main window, but the compiler will generate a warning. We saw this in the previous section. In the following examples, we will be sure to indicate </span><span class="f_Text" style="font-style: italic;">#property indicator_chart_window</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">#property indicator_separate_window</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Second compilation warning </span><span class="f_Text" style="font-style: italic;">IndStub.mq5</span><span class="f_Text"> concerned the missing buffers and charts setting. We will deal with them in the next section.</span></p>
+<p class="p_Quote"><span class="f_Quote">The action of the </span><span class="f_Quote" style="font-style: italic;">Apply to</span><span class="f_Quote"> dropdown list in the indicator settings depends on the window it was designed for.</span><br>
+<span class="f_Quote" style="font-style: italic;">&nbsp;</span><br>
+<span class="f_Quote">An indicator for an individual window can be </span><span class="f_Quote" style="font-style: italic;">Applied</span><span class="f_Quote"> to the indicator in the subwindow, but not to the indicator in the main window.</span><br>
+<span class="f_Quote" style="font-style: italic;">&nbsp;</span><br>
+<span class="f_Quote">However, the indicator for the main window can be </span><span class="f_Quote" style="font-style: italic;">Applied to</span><span class="f_Quote"> any indicator, both to the one in the main window and in the subwindow.</span></p>
+
+</div>
+
+</body>
+</html>

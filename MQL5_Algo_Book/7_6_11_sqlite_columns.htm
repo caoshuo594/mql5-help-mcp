@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.6.11 Reading Fields Separately: DatabaseColumn Functions</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_6_sqlite.htm"> 7.6 SQLite database </a>/ 7.6.11 Reading fields separately: DatabaseColumn Functions
+          </td>
+          <td width="70" align="right">
+          <a href="7_6_10_sqlite_read.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_6_12_sqlite_crud_examples.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.6.11 Reading fields separately: DatabaseColumn Functions</span></p>
+<p class="p_Text"><span class="f_Text">As a result of query execution by the </span><span class="f_Text" style="font-style: italic;">DatabaseRead</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">DatabaseReadBind</span><span class="f_Text"> functions, the program gets the opportunity to scroll through the records selected according to the specified conditions. At each iteration, in the internal structures of the SQLite engine, one specific record is allocated, the fields (columns) of which are available through the group of </span><span class="f_Text" style="font-style: italic;">DatabaseColumn</span><span class="f_Text"> functions.</span></p>
+<p class="p_H4"><span class="f_H4">int DatabaseColumnsCount(int request)</span></p>
+<p class="p_Text"><span class="f_Text">Based on the query descriptor, the function returns the number of fields (columns) in the query results. In case of an error, it returns -1.</span></p>
+<p class="p_Text"><span class="f_Text">You can find out the number of fields in the query created in </span><span class="f_Text" style="font-style: italic;"><a href="7_6_7_sqlite_prepare.htm" class="topiclink">DatabasePrepare</a></span><span class="f_Text"> even before calling the </span><span class="f_Text" style="font-style: italic;"><a href="7_6_10_sqlite_read.htm" class="topiclink">DatabaseRead</a></span><span class="f_Text"> function. For other </span><span class="f_Text" style="font-style: italic;">DatabaseColumn </span><span class="f_Text">functions, you should initially call </span><span class="f_Text" style="font-style: italic;">DatabaseRead</span><span class="f_Text"> (at least once). </span></p>
+<p class="p_Text"><span class="f_Text">Using the original number of a field in the query results, the program can find the field name (</span><span class="f_Text" style="font-style: italic;">DatabaseColumnName</span><span class="f_Text">), type (</span><span class="f_Text" style="font-style: italic;">DatabaseColumnType</span><span class="f_Text">), size (</span><span class="f_Text" style="font-style: italic;">DatabaseColumnSize</span><span class="f_Text">), and the value of the corresponding type (each type has its function).</span></p>
+<p class="p_H4"><span class="f_H4">bool DatabaseColumnName(int request, int column, string &amp;name)</span></p>
+<p class="p_Text"><span class="f_Text">The function fills the string parameter passed by reference (</span><span class="f_Text" style="font-style: italic;">name</span><span class="f_Text">) with the name of the column specified by number (</span><span class="f_Text" style="font-style: italic;">column</span><span class="f_Text">) in the query results (</span><span class="f_Text" style="font-style: italic;">request</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">Field numbering starts from 0 and cannot exceed the value of </span><span class="f_Text" style="font-style: italic;">DatabaseColumnsCount() - 1</span><span class="f_Text">. This applies not only to this function but also to all other functions of the section.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> if successful or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> in case of an error.</span></p>
+<p class="p_H4"><span class="f_H4">ENUM_DATABASE_FIELD_TYPE DatabaseColumnType(int request, int column)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabaseColumnType</span><span class="f_Text"> function returns the type of the value in the specified column in the current record of the query results. The possible types are collected in the ENUM_DATABASE_FIELD_TYPE enumeration.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">DATABASE_FIELD_TYPE_INVALID</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Error getting type, error code in </span><span class="f_fortable" style="font-style: italic;">_LastError</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">DATABASE_FIELD_TYPE_INTEGER</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Integer number</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">DATABASE_FIELD_TYPE_FLOAT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Real number</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">DATABASE_FIELD_TYPE_TEXT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">String</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">DATABASE_FIELD_TYPE_BLOB</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Binary data</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">DATABASE_FIELD_TYPE_NULL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Void (special type NULL)</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">More details about SQL types and their correspondence to MQL5 types were described in the section <a href="7_6_2_sqlite_scheme_types.htm" class="topiclink">Structure (schema) of tables: data types and restrictions</a>.</span></p>
+<p class="p_H4"><span class="f_H4">int DatabaseColumnSize(int request, int column)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the size of the value in bytes for the field with the </span><span class="f_Text" style="font-style: italic;">column</span><span class="f_Text"> index in the current record of results of the </span><span class="f_Text" style="font-style: italic;">request</span><span class="f_Text"> query. For example, integer values can be represented by a different number of bytes (we know this from MQL5 types, in particular, </span><span class="f_Text" style="font-style: italic;">short/int/long</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">The next group of functions allows you to get the value of a particular type from the corresponding field of the record. To read values from the next record, you need to call </span><span class="f_Text" style="font-style: italic;">DatabaseRead</span><span class="f_Text"> again.</span></p>
+<p class="p_H4"><span class="f_H4">bool DatabaseColumnText(int request, int column, string &amp;value)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool DatabaseColumnInteger(int request, int column, int &amp;value)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool DatabaseColumnLong(int request, int column, long &amp;value)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool DatabaseColumnDouble(int request, int column, double &amp;value)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool DatabaseColumnBlob(int request, int column, void &amp;data[])</span></p>
+<p class="p_Text"><span class="f_Text">All functions return </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> on success and put the field value in the receiving variable </span><span class="f_Text" style="font-style: italic;">value</span><span class="f_Text">. The only special case is the function </span><span class="f_Text" style="font-style: italic;">DatabaseColumnBlob</span><span class="f_Text">, which passes an array of an arbitrary simple type or simple structures as an output variable. By specifying the </span><span class="f_Text" style="font-style: italic;">uchar[]</span><span class="f_Text"> array as the most versatile option, you can read the byte representation of any value (including binary files marked with the DATABASE_FIELD_TYPE_BLOB type).</span></p>
+<p class="p_Quote"><span class="f_Quote">The SQLite engine does not check that for a column a function corresponding to its type is called. If the types are inadvertently or intentionally different, the system will automatically implicitly convert the field value to the type of the receiving variable.</span></p>
+<p class="p_Text"><span class="f_Text">Now, after getting familiar with the majority of </span><span class="f_Text" style="font-style: italic;">Database</span><span class="f_Text"> functions, we can complete the development of a set of SQL classes in the </span><span class="f_Text" style="font-style: italic;">DBSQLite.mqh</span><span class="f_Text"> file and proceed to practical examples.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.2.1 Managing a subscription to market depth events</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_2_marketbook.htm"> 6.2 Depth of Market </a>/ 6.2.1 Managing subscriptions to Depth of Market events
+          </td>
+          <td width="70" align="right">
+          <a href="6_2_marketbook.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_2_2_marketbook_events.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.2.1 Managing subscriptions to Depth of Market events</span></p>
+<p class="p_Text"><span class="f_Text">The terminal receives the Depth of Market information on a subscription basis: an MQL program must express its intent to receive Depth of Market (order book) events or, conversely, terminate its subscription by calling the appropriate functions, </span><span class="f_Text" style="font-style: italic;">MarketBookAdd</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">MarketBookRelease</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">MarketBookAdd</span><span class="f_Text"> function subscribes to receive notifications about changes in the order book for the specified instrument. Thus, you can subscribe to order books for many instruments, and not just the working instrument of the current chart.</span></p>
+<p class="p_H4"><span class="f_H4">bool MarketBookAdd(const string symbol)</span></p>
+<p class="p_Text"><span class="f_Text">Usually, this function is called from </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> or in the class constructor of a long-lived object. Notifications about the order book change are sent to the program in the form of </span><span class="f_Text" style="font-style: italic;"><a href="6_2_2_marketbook_events.htm" class="topiclink">OnBookEvent</a></span><span class="f_Text"> events, therefore, to process them, the program must have a handler function of the same name.</span></p>
+<p class="p_Text"><span class="f_Text">If the specified symbol was not selected in the Market Watch before calling the function, it will be added to the window automatically.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">MarketBookRelease</span><span class="f_Text"> function unsubscribes from notifications about changes in the specified order book.</span></p>
+<p class="p_H4"><span class="f_H4">bool MarketBookRelease(const string symbol)</span></p>
+<p class="p_Text"><span class="f_Text">As a rule, this function should be called from </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> or from the class destructor of a long-lived object.</span></p>
+<p class="p_Text"><span class="f_Text">Both functions return a value </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> if successful and </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> otherwise.</span></p>
+<p class="p_Text"><span class="f_Text">For all applications running on the same chart, separate subscription counters are maintained by symbols. In other words, there can be several subscriptions to different symbols on the chart, and each of them has its own counter.</span></p>
+<p class="p_Text"><span class="f_Text">Subscription or unsubscription by a single call of any of the functions changes the subscription counter only for a specific symbol, on a specific chart where the program is running. This means that two charts can have subscriptions to </span><span class="f_Text" style="font-style: italic;">OnBookEvent</span><span class="f_Text"> events of the same symbol, but with different values of subscription counters.</span></p>
+<p class="p_Text"><span class="f_Text">The initial value of the subscription counter is zero. On every call of </span><span class="f_Text" style="font-style: italic;">MarketBookAdd</span><span class="f_Text">, the subscription counter for the specified symbol on the given chart is incremented by 1 (the chart symbol and the symbol in </span><span class="f_Text" style="font-style: italic;">MarketBookAdd</span><span class="f_Text"> do not have to match). When calling </span><span class="f_Text" style="font-style: italic;">MarketBookRelease</span><span class="f_Text">, the counter of subscriptions to the specified symbol within the chart decreases by 1.</span></p>
+<p class="p_Text"><span class="f_Text" style="font-style: italic;">OnBookEvent</span><span class="f_Text"> events for any symbol within the chart are generated as long as the subscription counter for this symbol is greater than zero. Therefore, it is important that every MQL program that contains </span><span class="f_Text" style="font-style: italic;">MarketBookAdd</span><span class="f_Text"> calls, upon completion of its work, correctly unsubscribes from receiving events for each symbol using </span><span class="f_Text" style="font-style: italic;">MarketBookRelease</span><span class="f_Text">. For this, you should make sure that the number of </span><span class="f_Text" style="font-style: italic;">MarketBookAdd</span><span class="f_Text"> calls and </span><span class="f_Text" style="font-style: italic;">MarketBookRelease</span><span class="f_Text"> calls match. MQL5 does not allow you to find out the value of the counter.</span></p>
+<p class="p_Text"><span class="f_Text">The first example is a simple bufferless indicator </span><span class="f_Text" style="font-style: italic;">MarketBookAddRelease.mq5</span><span class="f_Text">, which enables a subscription to the order book at the time of launch and disables it when it is unloaded. In the </span><span class="f_Text" style="font-style: italic;">WorkSymbol</span><span class="f_Text"> input parameter, you can specify a symbol to subscribe. If it is left empty (default value), the subscription will be initiated for the working symbol of the current chart.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WorkSymbol</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;WorkSymbol&nbsp;(empty&nbsp;means&nbsp;current&nbsp;chart&nbsp;symbol)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_WorkSymbol</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">WorkSymbol</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WorkSymbol</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringSplit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">_WorkSymbol</span><span class="f_CodeExample">,&nbsp;',',&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">MarketBookAdd</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">])))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;MarketBookAdd(%s)&nbsp;failed&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnCalculate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">[])</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnDeinit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">);&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">MarketBookRelease</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">])))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;MarketBookRelease(%s)&nbsp;failed&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As an additional feature, it is allowed to specify several instruments separated by commas. In this case, a subscription to all will be requested.</span></p>
+<p class="p_Text"><span class="f_Text">When the indicator is launched, a sign of subscription success or an error code is displayed in the log. The indicator then tries to unsubscribe from the events in the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> handler.</span></p>
+<p class="p_Text"><span class="f_Text">With the default settings, on the chart with the symbol for which the order book is available, we will get the following entries in the log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">MarketBookAdd(symbols[i])=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">MarketBookRelease(symbols[i])=true&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If you put the indicator on a chart with a symbol without the order book, we will see error codes.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">MarketBookAdd(symbols[i])=false&nbsp;/&nbsp;BOOKS_CANNOT_ADD(4901)</span>
+<br><span class="f_CodeExample">MarketBookAdd(XPDUSD)&nbsp;failed</span>
+<br><span class="f_CodeExample">MarketBookRelease(symbols[i])=false&nbsp;/&nbsp;BOOKS_CANNOT_DELETE(4902)</span>
+<br><span class="f_CodeExample">MarketBookRelease(XPDUSD)&nbsp;failed</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">You can experiment by specifying in the input parameter </span><span class="f_Text" style="font-style: italic;">WorkSymbol</span><span class="f_Text"> existing or missing characters. We will consider the case of subscribing to order books of several symbols in the next section.</span></p>
+
+</div>
+
+</body>
+</html>

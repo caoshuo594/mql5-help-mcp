@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.2.1 Creating and deleting custom symbols</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_2_custom_symbols.htm"> 7.2 Custom symbols </a>/ 7.2.1 Creating and deleting custom symbols
+          </td>
+          <td width="70" align="right">
+          <a href="7_2_custom_symbols.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_2_2_custom_symbols_properties.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.2.1 Creating and deleting custom symbols</span></p>
+<p class="p_Text"><span class="f_Text">The first two functions you need in order to work with custom symbols are </span><span class="f_Text" style="font-style: italic;">CustomSymbolCreate</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">CustomSymbolDelete</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">bool CustomSymbolCreate(const string name, const string path = &quot;&quot;, const string origin = NULL)</span></p>
+<p class="p_Text"><span class="f_Text">The function creates a custom symbol with the specified name (</span><span class="f_Text" style="font-style: italic;">name</span><span class="f_Text">) in the specified group (</span><span class="f_Text" style="font-style: italic;">path</span><span class="f_Text">) and, if necessary, with the properties of an exemplary symbol – its name can be specified in the parameter </span><span class="f_Text" style="font-style: italic;">origin</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">name</span><span class="f_Text"> parameter should be a simple identifier, without hierarchy. If necessary, one or more required levels of groups (subfolders) should be specified in the parameter </span><span class="f_Text" style="font-style: italic;">path</span><span class="f_Text">, with the delimiter character being a backslash '\' (the forward slash is not supported here, unlike the file system). The backslash must be doubled in literal strings (&quot;\\&quot;).</span></p>
+<p class="p_Text"><span class="f_Text">By default, if the </span><span class="f_Text" style="font-style: italic;">path</span><span class="f_Text"> string is empty (&quot;&quot; or NULL), the symbol is created directly in the </span><span class="f_Text" style="font-style: italic;">Custom</span><span class="f_Text"> folder, which is allocated in the general hierarchy of symbols for user symbols. If the path is filled, it is created inside the </span><span class="f_Text" style="font-style: italic;">Custom</span><span class="f_Text"> folder to the full depth (if there are no corresponding folders yet).</span></p>
+<p class="p_Text"><span class="f_Text">The name of a symbol, as well as the name of a group of any level, can contain Latin letters and numbers, without punctuation marks, spaces, and special characters. Additionally, only '.', '_', '&amp;', and '#' are allowed.</span></p>
+<p class="p_Text"><span class="f_Text">The name must be unique in the entire symbol hierarchy, regardless of which group the symbol is supposed to be created in. If a symbol with the same name already exists, the function will return </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> and will set the error code 5300 (ERR_NOT_CUSTOM_SYMBOL) or 5304 (ERR_CUSTOM_SYMBOL_EXIST) in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Note that if the last (or even the only) element of the hierarchy in the </span><span class="f_Text" style="font-style: italic;">path</span><span class="f_Text"> string exactly matches the </span><span class="f_Text" style="font-style: italic;">name</span><span class="f_Text"> (case sensitive), then it is treated as a symbol name that is part of the path and not as a folder. For example, if the name and path contain the strings &quot;Example&quot; and &quot;MQL5Book\\Example&quot;, respectively, then the symbol &quot;Example&quot; will be created in the &quot;Custom\\MQL5Book\\&quot; folder. At the same time, if we change the name to &quot;example&quot;, we will get the &quot;example&quot; symbol in the &quot;Custom\\MQL5Book\\Example&quot; folder.</span></p>
+<p class="p_Text"><span class="f_Text">This feature has another consequence. The SYMBOL_PATH property returns the path along with the symbol name at the end. Therefore, if we transfer its value without changes from some exemplary symbol to a newly created one, we will get the following effect: a folder with the name of the old symbol will be created, inside which a new symbol will appear. Thus, if you want to create a custom symbol in the same group as the original symbol, you must strip the name of the original symbol from the string obtained from the SYMBOL_PATH property.</span></p>
+<p class="p_Text"><span class="f_Text">We will demonstrate the side effect of copying the SYMBOL_PATH property in an example in the next section. However, this effect can also be used as a positive one. In particular, by creating several of its symbols based on one original symbol, copying SYMBOL_PATH will ensure that all new symbols are placed in the folder with the name of the original, i.e., it will group the symbols according to their prototype symbol.</span></p>
+<p class="p_Text"><span class="f_Text">The SYMBOL_PATH property for custom symbols always starts with the &quot;Custom\\&quot; folder (this prefix is added automatically).</span></p>
+<p class="p_Text"><span class="f_Text">Name length is limited to 31 characters. When the limit is exceeded, </span><span class="f_Text" style="font-style: italic;">CustomSymbolCreate</span><span class="f_Text"> will return </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> and set error code 5302 (ERR_CUSTOM_SYMBOL_NAME_LONG).</span></p>
+<p class="p_Text"><span class="f_Text">The maximum length of the parameter path is 127 characters, including &quot;Custom\\&quot;, group separators &quot;\\&quot;, and the symbol name, if it is specified at the end.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">origin</span><span class="f_Text"> parameter allows you to optionally specify the name of the symbol from which the properties of the created custom symbol will be copied. After creating a custom symbol, you can change any of its properties to the desired value using the appropriate functions (see </span><span class="f_Text" style="font-style: italic;"><a href="7_2_2_custom_symbols_properties.htm" class="topiclink">CustomSymbolSet</a></span><span class="f_Text"> functions).</span></p>
+<p class="p_Text"><span class="f_Text">If a non-existent symbol is given as the </span><span class="f_Text" style="font-style: italic;">origin</span><span class="f_Text"> parameter, then the custom symbol will be created &quot;empty&quot;, as if the parameter </span><span class="f_Text" style="font-style: italic;">origin</span><span class="f_Text"> was not specified. This will raise error 4301 (ERR_MARKET_UNKNOWN_SYMBOL).</span></p>
+<p class="p_Text"><span class="f_Text">In a new symbol created &quot;blank&quot;, all properties are set to their default values. For example, the contract size is 100000, the number of digits in the price is 4, the margin calculation is carried out according to Forex rules, and charting is based on the </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> prices.</span></p>
+<p class="p_Text"><span class="f_Text">When you specify </span><span class="f_Text" style="font-style: italic;">origin</span><span class="f_Text">, only settings are transferred from this symbol to the new symbol but not quotes or ticks as they should be generated separately. This will be discussed in the following sections.</span></p>
+<p class="p_Text"><span class="f_Text">Creating a symbol does not automatically add it to </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text">. So, this must be done explicitly (manually or programmatically). Without quotes, the chart window will be empty.</span></p>
+<p class="p_H4"><span class="f_H4">bool CustomSymbolDelete(const string name)</span></p>
+<p class="p_Text"><span class="f_Text">The function deletes a custom symbol with the specified name. Not only settings are deleted, but also all data on the symbol (quotes and ticks). It is worth noting, that the history is not deleted immediately, but only after some delay, which can be a source of problems if you intend to recreate a symbol with the same name (we will touch on this point in the example of the section <a href="7_2_5_custom_symbols_rates.htm" class="topiclink">Adding, replacing, and deleting quotes</a>).</span></p>
+<p class="p_Text"><span class="f_Text">Only a custom symbol can be deleted. Also, you cannot delete a symbol selected in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> or a symbol having an open chart. Please note that a symbol can also be selected <a href="6_1_9_symbols_state.htm" class="topiclink">implicitly</a>, without displaying in the visible list (in such cases, the SYMBOL_VISIBLE property is </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">, and the SYMBOL_SELECT property is </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">). Such a symbol first must be &quot;hidden&quot; by calling </span><span class="f_Text" style="font-style: italic;">SymbolSelect(&quot;name&quot;, false)</span><span class="f_Text"> before attempting to delete: otherwise, we get a CUSTOM_SYMBOL_SELECTED (5306) error.</span></p>
+<p class="p_Text"><span class="f_Text">If deleting a symbol leaves an empty folder (or folder hierarchy), it is also deleted.</span></p>
+<p class="p_Text"><span class="f_Text">For example, let's create a simple script </span><span class="f_Text" style="font-style: italic;">CustomSymbolCreateDelete.mq5</span><span class="f_Text">. In the input parameters, you can specify a name, a path, and an exemplary symbol.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CustomSymbol</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Dummy&quot;</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Custom&nbsp;Symbol&nbsp;Name</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CustomPath</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5Book\\Part7&quot;</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Custom&nbsp;Symbol&nbsp;Folder</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Origin</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> handler, let's check if there is already a symbol with the given name. If not, then after the confirmation from the user, we will create such a symbol. If the symbol is already there and it's a custom symbol, let's delete it with the user's permission (this will make it easier to clean up after the experiment is over).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">custom</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SymbolExist</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CustomSymbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">custom</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">IDYES</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MessageBox</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Create&nbsp;new&nbsp;custom&nbsp;symbol?&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Please,&nbsp;confirm&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MB_YESNO</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CustomSymbolCreate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CustomSymbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CustomPath</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Origin</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">custom</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">IDYES</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MessageBox</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Delete&nbsp;existing&nbsp;custom&nbsp;symbol?&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Please,&nbsp;confirm&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MB_YESNO</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CustomSymbolDelete</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CustomSymbol</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Can't&nbsp;delete&nbsp;non-custom&nbsp;symbol&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Two consecutive runs with default options should result in the following log entries.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">SymbolExist(CustomSymbol,custom)=false&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">Create&nbsp;new&nbsp;custom&nbsp;symbol?</span>
+<br><span class="f_CodeExample">CustomSymbolCreate(CustomSymbol,CustomPath,Origin)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">SymbolExist(CustomSymbol,custom)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">Delete&nbsp;existing&nbsp;custom&nbsp;symbol?</span>
+<br><span class="f_CodeExample">CustomSymbolDelete(CustomSymbol)=true&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Between runs, you can open the symbol dialog in the terminal and check that the corresponding custom symbol has appeared in the symbol hierarchy.</span></p>
+
+</div>
+
+</body>
+</html>

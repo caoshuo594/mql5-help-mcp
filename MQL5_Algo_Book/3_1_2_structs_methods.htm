@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.1.2 Functions (methods) in structures</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_1_structs_and_unions.htm"> 3.1 Structures and unions </a>/ 3.1.2 Functions (methods) in structures
+          </td>
+          <td width="70" align="right">
+          <a href="3_1_1_structs_definition.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_1_3_structs_assignment.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.1.2 Functions (methods) in structures</span></p>
+<p class="p_Text"><span class="f_Text">After receiving a result from the </span><span class="f_Text" style="font-style: italic;">calculate </span><span class="f_Text">function, it would be desirable to print it to the log, but the </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> function does not work with user-defined types: they themselves must provide a way to output information.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Settings</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">'</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">',&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRICE_CLOSE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">calculate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Print(r);&nbsp;&nbsp;//&nbsp;error:&nbsp;'r'&nbsp;-&nbsp;objects&nbsp;are&nbsp;passed&nbsp;by&nbsp;reference&nbsp;only</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Print(&amp;r);&nbsp;//&nbsp;error:&nbsp;'r'&nbsp;-&nbsp;class&nbsp;type&nbsp;expected</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The comments show the attempts to call the </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> function for the structure, and what follows thereafter. The first error is caused by the fact that structure instances are objects, and objects must be passed to functions by reference. At the same time, </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> is expecting a value (one or several). The use of an ampersand before the variable name in the second </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> call means in MQL5 that the pointer is received, and it is not a reference as one might think. Pointers in MQL5 are only supported for class objects (not structures), hence the second &quot;class type expected&quot; error. We will learn more about pointers in the next chapter (see <a href="3_2_classes_and_interfaces.htm" class="topiclink">Classes and interfaces</a>).</span></p>
+<p class="p_Text"><span class="f_Text">We could specify in the </span><span class="f_Text" style="font-style: italic;">Print</span><span class="f_Text"> call all the members of the structure separately (using dereference), but this is rather troublesome.</span></p>
+<p class="p_Text"><span class="f_Text">For those cases when it is necessary to process the contents of the structure in a special way, it is possible to define functions inside the structure. The syntax of the definition is no different from the familiar global context functions, but the definition itself is located inside the structure block.</span></p>
+<p class="p_Text"><span class="f_Text">Such functions are called methods. Since they are located in the context of the corresponding block, the fields of the structure can be accessed from them without the dereference operator. As an example, let's write the implementation of the function </span><span class="f_Text" style="font-style: italic;">print</span><span class="f_Text"> in the </span><span class="f_Text" style="font-style: italic;">Result</span><span class="f_Text">structure.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">probability</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">direction</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">status</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">coef</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Calling a method of the structure instance is as simple as reading its field: the same '.' operator is used.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Settings</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">D</span><span class="f_CodeExample">'</span><span class="f_CodeExample" style="color: #333333;">2021</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">',&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRICE_CLOSE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Result</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">calculate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text"><a href="3_2_classes_and_interfaces.htm" class="topiclink">Chapter on Classes</a> will cover methods in more detail.</span></p>
+
+</div>
+
+</body>
+</html>
