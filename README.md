@@ -24,7 +24,7 @@
 
 ## 快速开始
 
-### 安装方式 1: NPM 全局安装（推荐）
+### 安装方式 1: 直接从 GitHub 安装（推荐）
 
 在你的 MCP 客户端配置文件中添加以下配置：
 
@@ -33,14 +33,14 @@
   "mcpServers": {
     "mql5-help": {
       "command": "npx",
-      "args": ["-y", "mql5-help-mcp@latest"]
+      "args": ["-y", "github:caoshuo594/mql5-help-mcp"]
     }
   }
 }
 ```
 
-> **注意**
-> 使用 `mql5-help-mcp@latest` 确保始终使用最新版本。
+> **提示**
+> 使用 `github:caoshuo594/mql5-help-mcp` 直接从 GitHub 获取最新版本，无需 NPM 注册。
 
 ### 安装方式 2: 本地开发模式
 
@@ -79,7 +79,7 @@ npm run build
 使用 Claude Code CLI 添加 MQL5 Help MCP 服务器（<a href="https://docs.anthropic.com/en/docs/claude-code/mcp">查看指南</a>）：
 
 ```bash
-claude mcp add mql5-help npx mql5-help-mcp@latest
+claude mcp add mql5-help npx github:caoshuo594/mql5-help-mcp
 ```
 
 或手动编辑配置文件 `~/.config/claude/mcp.json`（macOS/Linux）或 `%APPDATA%\Claude\mcp.json`（Windows）：
@@ -89,7 +89,7 @@ claude mcp add mql5-help npx mql5-help-mcp@latest
   "mcpServers": {
     "mql5-help": {
       "command": "npx",
-      "args": ["-y", "mql5-help-mcp@latest"]
+      "args": ["-y", "github:caoshuo594/mql5-help-mcp"]
     }
   }
 }
@@ -111,7 +111,7 @@ claude mcp add mql5-help npx mql5-help-mcp@latest
   "mcpServers": {
     "mql5-help": {
       "command": "npx",
-      "args": ["-y", "mql5-help-mcp@latest"]
+      "args": ["-y", "github:caoshuo594/mql5-help-mcp"]
     }
   }
 }
@@ -125,7 +125,7 @@ claude mcp add mql5-help npx mql5-help-mcp@latest
 按照 <a href="https://code.visualstudio.com/docs/copilot/chat/mcp-servers#_add-an-mcp-server">MCP 安装指南</a>，使用标准配置。或使用 VS Code CLI：
 
 ```bash
-code --add-mcp '{"name":"mql5-help","command":"npx","args":["mql5-help-mcp@latest"]}'
+code --add-mcp '{"name":"mql5-help","command":"npx","args":["github:caoshuo594/mql5-help-mcp"]}'
 ```
 
 </details>
@@ -136,13 +136,13 @@ code --add-mcp '{"name":"mql5-help","command":"npx","args":["mql5-help-mcp@lates
 **项目级安装:**
 
 ```bash
-gemini mcp add mql5-help npx mql5-help-mcp@latest
+gemini mcp add mql5-help npx github:caoshuo594/mql5-help-mcp
 ```
 
 **全局安装:**
 
 ```bash
-gemini mcp add -s user mql5-help npx mql5-help-mcp@latest
+gemini mcp add -s user mql5-help npx github:caoshuo594/mql5-help-mcp
 ```
 
 或参考 <a href="https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md">Gemini MCP 指南</a>使用标准配置。
