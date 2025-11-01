@@ -45,9 +45,14 @@
 
 ## 快速开始
 
-### 安装方式 1：直接从 GitHub 拉起（推荐）
+### 前提条件
 
-在你的 MCP 客户端配置文件中加入：
+- Node.js 18.0 或更高版本
+- npm 或 npx
+
+### 安装方式 1：直接从 GitHub 安装（推荐）
+
+使用 `npx` 直接从 GitHub 运行，无需手动克隆或构建：
 
 ```json
 {
@@ -60,35 +65,77 @@
 }
 ```
 
-> 提示：使用 `github:caoshuo594/mql5-help-mcp` 可直接从 GitHub 获取最新构建，无需发布到 npm。
+> **提示**：使用 `github:caoshuo594/mql5-help-mcp` 可直接从 GitHub 获取最新版本。npm 会自动：
+> 1. 下载源代码
+> 2. 安装依赖
+> 3. 运行 `prepare` 脚本编译 TypeScript
+> 4. 启动服务器
 
-### 安装方式 2：本地开发模式
+### 安装方式 2：从 npm 安装
 
-```bash
-# 克隆或下载项目到本地
-cd D:\\my-program\\mql5_help_mcp
-
-# 安装依赖
-npm install
-
-# 编译 TypeScript 源码
-npm run build
-```
-
-然后在 MCP 配置中使用绝对路径：
+如果包已发布到 npm：
 
 ```json
 {
   "mcpServers": {
     "mql5-help": {
-      "command": "node",
-      "args": ["D:\\my-program\\mql5_help_mcp\\build\\index.js"]
+      "command": "npx",
+      "args": ["-y", "mql5-help-mcp"]
     }
   }
 }
 ```
 
-> Windows 注意：路径用双反斜杠 `\\` 或正斜杠 `/`。
+### 安装方式 3：本地开发模式
+
+适用于需要修改代码或贡献的开发者：
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/caoshuo594/mql5-help-mcp.git
+cd mql5-help-mcp
+
+# 2. 安装依赖
+npm install
+
+# 3. 编译 TypeScript 源码
+npm run build
+```
+
+然后在 MCP 配置中使用绝对路径：
+
+**Windows 示例：**
+```json
+{
+  "mcpServers": {
+    "mql5-help": {
+      "command": "node",
+      "args": ["D:/my-program/mql5-help-mcp/build/index.js"]
+    }
+  }
+}
+```
+
+**macOS/Linux 示例：**
+```json
+{
+  "mcpServers": {
+    "mql5-help": {
+      "command": "node",
+      "args": ["/home/user/projects/mql5-help-mcp/build/index.js"]
+    }
+  }
+}
+```
+
+> **Windows 路径注意**：使用正斜杠 `/` 或双反斜杠 `\\\\`（在 JSON 中）
+
+### Claude Code 配置位置
+
+配置文件位置：
+- **Windows**: `%USERPROFILE%\.claude\claude_desktop_config.json`
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Linux**: `~/.config/claude/claude_desktop_config.json`
 
 ### 测试你的配置
 
