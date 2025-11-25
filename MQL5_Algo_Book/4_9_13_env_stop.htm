@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.9.13 Checking the MQL program status and reason for termination</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_9_environment.htm"> 4.9 MQL program execution environment </a>/ 4.9.13 Checking the MQL program status and reason for termination
+          </td>
+          <td width="70" align="right">
+          <a href="4_9_12_env_keyboard.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_9_14_env_terminal_close.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.9.13 Checking the MQL program status and reason for termination</span></p>
+<p class="p_Text"><span class="f_Text">We have already encountered the </span><span class="f_Text" style="font-style: italic;">IsStopped</span><span class="f_Text"> function in different examples across the book. It must be called from time to time in cases where the MQL program performs lengthy calculations. This allows you to check if the user initiated the closing of the program (i.e. if they tried to remove it from the chart).</span></p>
+<p class="p_H4"><span class="f_H4">bool IsStopped() &#8801; bool _StopFlag</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> if the program was interrupted by the user (for example, by pressing the Delete button in the dialog opened by the Expert List command in the context menu).</span></p>
+<p class="p_Text"><span class="f_Text">The program is given 3 seconds to properly pause calculations, save intermediate results if necessary, and complete its work. If this does not happen, the program will be removed from the chart forcibly.</span></p>
+<p class="p_Text"><span class="f_Text">Instead of the </span><span class="f_Text" style="font-style: italic;">IsStopped</span><span class="f_Text"> function, you can check the value of the built-in </span><span class="f_Text" style="font-style: italic;">_StopFlag</span><span class="f_Text"> variable.</span></p>
+<p class="p_Text"><span class="f_Text">The test script </span><span class="f_Text" style="font-style: italic;">EnvStop.mq5</span><span class="f_Text"> emulates lengthy calculations in a loop: search for prime numbers. Conditions for exiting the </span><span class="f_Text" style="font-style: italic;">while</span><span class="f_Text"> loop are written using the </span><span class="f_Text" style="font-style: italic;">IsStopped</span><span class="f_Text"> function. Therefore, when the user deletes the script, the loop is interrupted in the usual way and the log displays the statistics of found prime numbers log (the script could also save the numbers to a file).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">isPrime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">sqrt</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(&nbsp;;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">candidate</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">IsStopped</span><span class="f_CodeExample">())&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;try&nbsp;to&nbsp;replace&nbsp;it&nbsp;with&nbsp;while(true)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;emulate&nbsp;long&nbsp;calculations</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">isPrime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">candidate</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Count:&quot;</span><span class="f_CodeExample">,&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;Prime:&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">candidate</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">candidate</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Sleep</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Total&nbsp;found:&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If we replace the loop condition with </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> (infinite loop), the script will stop responding to the user's request to stop and will be unloaded from the chart forcibly. As a result, we will see the &quot;Abnormal termination&quot; error in the log, and the comment in the upper left corner of the window remains uncleaned. Thus, all instructions that in this example symbolize saving data and clearing busy resources (and this could be, for example, deleting your own graphic objects from the window) are ignored.</span></p>
+<p class="p_Text"><span class="f_Text">After a stop request has been sent to the program (and the value </span><span class="f_Text" style="font-style: italic;">_StopFlag</span><span class="f_Text"> equals </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">), the reason for the termination can be found using the </span><span class="f_Text" style="font-style: italic;">UninitializeReason</span><span class="f_Text"> function.</span></p>
+<p class="p_Quote"><span class="f_Quote">Unfortunately, this feature is only available for Expert Advisors and indicators.</span></p>
+<p class="p_H4"><span class="f_H4">int UninitializeReason() &#8801; int _UninitReason</span></p>
+<p class="p_Text"><span class="f_Text">The function returns one of the predefined codes describing the reasons for deinitialization.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Constant</span></p>
+</th>
+<th class="table" style="width:15%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Value</span></p>
+</th>
+<th class="table" style="width:50%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_PROGRAM</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">0</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable" style="font-style: italic;"><a href="5_1_7_runtime_remove.htm" class="topiclink">ExpertRemove</a> </span><span class="f_fortable">function only available in Expert Advisors and scripts was called</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_REMOVE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Program removed from the chart</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_RECOMPILE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Program recompiled</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_CHARTCHANGE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">3</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Chart symbol or period changed</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_CHARTCLOSE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">4</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Chart closed</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_PARAMETERS</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">5</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Program input parameters changed</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_ACCOUNT</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">6</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Another account is connected or a reconnection to the trading server occurred</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_TEMPLATE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">7</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Another chart template applied</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_INITFAILED</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">8</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable" style="font-style: italic;"><a href="5_1_5_runtime_oninit_ondeinit.htm" class="topiclink">OnInit</a></span><span class="f_fortable"> event handler returned an error flag</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_CLOSE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable"><span class="f_fortable">9</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Terminal closed</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Instead of a function, you can access the built-in global variable </span><span class="f_Text" style="font-style: italic;">_UninitReason</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The deinitialization reason code is also passed as a parameter to the </span><span class="f_Text" style="font-style: italic;"><a href="5_1_5_runtime_oninit_ondeinit.htm" class="topiclink">OnDeinit</a></span><span class="f_Text"> event handler function.</span></p>
+<p class="p_Text"><span class="f_Text">Later, when studying <a href="5_1_4_runtime_lifecycle.htm" class="topiclink">Program start and stop features</a>, we will see an indicator (</span><span class="f_Text" style="font-style: italic;">Indicators/MQL5Book/p5/LifeCycle.mq5</span><span class="f_Text">) and an Expert Advisor (</span><span class="f_Text" style="font-style: italic;">Experts/MQL5Book/p5/LifeCycle.mq5</span><span class="f_Text">) that log the reasons for deinitialization and allow you to explore the behavior of programs depending on user actions.</span></p>
+
+</div>
+
+</body>
+</html>

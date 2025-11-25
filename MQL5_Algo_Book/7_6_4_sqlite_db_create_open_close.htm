@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.6.4 Creating, opening and closing database</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_6_sqlite.htm"> 7.6 SQLite database </a>/ 7.6.4 Creating, opening, and closing databases
+          </td>
+          <td width="70" align="right">
+          <a href="7_6_3_sqlite_orm.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_6_5_sqlite_simple_queries.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.6.4 Creating, opening, and closing databases</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabaseOpen</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">DatabaseClose</span><span class="f_Text"> functions enable the creation and opening of databases.</span></p>
+<p class="p_H4"><span class="f_H4">int DatabaseOpen(const string filename, uint flags)</span></p>
+<p class="p_Text"><span class="f_Text">The function opens or creates a database in a file named </span><span class="f_Text" style="font-style: italic;">filename</span><span class="f_Text">. The parameter can contain not only the name but also the path with subfolders relative to </span><span class="f_Text" style="font-style: italic;">MQL5/Files</span><span class="f_Text"> (of a specific terminal instance or in a shared folder, see flags below). The extension can be omitted, which adds &quot;.sqlite&quot; to the default name.</span></p>
+<p class="p_Text"><span class="f_Text">If NULL or an empty string &quot;&quot; is specified in the </span><span class="f_Text" style="font-style: italic;">filename</span><span class="f_Text"> parameter, then the database is created in a temporary file, which will be automatically deleted after the database is closed.</span></p>
+<p class="p_Text"><span class="f_Text">If the string &quot;:memory:&quot; is specified in the </span><span class="f_Text" style="font-style: italic;">filename</span><span class="f_Text"> parameter, the database will be created in memory. Such a temporary base will be automatically deleted after closing.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text"> parameter contains a combination of flags that describe additional conditions for creating or opening a database from the ENUM_DATABASE_OPEN_FLAGS enumeration.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">DATABASE_OPEN_READONLY</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Open for reading only</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">DATABASE_OPEN_READWRITE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Open for reading and writing</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">DATABASE_OPEN_CREATE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Create a file on disk if it doesn't exist</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">DATABASE_OPEN_MEMORY</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Create an in-memory database</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">DATABASE_OPEN_COMMON</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The file is located in the shared folder of all terminals</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If none of the DATABASE_OPEN_READONLY or DATABASE_OPEN_READWRITE flags are specified in the </span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text"> parameter, the DATABASE_OPEN_READWRITE flag will be used.</span></p>
+<p class="p_Text"><span class="f_Text">On success, the function returns a handle to the database, which is then used as a parameter for other functions to access it. Otherwise, INVALID_HANDLE is returned, and the error code can be found in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">void DatabaseClose(int database)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabaseClose</span><span class="f_Text"> function closes the database by its handle, which was previously received from the </span><span class="f_Text" style="font-style: italic;">DatabaseOpen</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">After calling </span><span class="f_Text" style="font-style: italic;">DatabaseClose</span><span class="f_Text">, all query handles that we will learn to create for an open base in the following sections are automatically removed and invalidated.</span></p>
+<p class="p_Text"><span class="f_Text">The function does not return anything. However, if an incorrect handle is passed to it, it will set </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> to ERR_DATABASE_INVALID_HANDLE.</span></p>
+<p class="p_Text"><span class="f_Text">Let's start developing an object-oriented wrapper for databases in a file </span><span class="f_Text" style="font-style: italic;">DBSQLite.mqh</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The DBSQ</span><span class="f_Text" style="font-style: italic;">lite</span><span class="f_Text"> class will ensure the creation, opening, and closing of databases. We will extend it later.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBSQLite</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">path</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBSQLite</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">file</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">opts</span><span class="f_CodeExample">&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">DATABASE_OPEN_CREATE</span><span class="f_CodeExample">&nbsp;|&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">DATABASE_OPEN_READWRITE</span><span class="f_CodeExample">):</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">path</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">opts</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">DatabaseOpen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">opts</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;~</span><span class="f_CodeExample" style="color: #333333;">DBSQLite</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INVALID_HANDLE</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">DatabaseClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">getHandle</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">isOpen</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INVALID_HANDLE</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Note that the database is automatically created or opened when the object is created, and closed when the object is destroyed.</span></p>
+<p class="p_Text"><span class="f_Text">Using this class, let's write a simple script </span><span class="f_Text" style="font-style: italic;">DBinit.mq5</span><span class="f_Text">, which will create or open the specified database.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Database</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5Book/DB/Example1&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBSQLite</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Database</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExampleCondensed" style="font-size: 9pt; color: #808080;">//&nbsp;create&nbsp;or&nbsp;open&nbsp;the&nbsp;base&nbsp;in&nbsp;the&nbsp;constructor</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getHandle</span><span class="f_CodeExample">());&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;65537&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileIsExist</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Database</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;.sqlite&quot;</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">}&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;the&nbsp;base&nbsp;is&nbsp;closed&nbsp;in&nbsp;the&nbsp;destructor</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After the first run, with default settings, we should get a new file </span><span class="f_Text" style="font-style: italic;">MQL5/Files/MQL5Book/DB/Example1.sqlite</span><span class="f_Text">. This is confirmed in the code by checking for the existence of the file. On subsequent runs with the same name, the script simply opens the database and logs the current descriptor (an integer number).</span></p>
+
+</div>
+
+</body>
+</html>

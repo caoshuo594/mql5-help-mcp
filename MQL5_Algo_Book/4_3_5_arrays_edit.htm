@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.3.5 Copying and editing arrays</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_3_arrays.htm"> 4.3 Working with arrays </a>/ 4.3.5 Copying and editing arrays
+          </td>
+          <td width="70" align="right">
+          <a href="4_3_4_arrays_init_fill.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_3_6_arrays_move_swap.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.3.5 Copying and editing arrays</span></p>
+<p class="p_Text"><span class="f_Text">In this section, we'll learn how to use built-in functions to insert and remove array elements, change their order, and copy entire arrays.</span></p>
+<p class="p_H4"><span class="f_H4">bool ArrayInsert(void &amp;target[], const void &amp;source[], uint to, uint from = 0, uint count = WHOLE_ARRAY)</span></p>
+<p class="p_Text"><span class="f_Text">The function inserts the specified number of elements from the source array 'source' into the destination </span><span class="f_Text" style="font-style: italic;">target</span><span class="f_Text"> array. A position for insertion into the </span><span class="f_Text" style="font-style: italic;">target</span><span class="f_Text"> array is set by the index in the </span><span class="f_Text" style="font-style: italic;">to </span><span class="f_Text">parameter. The starting index of the element at which to start copying from the </span><span class="f_Text" style="font-style: italic;">source</span><span class="f_Text"> array is given by the index </span><span class="f_Text" style="font-style: italic;">from</span><span class="f_Text">. The WHOLE_ARRAY constant ((uint)-1) in the parameter </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> specifies the transfer of all elements of the source array.</span></p>
+<p class="p_Text"><span class="f_Text">All indexes and counts are relative to the first dimension of the arrays. In other words, for multidimensional arrays, the insertion is performed not by individual elements, but by the entire configuration described by the &quot;higher&quot; dimensions. For example, for a two-dimensional array, the value 1 in the parameter </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> means inserting a vector of length equal to the second dimension (see the example).</span></p>
+<p class="p_Text"><span class="f_Text">Due to this, the target array and the source array must have the same configurations. Otherwise, an error will occur and copying will fail. For one-dimensional arrays, this is not a limitation, but for multidimensional arrays, it is necessary to observe the equality of sizes in dimensions above the first one. In particular, elements from the array [][4] cannot be inserted into the array [][5] and vice versa.</span></p>
+<p class="p_Text"><span class="f_Text">The function is applicable only for arrays of fixed or dynamic size. Editing timeseries (arrays with <a href="5_3_timeseries.htm" class="topiclink">time series</a>) cannot be performed with this function. It is prohibited to specify in the parameters </span><span class="f_Text" style="font-style: italic;">target</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">source</span><span class="f_Text"> the same array.</span></p>
+<p class="p_Text"><span class="f_Text">When inserted into a fixed array, new elements shift existing elements to the right and displace </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> of the rightmost elements to the outside of the array. The </span><span class="f_Text" style="font-style: italic;">to</span><span class="f_Text"> parameter must have a value between 0 and the size of the array minus 1.</span></p>
+<p class="p_Text"><span class="f_Text">When inserted into a dynamic array, the old elements are also shifted to the right, but they do not disappear, because the array itself expands by </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> elements. The </span><span class="f_Text" style="font-style: italic;">to</span><span class="f_Text"> parameter must have a value between 0 and the size of the array. If it is equal to the size of the array, new elements are added to the end of the array.</span></p>
+<p class="p_Text"><span class="f_Text">The specified elements are copied from one array to another, i.e., they remain unchanged in the original array, and their &quot;doubles&quot; in the new array become independent instances that are not related to the &quot;originals&quot; in any way.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> if successful or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> in case of error.</span></p>
+<p class="p_Text"><span class="f_Text">Let's consider some examples (</span><span class="f_Text" style="font-style: italic;">ArrayInsert.mq5</span><span class="f_Text">). The </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function provides descriptions of several arrays of different configurations, both fixed and dynamic.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">#A</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;=&quot;</span><span class="f_CodeExample">,&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">)&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;/&nbsp;status:&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">GetLastError</span><span class="f_CodeExample">())</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx5</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">]&nbsp;=&nbsp;{{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">7</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">}};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">[]&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">11</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To begin with, for convenience, a macro is introduced that displays the error code (obtained through the function </span><span class="f_Text" style="font-style: italic;"><a href="4_9_15_env_last_error.htm" class="topiclink">GetLastError</a></span><span class="f_Text">) immediately after calling the instruction under test – PRTS. This is a slightly modified version of the familiar PRT macro.</span></p>
+<p class="p_Text"><span class="f_Text">Attempts to copy elements between arrays of different configurations end with error 4006 (ERR_INVALID_ARRAY).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;you&nbsp;can't&nbsp;mix&nbsp;1D&nbsp;and&nbsp;2D&nbsp;arrays</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayInsert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false:4006,&nbsp;ERR_INVALID_ARRAY</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;empty</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;you&nbsp;can't&nbsp;mix&nbsp;2D&nbsp;arrays&nbsp;of&nbsp;different&nbsp;configurations&nbsp;by&nbsp;the&nbsp;second&nbsp;dimension</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayInsert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false:4006,&nbsp;ERR_INVALID_ARRAY</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx5</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;empty</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;even&nbsp;if&nbsp;both&nbsp;arrays&nbsp;are&nbsp;fixed&nbsp;(or&nbsp;both&nbsp;are&nbsp;dynamic),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;size&nbsp;by&nbsp;&quot;higher&quot;&nbsp;dimensions&nbsp;must&nbsp;match</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayInsert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false:4006,&nbsp;ERR_INVALID_ARRAY</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;not&nbsp;changed</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The target index must be within the array.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;target&nbsp;index&nbsp;10&nbsp;is&nbsp;out&nbsp;of&nbsp;the&nbsp;range&nbsp;or&nbsp;the&nbsp;array&nbsp;'insert',</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;could&nbsp;be&nbsp;0,&nbsp;1,&nbsp;2,&nbsp;because&nbsp;its&nbsp;size&nbsp;=&nbsp;3</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayInsert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false:5052,&nbsp;ERR_SMALL_ARRAY</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;not&nbsp;changed</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The following are successful array modifications:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;copy&nbsp;second&nbsp;row&nbsp;from&nbsp;'fixed',&nbsp;'dynamic2Dx4'&nbsp;is&nbsp;allocated</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayInsert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;both&nbsp;rows&nbsp;from&nbsp;'fixed'&nbsp;are&nbsp;added&nbsp;to&nbsp;the&nbsp;end&nbsp;of&nbsp;'dynamic2Dx4',&nbsp;it&nbsp;expands</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayInsert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;memory&nbsp;is&nbsp;allocated&nbsp;for&nbsp;'dynamic'&nbsp;for&nbsp;all&nbsp;elements&nbsp;'insert'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayInsert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;'dynamic'&nbsp;expands&nbsp;by&nbsp;1&nbsp;element</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayInsert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;new&nbsp;element&nbsp;will&nbsp;push&nbsp;the&nbsp;last&nbsp;one&nbsp;out&nbsp;of&nbsp;'insert'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayInsert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here's what will appear in the log:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">ArrayInsert(dynamic2Dx4,fixed,0,1,1)=true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample">[0,]&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8</span>
+<br><span class="f_CodeExample">ArrayInsert(dynamic2Dx4,fixed,1)=true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample">[0,]&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8</span>
+<br><span class="f_CodeExample">[1,]&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;4</span>
+<br><span class="f_CodeExample">[2,]&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8</span>
+<br><span class="f_CodeExample">ArrayInsert(dynamic,insert,0)=true</span>
+<br><span class="f_CodeExample">10&nbsp;11&nbsp;12</span>
+<br><span class="f_CodeExample">ArrayInsert(dynamic,array,1)=true</span>
+<br><span class="f_CodeExample">&nbsp;10&nbsp;100&nbsp;&nbsp;11&nbsp;&nbsp;12</span>
+<br><span class="f_CodeExample">ArrayInsert(insert,array,1)=true</span>
+<br><span class="f_CodeExample">&nbsp;10&nbsp;100&nbsp;&nbsp;11</span>
+<br><span class="f_CodeExample">&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H4"><span class="f_H4">bool ArrayCopy(void &amp;target[], const void &amp;source[], int to = 0, int from = 0, int count = WHOLE_ARRAY)</span></p>
+<p class="p_Text"><span class="f_Text">The function copies part or all of the </span><span class="f_Text" style="font-style: italic;">source</span><span class="f_Text"> array to the </span><span class="f_Text" style="font-style: italic;">target</span><span class="f_Text"> array. The place in the </span><span class="f_Text" style="font-style: italic;">target</span><span class="f_Text"> array where the elements are written is specified by the index in the </span><span class="f_Text" style="font-style: italic;">to</span><span class="f_Text"> parameter. The starting index of the element from which to start copying from the </span><span class="f_Text" style="font-style: italic;">source</span><span class="f_Text"> array is given by the </span><span class="f_Text" style="font-style: italic;">from</span><span class="f_Text"> index. The WHOLE_ARRAY constant (-1) in the </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> parameter specifies the transfer of all elements of the source array. If </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> is less than zero or greater than the number of elements remaining from the </span><span class="f_Text" style="font-style: italic;">from</span><span class="f_Text"> position to the end of the </span><span class="f_Text" style="font-style: italic;">source</span><span class="f_Text"> array, the entire remainder of the array is copied.</span></p>
+<p class="p_Text"><span class="f_Text">Unlike the </span><span class="f_Text" style="font-style: italic;">ArrayInsert</span><span class="f_Text"> function, the </span><span class="f_Text" style="font-style: italic;">ArrayCopy</span><span class="f_Text"> function does not shift the existing elements of the receiving array but writes new elements to the specified positions over the old ones.</span></p>
+<p class="p_Text"><span class="f_Text">All indexes and the number of elements are set taking into account the continuous numbering of elements, regardless of the number of dimensions in the arrays and their configuration. In other words, elements can be copied from multidimensional arrays to one-dimensional arrays and vice versa, or between multidimensional arrays with different sizes according to the &quot;higher&quot; dimensions (see the example).</span></p>
+<p class="p_Text"><span class="f_Text">The function works with fixed and dynamic arrays, as well as time series arrays designated as <a href="5_4_4_indicators_buffers_plots.htm" class="topiclink">indicator buffers</a>.</span></p>
+<p class="p_Text"><span class="f_Text">It is permitted to copy elements from an array to itself. But if the </span><span class="f_Text" style="font-style: italic;">target</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">source </span><span class="f_Text">areas overlap, you need to keep in mind that the iteration is done from left to right.</span></p>
+<p class="p_Text"><span class="f_Text">A dynamic destination array is automatically expanded as needed. Fixed arrays retain their dimensions, and what is copied must fit in the array, otherwise an error will occur.</span></p>
+<p class="p_Text"><span class="f_Text">Arrays of built-in types and arrays of structures with simple type fields are supported. For numeric types, the function will try to convert the data if the source and destination types differ. A string array can only be copied to a string array. Class objects are not allowed, but pointers to objects can be copied.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of elements copied (0 on error).</span></p>
+<p class="p_Text"><span class="f_Text">In the script </span><span class="f_Text" style="font-style: italic;">ArrayCopy.mq5</span><span class="f_Text"> there are several examples of using the function.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">objects1</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">objects2</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error:&nbsp;structures&nbsp;or&nbsp;classes&nbsp;with&nbsp;objects&nbsp;are&nbsp;not&nbsp;allowed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">objects1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">objects2</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Arrays with objects generate a compilation error stating that &quot;structures or classes containing objects are not allowed&quot;, but pointers can be copied.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">pointers1</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">],&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">pointers2</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pointers1</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;=&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">objects1</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">pointers2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pointers1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;5&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pointers1</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pointers2</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;it&nbsp;outputs&nbsp;some&nbsp;pairwise&nbsp;identical&nbsp;object&nbsp;descriptors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;0&nbsp;1048576&nbsp;1048576</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;1&nbsp;2097152&nbsp;2097152</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;2&nbsp;3145728&nbsp;3145728</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;3&nbsp;4194304&nbsp;4194304</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;4&nbsp;5242880&nbsp;5242880</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Arrays of structures with fields of simple types are also copied without problems.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Simple</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Simple</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s1</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">]&nbsp;=&nbsp;{{</span><span class="f_CodeExample" style="color: #333333;">123</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">456</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">789</span><span class="f_CodeExample">}},&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s2</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;3&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0]&nbsp;123</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1]&nbsp;456</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[2]&nbsp;789</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To further demonstrate how to work with arrays of different types and configurations, the following arrays are defined (including fixed, dynamic, and arrays with a different number of dimensions):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx5</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">]&nbsp;=&nbsp;{{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">7</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">}};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">[]&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">11</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #0000ff;">M_PI</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #008080;">&quot;ok&quot;</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When copying one element from the </span><span class="f_Text" style="font-style: italic;">fixed</span><span class="f_Text"> array from position 1 (number 2), a whole row of 4 elements is allocated in the receiving dynamic array </span><span class="f_Text" style="font-style: italic;">dynamic2Dx4</span><span class="f_Text">, and since only 1 element is copied, the remaining three will contain random &quot;garbage&quot; (highlighted in yellow).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0,]&nbsp;&nbsp;&nbsp;2&nbsp;</span><span class="f_CodeExample" style="color: #808080; background-color: #ffff00;">&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;3</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, we copy all the elements from the </span><span class="f_Text" style="font-style: italic;">fixed</span><span class="f_Text"> array, starting from the third one, into the same array </span><span class="f_Text" style="font-style: italic;">dynamic2Dx4</span><span class="f_Text">, but starting from position 1. Since 5 elements are copied (the total number in the array </span><span class="f_Text" style="font-style: italic;">fixed</span><span class="f_Text"> is 8 minus the initial position 3), and they are placed at index 1, in total, 1 + 5 will be occupied in the receiving array, for a total of 6 elements. And since the array </span><span class="f_Text" style="font-style: italic;">dynamic2Dx4</span><span class="f_Text"> has 4 elements in each row (in the second dimension), it is possible to allocate memory for it only for the number of elements that is a multiple of 4, i.e., 2 more elements will be distributed, in which random data will remain.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;5&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0,]&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;6</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1,]&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8&nbsp;</span><span class="f_CodeExample" style="color: #808080; background-color: #ffff00;">&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;4</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When copying a multidimensional array to a one-dimensional array, the elements will be presented in a &quot;flat&quot; form.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;8&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;1&nbsp;2&nbsp;3&nbsp;4&nbsp;5&nbsp;6&nbsp;7&nbsp;8</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When copying a one-dimensional array to a multidimensional one, the elements are &quot;expanded&quot; according to the dimensions of the receiving array.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;3&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx5</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3][,4]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0,]&nbsp;&nbsp;10&nbsp;&nbsp;11&nbsp;&nbsp;12&nbsp;</span><span class="f_CodeExample" style="color: #808080; background-color: #ffff00;">&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;5</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In this case, 3 elements were copied and they fit into one row which is 5 elements long (according to the configuration of the receiving array). The memory for the remaining two elements of the series was allocated, but not filled (contains &quot;garbage&quot;).</span></p>
+<p class="p_Text"><span class="f_Text">We can overwrite the array </span><span class="f_Text" style="font-style: italic;">dynamic2Dx5</span><span class="f_Text"> from another source, including from a multidimensional array of a different configuration. Since two rows of 5 elements each were allocated in the receiving array, and 2 rows of 4 elements each were allocated in the source array, 2 additional elements were left unfilled.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;8&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx5</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3][,4]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0,]&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;5</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1,]&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">By using </span><span class="f_Text" style="font-style: italic;">ArrayCopy</span><span class="f_Text"> it is possible to change elements in fixed receiver arrays.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;3&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0,]&nbsp;&nbsp;10&nbsp;&nbsp;11&nbsp;&nbsp;12&nbsp;&nbsp;&nbsp;4</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1,]&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here we have overwritten the first three elements of the array </span><span class="f_Text" style="font-style: italic;">fixed</span><span class="f_Text">. And then let's overwrite the last 3.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;3&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0,]&nbsp;&nbsp;10&nbsp;&nbsp;11&nbsp;&nbsp;12&nbsp;&nbsp;&nbsp;4</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1,]&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;10&nbsp;&nbsp;11&nbsp;&nbsp;12</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Copying to a position equal to the length of the fixed array will not work (the dynamic destination array would expand in this case).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;4006,&nbsp;ERR_INVALID_ARRAY</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;no&nbsp;changes</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">String arrays combined with arrays of other types will throw an error:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;5050,&nbsp;ERR_INCOMPATIBLE_ARRAYS</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;empty</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">But between string arrays, copying is possible:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">message</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">texts</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;ok&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Arrays of different numeric types are copied with the necessary conversion.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">insert</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;10&nbsp;&nbsp;3&nbsp;12</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here we have written the number Pi in an integer array, and therefore received the value 3 (it replaced 11).</span></p>
+<p class="p_H4"><span class="f_H4">bool ArrayRemove(void &amp;array[], uint start, uint count = WHOLE_ARRAY)</span></p>
+<p class="p_Text"><span class="f_Text">The function removes the specified number of elements from the array starting from the index </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text">. An array can be multidimensional and have any built-in or structure type with fields of built-in types, with the exception of strings.</span></p>
+<p class="p_Text"><span class="f_Text">The index </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> and quantity </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> refer to the first dimension of the arrays. In other words, for multidimensional arrays, deletion is performed not by individual elements, but by the entire configuration described by &quot;higher&quot; dimensions. For example, for a two-dimensional array, the value 1 in the parameter </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> means deleting a whole series of length equal to the second dimension (see the example).</span></p>
+<p class="p_Text"><span class="f_Text">The value </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> must be between 0 and the size of the first dimension minus 1.</span></p>
+<p class="p_Text"><span class="f_Text">The function cannot be applied to arrays with time series (built-in <a href="5_3_timeseries.htm" class="topiclink">timeseries</a> or <a href="5_4_5_indicators_setindexbuffer.htm" class="topiclink">indicator buffers</a>).</span></p>
+<p class="p_Text"><span class="f_Text">To test the function, we prepared the script </span><span class="f_Text" style="font-style: italic;">ArrayRemove.mq5</span><span class="f_Text">. In particular, it defines 2 structures:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Simple</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">NotSoSimple</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;a&nbsp;field&nbsp;of&nbsp;type&nbsp;string&nbsp;causes&nbsp;the&nbsp;compiler&nbsp;to&nbsp;make&nbsp;an&nbsp;implicit&nbsp;destructor</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Arrays with a simple structure can be processed by the function </span><span class="f_Text" style="font-style: italic;">ArrayRemove</span><span class="f_Text"> successfully, while arrays of objects with destructors (even with implicit ones, as in </span><span class="f_Text" style="font-style: italic;">NotSoSimple</span><span class="f_Text">) cause an error:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Simple</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">structs1</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayRemove</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">structs1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">NotSoSimple</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">structs2</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayRemove</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">structs2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false&nbsp;/&nbsp;status:4005,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ERR_STRUCT_WITHOBJECTS_ORCLASS</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, arrays of various configurations are defined and initialized.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">]&nbsp;=&nbsp;{{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">7</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">}};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;make&nbsp;2&nbsp;copies</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;show&nbsp;initial&nbsp;data</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;1&nbsp;2&nbsp;3&nbsp;4&nbsp;5&nbsp;6&nbsp;7&nbsp;8</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0,]&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;4</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1,]&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When deleting from a fixed array, all elements after the fragment being removed are shifted to the left. It is important that the size of the array does not change, and therefore copies of the shifted elements appear in duplicate.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayRemove</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;ArrayRemove(fixed,0,1)=true&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0,]&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1,]&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here we removed one element of the first dimension of a two-dimensional array </span><span class="f_Text" style="font-style: italic;">fixed</span><span class="f_Text"> by offset 0, that is, the initial row. The elements of the next row moved up and remained in the same row.</span></p>
+<p class="p_Text"><span class="f_Text">If we perform the same operation with a dynamic array (identical in content to the array </span><span class="f_Text" style="font-style: italic;">fixed</span><span class="f_Text">), its size will be automatically reduced by the number of elements removed.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayRemove</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;ArrayRemove(dynamic2Dx4,0,1)=true&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0,]&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In a one-dimensional array, each element removed corresponds to a single value. For example, in the array </span><span class="f_Text" style="font-style: italic;">dynamic</span><span class="f_Text">, when removing three elements starting at index 2, we get the following result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayRemove</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;ArrayRemove(dynamic,2,3)=true&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;1&nbsp;2&nbsp;6&nbsp;7&nbsp;8</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The values 3, 4, 5 have been removed, the array size has been reduced by 3.</span></p>
+<p class="p_H4"><span class="f_H4">bool ArrayReverse(void &amp;array[], uint start = 0, uint count = WHOLE_ARRAY)</span></p>
+<p class="p_Text"><span class="f_Text">The function reverses the order of the specified elements in the array. Elements to be reversed are determined by a starting position </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> and quantity </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text">. If </span><span class="f_Text" style="font-style: italic;">start = 0</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">count = WHOLE_ARRAY</span><span class="f_Text">, the entire array is accessed.</span></p>
+<p class="p_Text"><span class="f_Text">Arrays of arbitrary dimensions and types are supported, both fixed and dynamic (including time series in <a href="5_4_5_indicators_setindexbuffer.htm" class="topiclink">indicator buffers</a>). An array can contain objects, pointers, or structures. For multidimensional arrays, only the first dimension is reversed.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> value must be between 0 and the number of elements in the first dimension. Please note that </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> less than 2 will not give a noticeable effect, but it can be used to unify loops in algorithms.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> if successful or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> in case of error.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">ArrayReverse.mq5 </span><span class="f_Text">script can be used to test the function. At its beginning, a class is defined for generating objects stored in an array. The presence of strings and other &quot;complex&quot; fields is not a problem.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;a&nbsp;field&nbsp;of&nbsp;type&nbsp;string&nbsp;causes&nbsp;the&nbsp;compiler&nbsp;to&nbsp;create&nbsp;an&nbsp;implicit&nbsp;destructor</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span><span class="f_CodeExample">()&nbsp;{&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">++;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Objects are identified by a serial number (assigned at the time of creation).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">objects</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Objects&nbsp;before&nbsp;reverse&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">objects</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x]&nbsp;&nbsp;[s]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0]&nbsp;&nbsp;&nbsp;0&nbsp;null</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1]&nbsp;&nbsp;&nbsp;1&nbsp;null</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[2]&nbsp;&nbsp;&nbsp;2&nbsp;null</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[3]&nbsp;&nbsp;&nbsp;3&nbsp;null</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[4]&nbsp;&nbsp;&nbsp;4&nbsp;null</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After applying </span><span class="f_Text" style="font-style: italic;">ArrayReverse</span><span class="f_Text"> we get the expected reverse order of the objects.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayReverse</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">objects</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Objects&nbsp;after&nbsp;reverse&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">objects</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x]&nbsp;&nbsp;[s]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0]&nbsp;&nbsp;&nbsp;4&nbsp;null</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1]&nbsp;&nbsp;&nbsp;3&nbsp;null</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[2]&nbsp;&nbsp;&nbsp;2&nbsp;null</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[3]&nbsp;&nbsp;&nbsp;1&nbsp;null</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[4]&nbsp;&nbsp;&nbsp;0&nbsp;null</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, numerical arrays of different configurations are prepared and unfolded with different parameters.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">]&nbsp;=&nbsp;{{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">7</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">}};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCopy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayReverse</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">fixed</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[,0][,1][,2][,3]</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[0,]&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[1,]&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;4</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayReverse</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;true&nbsp;/&nbsp;status:0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;1&nbsp;2&nbsp;3&nbsp;4&nbsp;7&nbsp;6&nbsp;5&nbsp;8</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayReverse</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;does&nbsp;nothing&nbsp;(count&nbsp;=&nbsp;1)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTS</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArrayReverse</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dynamic2Dx4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;false&nbsp;/&nbsp;status:5052,&nbsp;ERR_SMALL_ARRAY</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the latter case, the value </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> (2) exceeds the size in the first dimension, so an error occurs.</span></p>
+
+</div>
+
+</body>
+</html>

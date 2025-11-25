@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.8.4 Theoretical foundations of the WebSockets protocol</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_8_project.htm"> 7.8 Projects </a>/ 7.8.4 Theoretical foundations of the WebSockets protocol
+          </td>
+          <td width="70" align="right">
+          <a href="7_8_3_project_nodejs.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_8_5_project_websocket_server.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.8.4 Theoretical foundations of the WebSockets protocol</span></p>
+<p class="p_Text"><span class="f_Text">The WebSocket protocol is built on top of TCP/IP network connections, which are characterized by an IP address (or a domain name that replaces it) and a port number. The HTTP/HTTPS protocol, with which we have already practiced in the chapter on <a href="7_5_network.htm" class="topiclink">network functions</a>, works based on the same principle. There, the standard port numbers were 80 (for insecure connections) and 443 (for secure connections). There is no dedicated port number for WebSocket, so web service providers can choose any available number. All of our examples will use port 9000.</span></p>
+<p class="p_Text"><span class="f_Text">When specifying URLs as WebSocket protocol prefixes, we use </span><span class="f_Text" style="font-style: italic;">ws</span><span class="f_Text"> (for non-secure connections) and </span><span class="f_Text" style="font-style: italic;">wss</span><span class="f_Text"> (for secure connections).</span></p>
+<p class="p_Text"><span class="f_Text">The WebSocket format is more efficient in terms of data transfer than HTTP as it uses much less control data.</span></p>
+<p class="p_Text"><span class="f_Text">The initial connection establishment for a WebSocket service completely repeats an HTTP/HTTPS web page request: you need to send a GET request with specially prepared headers. A feature of these headers is the presence of lines:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Connection:&nbsp;Upgrade</span>
+<br><span class="f_CodeExample">Upgrade:&nbsp;websocket</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">as well as some additional lines that report the version of the WebSocket protocol and special randomly generated strings. The keys involved in the &quot;handshaking&quot; procedure between the client and the server.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Sec-WebSocket-Key:&nbsp;...</span>
+<br><span class="f_CodeExample">Sec-WebSocket-Version:&nbsp;13</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In practice, the &quot;handshake&quot; implies that the server checks the availability of those options that the client requested, and in response with standard HTTP headers confirms the switch to WebSocket mode or rejects it. The simplest reason for rejection can be if you are trying to connect via WebSockets to a simple web server where the WebSocket server is not provided or the required version is not supported.</span></p>
+<p class="p_Text"><span class="f_Text">The current version of the WebSockets protocol is known under the symbolic name Hybi and number 13. An earlier and simpler version called Hixie may be useful for backward compatibility. In what follows, we will only use Hybi, although a Hixie implementation is also included.</span></p>
+<p class="p_Text"><span class="f_Text">A successful connection is indicated by the following HTTP headers in the server response:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">HTTP/1.1&nbsp;101&nbsp;Switching&nbsp;Protocols</span>
+<br><span class="f_CodeExample">Upgrade:&nbsp;websocket</span>
+<br><span class="f_CodeExample">Connection:&nbsp;Upgrade</span>
+<br><span class="f_CodeExample">Sec-WebSocket-Accept:&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The Sec-WebSocket-Accept field here is calculated and populated by the server based on the Sec-WebSocket-Key to confirm compliance with the protocol. All this is regulated by the specification <a href="https://www.rfc-editor.org/rfc/rfc6455" target="_blank" class="weblink" title="WebSocket protocol">RFC6455</a> and will be supported in our MQL programs as well.</span></p>
+<p class="p_Text"><span class="f_Text">For clarity, the procedure is shown in the following image:</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Interaction between client and server via WebSocket protocol" title="Interaction between client and server via WebSocket protocol" width="600" height="360" style="margin:0 auto 0 auto;width:600px;height:360px;border:none" src="websocket.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Interaction between client and server via WebSocket protocol</span></p>
+<p class="p_Text"><span class="f_Text">After establishing a WebSocket connection, the client and server can exchange information packed into special blocks: frames and messages. A message may consist of one or more frames. The frame size, according to the specification, is limited to an astronomical number of 2</span><span class="f_Text" style="font-size: 7pt; vertical-align: super;">63</span><span class="f_Text"> bytes (9223372036854775807 ~ 9.22 exabytes!), but specific implementations may of course have more mundane limits since this theoretical limit does not seem practical for sending in one packet.</span></p>
+<p class="p_Text"><span class="f_Text">At any time, the client or server can terminate the connection, having previously &quot;politely said goodbye&quot; (see below) or by simply closing the network socket. &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">Frames can be of different types as specified in their header (4 to 16 bytes long) that comes at the beginning of each frame. For reference, let's list the operational codes (they are present in the first byte of the header) and the purpose of frames of different types.</span></p>
+<ul>
+<li class="p_li"><span class="f_li">0 – continuation frame (inherits the properties of the previous frame);</span></li>
+<li class="p_li"><span class="f_li">1 – frame with text information;</span></li>
+<li class="p_li"><span class="f_li">2 – frame with binary information;</span></li>
+<li class="p_li"><span class="f_li">8 – frame request to close and confirmation of closing the connection (sent for &quot;polite farewell&quot;);</span></li>
+<li class="p_li"><span class="f_li">9 – ping frame, can be periodically sent by either side to make sure the connection is physically saved;</span></li>
+<li class="p_li"><span class="f_li">10 – pong frame, sent in response to a ping frame.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The last frame in a message is marked with a special bit in the header. Of course, when a message consists of one frame, it is also the last one. The length of the payload is also passed in the header.</span></p>
+
+</div>
+
+</body>
+</html>

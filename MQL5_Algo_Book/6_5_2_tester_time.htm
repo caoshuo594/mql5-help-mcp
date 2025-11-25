@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.5.2 Time management in the tester: timer, Sleep, GMT</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_5_tester.htm"> 6.5 Testing and optimization of Expert Advisors </a>/ 6.5.2 Time management in the tester: timer, Sleep, GMT
+          </td>
+          <td width="70" align="right">
+          <a href="6_5_1_tester_ticks.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_5_3_tester_chart_limits.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.5.2 Time management in the tester: timer, Sleep, GMT</span></p>
+<p class="p_Text"><span class="f_Text">When developing Expert Advisors, it should be taken into account that the tester has some specifics of simulating the passage of time based on <a href="6_5_1_tester_ticks.htm" class="topiclink">generated ticks</a> and operation of time-related functions.</span></p>
+<p class="p_Text"><span class="f_Text">When testing, the local time returned by the </span><span class="f_Text" style="font-style: italic;">TimeLocal</span><span class="f_Text"> function is always equal to the server time according to </span><span class="f_Text" style="font-style: italic;">TimeTradeServer</span><span class="f_Text">. In turn, server time is always equal to GMT </span><span class="f_Text" style="font-style: italic;">TimeGMT</span><span class="f_Text">. Thus, all these functions, when tested, give the same time. This is a technical feature of the platform, which occurs because it was decided not to store information about the server time locally, but always take it from the server, with which there may be no connection at a particular moment.</span></p>
+<p class="p_Text"><span class="f_Text">This feature creates difficulties in the implementation of strategies related to global time, in particular, with reference to news releases. In such cases, it is necessary to specify the time zone of quotes in the settings of the Expert Advisor being tested or to invent methods for auto-detection of the time zone (see section <a href="4_7_2_timing_daylight_saving.htm" class="topiclink">Daylight saving time</a>).</span></p>
+<p class="p_Text"><span class="f_Text">Let's turn now to other functions for working with time.</span></p>
+<p class="p_Text"><span class="f_Text">As we know, it is possible to process timer events in MQL5. The </span><span class="f_Text" style="font-style: italic;"><a href="5_6_2_timer_ontimer.htm" class="topiclink">OnTimer</a></span><span class="f_Text"> handler is called regardless of the testing mode. This means that if testing is launched in the &quot;Open prices only&quot; mode on the H4 period, and a timer is set inside the Expert Advisor with a call coming every second, then the </span><span class="f_Text" style="font-style: italic;">OnTick</span><span class="f_Text"> handler will be called once at the opening of each H4 bar and then, within the bar, the </span><span class="f_Text" style="font-style: italic;">OnTimer</span><span class="f_Text"> handler will be called 14400 times (3600 seconds * 4 hours). The extent to which the Expert Advisor testing time will increase in this case depends on its algorithm.</span></p>
+<p class="p_Text"><span class="f_Text">Another function that influences the course of time within a program is the </span><span class="f_Text" style="font-style: italic;"><a href="4_7_4_timing_sleep.htm" class="topiclink">Sleep</a></span><span class="f_Text"> function. It allows you to suspend the execution of an Expert Advisor for some time. This may be necessary when requesting any data that is not yet ready at the time of the request, and it is necessary to wait until it is ready.</span></p>
+<p class="p_Text"><span class="f_Text">It is important to understand that </span><span class="f_Text" style="font-style: italic;">Sleep</span><span class="f_Text"> affects only the program that calls it and does not delay the testing process. In fact, when calling </span><span class="f_Text" style="font-style: italic;">Sleep</span><span class="f_Text">, the generated ticks are &quot;played&quot; within the specified delay, as a result of which pending orders, stop levels, etc. can be triggered. After calling </span><span class="f_Text" style="font-style: italic;">Sleep</span><span class="f_Text">, the time simulated in the tester is increased by the interval specified in the function parameter.</span></p>
+<p class="p_Text"><span class="f_Text">Later, in the section on <a href="6_5_4_tester_multicurrency_sync.htm" class="topiclink">testing multi-currency Expert Advisors</a>, we will show how you can use the timer and the </span><span class="f_Text" style="font-style: italic;">Sleep</span><span class="f_Text"> function to synchronize bars.</span></p>
+
+</div>
+
+</body>
+</html>

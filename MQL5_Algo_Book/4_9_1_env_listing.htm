@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.9.1 Getting a general list of terminal and program properties</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_9_environment.htm"> 4.9 MQL program execution environment </a>/ 4.9.1 Getting a general list of terminal and program properties
+          </td>
+          <td width="70" align="right">
+          <a href="4_9_environment.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_9_2_env_build.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.9.1 Getting a general list of terminal and program properties</span></p>
+<p class="p_Text"><span class="f_Text">The available built-in functions for obtaining environment properties use a generic approach: the properties of each specific type are combined into a separate function with a single argument that specifies the requested property. There are enumerations defined to identify properties: each element describes one property.</span></p>
+<p class="p_Text"><span class="f_Text">As we will see below, this approach is often used in the MQL5 API and in other areas, including application areas. In particular, similar sets of functions are used to get the properties of <a href="6_3_account.htm" class="topiclink">trading accounts</a> and <a href="6_1_symbols.htm" class="topiclink">financial instruments</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Properties of three simple types, </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">string</span><span class="f_Text">, are sufficient to describe the environment. However, not only integer properties are presented using values of type </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text">, but also logical flags (in particular, permissions/prohibitions, presence of a network connection, etc.), as well as other built-in enumerations (for example, types of MQL programs and types of licenses).</span></p>
+<p class="p_Text"><span class="f_Text">Given the conditional division into terminal properties and properties of a particular MQL program, there are the following functions that describe the environment.</span></p>
+<p class="p_H4"><span class="f_H4">int MQLInfoInteger(ENUM_MQL_INFO_INTEGER p)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">int TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER p)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">double TerminalInfoDouble(ENUM_TERMINAL_INFO_DOUBLE p)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">string MQLInfoString(ENUM_MQL_INFO_STRING p)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">string TerminalInfoString(ENUM_TERMINAL_INFO_STRING p)</span></p>
+<p class="p_Text"><span class="f_Text">These prototypes map value types to enum types. For example, terminal properties of type </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> are summarized in ENUM_TERMINAL_INFO_INTEGER, and its properties of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> are listed in ENUM_TERMINAL_INFO_DOUBLE, etc. The list of available enums and their elements can be found in the documentation, in the sections on <a href="https://www.mql5.com/en/docs/constants/environment_state/terminalstatus" target="_blank" class="weblink" title="Documentation on mql5.com">Terminal properties</a> and <a href="https://www.mql5.com/en/docs/constants/environment_state/mql5_programm_info" target="_blank" class="weblink" title="Documentation on mql5.com">MQL programs</a>.</span></p>
+<p class="p_Text"><span class="f_Text">In the following sections, we'll take a look at all the properties, grouped based on their purpose. But here we turn to the problem of obtaining a general list of all existing properties and their values. This is often necessary to identify &quot;bottlenecks&quot; or features of the operation of MQL programs on specific instances of the terminal. A rather common situation is when an MQL program works on one computer, but does not work at all, or works exhibits some problems on another.</span></p>
+<p class="p_Text"><span class="f_Text">The list of properties is constantly updated as the platform develops, so it is advisable to make their request not on the basis of a list hardwired into the source code, but automatically.</span></p>
+<p class="p_Text"><span class="f_Text">In the <a href="4_1_6_conversions_enums.htm" class="topiclink">Enumerations</a> section, we have created a template function </span><span class="f_Text" style="font-style: italic;">EnumToArray</span><span class="f_Text"> to get a complete list of enumeration elements (file </span><span class="f_Text" style="font-style: italic;">EnumToArray.mqh</span><span class="f_Text">). Also in that section, we introduced the script </span><span class="f_Text" style="font-style: italic;">ConversionEnum.mq5</span><span class="f_Text">, which uses the specified header file. In the script, a helper function </span><span class="f_Text" style="font-style: italic;">process</span><span class="f_Text"> was implemented, which received an array with enumeration element codes and output them to the log. We will take these developments as a starting point for further improvement.</span></p>
+<p class="p_Text"><span class="f_Text">We need to modify the </span><span class="f_Text" style="font-style: italic;">process</span><span class="f_Text"> function in such a way, that we not only get a list of the elements of a particular enumeration but also query the corresponding properties using one of the built-in property functions.</span></p>
+<p class="p_Text"><span class="f_Text">Let's give the new version of the script a name, </span><span class="f_Text" style="font-style: italic;">Environment.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Since the properties of the environment are scattered across several different functions (in this case, five), you need to learn how to pass to the new version of the function </span><span class="f_Text" style="font-style: italic;">process</span><span class="f_Text"> a pointer to the required built-in function (see section <a href="2_8_10_functions_typedef.htm" class="topiclink">Function pointers (typedef)</a>). However, MQL5 does not allow assigning the address of a built-in function to a function pointer. This can only be done with an application function implemented in MQL5. Therefore, we will create wrapper functions. For example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_MQLInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_MQL_INFO_INTEGER</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MQLInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;example&nbsp;of&nbsp;pointer&nbsp;type&nbsp;description&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">typedef</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;(*</span><span class="f_CodeExample" style="color: #333333;">IntFuncPtr</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_MQL_INFO_INTEGER</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">property</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;initialization&nbsp;of&nbsp;pointer&nbsp;variables</span>
+<br><span class="f_CodeExample" style="color: #333333;">IntFuncPtr</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr1</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_MQLInfoInteger</span><span class="f_CodeExample">;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok</span>
+<br><span class="f_CodeExample" style="color: #333333;">IntFuncPtr</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr2</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MQLInfoInteger</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;compilation&nbsp;error</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">A &quot;double&quot; for </span><span class="f_Text" style="font-style: italic;">MQLInfoInteger</span><span class="f_Text"> is shown above (obviously, it should have a different, but preferably similar, name). Other functions are &quot;packed&quot; in a similar way. There will be five in total.</span></p>
+<p class="p_Text"><span class="f_Text">If in the old version of </span><span class="f_Text" style="font-style: italic;">process</span><span class="f_Text"> there was only one template parameter specifying an enumeration, in the new one we also need to pass the type of the return value (since MQL5 does not &quot;understand&quot; the words in the name of enumerations): even though the ending &quot;INTEGER&quot; is present in the name ENUM_MQL_INFO_INTEGER, the compiler is not able to associate it with the type </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">However, in addition to linking the types of the return value and the enumeration, we need to somehow pass to the function </span><span class="f_Text" style="font-style: italic;">process</span><span class="f_Text"> a pointer to the appropriate wrapper function (one of the five we defined earlier). After all, the compiler itself cannot determine by an argument, for example, of ENUM_MQL_INFO_INTEGER type, that </span><span class="f_Text" style="font-style: italic;">MQLInfoInteger</span><span class="f_Text"> needs to be called.</span></p>
+<p class="p_Text"><span class="f_Text">To solve this problem, a special template structure was created that combines all three factors together.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">E</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">R</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Binding</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">typedef</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">R</span><span class="f_CodeExample">&nbsp;(*</span><span class="f_CodeExample" style="color: #333333;">FuncPtr</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">E</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">property</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FuncPtr</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Binding</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FuncPtr</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">):&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">p</span><span class="f_CodeExample">)&nbsp;{&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The two template parameters allow you to specify the type of the function pointer (</span><span class="f_Text" style="font-style: italic;">FuncPtr</span><span class="f_Text">) with the desired combination of result and input parameters. The structure instance has the </span><span class="f_Text" style="font-style: italic;">f</span><span class="f_Text"> field for a pointer to that newly defined type.</span></p>
+<p class="p_Text"><span class="f_Text">Now a new version of the </span><span class="f_Text" style="font-style: italic;">process</span><span class="f_Text"> function can be described as follows.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">E</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">R</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Binding</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">E</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">R</span><span class="f_CodeExample">&gt;&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">E&nbsp;e</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">E</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;turn&nbsp;off&nbsp;the&nbsp;warning&nbsp;about&nbsp;the&nbsp;lack&nbsp;of&nbsp;initialization</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;get&nbsp;a&nbsp;list&nbsp;of&nbsp;enum&nbsp;elements&nbsp;into&nbsp;an&nbsp;array</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">EnumToArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">USHORT_MAX</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">E</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;Count=&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ResetLastError</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;//&nbsp;display&nbsp;the&nbsp;name&nbsp;and&nbsp;value&nbsp;for&nbsp;each&nbsp;element,</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;//&nbsp;obtained&nbsp;by&nbsp;calling&nbsp;a&nbsp;pointer&nbsp;in&nbsp;the&nbsp;Binding&nbsp;structure</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">E</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">R&nbsp;r</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">b</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;call&nbsp;the&nbsp;function,&nbsp;then&nbsp;parse&nbsp;_LastError</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">snapshot</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%&nbsp;3d&nbsp;%s=%s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">),&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;+</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">snapshot</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">E2S</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">snapshot</span><span class="f_CodeExample">)&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;(&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">snapshot</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;)&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ResetLastError</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The input argument is the </span><span class="f_Text" style="font-style: italic;">Binding</span><span class="f_Text"> structure. It contains a pointer to a specific function for obtaining properties (this field will be filled in by the calling code).</span></p>
+<p class="p_Text"><span class="f_Text">This version of the algorithm logs the sequence number, the property identifier, and its value. Again, note that the first number in each entry will contain the element's ordinal in the enumeration, not the value (values can be assigned to elements with gaps). Optionally you can add an output of a variable </span><span class="f_Text" style="font-style: italic;">e</span><span class="f_Text"> &quot;in its pure form&quot; inside the instructions </span><span class="f_Text" style="font-style: italic;">print format</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In addition, you can modify the process so that it collects into an array (or other container, such as a map) the resulting property values and returns them &quot;outside&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">It would be a potential error to refer to the function pointer directly in the instruction </span><span class="f_Text" style="font-style: italic;">print format</span><span class="f_Text"> along with the </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> error code analysis. The point is that the sequence of evaluation of function arguments (see section <a href="2_8_3_functions_parameters.htm" class="topiclink">Parameters and Arguments</a>) and operands in an expression (see section <a href="2_5_1_expressions_overview.htm" class="topiclink">Basic concepts</a>) is not defined in this case. Therefore, when a pointer is called on the same line where </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> is read, the compiler may decide to execute the second before the first. As a result, we will see an irrelevant error code (for example, from a previous function call).</span></p>
+<p class="p_Text"><span class="f_Text">But that's not all. Built-in variable </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> can change its value almost anywhere in the evaluation of an expression if any operation fails. In particular, the function </span><span class="f_Text" style="font-style: italic;">EnumToString</span><span class="f_Text"> can potentially raise an error code if a value is passed as an argument that is not in the enumeration. In this snippet, we are immune to this problem because our function </span><span class="f_Text" style="font-style: italic;">EnumToArray</span><span class="f_Text"> returns an array with only checked (valid) enumeration elements. However, in general cases, in any &quot;compound&quot; instruction, there may be many places where </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> will be changed. In this regard, it is desirable to fix the error code immediately after the action which we are interested in (here it is a function call by a pointer), saving it to an intermediate variable </span><span class="f_Text" style="font-style: italic;">snapshot</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">But let's go back to the main issue. We can finally organize a call of the new function </span><span class="f_Text" style="font-style: italic;">process</span><span class="f_Text"> to obtain various properties of the software environment.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Binding</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_MQL_INFO_INTEGER</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&gt;(</span><span class="f_CodeExample" style="color: #333333;">_MQLInfoInteger</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Binding</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_TERMINAL_INFO_INTEGER</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&gt;(</span><span class="f_CodeExample" style="color: #333333;">_TerminalInfoInteger</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Binding</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_TERMINAL_INFO_DOUBLE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&gt;(</span><span class="f_CodeExample" style="color: #333333;">_TerminalInfoDouble</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Binding</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_MQL_INFO_STRING</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&gt;(</span><span class="f_CodeExample" style="color: #333333;">_MQLInfoString</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">process</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Binding</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_TERMINAL_INFO_STRING</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&gt;(</span><span class="f_CodeExample" style="color: #333333;">_TerminalInfoString</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Below is a snippet of the generated log entries.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">ENUM_MQL_INFO_INTEGER&nbsp;Count=15</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;0&nbsp;MQL_PROGRAM_TYPE=1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;1&nbsp;MQL_DLLS_ALLOWED=0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;2&nbsp;MQL_TRADE_ALLOWED=0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;3&nbsp;MQL_DEBUG=1</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;7&nbsp;MQL_LICENSE_TYPE=0</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">ENUM_TERMINAL_INFO_INTEGER&nbsp;Count=50</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;0&nbsp;TERMINAL_BUILD=2988</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;1&nbsp;TERMINAL_CONNECTED=1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;2&nbsp;TERMINAL_DLLS_ALLOWED=0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;3&nbsp;TERMINAL_TRADE_ALLOWED=0</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;6&nbsp;TERMINAL_MAXBARS=100000</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;7&nbsp;TERMINAL_CODEPAGE=1251</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;8&nbsp;TERMINAL_MEMORY_PHYSICAL=4095</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;9&nbsp;TERMINAL_MEMORY_TOTAL=8190</span>
+<br><span class="f_CodeExample">&nbsp;10&nbsp;TERMINAL_MEMORY_AVAILABLE=7813</span>
+<br><span class="f_CodeExample">&nbsp;11&nbsp;TERMINAL_MEMORY_USED=377</span>
+<br><span class="f_CodeExample">&nbsp;12&nbsp;TERMINAL_X64=1</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">ENUM_TERMINAL_INFO_DOUBLE&nbsp;Count=2</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;0&nbsp;TERMINAL_COMMUNITY_BALANCE=0.0&nbsp;(MQL5_WRONG_PROPERTY,4512)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;1&nbsp;TERMINAL_RETRANSMISSION=0.0</span>
+<br><span class="f_CodeExample">ENUM_MQL_INFO_STRING&nbsp;Count=2</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;0&nbsp;MQL_PROGRAM_NAME=Environment</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;1&nbsp;MQL_PROGRAM_PATH=C:\Program&nbsp;Files\MT5East\MQL5\Scripts\MQL5Book\p4\Environment.ex5</span>
+<br><span class="f_CodeExample">ENUM_TERMINAL_INFO_STRING&nbsp;Count=6</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;0&nbsp;TERMINAL_COMPANY=MetaQuotes&nbsp;Software&nbsp;Corp.</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;1&nbsp;TERMINAL_NAME=MetaTrader&nbsp;5</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;2&nbsp;TERMINAL_PATH=C:\Program&nbsp;Files\MT5East</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;3&nbsp;TERMINAL_DATA_PATH=C:\Program&nbsp;Files\MT5East</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;4&nbsp;TERMINAL_COMMONDATA_PATH=C:\Users\User\AppData\Roaming\MetaQuotes\Terminal\Common</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;5&nbsp;TERMINAL_LANGUAGE=Russian</span>
+<br><span class="f_CodeExample">&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">These and other properties will be described in the following sections.</span></p>
+<p class="p_Text"><span class="f_Text">It is worth noting that some properties are inherited from previous stages of platform development and are left only for compatibility. In particular, the TERMINAL_X64 property in </span><span class="f_Text" style="font-style: italic;">TerminalInfoInteger</span><span class="f_Text"> returns an indication of whether the terminal is 64-bit. Today, the development of 32-bit versions has been discontinued, and therefore this property is always equal to 1 (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">).</span></p>
+
+</div>
+
+</body>
+</html>

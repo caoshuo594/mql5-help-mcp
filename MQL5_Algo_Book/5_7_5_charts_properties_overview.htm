@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.7.5 Overview of functions for working with complete set of properties</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_7_charts.htm"> 5.7 Working with charts </a>/ 5.7.5 Overview of functions for working with the complete set of properties
+          </td>
+          <td width="70" align="right">
+          <a href="5_7_4_charts_symbol_period.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_7_6_charts_string_properties.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.7.5 Overview of functions for working with the complete set of chart properties</span></p>
+<p class="p_Text"><span class="f_Text">Chart properties are readable and editable via groups </span><span class="f_Text" style="font-style: italic;">ChartSet</span><span class="f_Text">- and </span><span class="f_Text" style="font-style: italic;">ChartGet</span><span class="f_Text">-functions, each of which contains properties of a certain type: real numbers (</span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">), whole numbers (</span><span class="f_Text" style="font-style: italic;">long</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">color</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">bool</span><span class="f_Text">, enums), and strings.</span></p>
+<p class="p_Text"><span class="f_Text">All functions receive the chart ID as the first parameter. The value 0 means the current chart, that is, it is equivalent to passing the result of the call </span><span class="f_Text" style="font-style: italic;">ChartID()</span><span class="f_Text">. However, this does not mean that the ID of the current chart is 0.</span></p>
+<p class="p_Text"><span class="f_Text">The constants describing all properties form three enumerations ENUM_CHART_PROPERTY_INTEGER, ENUM_CHART_PROPERTY_DOUBLE, ENUM_CHART_PROPERTY_STRING, which are used as function parameters for the corresponding type. A summary table of all properties can be found in the MQL5 documentation, on the page about <a href="https://www.mql5.com/ru/docs/constants/chartconstants/enum_chart_property" target="_blank" class="weblink" title="MQL5 Documentation">chart properties</a>. In the following sections of this chapter, we will gradually cover virtually all the properties, grouping them according to their purpose. The only exception is the properties of managing events on the chart - we will describe them in the <a href="5_9_2_events_properties.htm" class="topiclink">relevant section</a> of the chapter on events.</span></p>
+<p class="p_Text"><span class="f_Text">The elements of all three enumerations are assigned such values that they form a single list without intersections (repetitions). This allows you to determine the type of enumeration by a specific value. For example, given a constant, we can consistently try to convert it to a string with the name of one of the enums until we succeed.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">&nbsp;=&nbsp;...;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">ResetLastError</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;clear&nbsp;the&nbsp;error&nbsp;code&nbsp;if&nbsp;there&nbsp;was&nbsp;one</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_CHART_PROPERTY_INTEGER</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;resulting&nbsp;string&nbsp;is&nbsp;not&nbsp;important</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;analyze&nbsp;if&nbsp;there&nbsp;is&nbsp;a&nbsp;new&nbsp;error</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;success&nbsp;is&nbsp;an&nbsp;element&nbsp;of&nbsp;ENUM_CHART_PROPERTY_INTEGER</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_CHART_PROPERTY_INTEGER</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">ResetLastError</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_CHART_PROPERTY_DOUBLE</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;success&nbsp;is&nbsp;an&nbsp;ENUM_CHART_PROPERTY_DOUBLE&nbsp;element</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_CHART_PROPERTY_DOUBLE</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">...&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;continue&nbsp;a&nbsp;similar&nbsp;check&nbsp;for&nbsp;ENUM_CHART_PROPERTY_STRING</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Later we will use this approach in test scripts.</span></p>
+<p class="p_Text"><span class="f_Text">Some properties (for example, the number of visible bars) are read-only and cannot be changed. They will be further marked &quot;r/o&quot; (read-only).</span></p>
+<p class="p_Text"><span class="f_Text">Property read functions have a short form and a long form: the short form directly returns the requested value, and the long form returns a boolean attribute of success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or error (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">), while the value itself is placed in the last parameter passed by reference. When using the short form, it is especially important to check the error code in the </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> variable, because the value 0 (NULL) returned in case of problems may be generally correct.</span></p>
+<p class="p_Text"><span class="f_Text">When accessing some properties, you must specify an additional parameter </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text">, which is used to indicate the chart window/subwindow. 0 means the main window. Subwindows are numbered starting from 1. Some properties apply to the chart as a whole and thus they have function variants without the </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text"> parameter.</span></p>
+<p class="p_Text"><span class="f_Text">Following are the function prototypes for reading and writing integer properties. Please note that the type of values in them is </span><span class="f_Text" style="font-style: italic;">long</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4" style="letter-spacing: -1px;">bool ChartSetInteger(long chartId, ENUM_CHART_PROPERTY_INTEGER property, long value)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4" style="letter-spacing: -1px;">bool ChartSetInteger(long chartId, ENUM_CHART_PROPERTY_INTEGER property, int window, long value)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4" style="letter-spacing: -1px;">long ChartGetInteger(long chartId, ENUM_CHART_PROPERTY_INTEGER property, int window = 0)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4" style="letter-spacing: -1px;">bool ChartGetInteger(long chartId, ENUM_CHART_PROPERTY_INTEGER property, int window, long &amp;value)</span></p>
+<p class="p_Text"><span class="f_Text">Functions for real properties are described similarly. There are no writable real properties for subwindows, so there is only one form of </span><span class="f_Text" style="font-style: italic;">ChartSetDouble</span><span class="f_Text">, which is without the </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text"> parameter.</span></p>
+<p class="p_H4"><span class="f_H4" style="letter-spacing: -1px;">bool ChartSetDouble(long chartId, ENUM_CHART_PROPERTY_DOUBLE property, double value)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4" style="letter-spacing: -1px;">double ChartGetDouble(long chartId, ENUM_CHART_PROPERTY_DOUBLE property, int window = 0)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4" style="letter-spacing: -1px;">bool ChartGetDouble(long chartId, ENUM_CHART_PROPERTY_DOUBLE property, int window, double &amp;value)</span></p>
+<p class="p_Text"><span class="f_Text">The same applies to string properties, but one more nuance should be taken into account: the length of the string cannot exceed 2045 characters (extra characters will be cut off).</span></p>
+<p class="p_H4"><span class="f_H4" style="letter-spacing: -1px;">bool ChartSetString(long chartId, ENUM_CHART_PROPERTY_STRING property, string value)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4" style="letter-spacing: -1px;">string ChartGetString(long chartId, ENUM_CHART_PROPERTY_STRING property) </span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4" style="letter-spacing: -1px;">bool ChartGetString(long chartId, ENUM_CHART_PROPERTY_STRING property, string &amp;value) </span></p>
+<p class="p_Text"><span class="f_Text">When reading properties using the short form of </span><span class="f_Text" style="font-style: italic;">ChartGetInteger/ChartGetDouble</span><span class="f_Text">, the </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text"> parameter is optional and defaults to the main window (</span><span class="f_Text" style="font-style: italic;">window=0</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">Functions for setting chart properties (</span><span class="f_Text" style="font-style: italic;">ChartSetInteger</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">ChartSetDouble</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">ChartSetString</span><span class="f_Text">) are asynchronous and serve to send change commands to the chart. If these functions are successfully executed, the command is added to the common queue of chart events, and </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> is returned. When an error occurs, the function returns </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">. In this case, you should check the error code in the </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> variable.</span></p>
+<p class="p_Text"><span class="f_Text">Chart properties are changed later, during the processing of the event queue of this chart, and, as a rule, with some delay, so you should not expect an immediate update of the chart after applying new settings. To force the update of the appearance and properties of the chart, use the function </span><span class="f_Text" style="font-style: italic;"><a href="5_7_20_charts_redraw.htm" class="topiclink">ChartRedraw</a></span><span class="f_Text">. If you want to change several chart properties at once, then you need to call the corresponding functions in one code block and then once in </span><span class="f_Text" style="font-style: italic;">ChartRedraw</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In general, the chart is updated automatically by the terminal in response to events such as the arrival of a new quote, changes in the chart window size, scaling, scrolling, adding an indicator, etc.</span></p>
+<p class="p_Text"><span class="f_Text">Functions for getting chart properties (</span><span class="f_Text" style="font-style: italic;">ChartGetInteger</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">ChartGetDouble</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">ChartGetString</span><span class="f_Text">) are synchronous, that is, the calling code waits for the result of their execution.</span></p>
+
+</div>
+
+</body>
+</html>

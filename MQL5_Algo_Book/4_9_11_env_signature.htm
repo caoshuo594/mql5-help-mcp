@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.9.11 Binding a program to runtime properties</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_9_environment.htm"> 4.9 MQL program execution environment </a>/ 4.9.11 Binding a program to runtime properties
+          </td>
+          <td width="70" align="right">
+          <a href="4_9_10_env_bar_lang.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_9_12_env_keyboard.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.9.11 Binding a program to runtime properties</span></p>
+<p class="p_Text"><span class="f_Text">As an example of working with the properties described in the previous sections, let's consider the popular task of binding an MQL program to a hardware environment to protect it from copying. When the program is distributed through the MQL5 Market, the binding is provided by the service itself. However, if the program is developed on a custom basis, it can be linked either to the account number, or to the name of the client, or to the available properties of the terminal (computer). The first is not always convenient, because many traders have several live accounts (probably with different brokers), not to mention demo accounts with a limited validity period. The second may be fictional or too commonplace. Therefore, we will implement a prototype algorithm for binding a program to a selected set of environment properties. More serious security schemes could probably use a DLL and directly read device hardware labels from Windows, but not every client will agree to run potentially unsafe libraries.</span></p>
+<p class="p_Text"><span class="f_Text">Our protection option is presented in the script </span><span class="f_Text" style="font-style: italic;">EnvSignature.mq5</span><span class="f_Text">. The script calculates hashes from the given properties of the environment and creates a unique signature (imprint) based on them.</span></p>
+<p class="p_Text"><span class="f_Text">Hashing is a special processing of arbitrary information, as a result of which a new block of data is created that has the following characteristics (they are guaranteed by the algorithm used):</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Matching hash values for two original data sets means, with almost 100% probability, that the data are identical (the probability of a random match is negligible).</span></li>
+<li class="p_li"><span class="f_li">If the original data changes, their hash value will also change.</span></li>
+<li class="p_li"><span class="f_li">It is impossible to mathematically restore the original data from the hash value (they remain secret) unless a complete enumeration of possible initial values is performed (if their initial size increases and there is no information about their structure, the problem is unsolvable in the foreseeable future).</span></li>
+<li class="p_li"><span class="f_li">The hash size is fixed (does not depend on the amount of initial data).</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Suppose one of the environment properties is described by the string: &quot;TERMINAL_LANGUAGE=German&quot;. It can be obtained with a simple statement like the following (simplified):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">language</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_LANGUAGE</span><span class="f_CodeExample">)&nbsp;+</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;=&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_LANGUAGE</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The actual language will match the settings. Having a hypothetical </span><span class="f_Text" style="font-style: italic;">Hash</span><span class="f_Text"> function, we can compute the signature.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signature</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Hash</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">language</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When there are more properties, we simply repeat the procedure for all of them, or request a hash from the combined strings (so far this is pseudo-code, not part of the real program).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">properties</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;fill&nbsp;in&nbsp;the&nbsp;property&nbsp;lines&nbsp;as&nbsp;you&nbsp;wish</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signature</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">properties</span><span class="f_CodeExample">);&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signature</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">properties</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Hash</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">signature</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The received signature can be reported by the user to the program developer, who will &quot;sign&quot; it in a special way, upon receiving a validation string suitable only for this signature. The signature is also based on hashing and requires knowledge of some secret (password phrase), known only to the developer and hard-coded into the program (for the verification phase).</span></p>
+<p class="p_Text"><span class="f_Text">The developer will pass the validation string to the user who then will be able to run the program by specifying this string in the parameters.</span></p>
+<p class="p_Text"><span class="f_Text">When launched without a validation string, the program should generate a new signature for the current environment, print it to the log, and exit (this information should be passed to the developer). With an invalid validation string, the program should display an error message and exit.</span></p>
+<p class="p_Text"><span class="f_Text">Several launch modes can be provided for the developer himself: with a signature, but without a validation string (to generate the last one), or with a signature and a validation string (here the program will re-sign the signature and compare it with the specified validation string just for checking).</span></p>
+<p class="p_Text"><span class="f_Text">Let's estimate how selective such protection will be. After all, the binding here is not performed to a unique identifier of anything.</span></p>
+<p class="p_Text"><span class="f_Text">The following table provides statistics on two characteristics: screen size and RAM. Obviously, the values will change over time, but the approximate distribution will remain the same: a few characteristic values will be the most popular, while some &quot;new&quot; advanced and &quot;old&quot; ones that are going out of circulation will make up decreasing &quot;tails&quot;.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Screen</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: right;"><span class="f_BoldTitlesInTables">1920x1080</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: right;"><span class="f_BoldTitlesInTables">1536x864</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: right;"><span class="f_BoldTitlesInTables">1440x900</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: right;"><span class="f_BoldTitlesInTables">1366x768</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: right;"><span class="f_BoldTitlesInTables">800x600</span></p>
+</th>
+</tr>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">RAM</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: right;"><span class="f_BoldTitlesInTables">21%</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: right;"><span class="f_BoldTitlesInTables">7%</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: right;"><span class="f_BoldTitlesInTables">5%</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: right;"><span class="f_BoldTitlesInTables">10%</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: right;"><span class="f_BoldTitlesInTables">4%</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">4Gb&nbsp;&nbsp;&nbsp;&nbsp;20%</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">4.20</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">1.40</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">1.00</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">2.0</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">0.8</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">8Gb&nbsp;&nbsp;&nbsp;&nbsp;20%</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">4.20</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">1.40</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">1.00</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">2.0</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">0.8</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">16Gb&nbsp;&nbsp;15%</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">3.15</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">1.05</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">0.75</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">1.5</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">0.6</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">32Gb&nbsp;&nbsp;10%</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">2.10</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">0.70</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">0.50</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">1.0</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">0.4</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">64Gb&nbsp;&nbsp;&nbsp;&nbsp;5%</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">1.05</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">0.35</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">0.25</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">0.5</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: right;"><span class="f_fortable">0.2</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Pay attention to the cells with the largest values, because they mean the same signatures (unless we introduce an element of randomness into them, which will be discussed below). In this case, two combinations of characteristics in the upper left corner are most likely, with each at 4.2%. But these are only two features. If you add the interface language, time zone, number of cores, and working data path (preferably shared, since it contains the Windows username) to the evaluated environment, then the number of potential matches will noticeably decrease.</span></p>
+<p class="p_Text"><span class="f_Text">For hashing, we use the built-in </span><span class="f_Text" style="font-style: italic;">CryptEncode</span><span class="f_Text"> function (it will be described in the <a href="7_4_2_crypt_encode.htm" class="topiclink">Cryptography</a> section) that supports the SHA256 hashing method. As its name suggests, it produces a hash that is 256 bits long, i.e., 32 bytes. If we needed to show it to the user, then we would translate it into text in hexadecimal representation and get a 64-character long string.</span></p>
+<p class="p_Text"><span class="f_Text">To make the signature shorter, we will convert it using Base64 encoding (it is also supported by the </span><span class="f_Text" style="font-style: italic;">CryptEncode</span><span class="f_Text"> function and its counterpart </span><span class="f_Text" style="font-style: italic;">CryptDecode</span><span class="f_Text">), which will give a 44-character long string. Unlike a one-way hash operation, Base64 encoding is reversible, i.e. the original data can be recovered from it. &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">The main operations are implemented by the </span><span class="f_Text" style="font-style: italic;">EnvSignature </span><span class="f_Text">class. It defines the </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> string which should accumulate certain fragments describing the environment. The public interface consists of several overloaded versions of the </span><span class="f_Text" style="font-style: italic;">append</span><span class="f_Text"> function to add strings with environment properties. Essentially, they join the name of the requested property and its value using some abstract element returned by the virtual 'pepper' method as a link. The derived class will define it as a specific string (but it can be empty).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">EnvSignature</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">private</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pepper</span><span class="f_CodeExample">()&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_TERMINAL_INFO_STRING</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">)&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pepper</span><span class="f_CodeExample">()&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_MQL_INFO_STRING</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">)&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pepper</span><span class="f_CodeExample">()&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MQLInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_TERMINAL_INFO_INTEGER</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">)&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pepper</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">)));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_MQL_INFO_INTEGER</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">)&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pepper</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MQLInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">e</span><span class="f_CodeExample">)));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To add an arbitrary string to an object, there is a generic method </span><span class="f_Text" style="font-style: italic;">append</span><span class="f_Text">, which is called in the above methods.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Optionally, the developer can add a so-called &quot;salt&quot; to the hashed data. This is an array with randomly generated data which further complicates hash reversal. Each generation of the signature will be different from the previous one, even though the environment remains constant. The implementation of this feature as well as of other more specific protection aspects (such as the use of symmetric encryption and dynamic calculation of the secret) are left for independent study.</span></p>
+<p class="p_Text"><span class="f_Text">Since the environment consists of well-known properties (their list is limited by MQL5 API constants), and not all of them are sufficiently unique, our defense, as we calculated, can generate the same signatures for different users if we do not use the salt. The signature match will not allow identifying the source of the license leak if it happened.</span></p>
+<p class="p_Text"><span class="f_Text">Therefore, you can increase the effectiveness of protection by changing the method of presenting properties before hashing for each customer. Of course, the method itself should not be disclosed. In the considered example, this implies changing the contents of the </span><span class="f_Text" style="font-style: italic;">pepper</span><span class="f_Text"> method and recompiling the product. This can be expensive, but it allows you to avoid using random salt.</span></p>
+<p class="p_Text"><span class="f_Text">With the property string filled in, we can generate a signature. This is done using the </span><span class="f_Text" style="font-style: italic;">emit</span><span class="f_Text"> method.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">emit</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pack</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">secret</span><span class="f_CodeExample">(),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pack</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">)&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">secret</span><span class="f_CodeExample">()),&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">)&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">[],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CryptEncode</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">CRYPT_HASH_SHA256</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pack</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">)&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Hash&nbsp;bytes:&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">CryptEncode</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">CRYPT_BASE64</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">CharArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The method adds a certain secret (a sequence of bytes known only to the developer and located inside the program) to the data and calculates the hash for the shared string. The secret is obtained from the virtual </span><span class="f_Text" style="font-style: italic;">secret</span><span class="f_Text"> method, which will also define the derived class.</span></p>
+<p class="p_Text"><span class="f_Text">The resulting byte array with the hash is encoded into a string using Base64.</span></p>
+<p class="p_Text"><span class="f_Text">Now comes the most important class function: </span><span class="f_Text" style="font-style: italic;">check</span><span class="f_Text">. It is this function that implements the signature from the developer and checks it from the user.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">check</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">sig</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">validation</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">sig</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">secret</span><span class="f_CodeExample">(),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">sig</span><span class="f_CodeExample">)&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">secret</span><span class="f_CodeExample">()),&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">[],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result1</span><span class="f_CodeExample">[],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result2</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CryptEncode</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">CRYPT_HASH_SHA256</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result1</span><span class="f_CodeExample">)&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WARNING</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;following&nbsp;code&nbsp;should&nbsp;only&nbsp;be&nbsp;present&nbsp;in&nbsp;the&nbsp;developer&nbsp;utility.</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;program&nbsp;supplied&nbsp;to&nbsp;the&nbsp;user&nbsp;must&nbsp;compile&nbsp;without&nbsp;this&nbsp;if.</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">#ifdef</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">I_AM_DEVELOPER</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">validation</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CryptEncode</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">CRYPT_BASE64</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result2</span><span class="f_CodeExample">)&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">validation</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">CharArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">result2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">#endif</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;the&nbsp;exact&nbsp;length&nbsp;is&nbsp;needed&nbsp;to&nbsp;not&nbsp;append&nbsp;terminating&nbsp;'0'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">validation</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">validation</span><span class="f_CodeExample">))&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CryptDecode</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">CRYPT_BASE64</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result2</span><span class="f_CodeExample">)&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayCompare</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">result1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result2</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">During normal operation (for the user), the method calculates the hash from the received signature, supplemented by the secret, and compares it with the value from the validation string (it must first be decoded from Base64 into the raw binary representation of the hash). If the two hashes match, the validation is successful: the validation string matches the property set. Obviously, an empty validation string (or a string entered at random) will not pass the test.</span></p>
+<p class="p_Text"><span class="f_Text">On the developer's machine, the I_AM_DEVELOPER macro must be defined in the source code for the signature utility, which results in an empty validation string being handled differently. In this case, the resulting hash is Base64 encoded, and this string is passed out through the </span><span class="f_Text" style="font-style: italic;">validation</span><span class="f_Text"> parameter. Thus, the utility will be able to display a ready-made validation string for the given signature to the developer.</span></p>
+<p class="p_Text"><span class="f_Text">To create an object, you need a certain derived class that defines strings with the secret and pepper.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//&nbsp;WARNING:&nbsp;change&nbsp;the&nbsp;macro&nbsp;to&nbsp;your&nbsp;own&nbsp;set&nbsp;of&nbsp;random&nbsp;bytes</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PROGRAM_SPECIFIC_SECRET</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&lt;PROGRAM-SPECIFIC-SECRET&gt;&quot;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;WARNING:&nbsp;choose&nbsp;your&nbsp;characters&nbsp;to&nbsp;link&nbsp;in&nbsp;pairs&nbsp;name'='value&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#define&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INSTANCE_SPECIFIC_PEPPER&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;=&quot;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;obvious&nbsp;single&nbsp;sign&nbsp;is&nbsp;selected&nbsp;for&nbsp;demo</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;WARNING:&nbsp;the&nbsp;following&nbsp;macro&nbsp;needs&nbsp;to&nbsp;be&nbsp;disabled&nbsp;in&nbsp;the&nbsp;real&nbsp;product,</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;it&nbsp;should&nbsp;only&nbsp;be&nbsp;in&nbsp;the&nbsp;signature&nbsp;utility</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">I_AM_DEVELOPER</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#ifdef</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">I_AM_DEVELOPER</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INPUT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">input</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#else</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INPUT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#endif</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">INPUT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Signature</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">INPUT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Secret</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PROGRAM_SPECIFIC_SECRET</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">INPUT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Pepper</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INSTANCE_SPECIFIC_PEPPER</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MyEnvSignature</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">EnvSignature</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">secret</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Secret</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pepper</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Pepper</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's quickly pick a few properties to fill in the signature.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FillEnvironment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">EnvSignature</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;the&nbsp;order&nbsp;is&nbsp;not&nbsp;important,&nbsp;you&nbsp;can&nbsp;mix</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_LANGUAGE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_COMMONDATA_PATH</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_CPU_CORES</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_MEMORY_PHYSICAL</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_SCREEN_DPI</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_SCREEN_WIDTH</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_SCREEN_HEIGHT</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_VPS</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">append</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">MQL_PROGRAM_TYPE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now everything is ready to test our protection scheme in the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function. But first, let's look at the input variables. Since the same program will be compiled in two versions, for the end user and for the developer, there are two sets of input variables: for entering registration data by the user and for generating this data based on the developer's signature. The input variables intended for the developer have been described above using the INPUT macro. Only the validation string is available to the user.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Validation</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When the string is empty, the program will collect the environment data, generate a new signature, and print it to the log. This completes the work of the script since access to the useful code has not yet been confirmed.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MyEnvSignature</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signature</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Signature</span><span class="f_CodeExample">)&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...&nbsp;here&nbsp;will&nbsp;be&nbsp;the&nbsp;code&nbsp;to&nbsp;be&nbsp;signed&nbsp;by&nbsp;the&nbsp;author</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FillEnvironment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signature</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">emit</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Validation</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Validation&nbsp;string&nbsp;from&nbsp;developer&nbsp;is&nbsp;required&nbsp;to&nbsp;run&nbsp;this&nbsp;script&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Environment&nbsp;Signature&nbsp;is&nbsp;generated&nbsp;for&nbsp;current&nbsp;state...&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Signature:&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signature</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...&nbsp;check&nbsp;the&nbsp;validation&nbsp;string&nbsp;here</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;The&nbsp;script&nbsp;is&nbsp;validated&nbsp;and&nbsp;running&nbsp;normally&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...&nbsp;actual&nbsp;working&nbsp;code&nbsp;is&nbsp;here</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If the variable </span><span class="f_Text" style="font-style: italic;">Validation</span><span class="f_Text"> is filled, we check its compliance with the signature and terminate the work in case of failure.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Validation</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">validation</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Validation</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;need&nbsp;a&nbsp;non-const&nbsp;argument</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">accessGranted</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">check</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Signature</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">validation</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">accessGranted</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Wrong&nbsp;validation&nbsp;string,&nbsp;terminating&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;success</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;The&nbsp;script&nbsp;is&nbsp;validated&nbsp;and&nbsp;running&nbsp;normally&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...&nbsp;actual&nbsp;working&nbsp;code&nbsp;is&nbsp;here</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If there are no discrepancies, the algorithm proceeds to the working code of the program.</span></p>
+<p class="p_Text"><span class="f_Text">On the developer's side (in the version of the program that was built with the I_AM_DEVELOPER macro), a signature can be introduced. We restore the state of the </span><span class="f_Text" style="font-style: italic;">MyEnvSignature</span><span class="f_Text"> object using the signature and calculate the validation string.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Signature</span><span class="f_CodeExample">)&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">#ifdef</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">I_AM_DEVELOPER</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Validation</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">validation</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">check</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Signature</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">validation</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Validation:&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">validation</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signature</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Signature</span><span class="f_CodeExample">;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">#endif</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The developer can not only specify the signature but also validate it: in this case, the code execution will continue in the user mode (for debugging purposes).</span></p>
+<p class="p_Text"><span class="f_Text">If you wish, you can simulate a change in the environment, for example, as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FillEnvironment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;artificially&nbsp;make&nbsp;a&nbsp;change&nbsp;in&nbsp;the&nbsp;environment&nbsp;(add&nbsp;a&nbsp;time&nbsp;zone)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;env.append(&quot;Dummy&quot;&nbsp;+&nbsp;(string)(TimeGMTOffset()&nbsp;-&nbsp;TimeDaylightSavings()));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">update</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">env</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">emit</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">update</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signature</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Signature&nbsp;and&nbsp;environment&nbsp;mismatch&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's look at a few test logs.</span></p>
+<p class="p_Text"><span class="f_Text">When you first run the </span><span class="f_Text" style="font-style: italic;">EnvSignature.mq5</span><span class="f_Text"> script, the &quot;user&quot; will see something like the following log (values will vary due to environment differences):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Hash&nbsp;bytes:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;4&nbsp;249&nbsp;194&nbsp;161&nbsp;242&nbsp;&nbsp;28&nbsp;&nbsp;43&nbsp;&nbsp;60&nbsp;180&nbsp;195&nbsp;&nbsp;54&nbsp;254&nbsp;&nbsp;97&nbsp;223&nbsp;144&nbsp;247&nbsp;216&nbsp;103&nbsp;238&nbsp;245&nbsp;244&nbsp;224&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;68&nbsp;101&nbsp;253&nbsp;248&nbsp;134&nbsp;&nbsp;27&nbsp;102&nbsp;202&nbsp;153</span>
+<br><span class="f_CodeExample">Validation&nbsp;string&nbsp;from&nbsp;developer&nbsp;is&nbsp;required&nbsp;to&nbsp;run&nbsp;this&nbsp;script</span>
+<br><span class="f_CodeExample">Environment&nbsp;Signature&nbsp;is&nbsp;generated&nbsp;for&nbsp;current&nbsp;state...</span>
+<br><span class="f_CodeExample">Signature:BPnCofIcKzy0wzb+Yd+Q99hn7vX04AdEZf34hhtmypk=</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It sends the generated signature to the &quot;developer&quot; (there are no actual users during the test, so all the roles of &quot;user&quot; and &quot;developer&quot; are quoted), who enters it into the signing utility (compiled with the I_AM_DEVELOPER macro), in the </span><span class="f_Text" style="font-style: italic;">Signature</span><span class="f_Text"> parameter. As a result, the program will generate a validation string:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Validation:YBpYpQ0tLIpUhBslIw+AsPhtPG48b0qut9igJ+Tk1fQ=</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The &quot;developer&quot; sends it back to the &quot;user&quot;, and the &quot;user&quot;, by entering it into the </span><span class="f_Text" style="font-style: italic;">Validation</span><span class="f_Text"> parameter, will get the activated script:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Hash&nbsp;bytes:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;4&nbsp;249&nbsp;194&nbsp;161&nbsp;242&nbsp;&nbsp;28&nbsp;&nbsp;43&nbsp;&nbsp;60&nbsp;180&nbsp;195&nbsp;&nbsp;54&nbsp;254&nbsp;&nbsp;97&nbsp;223&nbsp;144&nbsp;247&nbsp;216&nbsp;103&nbsp;238&nbsp;245&nbsp;244&nbsp;224&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;68&nbsp;101&nbsp;253&nbsp;248&nbsp;134&nbsp;&nbsp;27&nbsp;102&nbsp;202&nbsp;153</span>
+<br><span class="f_CodeExample">The&nbsp;script&nbsp;is&nbsp;validated&nbsp;and&nbsp;running&nbsp;normally</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To demonstrate the effectiveness of protection, let's duplicate the script as a service: to do this, let's copy the file to the folder </span><span class="f_Text" style="font-style: italic;">MQL5/Services/MQL5Book/p4/</span><span class="f_Text"> and replace the following line in the source code:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">script_show_inputs</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">with the following line:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">service</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's compile the service, create and run its instance, and specify the previously received validation string in the input parameters. As a result, the service will abort (before reaching the statements with the required code) with the following message:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Hash&nbsp;bytes:</span>
+<br><span class="f_CodeExample">147&nbsp;131&nbsp;&nbsp;69&nbsp;&nbsp;39&nbsp;&nbsp;29&nbsp;254&nbsp;&nbsp;83&nbsp;141&nbsp;&nbsp;90&nbsp;102&nbsp;216&nbsp;180&nbsp;229&nbsp;111&nbsp;&nbsp;&nbsp;2&nbsp;246&nbsp;245&nbsp;&nbsp;19&nbsp;&nbsp;35&nbsp;205&nbsp;223&nbsp;145&nbsp;194&nbsp;245&nbsp;&nbsp;67&nbsp;129&nbsp;&nbsp;32&nbsp;108&nbsp;178&nbsp;187&nbsp;232&nbsp;113</span>
+<br><span class="f_CodeExample">Wrong&nbsp;validation&nbsp;string,&nbsp;terminating</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The point is that among the properties of the environment we have used the string MQL_PROGRAM_TYPE. Therefore, an issued license for one type of program will not work for another type of program, even if it is running on the same user's computer.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.5.15 Forced test stop: TesterStop</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_5_tester.htm"> 6.5 Testing and optimization of Expert Advisors </a>/ 6.5.15 Forced test stop: TesterStop
+          </td>
+          <td width="70" align="right">
+          <a href="6_5_14_tester_withdraw_deposit.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_5_16_tester_example_ea.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.5.15 Forced test stop: TesterStop</span></p>
+<p class="p_Text"><span class="f_Text">If necessary, depending on the conditions observed, the developer can stop testing the Expert Advisor earlier. For example, this can be done when a specified number of losing deals or a drawdown level is reached. For this purpose, the API provides the </span><span class="f_Text" style="font-style: italic;">TesterStop</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">void TesterStop()</span></p>
+<p class="p_Text"><span class="f_Text">The function gives a command to terminate the tester, i.e., the stop will occur only after the program returns control to the execution environment.</span></p>
+<p class="p_Text"><span class="f_Text">Calling </span><span class="f_Text" style="font-style: italic;">TesterStop</span><span class="f_Text"> is considered a normal end of testing, and so this will call the </span><span class="f_Text" style="font-style: italic;"><a href="6_5_7_tester_ontester.htm" class="topiclink">OnTester</a></span><span class="f_Text"> function and return all accumulated trading statistics and the value of the optimization criterion to the strategy tester.</span></p>
+<p class="p_Text"><span class="f_Text">There is also an alternative regular way to interrupt testing: using the previously considered </span><span class="f_Text" style="font-style: italic;"><a href="5_1_7_runtime_remove.htm" class="topiclink">ExpertRemove</a></span><span class="f_Text"> function. The call of </span><span class="f_Text" style="font-style: italic;">ExpertRemove</span><span class="f_Text"> also returns trading statistics collected by the time the function is called. However, there are some differences.</span></p>
+<p class="p_Text"><span class="f_Text">As a result of the </span><span class="f_Text" style="font-style: italic;">ExpertRemove</span><span class="f_Text"> call, the Expert Advisor is unloaded from the agent's memory. Therefore, if you need to run a new pass with a new set of parameters, some time will be taken to reload the MQL program. When using </span><span class="f_Text" style="font-style: italic;">TesterStop</span><span class="f_Text">, this does not happen, and this method is preferable in terms of performance.</span></p>
+<p class="p_Text"><span class="f_Text">On the other hand, the </span><span class="f_Text" style="font-style: italic;">ExpertRemove</span><span class="f_Text"> call sets the </span><span class="f_Text" style="font-style: italic;"><a href="4_9_13_env_stop.htm" class="topiclink">_IsStopped</a></span><span class="f_Text"> stop flag in the MQL program, which can be used in a standard way in different parts of the program for finalizing (&quot;cleaning up&quot; resources). But calling </span><span class="f_Text" style="font-style: italic;">TesterStop</span><span class="f_Text"> does not set this flag, and therefore the developer may need to introduce their own global variable to indicate early termination and handle it in a specific way.</span></p>
+<p class="p_Quote"><span class="f_Quote">It is important to note that </span><span class="f_Quote" style="font-style: italic;">TesterStop</span><span class="f_Quote"> is designed to stop only one pass of the tester. </span><br>
+<span class="f_Quote" style="font-style: italic;">&nbsp;</span><br>
+<span class="f_Quote">MQL5 does not provide functions for the early termination of optimization. Therefore, for example, if your Expert Advisor detects that the optimization has been launched on the wrong tick generation model, and this can be detected only after the optimization has been launched (</span><span class="f_Quote" style="font-style: italic;">OnTesterInit</span><span class="f_Quote"> does not help here), then the </span><span class="f_Quote" style="font-style: italic;">TesterStop</span><span class="f_Quote"> or </span><span class="f_Quote" style="font-style: italic;">ExpertRemove</span><span class="f_Quote"> calls will interrupt new passes, but the passes themselves will continue to be initiated, generating mass null results. We will see it in the section <a href="6_5_16_tester_example_ea.htm" class="topiclink">Big Expert Advisor example</a>, which will use protection from launching at open prices. </span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">It could be assumed that the </span><span class="f_Quote" style="font-style: italic;">ExpertRemove</span><span class="f_Quote"> call in the Expert Advisor instance running in the terminal and actually serving an optimization manager would stop the optimization. But this is not the case. Even closing the chart with this Expert Advisor working in the frame mode does not stop the optimization.</span></p>
+<p class="p_Text"><span class="f_Text">It is suggested that you try these functions in action yourself.</span></p>
+
+</div>
+
+</body>
+</html>

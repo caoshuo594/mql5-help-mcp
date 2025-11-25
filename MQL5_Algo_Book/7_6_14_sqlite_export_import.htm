@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.6.14 Import and export of database table</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_6_sqlite.htm"> 7.6 SQLite database </a>/ 7.6.14 Import and export of database tables
+          </td>
+          <td width="70" align="right">
+          <a href="7_6_13_sqlite_transactions.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_6_15_sqlite_print.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.6.14 Import and export of database tables</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 allows the export and import of individual database tables to/from CSV files. Export/import of the entire database, as a file with SQL commands, is not provided.</span></p>
+<p class="p_H4"><span class="f_H4">long DatabaseImport(int database, const string table, const string filename, uint flags,</span><br>
+<span class="f_H4"> &nbsp; const string separator, ulong skip_rows, const string comment_chars)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabaseImport</span><span class="f_Text"> function imports data from the specified file into the table. The open database descriptor and the table name are given by the first two parameters.</span></p>
+<p class="p_Text"><span class="f_Text">If tables named </span><span class="f_Text" style="font-style: italic;">table</span><span class="f_Text"> does not exist, it will be created automatically. The names and types of fields in the table will be recognized automatically based on the data contained in the file. &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">The imported file can be not only a ready-made CSV file but also a ZIP archive with a CSV file. The filename may contain a path. The file is searched relative to the </span><span class="f_Text" style="font-style: italic;">MQL5/Files</span><span class="f_Text"> directory.</span></p>
+<p class="p_Text"><span class="f_Text">Valid flags that can be bitwise combined are described in the ENUM_DATABASE_IMPORT_FLAGS enumeration:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">DATABASE_IMPORT_HEADER – the first line contains the names of the table fields</span></li>
+<li class="p_li"><span class="f_li">DATABASE_IMPORT_CRLF – for line breaks, the CRLF character sequence is used</span></li>
+<li class="p_li"><span class="f_li">DATABASE_IMPORT_APPEND – add data to an existing table</span></li>
+<li class="p_li"><span class="f_li">DATABASE_IMPORT_QUOTED_STRINGS – string values in double quotes</span></li>
+<li class="p_li"><span class="f_li">DATABASE_IMPORT_COMMON_FOLDER – common folder of terminals</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Parameter </span><span class="f_Text" style="font-style: italic;">separator</span><span class="f_Text"> sets the delimiter character in the CSV file.</span></p>
+<p class="p_Text"><span class="f_Text">Parameter </span><span class="f_Text" style="font-style: italic;">skip_rows</span><span class="f_Text"> skips the specified number of leading lines in the file.</span></p>
+<p class="p_Text"><span class="f_Text">Parameter </span><span class="f_Text" style="font-style: italic;">comment_chars</span><span class="f_Text"> contains the characters used in the file as a comment flag. Lines starting with any of these characters will be considered comments and will not be imported.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of imported rows or -1 on error.</span></p>
+<p class="p_H4"><span class="f_H4">long DatabaseExport(int database, const string table_or_sql, const string filename, uint flags, const string separator)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabaseExport</span><span class="f_Text"> function exports a table or the result of an SQL query to a CSV file. The database handle, as well as the table name or query text, are specified in the first two parameters.</span></p>
+<p class="p_Text"><span class="f_Text">If query results are exported, then the SQL query must begin with &quot;SELECT&quot; or &quot;select&quot;. In other words, a SQL query cannot change the database state; otherwise, </span><span class="f_Text" style="font-style: italic;">DatabaseExport</span><span class="f_Text"> will end with an error.</span></p>
+<p class="p_Text"><span class="f_Text">File </span><span class="f_Text" style="font-style: italic;">filename</span><span class="f_Text"> name may contain a path inside the </span><span class="f_Text" style="font-style: italic;">MQL5/Files</span><span class="f_Text"> directory of the current instance of the terminal or the shared folder of terminals, depending on the flags.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text"> parameter allows you to specify a combination of flags that controls the format and location of the file.</span></p>
+<ul>
+<li class="p_li"><span class="f_li">DATABASE_EXPORT_HEADER – output a string with field names</span></li>
+<li class="p_li"><span class="f_li">DATABASE_EXPORT_INDEX – display line numbers</span></li>
+<li class="p_li"><span class="f_li">DATABASE_EXPORT_NO_BOM – do not insert a label <a href="4_5_5_files_txt_codepage.htm" class="topiclink">BOM</a> at the beginning of the file (BOM is inserted by default)</span></li>
+<li class="p_li"><span class="f_li">DATABASE_EXPORT_CRLF – use CRLF to break a line (LF by default)</span></li>
+<li class="p_li"><span class="f_li">DATABASE_EXPORT_APPEND – append data to the end of an existing file (by default, the file is overwritten), if the file does not exist, it will be created</span></li>
+<li class="p_li"><span class="f_li">DATABASE_EXPORT_QUOTED_STRINGS – output string values in double quotes</span></li>
+<li class="p_li"><span class="f_li">DATABASE_EXPORT_COMMON_FOLDER – CSV file will be created in the common folder of all terminals </span><span class="f_li" style="font-style: italic;">MetaQuotes/Terminal/Common/File</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Parameter </span><span class="f_Text" style="font-style: italic;">separator</span><span class="f_Text"> specifies the column separator character. If it is NULL, then the tab character '\t' will be used as a separator. The empty string &quot;&quot; is considered a valid delimiter, but the resulting CSV file cannot be read as a table and it will be a set of rows.</span></p>
+<p class="p_Text"><span class="f_Text">Text fields in the database can contain newlines ('\r' or '\r\n' ) as well as the delimiter character specified in the separator parameter. In this case, it is necessary to use the DATABASE_EXPORT_QUOTED_STRINGS flag in the </span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text"> parameter. If this flag is present, all output strings will be enclosed in double quotes, and if the string contains a double quote, it will be replaced by two double quotes.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of exported records or a negative value in case of an error.</span></p>
+
+</div>
+
+</body>
+</html>

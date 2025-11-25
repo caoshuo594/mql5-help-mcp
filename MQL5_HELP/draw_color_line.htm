@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>DRAW_COLOR_LINE</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="customind.htm"> Custom Indicators </a> / <a class="h_m" href="indicators_examples.htm"> Indicator Styles in Examples </a>/ DRAW_COLOR_LINE
+          </td>
+          <td width="70" align="right">
+          <a href="draw_candles.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="draw_color_section.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">DRAW_COLOR_LINE</span></p>
+<p class="p_Text"><span class="f_Text">The DRAW_COLOR_LINE value is a colored variant of the <a href="draw_line.htm" class="topiclink">DRAW_LINE</a> style; it also draws a line using the values of the indicator buffer. But this style, like all color styles with the word </span><span class="f_Text" style="font-weight: bold;">COLOR</span><span class="f_Text"> in their title has an additional special indicator buffer that stores the color index (number) from a specially set array of colors. Thus, the color of each line segment can be defined by specifying the color index of the index to draw the line at this bar.</span></p>
+<p class="p_Text"><span class="f_Text">The width, style and colors of lines can be set using the <a href="compilation.htm" class="topiclink">compiler directives</a> and dynamically using the <a href="plotindexsetinteger.htm" class="topiclink">PlotIndexSetInteger()</a> function. Dynamic changes of the plotting properties allows &quot;to enliven&quot; indicators, so that their appearance changes depending on the current situation.</span></p>
+<p class="p_Text"><span class="f_Text">The number of buffers required for plotting DRAW_COLOR_LINE is 2.</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">one buffer to store the indicator values used for drawing a line;</span></li>
+<li class="p_li"><span class="f_li">one buffer to store the index of the color of the line on each bar.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Colors can be specified by the compiler directive </span><span class="f_Text" style="color: #0000ff;">#property indicator_color1</span><span class="f_Text"> separated by a comma. The number of colors cannot exceed 64.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Define&nbsp;5&nbsp;colors&nbsp;for&nbsp;coloring&nbsp;each&nbsp;bar&nbsp;(they&nbsp;are&nbsp;stored&nbsp;in&nbsp;the&nbsp;special&nbsp;array)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_color1</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">clrRed,clrBlue,clrGreen,clrOrange,clrDeepPink</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;(Up&nbsp;to&nbsp;64&nbsp;colors&nbsp;can&nbsp;be&nbsp;specified)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">An example of the indicator that draws a line using Close prices of bars. The line width and style change randomly every N=5 ticks.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="An example of the DRAW_COLOR_LINE style" title="An example of the DRAW_COLOR_LINE style" width="730" height="425" style="margin:0 auto 0 auto;width:730px;height:425px;border:none" src="draw_color_line.png"/></p>
+<p class="p_Text"><span class="f_Text">The colors of the line segments also change randomly in the custom function ChangeColors().</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Changes&nbsp;the&nbsp;color&nbsp;of&nbsp;line&nbsp;segments&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;&nbsp;ChangeColors(</span><span class="f_CodeExample" style="color: #0000ff;">color</span><span class="f_CodeExample">&nbsp;&nbsp;&amp;cols[],</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;plot_colors)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;The&nbsp;number&nbsp;of&nbsp;colors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;size=</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(cols);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;comm=</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetString</span><span class="f_CodeExample">(0,</span><span class="f_CodeExample" style="color: #0000ff;">CHART_COMMENT</span><span class="f_CodeExample">)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;For&nbsp;each&nbsp;color&nbsp;index&nbsp;define&nbsp;a&nbsp;new&nbsp;color&nbsp;randomly</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;plot_color_ind=0;plot_color_ind&lt;plot_colors;plot_color_ind++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Get&nbsp;a&nbsp;random&nbsp;value</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;number=</span><span class="f_CodeExample" style="color: #0000ff;">MathRand</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Get&nbsp;an&nbsp;index&nbsp;in&nbsp;the&nbsp;col[]&nbsp;array&nbsp;as&nbsp;a&nbsp;remainder&nbsp;of&nbsp;the&nbsp;integer&nbsp;devision</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;i=number%size;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Set&nbsp;the&nbsp;color&nbsp;for&nbsp;each&nbsp;index&nbsp;as&nbsp;the&nbsp;property&nbsp;PLOT_LINE_COLOR</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetInteger</span><span class="f_CodeExample">(0,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;a&nbsp;graphical&nbsp;style</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PLOT_LINE_COLOR</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;Property&nbsp;identifier</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plot_color_ind,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;The&nbsp;index&nbsp;of&nbsp;the&nbsp;color,&nbsp;where&nbsp;we&nbsp;write&nbsp;the&nbsp;color</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cols[i]);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;A&nbsp;new&nbsp;color</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Write&nbsp;the&nbsp;colors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comm=comm+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;LineColorIndex[%d]=%s&nbsp;\r\n&quot;</span><span class="f_CodeExample">,plot_color_ind,</span><span class="f_CodeExample" style="color: #0000ff;">ColorToString</span><span class="f_CodeExample">(cols[i],true));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartSetString</span><span class="f_CodeExample">(0,</span><span class="f_CodeExample" style="color: #0000ff;">CHART_COMMENT</span><span class="f_CodeExample">,comm);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The example shows the feature of the &quot;color&quot; versions of indicators - to change the color of a line segment, you do not need to change values in the ColorLineColors[] buffer (which contains the color indexes). All you need to do is set new colors in a special array. This allows you to quickly change the color once for the entire plotting, changing only a small array of colors using the <a href="indicatorsetinteger.htm" class="topiclink">PlotIndexSetInteger()</a> function.</span></p>
+<p class="p_Text"><span class="f_Text">Note that initially for </span><span class="f_Text" style="font-weight: bold;">plot1</span><span class="f_Text"> with DRAW_COLOR_LINE the properties are set using the compiler directive <a href="compilation.htm" class="topiclink">#property</a>, and then in the <a href="oncalculate.htm" class="topiclink">OnCalculate()</a> function these three properties are set randomly. </span></p>
+<p class="p_Text"><span class="f_Text">The N and Length (the length of color segments in bars) parameters are set in <a href="inputvariables.htm" class="topiclink">external parameters</a> of the indicator for the possibility of manual configuration (the Parameters tab in the indicator's Properties window).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DRAW_COLOR_LINE.mq5&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copyright&nbsp;2011,&nbsp;MetaQuotes&nbsp;Software&nbsp;Corp.&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://www.mql5.com&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">copyright</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Copyright&nbsp;2000-2024,&nbsp;MetaQuotes&nbsp;Ltd.&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">link</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;https://www.mql5.com&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">version</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;1.00&quot;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">description</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;An&nbsp;indicator&nbsp;to&nbsp;demonstrate&nbsp;DRAW_COLOR_LINE&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">description</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;It&nbsp;draws&nbsp;a&nbsp;line&nbsp;on&nbsp;Close&nbsp;price&nbsp;in&nbsp;colored&nbsp;pieces&nbsp;of&nbsp;20&nbsp;bars&nbsp;each&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">description</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;The&nbsp;width,&nbsp;style&nbsp;and&nbsp;color&nbsp;of&nbsp;the&nbsp;line&nbsp;parts&nbsp;are&nbsp;changed&nbsp;randomly&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">description</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;every&nbsp;N&nbsp;ticks&quot;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_chart_window</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_buffers</span><span class="f_CodeExample">&nbsp;2</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_plots</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;plot&nbsp;ColorLine</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_label1</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ColorLine&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_type1</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">DRAW_COLOR_LINE</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Define&nbsp;5&nbsp;colors&nbsp;for&nbsp;coloring&nbsp;each&nbsp;bar&nbsp;(they&nbsp;are&nbsp;stored&nbsp;in&nbsp;the&nbsp;special&nbsp;array)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_color1</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">clrRed,clrBlue,clrGreen,clrOrange,clrDeepPink</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;(Up&nbsp;to&nbsp;64&nbsp;colors&nbsp;can&nbsp;be&nbsp;specified)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_style1</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">STYLE_SOLID</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_width1</span><span class="f_CodeExample">&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;input&nbsp;parameters</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #c0504d;">N</span><span class="f_CodeExample">=5;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//Number&nbsp;of&nbsp;ticks&nbsp;to&nbsp;change&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #c0504d;">Length</span><span class="f_CodeExample">=20;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;The&nbsp;length&nbsp;of&nbsp;each&nbsp;color&nbsp;part&nbsp;in&nbsp;bars</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line_colors=5;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;The&nbsp;number&nbsp;of&nbsp;set&nbsp;colors&nbsp;is&nbsp;5&nbsp;-&nbsp;see&nbsp;#property&nbsp;indicator_color1</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;A&nbsp;buffer&nbsp;for&nbsp;plotting</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ColorLineBuffer[];</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;A&nbsp;buffer&nbsp;for&nbsp;storing&nbsp;the&nbsp;line&nbsp;color&nbsp;on&nbsp;each&nbsp;bar</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ColorLineColors[];</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;The&nbsp;array&nbsp;for&nbsp;storing&nbsp;colors&nbsp;contains&nbsp;7&nbsp;elements</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">color</span><span class="f_CodeExample">&nbsp;colors[]={</span><span class="f_CodeExample" style="color: #0000ff;">clrRed,clrBlue,clrGreen,clrChocolate,clrMagenta,clrDodgerBlue,clrGoldenrod</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;An&nbsp;array&nbsp;to&nbsp;store&nbsp;the&nbsp;line&nbsp;styles</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">ENUM_LINE_STYLE</span><span class="f_CodeExample">&nbsp;styles[]={</span><span class="f_CodeExample" style="color: #0000ff;">STYLE_SOLID</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">STYLE_DASH</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">STYLE_DOT</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">STYLE_DASHDOT</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">STYLE_DASHDOTDOT</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Custom&nbsp;indicator&nbsp;initialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Binding&nbsp;an&nbsp;array&nbsp;and&nbsp;an&nbsp;indicator&nbsp;buffer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(0,ColorLineBuffer,</span><span class="f_CodeExample" style="color: #0000ff;">INDICATOR_DATA</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetIndexBuffer</span><span class="f_CodeExample">(1,ColorLineColors,</span><span class="f_CodeExample" style="color: #0000ff;">INDICATOR_COLOR_INDEX</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Initializing&nbsp;the&nbsp;generator&nbsp;of&nbsp;pseudo-random&nbsp;numbers</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MathSrand</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GetTickCount</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">INIT_SUCCEEDED</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Custom&nbsp;indicator&nbsp;iteration&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnCalculate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;rates_total,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;prev_calculated,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;&amp;time[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;open[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;high[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;low[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;close[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&amp;tick_volume[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&amp;volume[],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&amp;spread[])</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;ticks=0;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Calculate&nbsp;ticks&nbsp;to&nbsp;change&nbsp;the&nbsp;style,&nbsp;color&nbsp;and&nbsp;width&nbsp;of&nbsp;the&nbsp;line</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;ticks++;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;If&nbsp;a&nbsp;critical&nbsp;number&nbsp;of&nbsp;ticks&nbsp;has&nbsp;been&nbsp;accumulated</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(ticks&gt;=</span><span class="f_CodeExample" style="color: #c0504d;">N</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Change&nbsp;the&nbsp;line&nbsp;properties</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ChangeLineAppearance();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Change&nbsp;the&nbsp;colors&nbsp;of&nbsp;line&nbsp;sections</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ChangeColors(colors,5);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Reset&nbsp;the&nbsp;counter&nbsp;of&nbsp;ticks&nbsp;to&nbsp;zero</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ticks=0;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Block&nbsp;for&nbsp;calculating&nbsp;indicator&nbsp;values</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;i=0;i&lt;rates_total;i++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Write&nbsp;the&nbsp;indicator&nbsp;value&nbsp;into&nbsp;the&nbsp;buffer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ColorLineBuffer[i]=close[i];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Now,&nbsp;randomly&nbsp;set&nbsp;a&nbsp;color&nbsp;index&nbsp;for&nbsp;this&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;color_index=i%(5*</span><span class="f_CodeExample" style="color: #c0504d;">Length</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color_index=color_index/</span><span class="f_CodeExample" style="color: #c0504d;">Length</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;For&nbsp;this&nbsp;bar,&nbsp;the&nbsp;line&nbsp;will&nbsp;have&nbsp;the&nbsp;color&nbsp;with&nbsp;the&nbsp;index&nbsp;color_index</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ColorLineColors[i]=color_index;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Return&nbsp;the&nbsp;prev_calculated&nbsp;value&nbsp;for&nbsp;the&nbsp;next&nbsp;call&nbsp;of&nbsp;the&nbsp;function</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(rates_total);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Changes&nbsp;the&nbsp;color&nbsp;of&nbsp;line&nbsp;segments&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;&nbsp;ChangeColors(</span><span class="f_CodeExample" style="color: #0000ff;">color</span><span class="f_CodeExample">&nbsp;&nbsp;&amp;cols[],</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;plot_colors)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;The&nbsp;number&nbsp;of&nbsp;colors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;size=</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(cols);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;comm=</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetString</span><span class="f_CodeExample">(0,</span><span class="f_CodeExample" style="color: #0000ff;">CHART_COMMENT</span><span class="f_CodeExample">)+</span><span class="f_CodeExample" style="color: #008080;">&quot;\r\n\r\n&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;For&nbsp;each&nbsp;color&nbsp;index&nbsp;define&nbsp;a&nbsp;new&nbsp;color&nbsp;randomly</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;plot_color_ind=0;plot_color_ind&lt;plot_colors;plot_color_ind++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Get&nbsp;a&nbsp;random&nbsp;value</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;number=</span><span class="f_CodeExample" style="color: #0000ff;">MathRand</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Get&nbsp;an&nbsp;index&nbsp;in&nbsp;the&nbsp;col[]&nbsp;array&nbsp;as&nbsp;a&nbsp;remainder&nbsp;of&nbsp;the&nbsp;integer&nbsp;devision</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;i=number%size;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Set&nbsp;the&nbsp;color&nbsp;for&nbsp;each&nbsp;index&nbsp;as&nbsp;the&nbsp;property&nbsp;PLOT_LINE_COLOR</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetInteger</span><span class="f_CodeExample">(0,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;a&nbsp;graphical&nbsp;style</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PLOT_LINE_COLOR</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;Property&nbsp;identifier</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plot_color_ind,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;The&nbsp;index&nbsp;of&nbsp;the&nbsp;color,&nbsp;where&nbsp;we&nbsp;write&nbsp;the&nbsp;color</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cols[i]);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;A&nbsp;new&nbsp;color</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Write&nbsp;the&nbsp;colors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comm=comm+</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;LineColorIndex[%d]=%s&nbsp;\r\n&quot;</span><span class="f_CodeExample">,plot_color_ind,</span><span class="f_CodeExample" style="color: #0000ff;">ColorToString</span><span class="f_CodeExample">(cols[i],true));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartSetString</span><span class="f_CodeExample">(0,</span><span class="f_CodeExample" style="color: #0000ff;">CHART_COMMENT</span><span class="f_CodeExample">,comm);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Changes&nbsp;the&nbsp;appearance&nbsp;of&nbsp;a&nbsp;displayed&nbsp;line&nbsp;in&nbsp;the&nbsp;indicator&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;ChangeLineAppearance()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;A&nbsp;string&nbsp;for&nbsp;the&nbsp;formation&nbsp;of&nbsp;information&nbsp;about&nbsp;the&nbsp;line&nbsp;properties</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;comm=</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;A&nbsp;block&nbsp;for&nbsp;changing&nbsp;the&nbsp;width&nbsp;of&nbsp;the&nbsp;line</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;number=</span><span class="f_CodeExample" style="color: #0000ff;">MathRand</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Get&nbsp;the&nbsp;width&nbsp;of&nbsp;the&nbsp;remainder&nbsp;of&nbsp;integer&nbsp;division</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;width=number%5;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;The&nbsp;width&nbsp;is&nbsp;set&nbsp;from&nbsp;0&nbsp;to&nbsp;4</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Set&nbsp;the&nbsp;color&nbsp;as&nbsp;the&nbsp;PLOT_LINE_WIDTH&nbsp;property</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetInteger</span><span class="f_CodeExample">(0,</span><span class="f_CodeExample" style="color: #0000ff;">PLOT_LINE_WIDTH</span><span class="f_CodeExample">,width);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Write&nbsp;the&nbsp;line&nbsp;width</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;comm=comm+</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;Width=&quot;</span><span class="f_CodeExample">+</span><span class="f_CodeExample" style="color: #0000ff;">IntegerToString</span><span class="f_CodeExample">(width);</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;A&nbsp;block&nbsp;for&nbsp;changing&nbsp;the&nbsp;style&nbsp;of&nbsp;the&nbsp;line</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;number=</span><span class="f_CodeExample" style="color: #0000ff;">MathRand</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;The&nbsp;divisor&nbsp;is&nbsp;equal&nbsp;to&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;styles&nbsp;array</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;size=</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(styles);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Get&nbsp;the&nbsp;index&nbsp;to&nbsp;select&nbsp;a&nbsp;new&nbsp;style&nbsp;as&nbsp;the&nbsp;remainder&nbsp;of&nbsp;integer&nbsp;division</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;style_index=number%size;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Set&nbsp;the&nbsp;color&nbsp;as&nbsp;the&nbsp;PLOT_LINE_COLOR&nbsp;property</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PlotIndexSetInteger</span><span class="f_CodeExample">(0,</span><span class="f_CodeExample" style="color: #0000ff;">PLOT_LINE_STYLE</span><span class="f_CodeExample">,styles[style_index]);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Write&nbsp;the&nbsp;line&nbsp;style</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;comm=</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(styles[style_index])+</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;&quot;</span><span class="f_CodeExample">+comm;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Show&nbsp;the&nbsp;information&nbsp;on&nbsp;the&nbsp;chart&nbsp;using&nbsp;a&nbsp;comment</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(comm);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+
+</div>
+
+</body>
+</html>

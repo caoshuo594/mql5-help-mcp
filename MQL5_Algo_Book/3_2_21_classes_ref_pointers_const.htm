@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.2.21 Pointers, references, and const</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_2_classes_and_interfaces.htm"> 3.2 Classes and interfaces </a>/ 3.2.21 Pointers, references, and const
+          </td>
+          <td width="70" align="right">
+          <a href="3_2_20_classes_dynamic_cast_void.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_2_22_classes_final_delete.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.2.21 Pointers, references, and const</span></p>
+<p class="p_Text"><span class="f_Text">After learning about built-in and object types, and the concepts of <a href="2_8_4_functions_ref_value.htm" class="topiclink">reference</a> and <a href="3_2_13_classes_pointers.htm" class="topiclink">pointer</a>, it probably makes sense to do a comparison of all available type modifications.</span></p>
+<p class="p_Text"><span class="f_Text">References in MQL5 are used only when describing parameters of functions and methods. Moreover, object type parameters must be passed by reference.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">function</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ClassOrStruct</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">object</span><span class="f_CodeExample">)&nbsp;{&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OK</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">function</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ClassOrStruct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">object</span><span class="f_CodeExample">)&nbsp;{&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;wrong</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">function</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">)&nbsp;{&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OK</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">function</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">)&nbsp;{&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OK</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here </span><span class="f_Text" style="font-style: italic;">ClassOrStruct</span><span class="f_Text"> is the name of the class or structure.</span></p>
+<p class="p_Text"><span class="f_Text">It is allowed to pass only variables (LValue) as an argument for a reference type parameter, but not constants or temporary values obtained as a result of expression evaluation.</span></p>
+<p class="p_Text"><span class="f_Text">You cannot create a variable of a reference type or return a reference from a function.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">ClassOrStruct</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">function</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">)&nbsp;{&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Class</span><span class="f_CodeExample">();&nbsp;}&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;wrong</span>
+<br><span class="f_CodeExample" style="color: #333333;">ClassOrStruct</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">object</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;wrong</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;wrong</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Pointers in MQL5 are available only for class objects. Pointers to variables of built-in types or structures are not supported.</span></p>
+<p class="p_Text"><span class="f_Text">You can declare a variable or function parameter of type a pointer to an object, and also return a pointer to an object from the function.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">ClassOrStruct</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">pointer</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OK</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">function</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ClassOrStruct</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">object</span><span class="f_CodeExample">)&nbsp;{&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OK</span>
+<br><span class="f_CodeExample" style="color: #333333;">ClassOrStruct</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">function</span><span class="f_CodeExample">()&nbsp;{&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ClassOrStruct</span><span class="f_CodeExample">();&nbsp;}&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OK</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">However, you cannot return a pointer to a local automatic object, because the latter will be freed when the function exits, and the pointer will become invalid.</span></p>
+<p class="p_Text"><span class="f_Text">If the function returned a pointer to an object dynamically allocated within the function with new, then the calling code must &quot;remember&quot; to free the pointer with delete.</span></p>
+<p class="p_Text"><span class="f_Text">A pointer, unlike a reference, can be NULL. Pointer parameters can have a default value, but references can't (&quot;reference cannot be initialized&quot; error).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">function</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ClassOrStruct</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">object</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">)&nbsp;{&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OK</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">function</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ClassOrStruct</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">object</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">)&nbsp;{&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;wrong</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Links and pointers can be combined in a parameter description. So a function can take a reference to a pointer: and then changes to the pointer in the function will become available in the calling code. In particular, the factory function, which is responsible for creating objects, can be implemented in this way.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">createObject</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ClassName</span><span class="f_CodeExample">&nbsp;*&amp;</span><span class="f_CodeExample" style="color: #333333;">ref</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ref</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ClassName</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;further&nbsp;customization&nbsp;of&nbsp;ref</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">True, to return a single pointer from a function, it is usually customary to use the return statement, so this example is somewhat artificial. However, in those cases when it is necessary to pass an array of pointers outside, a reference to it in the parameter becomes the preferred option. For example, in some classes of the standard library for working with container classes of the map type with [key, value] pairs (</span><span class="f_Text" style="font-style: italic;">MQL5/Include/Generic/SortedMap.mqh</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">MQL5/Include/Generic/HashMap.mqh</span><span class="f_Text">) there are methods </span><span class="f_Text" style="font-style: italic;">CopyTo</span><span class="f_Text"> for getting arrays with elements </span><span class="f_Text" style="font-style: italic;">CKeyValuePair</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CopyTo</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CKeyValuePair</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">TKey</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">TValue</span><span class="f_CodeExample">&gt;&nbsp;*&amp;</span><span class="f_CodeExample" style="color: #333333;">dst_array</span><span class="f_CodeExample">[],&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dst_start&nbsp;</span><span class="f_CodeExample">=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The parameter type </span><span class="f_Text" style="font-style: italic;">dst_array</span><span class="f_Text"> may seem unfamiliar: it's a class template. We will learn about templates in the <a href="3_3_templates.htm" class="topiclink">next chapter</a>. Here, for now, the only important thing for us is that this is a reference to an array of pointers.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">const </span><span class="f_Text">modifier imposes special behavior for all types. In relation to built-in types, it was discussed in the section on <a href="2_3_5_const_variables.htm" class="topiclink">Constant variables</a>. Object types have their own characteristics.</span></p>
+<p class="p_Text"><span class="f_Text">If a variable or function parameter is declared as a pointer or a reference to an object (a reference is only in the case of a parameter), then the presence of the modifier </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> on them limits the set of methods and properties that can be accessed to only those that also have the modifier </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text">. In other words, only constant properties are accessible through constant references and pointers.</span></p>
+<p class="p_Text"><span class="f_Text">When you try to call a non-const method or change a non-const field, the compiler will generate an error: &quot;call non-const method for constant object&quot; or &quot;constant cannot be modified&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">A non-const pointer parameter can take any argument (constant or non-constant).</span></p>
+<p class="p_Text"><span class="f_Text">It should be borne in mind that two modifiers </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> can be set in the pointer description: one will refer to the object, and the second to the pointer:</span></p>
+<ul>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Class *pointer</span><span class="f_li"> is a pointer to an object; the object and the pointer work without limitations;</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">const Class *pointer</span><span class="f_li"> is a pointer to a const object; for the object, only constant methods and reading properties are available, but the pointer can be changed (assigned to it the address of another object);</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">const Class * const pointer</span><span class="f_li"> is a const pointer to a const object; for the object, only const methods and reading properties are available; the pointer cannot be changed;</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Class * const pointer</span><span class="f_li"> is a const pointer to an object; the pointer cannot be changed, but the properties of the object can be changed.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Consider the following class </span><span class="f_Text" style="font-style: italic;">Counter</span><span class="f_Text"> (</span><span class="f_Text" style="font-style: italic;">CounterConstPtr.mq5</span><span class="f_Text">) as an example.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Counter</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">)&nbsp;{&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">increment</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">clone</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It artificially made the public variable </span><span class="f_Text" style="font-style: italic;">counter</span><span class="f_Text">. The class also has two methods, one of which is constant (</span><span class="f_Text" style="font-style: italic;">clone</span><span class="f_Text">), and the second is not (</span><span class="f_Text" style="font-style: italic;">increment</span><span class="f_Text">). Recall that a constant method does not have the right to change the fields of an object.</span></p>
+<p class="p_Text"><span class="f_Text">The following function with the </span><span class="f_Text" style="font-style: italic;">Counter *ptr</span><span class="f_Text"> type parameter can call all methods of the class and change its fields.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">functionVolatile</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OK:&nbsp;everything&nbsp;is&nbsp;available</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">increment</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//remove&nbsp;the&nbsp;clone&nbsp;immediately&nbsp;so&nbsp;that&nbsp;there&nbsp;is&nbsp;no&nbsp;memory&nbsp;leak</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;the&nbsp;clone&nbsp;is&nbsp;only&nbsp;needed&nbsp;to&nbsp;demonstrate&nbsp;calling&nbsp;a&nbsp;constant&nbsp;method&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">delete</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">clone</span><span class="f_CodeExample">();&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The following function with the parameter </span><span class="f_Text" style="font-style: italic;">const Counter *ptr</span><span class="f_Text"> will throw a couple of errors.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">functionConst</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ERRORS:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">increment</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;calling&nbsp;non-const&nbsp;method&nbsp;for&nbsp;constant&nbsp;object</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;constant&nbsp;cannot&nbsp;be&nbsp;modified</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OK:&nbsp;only&nbsp;const&nbsp;methods&nbsp;are&nbsp;available,&nbsp;fields&nbsp;can&nbsp;be&nbsp;read</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;reading&nbsp;a&nbsp;const&nbsp;object</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">clone</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">clone</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;calling&nbsp;a&nbsp;const&nbsp;method</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">clone</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;changing&nbsp;a&nbsp;non-const&nbsp;pointer&nbsp;ptr</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">delete</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;cleaning&nbsp;memory</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, the following function with the parameter </span><span class="f_Text" style="font-style: italic;">const Counter * const ptr</span><span class="f_Text"> does even less.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">functionConstConst</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OK:&nbsp;only&nbsp;const&nbsp;methods&nbsp;are&nbsp;available,&nbsp;the&nbsp;pointer&nbsp;ptr&nbsp;cannot&nbsp;be&nbsp;changed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;reading&nbsp;a&nbsp;const&nbsp;object</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">delete</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">clone</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;calling&nbsp;a&nbsp;const&nbsp;method</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">local</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ERRORS:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">increment</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;calling&nbsp;non-const&nbsp;method&nbsp;for&nbsp;constant&nbsp;object</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;constant&nbsp;cannot&nbsp;be&nbsp;modified</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">&nbsp;=&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">local</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;constant&nbsp;cannot&nbsp;be&nbsp;modified</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the function </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">, where we have declared two </span><span class="f_Text" style="font-style: italic;">Counter</span><span class="f_Text"> objects (one is constant and the other is not), you can call these functions with some exceptions:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">constCounter</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">increment</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ERROR:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;constCounter.increment();&nbsp;//&nbsp;call&nbsp;non-const&nbsp;method&nbsp;for&nbsp;constant&nbsp;object</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">&nbsp;*)&amp;</span><span class="f_CodeExample" style="color: #333333;">constCounter</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;trick:&nbsp;type&nbsp;casting&nbsp;without&nbsp;const</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ptr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">increment</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">functionVolatile</span><span class="f_CodeExample">(&amp;</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ERROR:&nbsp;cannot&nbsp;convert&nbsp;from&nbsp;a&nbsp;const&nbsp;pointer...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;functionVolatile(&amp;constCounter);&nbsp;//&nbsp;to&nbsp;a&nbsp;non-const&nbsp;pointer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">functionVolatile</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #333333;">Counter</span><span class="f_CodeExample">&nbsp;*)&amp;</span><span class="f_CodeExample" style="color: #333333;">constCounter</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;type&nbsp;casting&nbsp;without&nbsp;const</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">functionConst</span><span class="f_CodeExample">(&amp;</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">functionConst</span><span class="f_CodeExample">(&amp;</span><span class="f_CodeExample" style="color: #333333;">constCounter</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">functionConstConst</span><span class="f_CodeExample">(&amp;</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">functionConstConst</span><span class="f_CodeExample">(&amp;</span><span class="f_CodeExample" style="color: #333333;">constCounter</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">First, note that variables also generate an error when trying to call a const method </span><span class="f_Text" style="font-style: italic;">increment</span><span class="f_Text"> on a non-const object.</span></p>
+<p class="p_Text"><span class="f_Text">Secondly, </span><span class="f_Text" style="font-style: italic;">constCounter</span><span class="f_Text"> cannot be passed to the </span><span class="f_Text" style="font-style: italic;">functionVolatile</span><span class="f_Text"> function – we get the error &quot;cannot convert from const pointer to nonconst pointer&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">However, both errors can be circumvented by explicit type casting without the </span><span class="f_Text" style="font-style: italic;">const </span><span class="f_Text">modifier. Although this is not recommended.</span></p>
+
+</div>
+
+</body>
+</html>

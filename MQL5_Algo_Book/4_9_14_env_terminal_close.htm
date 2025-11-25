@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.9.14 Programmatically closing the terminal and setting a return code</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_9_environment.htm"> 4.9 MQL program execution environment </a>/ 4.9.14 Programmatically closing the terminal and setting a return code
+          </td>
+          <td width="70" align="right">
+          <a href="4_9_13_env_stop.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_9_15_env_last_error.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.9.14 Programmatically closing the terminal and setting a return code</span></p>
+<p class="p_Text"><span class="f_Text">The MQL5 API contains several functions not only for reading but also for modifying the program environment. One of the most radical of them is </span><span class="f_Text" style="font-style: italic;">TerminalClose</span><span class="f_Text">. Using this function, an MQL program can close the terminal (without user confirmation!).</span></p>
+<p class="p_H4"><span class="f_H4">bool TerminalClose(int retcode)</span></p>
+<p class="p_Text"><span class="f_Text">The function has one parameter </span><span class="f_Text" style="font-style: italic;">retcode</span><span class="f_Text"> which is the code returned by the terminal64.exe process to the Windows operating system. Such codes can be analyzed in batch files (*.bat and *.cmd), as well as in shell scripts (Windows Script Host (WSH), which supports VBScript and JScript, or Windows PowerShell (WPS), with .ps* files) and other automation tools (for example, the built-in Windows scheduler, the Linux support subsystem under Windows with *.sh files, etc.).</span></p>
+<p class="p_Text"><span class="f_Text">The function does not immediately stop the terminal, but sends a termination command to the terminal.</span></p>
+<p class="p_Text"><span class="f_Text">If the result of the call is </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">, it means that the command has been successfully &quot;accepted for consideration&quot;, and the terminal will try to close as quickly as possible, but correctly (generating a notification and stopping other running MQL programs). In the calling code, of course, all preparations must also be made for the immediate termination of work (in particular, all previously opened files should be closed), and after the function call, control should be returned to the terminal.</span></p>
+<p class="p_Text"><span class="f_Text">Another function associated with the process return code is </span><span class="f_Text" style="font-style: italic;">SetReturnError</span><span class="f_Text">. It allows you to pre-assign this code without sending an immediate close command.</span></p>
+<p class="p_H4"><span class="f_H4">void SetReturnError(int retcode)</span></p>
+<p class="p_Text"><span class="f_Text">The function sets the code that the terminal process will return to the Windows system after closing.</span></p>
+<p class="p_Text"><span class="f_Text">Please note that the terminal does not need to be forcibly closed by the </span><span class="f_Text" style="font-style: italic;">TerminalClose</span><span class="f_Text"> function. Regular closing of the terminal by the user will also occur with the specified code. Also, this code will enter the system if the terminal closes due to an unexpected critical error.</span></p>
+<p class="p_Text"><span class="f_Text">If the </span><span class="f_Text" style="font-style: italic;">SetReturnError</span><span class="f_Text"> function was called repeatedly and/or from different MQL programs, the terminal will return the last set code.</span></p>
+<p class="p_Text"><span class="f_Text">Let's test these functions using the </span><span class="f_Text" style="font-style: italic;">EnvClose.mq5</span><span class="f_Text"> script.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">script_show_inputs</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ReturnCode</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CloseTerminalNow</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CloseTerminalNow</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TerminalClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ReturnCode</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SetReturnError</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ReturnCode</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To test it in action, we also need the file </span><span class="f_Text" style="font-style: italic;">envrun.bat</span><span class="f_Text"> (located in the folder </span><span class="f_Text" style="font-style: italic;">MQL5/Files/MQL5Book/</span><span class="f_Text">).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">terminal64.exe</span>
+<br><span class="f_CodeExample">@echo&nbsp;Exit&nbsp;code:&nbsp;%ERRORLEVEL%</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In fact, it only launches the terminal, and after its completion displays the resulting code to the console. The file should be placed in the terminal folder (or the current instance of MetaTrader 5 from among several installed in the system should be registered in the PATH system variable).</span></p>
+<p class="p_Text"><span class="f_Text">For example, if we start the terminal using the bat file, and execute the script </span><span class="f_Text" style="font-style: italic;">EnvClose.mq5</span><span class="f_Text">, for example, with parameters </span><span class="f_Text" style="font-style: italic;">ReturnCode=100</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">CloseTerminalNow=true</span><span class="f_Text">, we will see something like this in the console:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Microsoft&nbsp;Windows&nbsp;[Version&nbsp;10.0.19570.1000]</span>
+<br><span class="f_CodeExample">(c)&nbsp;2020&nbsp;Microsoft&nbsp;Corporation.&nbsp;All&nbsp;rights&nbsp;reserved.</span>
+<br><span class="f_CodeExample">C:\Program&nbsp;Files\MT5East&gt;envrun</span>
+<br><span class="f_CodeExample">C:\Program&nbsp;Files\MT5East&gt;terminal64.exe</span>
+<br><span class="f_CodeExample">Exit&nbsp;code:&nbsp;100</span>
+<br><span class="f_CodeExample">C:\Program&nbsp;Files\MT5East&gt;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As a reminder, MetaTrader 5 supports various options when launched from the command line (see details in the documentation section <a href="https://www.metatrader5.com/en/terminal/help/start_advanced/start#command_line" target="_blank" class="weblink" title="Documentation on mql5.com">Running the trading platform</a>). Thus, it is possible to organize, for example, batch testing of various Expert Advisors or settings, as well as sequential switching between thousands of monitored accounts, which would be unrealistic to achieve with the constant parallel operation of so many instances on one computer.</span></p>
+
+</div>
+
+</body>
+</html>

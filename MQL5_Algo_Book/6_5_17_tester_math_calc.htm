@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.5.17 Mathematical calculations</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_5_tester.htm"> 6.5 Testing and optimization of Expert Advisors </a>/ 6.5.17 Mathematical calculations
+          </td>
+          <td width="70" align="right">
+          <a href="6_5_16_tester_example_ea.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_5_18_tester_debug_profile.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.5.17 Mathematical calculations</span></p>
+<p class="p_Text"><span class="f_Text">The tester in the MetaTrader 5 terminal can be used not only to test trading strategies but also for mathematical calculations. To do this, select the appropriate mode in the tester settings, in the Simulation drop-down list. This is the same list where we select the tick generation method, but in this case, the tester will not generate ticks or quotes, or even connect the trading environment (trading account and symbols).</span></p>
+<p class="p_Text"><span class="f_Text">The choice between the full enumeration of parameters and a genetic algorithm depends on the size of the search space. For the optimization criterion, select &quot;Custom max&quot;. Other input fields in the tester settings (such as date range or delays) are not important and are therefore automatically disabled.</span></p>
+<p class="p_Text"><span class="f_Text">In the &quot;Mathematical calculations&quot; mode, each test agent run is performed with a call of only three functions: </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">OnTester</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">A typical mathematical problem for solving in the MetaTrader 5 tester is finding an extremum for a function of many variables. To solve it, it is necessary to declare the function parameters in the form of input variables and place the block for calculating its values in </span><span class="f_Text" style="font-style: italic;">OnTester</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The value of the function for a specific set of input variables is returned as an output value of </span><span class="f_Text" style="font-style: italic;">OnTester</span><span class="f_Text">. Do not use any built-in functions other than math functions in calculations.</span></p>
+<p class="p_Text"><span class="f_Text">It must be remembered that when optimizing, the maximum value of the </span><span class="f_Text" style="font-style: italic;">OnTester</span><span class="f_Text"> function is always sought. Therefore, if you need to find the minimum, you should return the inverse values or the values multiplied by -1 values.</span></p>
+<p class="p_Text"><span class="f_Text">To understand how this works, let's take as an example a relatively simple function of two variables with one maximum. Let's describe it in the </span><span class="f_Text" style="font-style: italic;">MathCalc.mq5</span><span class="f_Text"> Expert Advisor algorithm.</span></p>
+<p class="p_Text"><span class="f_Text">It is usually assumed that we do not know the representation of the function in an analytical form, otherwise, it would be possible to calculate its extrema. But now let's take a well-known formula to make sure the answer is correct.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">X1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">X2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTester</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">sqrt</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">X1</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">X1</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">X2</span><span class="f_CodeExample">&nbsp;*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">X2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">sin</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">)&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The Expert Advisor is accompanied by the </span><span class="f_Text" style="font-style: italic;">MathCalc.set</span><span class="f_Text"> file with parameters for optimization: arguments X1 and X2 are iterated in the ranges [-15, +15] with a step of 0.5.</span></p>
+<p class="p_Text"><span class="f_Text">Let's run the optimization and see the solution in the optimization table. The best pass gives the correct result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;X1=0.0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;X2=0.0</span>
+<br><span class="f_CodeExample">OnTester&nbsp;result&nbsp;0.8414709848078965</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">On the optimization chart, you can turn on the 3D mode and access the shape of the surface visually.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="The result of optimization (maximization) of a function in the mathematical calculations mode" title="The result of optimization (maximization) of a function in the mathematical calculations mode" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="sinccone.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">The result of optimization (maximization) of a function in the mathematical calculations mode</span></p>
+<p class="p_Text"><span class="f_Text">At the same time, the use of the tester in the mathematical calculations mode is not limited to purely scientific research. On its basis, in particular, it is possible to organize the optimization of trading systems using alternative well-known optimization methods, such as the &quot;particle swarm&quot; or &quot;simulated annealing&quot; method. Of course, to do this, you will need to upload the history of quotes or ticks to files and connect them to the tested Expert Advisor, as well as emulate the execution of trades, accounting for positions and funds. This routine work can be attractive due to the fact that you can freely customize the optimization process (as opposed to the built-in &quot;black box&quot; with a genetic algorithm) and control resources (primarily RAM).</span></p>
+
+</div>
+
+</body>
+</html>

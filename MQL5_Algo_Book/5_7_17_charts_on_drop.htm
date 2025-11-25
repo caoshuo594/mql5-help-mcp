@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.7.17 Getting MQL program drop coordinates on a chart</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_7_charts.htm"> 5.7 Working with charts </a>/ 5.7.17 Getting MQL program drop coordinates on a chart
+          </td>
+          <td width="70" align="right">
+          <a href="5_7_16_charts_floating.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_7_18_charts_coordinates.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.7.17 Getting MQL program drop coordinates on a chart</span></p>
+<p class="p_Text"><span class="f_Text">Users often drag MQL programs onto a chart using a mouse. In addition to being convenient, this allows you to set some context for the algorithm. For example, an indicator can be applied in different subwindows, or a script can place a pending order at the price where the user placed it on the chart. The next group of functions is designed to get the coordinates of the point to which the program was dragged and dropped.</span></p>
+<p class="p_H4"><span class="f_H4">int ChartWindowOnDropped()</span></p>
+<p class="p_Text"><span class="f_Text">This function returns the number of the chart subwindow on which the current Expert Advisor, script, or indicator is dropped by the mouse. The main window, as we know, is numbered 0, and the subwindows are numbered starting from 1. The number of a subwindow does not depend on whether there are hidden subwindows above it, as their indices remain assigned to them. In other words, the visible subwindow number may differ from its real index if there are <a href="5_7_8_charts_count_visibility.htm" class="topiclink">hidden subwindows</a>.</span></p>
+<p class="p_H4"><span class="f_H4">double ChartPriceOnDropped()</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">datetime ChartTimeOnDropped()</span></p>
+<p class="p_Text"><span class="f_Text">This pair of functions returns the program drop point coordinates in units of price and time. Please note that arbitrary data can be displayed in subwindows, and not just prices, although the function name </span><span class="f_Text" style="font-style: italic;">ChartPriceOnDropped</span><span class="f_Text"> includes 'Price'.</span></p>
+<p class="p_Quote"><span class="f_Quote">Attention! The target point time is not rounded by the size of the chart timeframe, so even on the H1 and D1 charts, you can get a value with minutes and even seconds.</span></p>
+<p class="p_H4"><span class="f_H4">int ChartXOnDropped()</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">int ChartYOnDropped()</span></p>
+<p class="p_Text"><span class="f_Text">These two functions return the X and Y screen coordinates of a point in pixels. The origin of the coordinates is located in the upper left corner of the main chart window. We talked about the direction of the axes in the <a href="4_9_8_env_screen.htm" class="topiclink">Screen specifications</a> section.</span></p>
+<p class="p_Text"><span class="f_Text">The Y coordinate is always counted from the upper left corner of the main chart, even if the drop point belongs to a subwindow. To translate this value into a coordinate </span><span class="f_Text" style="font-style: italic;">y</span><span class="f_Text"> relative to a subwindow, use the property <a href="5_7_13_charts_scale_price.htm" class="topiclink">CHART_WINDOW_YDISTANCE</a> (see example).</span></p>
+<p class="p_Text"><span class="f_Text">Let's output the values of all mentioned functions to the log in the script </span><span class="f_Text" style="font-style: italic;">ChartDrop.mq5</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartWindowOnDropped</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartTimeOnDropped</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartPriceOnDropped</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartXOnDropped</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartYOnDropped</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;for&nbsp;the&nbsp;subwindow,&nbsp;recalculate&nbsp;the&nbsp;y&nbsp;coordinate&nbsp;to&nbsp;the&nbsp;local&nbsp;one</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_WINDOW_YDISTANCE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartYOnDropped</span><span class="f_CodeExample">()&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For example, if we drop this script into the first subwindow where the WPR indicator is running, we can get the following results.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">ChartWindowOnDropped()=1&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">ChartTimeOnDropped()=2021.11.30&nbsp;03:52:30&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">ChartPriceOnDropped()=-50.0&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">ChartXOnDropped()=217&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">ChartYOnDropped()=312&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">ChartGetInteger(0,CHART_WINDOW_YDISTANCE,w)=282&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">ChartYOnDropped()-y=30&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Despite the fact that the script is dropped on the EURUSD, H1 chart, we got a timestamp with minutes and seconds.</span></p>
+<p class="p_Text"><span class="f_Text">Note that the &quot;price&quot; value is -50 because the range of WPR values is [0,-100].</span></p>
+<p class="p_Text"><span class="f_Text">In addition, the vertical coordinate of point 312 (relative to the entire chart window) was converted to the local coordinate of the subwindow: since the vertical distance from the beginning of the main chart to the subwindow was 282, the value </span><span class="f_Text" style="font-style: italic;">y</span><span class="f_Text"> inside the subwindow turned out to be 30.</span></p>
+
+</div>
+
+</body>
+</html>

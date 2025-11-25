@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.5.6 Getting testing financial statistics: TesterStatistics</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_5_tester.htm"> 6.5 Testing and optimization of Expert Advisors </a>/ 6.5.6 Getting testing financial statistics: TesterStatistics
+          </td>
+          <td width="70" align="right">
+          <a href="6_5_5_tester_criterion.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_5_7_tester_ontester.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.5.6 Getting testing financial statistics: TesterStatistics</span></p>
+<p class="p_Text"><span class="f_Text">We usually evaluate the quality of an Expert Advisor based on a trading report, which is similar to a testing report when dealing with a tester. It contains a large number of variables that characterize the trading style, stability and, of course, profitability. All these metrics, with some exceptions, are available to the MQL program through a special function </span><span class="f_Text" style="font-style: italic;">TesterStatistics</span><span class="f_Text">. Thus, the Expert Advisor developer has the ability to analyze individual variables in the code and construct their own combined optimization quality criteria from them.</span></p>
+<p class="p_H4"><span class="f_H4">double TesterStatistics(ENUM_STATISTICS statistic)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">TesterStatistics</span><span class="f_Text"> function returns the value of the specified statistical variable, calculated based on the results of a separate run of the Expert Advisor in the tester. A function can be called in the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">OnTester</span><span class="f_Text"> handler, which is yet to be discussed.</span></p>
+<p class="p_Text"><span class="f_Text">All available statistical variables are summarized in the ENUM_STATISTICS enumeration. Some of them serve as qualitative characteristics, that is, real numbers (usually total profits, drawdowns, ratios, and so on), and the other part is quantitative, that is, integers (for example, the number of transactions). However, both groups are controlled by the same function with the </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> result.</span></p>
+<p class="p_Text"><span class="f_Text">The following table shows real indicators (monetary amounts and coefficients). All monetary amounts are expressed in the deposit currency.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:35%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_INITIAL_DEPOSIT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Initial deposit</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_WITHDRAWAL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The amount of funds withdrawn from the account</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_PROFIT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Net profit or loss at the end of testing, the sum of STAT_GROSS_PROFIT and STAT_GROSS_LOSS</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_GROSS_PROFIT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Total profit, the sum of all profitable trades (greater than or equal to zero)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_GROSS_LOSS</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Total loss, the sum of all losing trades (less than or equal to zero)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_MAX_PROFITTRADE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Maximum profit: the largest value among all profitable trades (greater than or equal to zero)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_MAX_LOSSTRADE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Maximum loss: the smallest value among all losing trades (less than or equal to zero)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_CONPROFITMAX</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Total maximum profit in a series of profitable trades (greater than or equal to zero)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_MAX_CONWINS</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Total profit in the longest series of profitable trades</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_CONLOSSMAX</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Total maximum loss in a series of losing trades (less than or equal to zero)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_MAX_CONLOSSES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Total loss in the longest series of losing trades</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_BALANCEMIN</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Minimum balance value</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_BALANCE_DD</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Maximum balance drawdown in money</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_BALANCEDD_PERCENT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Balance drawdown in percent, which was recorded at the time of the maximum balance drawdown in money (STAT_BALANCE_DD)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_BALANCE_DDREL_PERCENT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Maximum balance drawdown in percent</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_BALANCE_DD_RELATIVE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Balance drawdown in money equivalent, which was recorded at the moment of the maximum balance drawdown in percent (STAT_BALANCE_DDREL_PERCENT)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_EQUITYMIN</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Minimum equity value</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_EQUITY_DD</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Maximum drawdown in money</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_EQUITYDD_PERCENT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Drawdown in percent, which was recorded at the time of the maximum drawdown of funds in the money (STAT_EQUITY_DD)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_EQUITY_DDREL_PERCENT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Maximum drawdown in percent</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_EQUITY_DD_RELATIVE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Drawdown in money that was recorded at the time of the maximum drawdown in percent (STAT_EQUITY_DDREL_PERCENT)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_EXPECTED_PAYOFF</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Mathematical expectation of winnings (arithmetic mean of the total profit and the number of transactions)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_PROFIT_FACTOR</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Profitability, which is the ratio STAT_GROSS_PROFIT/STAT_GROSS_LOSS (if STAT_GROSS_LOSS = 0; profitability takes the value DBL_MAX)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_RECOVERY_FACTOR</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Recovery factor: the ratio of STAT_PROFIT/STAT_BALANCE_DD</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_SHARPE_RATIO</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Sharpe ratio</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_MIN_MARGINLEVEL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Minimum margin level reached</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_CUSTOM_ONTESTER</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The value of the custom optimization criterion returned by the OnTester function</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The following table shows integer indicators (amounts).</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:35%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_DEALS</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Total number of completed transactions</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_TRADES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Number of trades (deals to exit the market)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_PROFIT_TRADES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Profitable trades</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_LOSS_TRADES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Losing trades</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_SHORT_TRADES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Short trades</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_LONG_TRADES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Long trades</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_PROFIT_SHORTTRADES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Short profitable trades</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_PROFIT_LONGTRADES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Long profitable trades</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_PROFITTRADES_AVGCON</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Average length of a profitable series of trades</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_LOSSTRADES_AVGCON</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Average length of a losing series of trades</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_CONPROFITMAX_TRADES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Number of trades that formed STAT_CONPROFITMAX (maximum profit in the sequence of profitable trades)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_MAX_CONPROFIT_TRADES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Number of trades in the longest series of profitable trades STAT_MAX_CONWINS</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_CONLOSSMAX_TRADES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Number of trades that formed STAT_CONLOSSMAX (maximum loss in the sequence of losing trades)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:35%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">STAT_MAX_CONLOSS_TRADES</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Number of trades in the longest series of losing trades STAT_MAX_CONLOSSES</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's try to use the presented metrics to create our own complex Expert Advisor quality criterion. To do this, we need some kind of &quot;experimental&quot; example of an MQL program. Let's take the Expert Advisor </span><span class="f_Text" style="font-style: italic;"><a href="6_4_38_experts_multisymbol.htm" class="topiclink">MultiMartingale.mq5</a></span><span class="f_Text"> as a starting point, but we will simplify it: we will remove multicurrency, built-in error handling, and scheduling. Moreover, we will choose a signal trading strategy for it with a single calculation on the bar, i.e., at the opening prices. This will speed up optimization and expand the field for experiments.</span></p>
+<p class="p_Text"><span class="f_Text">The strategy will be based on the overbought and oversold conditions determined by the OsMA indicator. The Bollinger Bands indicator superimposed on OsMA will help you dynamically find the boundaries of excess volatility, which means trading signals.</span></p>
+<p class="p_Text"><span class="f_Text">When OsMA returns inside the corridor, crossing the lower border from the bottom up, we will open a buy trade. When OsMA crosses the upper boundary in the same way from top to bottom, we will sell. To exit positions, we use the moving average, also applied to OsMA. If OsMA shows a reverse movement (down for a long position or up for a short position) and touches the MA, the position will be closed. This strategy is illustrated in the following screenshot.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Trading strategy based on OsMA, BBands and MA indicators" title="Trading strategy based on OsMA, BBands and MA indicators" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="eurusdh1_bandosma.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Trading strategy based on OsMA, BBands and MA indicators</span></p>
+<p class="p_Text"><span class="f_Text">The blue vertical line corresponds to the bar where the buy is opened, since on the two previous bars the lower Bollinger band was crossed by the OsMA histogram from the bottom up (this place is marked with a hollow blue arrow in the subwindow). The red vertical line is the location of the reverse signal, so the buy was closed and the sell was opened. In the subwindow, in this place (or rather, on the two previous bars, where the hollow red arrow is located), the OsMA histogram crosses the upper Bollinger band from top to bottom. Finally, the green line indicates the closing of the sale, due to the fact that the histogram began to rise above the red MA.</span></p>
+<p class="p_Text"><span class="f_Text">Let's name the Expert Advisor </span><span class="f_Text" style="font-style: italic;">BandOsMA.mq5</span><span class="f_Text">. The general settings will include a magic number, a fixed lot, and a stop loss distance in points. For the stop loss, we will use </span><span class="f_Text" style="font-style: italic;">TrailingStop</span><span class="f_Text"> from the previous example. Take profit is not used here.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">group</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;C&nbsp;O&nbsp;M&nbsp;M&nbsp;O&nbsp;N&nbsp;&nbsp;&nbsp;S&nbsp;E&nbsp;T&nbsp;T&nbsp;I&nbsp;N&nbsp;G&nbsp;S&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">sinput</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Magic</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1234567890</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Lots</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">01</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StopLoss</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Three groups of settings are intended for indicators.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">group</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;O&nbsp;S&nbsp;M&nbsp;A&nbsp;&nbsp;&nbsp;S&nbsp;E&nbsp;T&nbsp;T&nbsp;I&nbsp;N&nbsp;G&nbsp;S&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FastOsMA</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SlowOsMA</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">26</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SignalOsMA</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">9</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_APPLIED_PRICE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PriceOsMA</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRICE_TYPICAL</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">group</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;B&nbsp;B&nbsp;A&nbsp;N&nbsp;D&nbsp;S&nbsp;&nbsp;&nbsp;S&nbsp;E&nbsp;T&nbsp;T&nbsp;I&nbsp;N&nbsp;G&nbsp;S&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BandsMA</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">26</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BandsShift</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BandsDeviation</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">group</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;M&nbsp;A&nbsp;&nbsp;&nbsp;S&nbsp;E&nbsp;T&nbsp;T&nbsp;I&nbsp;N&nbsp;G&nbsp;S&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PeriodMA</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ShiftMA</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_MA_METHOD</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MethodMA</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">MODE_SMA</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">MultiMartingale.mq5</span><span class="f_Text"> Expert Advisor, we had no trading signals, while the opening direction was set by the user. Here we have trading signals, and it makes sense to arrange them as a separate class. First, let's describe the abstract interface </span><span class="f_Text" style="font-style: italic;">TradingSignal</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">interface</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TradingSignal</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It is as simple as our other interface </span><span class="f_Text" style="font-style: italic;">TradingStrategy</span><span class="f_Text">. And this is good. The simpler the interfaces and objects, the more likely they are to do one single thing, which is a good programming style because it minimizes bugs and makes large software projects more understandable. Due to abstraction in any program that uses </span><span class="f_Text" style="font-style: italic;">TradingSignal</span><span class="f_Text">, it will be possible to replace one signal with another. We can also replace the strategy. Our strategies are now responsible for preparing and sending orders, and signals initiate them based on market analysis.</span></p>
+<p class="p_Text"><span class="f_Text">In our case, let's pack the specific implementation of </span><span class="f_Text" style="font-style: italic;">TradingSignal</span><span class="f_Text"> into the </span><span class="f_Text" style="font-style: italic;">BandOsMaSignal</span><span class="f_Text"> class. Of course, we need variables to store the descriptors of the 3 indicators. Indicator instances are created and deleted in the constructor and destructor, respectively. All parameters will be passed from input variables. Note that </span><span class="f_Text" style="font-style: italic;">iBands</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">iMA</span><span class="f_Text"> are built based on the </span><span class="f_Text" style="font-style: italic;">hOsMA</span><span class="f_Text"> handler.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BandOsMaSignal</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TradingSignal</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hOsMA</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hBands</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hMA</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">direction</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BandOsMaSignal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fast</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">slow</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signal</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_APPLIED_PRICE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bands</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shift</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">deviation</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_MA_METHOD</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">method</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hOsMA</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iOsMA</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fast</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">slow</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signal</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hBands</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iBands</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bands</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shift</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">deviation</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hOsMA</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hMA</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iMA</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">method</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hOsMA</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">direction</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;~</span><span class="f_CodeExample" style="color: #333333;">BandOsMaSignal</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">IndicatorRelease</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">hMA</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">IndicatorRelease</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">hBands</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">IndicatorRelease</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">hOsMA</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The direction of the current trading signal is placed in the variable </span><span class="f_Text" style="font-style: italic;">direction</span><span class="f_Text">: 0 – no signals (undefined situation), +1 – buy, -1 – sell. We will fill in this variable in the </span><span class="f_Text" style="font-style: italic;">signal</span><span class="f_Text"> method. Its code repeats the above verbal description of signals in MQL5.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">signal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">osma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">upper</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lower</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;get&nbsp;two&nbsp;values&nbsp;of&nbsp;each&nbsp;indicator&nbsp;on&nbsp;bars&nbsp;1&nbsp;and&nbsp;2</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CopyBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">hOsMA</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">osma</span><span class="f_CodeExample">)&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CopyBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">hBands</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">UPPER_BAND</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">upper</span><span class="f_CodeExample">)&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CopyBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">hBands</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LOWER_BAND</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lower</span><span class="f_CodeExample">)&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CopyBuffer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">hMA</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ma</span><span class="f_CodeExample">)&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;if&nbsp;there&nbsp;was&nbsp;a&nbsp;signal&nbsp;already,&nbsp;check&nbsp;if&nbsp;it&nbsp;has&nbsp;ended</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">direction</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">direction</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">osma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]&nbsp;&gt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">osma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">direction</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">osma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">osma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">direction</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;in&nbsp;any&nbsp;case,&nbsp;check&nbsp;if&nbsp;there&nbsp;is&nbsp;a&nbsp;new&nbsp;signal</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">osma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lower</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">osma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lower</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">direction</span><span class="f_CodeExample">&nbsp;=&nbsp;+</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">osma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]&nbsp;&gt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">upper</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">osma</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">upper</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">direction</span><span class="f_CodeExample">&nbsp;=&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">direction</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As you can see, the indicator values are read for bars 1 and 2, since we will work on opening a bar, and the 0th bar has just opened by the time we we call the </span><span class="f_Text" style="font-style: italic;">signal</span><span class="f_Text"> method.</span></p>
+<p class="p_Text"><span class="f_Text">The new class that implements the </span><span class="f_Text" style="font-style: italic;">TradingStrategy</span><span class="f_Text"> interface will be called </span><span class="f_Text" style="font-style: italic;">SimpleStrategy</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The class provides some new features while also using some previously existing parts. In particular, it retained autopointers for </span><span class="f_Text" style="font-style: italic;">PositionState</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">TrailingStop</span><span class="f_Text"> and has a new autopointer to the </span><span class="f_Text" style="font-style: italic;">TradingSignal</span><span class="f_Text"> signal. Also, since we are going to trade only on the opening of bars, we needed the </span><span class="f_Text" style="font-style: italic;">lastBar</span><span class="f_Text"> variable, which will store the time of the last processed bar.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SimpleStrategy</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TradingStrategy</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">AutoPtr</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">PositionState</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">AutoPtr</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">TrailingStop</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">trailing</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">AutoPtr</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">TradingSignal</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">command</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stopLoss</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">magic</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lots</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastBar</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The global parameters are passed to the </span><span class="f_Text" style="font-style: italic;">SimpleStrategy</span><span class="f_Text"> constructor. We also pass a pointer to the </span><span class="f_Text" style="font-style: italic;">TradingSignal</span><span class="f_Text"> object: in this case, it will be </span><span class="f_Text" style="font-style: italic;">BandOsMaSignal</span><span class="f_Text"> which will have to be created by the calling code. Next, the constructor tries to find among the existing positions those that have the required </span><span class="f_Text" style="font-style: italic;">magic</span><span class="f_Text"> number and symbol, and if successful, adds a trailing stop. This will be useful if the Expert Advisor has a break for one reason or another, and the position has already been opened.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SimpleStrategy</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">TradingSignal</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">signal</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">sl</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">):</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">command</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">signal</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">magic</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stopLoss</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">sl</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lots</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastBar</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;select&nbsp;&quot;our&quot;&nbsp;position&nbsp;among&nbsp;the&nbsp;existing&nbsp;ones&nbsp;(if&nbsp;there&nbsp;is&nbsp;a&nbsp;suitable&nbsp;one)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PositionFilter</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">positions</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">tickets</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">positions</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">let</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_MAGIC</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">magic</span><span class="f_CodeExample">).</span><span class="f_CodeExample" style="color: #333333;">let</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_SYMBOL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">).</span><span class="f_CodeExample" style="color: #333333;">select</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">tickets</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">tickets</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Alert</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Too&nbsp;many&nbsp;positions:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;TODO:&nbsp;close&nbsp;extra&nbsp;positions&nbsp;-&nbsp;this&nbsp;is&nbsp;not&nbsp;allowed&nbsp;by&nbsp;the&nbsp;strategy</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PositionState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">tickets</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">stopLoss</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">trailing</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TrailingStop</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">tickets</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stopLoss</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stopLoss</span><span class="f_CodeExample">&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">50</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The implementation of the </span><span class="f_Text" style="font-style: italic;">trade</span><span class="f_Text"> method is similar to the martingale example. However, we have removed lot multiplications and added the </span><span class="f_Text" style="font-style: italic;">signal</span><span class="f_Text"> method call.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">trade</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;we&nbsp;work&nbsp;only&nbsp;once&nbsp;when&nbsp;a&nbsp;new&nbsp;bar&nbsp;appears</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">lastBar</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">))&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">command</span><span class="f_CodeExample">[].</span><span class="f_CodeExample" style="color: #333333;">signal</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;getting&nbsp;a&nbsp;signal</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ticket</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">[]&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">[].</span><span class="f_CodeExample" style="color: #333333;">refresh</span><span class="f_CodeExample">())&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;position&nbsp;exists</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;the&nbsp;signal&nbsp;has&nbsp;changed&nbsp;to&nbsp;the&nbsp;opposite&nbsp;or&nbsp;disappeared</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">[].</span><span class="f_CodeExample" style="color: #333333;">get</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_TYPE</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_TYPE_BUY</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;!=&nbsp;+</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;||&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">[].</span><span class="f_CodeExample" style="color: #333333;">get</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_TYPE</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_TYPE_SELL</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;!=&nbsp;-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Signal&nbsp;lost:&nbsp;%d&nbsp;for&nbsp;position&nbsp;%d&nbsp;%lld&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">[].</span><span class="f_CodeExample" style="color: #333333;">get</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_TYPE</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">[].</span><span class="f_CodeExample" style="color: #333333;">get</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_TICKET</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">[].</span><span class="f_CodeExample" style="color: #333333;">get</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_TICKET</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">NULL</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;update&nbsp;internal&nbsp;flag&nbsp;'ready'</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;according&nbsp;to&nbsp;whether&nbsp;or&nbsp;not&nbsp;there&nbsp;was&nbsp;a&nbsp;closure</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">[].</span><span class="f_CodeExample" style="color: #333333;">refresh</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">[].</span><span class="f_CodeExample" style="color: #333333;">update</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">trailing</span><span class="f_CodeExample">[])&nbsp;</span><span class="f_CodeExample" style="color: #333333;">trailing</span><span class="f_CodeExample">[].</span><span class="f_CodeExample" style="color: #333333;">trail</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;position&nbsp;is&nbsp;closed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">[]&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ticket</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;==&nbsp;+</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">openBuy</span><span class="f_CodeExample">()&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">openSell</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ticket</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;new&nbsp;position&nbsp;just&nbsp;opened</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PositionState</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ticket</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">stopLoss</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">trailing</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TrailingStop</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ticket</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stopLoss</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stopLoss</span><span class="f_CodeExample">&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">50</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;store&nbsp;the&nbsp;current&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastBar</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Auxiliary methods </span><span class="f_Text" style="font-style: italic;">openBuy</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">openSell</span><span class="f_Text">, and others have undergone minimal changes, so we will not list them (the full source code is attached).</span></p>
+<p class="p_Text"><span class="f_Text">Since we always have only one strategy in this Expert Advisor, in contrast to the multi-currency martingale in which each symbol required its own settings, let's exclude the strategy pool and manage the strategy object directly.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">AutoPtr</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">TradingStrategy</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">strategy</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FastOsMA</span><span class="f_CodeExample">&nbsp;&gt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SlowOsMA</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_PARAMETERS_INCORRECT</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">strategy</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SimpleStrategy</span><span class="f_CodeExample">(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BandOsMaSignal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">FastOsMA</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SlowOsMA</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SignalOsMA</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PriceOsMA</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BandsMA</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BandsShift</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BandsDeviation</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PeriodMA</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ShiftMA</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MethodMA</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Magic</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StopLoss</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Lots</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INIT_SUCCEEDED</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTick</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">strategy</span><span class="f_CodeExample">[]&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">NULL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">strategy</span><span class="f_CodeExample">[].</span><span class="f_CodeExample" style="color: #333333;">trade</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We now have a ready Expert Advisor which we can use as a tool for studying the tester. First, let's create an auxiliary structure </span><span class="f_Text" style="font-style: italic;">TesterRecord</span><span class="f_Text"> for querying and storing all statistical data.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TesterRecord</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">feature</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">fill</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">TesterRecord</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">[])</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ResetLastError</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TesterStatistics</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_STATISTICS</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_LastError</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TesterRecord</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_STATISTICS</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PUSH</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In this case, the </span><span class="f_Text" style="font-style: italic;">feature</span><span class="f_Text"> string field is needed only for informative log output. To save all indicators (for example, to be able to generate your own report form later), a simple array of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text"> of appropriate length is enough.</span></p>
+<p class="p_Text"><span class="f_Text">Using the structure in the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> handler, we make sure that the MQL5 API returns the same values as the tester's report.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnDeinit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TesterRecord</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TesterRecord</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">fill</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For example, when running the Expert Advisor on EURUSD, H1 with a deposit of 10000 and without any optimizations (with default settings), we will get approximately the following values for 2021 (fragment):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[feature]&nbsp;&nbsp;[value]</span>
+<br><span class="f_CodeExample">[&nbsp;0]&nbsp;&quot;STAT_INITIAL_DEPOSIT&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10000.00</span>
+<br><span class="f_CodeExample">[&nbsp;1]&nbsp;&quot;STAT_WITHDRAWAL&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00</span>
+<br><span class="f_CodeExample">[&nbsp;2]&nbsp;&quot;STAT_PROFIT&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6.01</span>
+<br><span class="f_CodeExample">[&nbsp;3]&nbsp;&quot;STAT_GROSS_PROFIT&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;303.63</span>
+<br><span class="f_CodeExample">[&nbsp;4]&nbsp;&quot;STAT_GROSS_LOSS&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-297.62</span>
+<br><span class="f_CodeExample">[&nbsp;5]&nbsp;&quot;STAT_MAX_PROFITTRADE&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;15.15</span>
+<br><span class="f_CodeExample">[&nbsp;6]&nbsp;&quot;STAT_MAX_LOSSTRADE&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-10.00</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">[27]&nbsp;&quot;STAT_DEALS&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;476.00</span>
+<br><span class="f_CodeExample">[28]&nbsp;&quot;STAT_TRADES&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;238.00</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">[37]&nbsp;&quot;STAT_CONLOSSMAX_TRADES&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8.00</span>
+<br><span class="f_CodeExample">[38]&nbsp;&quot;STAT_MAX_CONLOSS_TRADES&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8.00</span>
+<br><span class="f_CodeExample">[39]&nbsp;&quot;STAT_PROFITTRADES_AVGCON&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.00</span>
+<br><span class="f_CodeExample">[40]&nbsp;&quot;STAT_LOSSTRADES_AVGCON&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.00</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Knowing all these values, we can invent our own formula for the combined metric of the Expert Advisor quality and, at the same time, the objective optimization function. But the value of this indicator in any case will need to be reported to the tester. And that's what the </span><span class="f_Text" style="font-style: italic;">OnTester</span><span class="f_Text"> function does.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.2.12 Dynamic creation of objects: new and delete</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_2_classes_and_interfaces.htm"> 3.2 Classes and interfaces </a>/ 3.2.12 Dynamic creation of objects: new and delete
+          </td>
+          <td width="70" align="right">
+          <a href="3_2_11_classes_inheritance.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_2_13_classes_pointers.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.2.12 Dynamic creation of objects: new and delete</span></p>
+<p class="p_Text"><span class="f_Text">So far we have only tried to create automatic objects, i.e. local variables inside </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">. An object declared in the global context (outside </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> or some other function) would also be automatically created (when the script is loaded) and deleted (when the script is unloaded).</span></p>
+<p class="p_Text"><span class="f_Text">In addition to these two modes, we have touched on the ability to describe a field of an object type (in our example, this is the structure </span><span class="f_Text" style="font-style: italic;">Pair</span><span class="f_Text"> used for the field </span><span class="f_Text" style="font-style: italic;">coordinates</span><span class="f_Text"> inside the object </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text">). All such objects are also automatic: they are created for us by a compiler in a constructor of a &quot;host&quot; object and deleted in its destructor.</span></p>
+<p class="p_Text"><span class="f_Text">However, it is quite often impossible to get by with only automatic objects in programs. In the case of a drawing program, we will need to create shapes at the user's request. Moreover, shapes will need to be stored in an array, and for this automatic objects would have to have a default constructor (which is not the case in our case. &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">For such situations, MQL5 offers the opportunity to dynamically create and delete objects. Creation is implemented with the operator </span><span class="f_Text" style="font-style: italic;">new</span><span class="f_Text"> and deletion with the operator </span><span class="f_Text" style="font-style: italic;">delete</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text" style="page-break-after: avoid;"><span class="f_Text" style="font-weight: bold;">Operator </span><span class="f_Text" style="font-style: italic; font-weight: bold;">new</span></p>
+<p class="p_Text"><span class="f_Text">The keyword </span><span class="f_Text" style="font-style: italic;">new</span><span class="f_Text"> is followed by the name of the required class and, in parentheses, a list of arguments to call any of the existing constructors. Execution of the operator </span><span class="f_Text" style="font-style: italic;">new</span><span class="f_Text"> leads to the creation of an instance of the class.</span></p>
+<p class="p_Text"><span class="f_Text">The operator </span><span class="f_Text" style="font-style: italic;">new</span><span class="f_Text"> returns a value of a special type – a pointer to an object. To describe a variable of this type, add an asterisk character '*' after the class name. For example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">pr</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Rectangle</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">200</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">50</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">75</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">clrBlue</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here the variable </span><span class="f_Text" style="font-style: italic;">pr</span><span class="f_Text"> has a type of pointer to an object of the class </span><span class="f_Text" style="font-style: italic;">Rectangle</span><span class="f_Text">. Pointers will be discussed in more detail in a separate <a href="3_2_13_classes_pointers.htm" class="topiclink">section</a>.</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that the declaration of a variable of an object pointer type itself does not allocate memory for an object and does not call its constructor. Of course, a pointer takes up space - 8 bytes, but in fact, it is an unsigned integer </span><span class="f_Text" style="font-style: italic;">ulong</span><span class="f_Text">, which the system interprets in a special way.</span></p>
+<p class="p_Text"><span class="f_Text">You can work with a pointer in the same way as with an object, i.e., you can call available methods through the dereference operator and access fields.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">pr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">toString</span><span class="f_CodeExample">());</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">A pointer variable that has not yet been assigned a dynamic object descriptor (for example, if the operator </span><span class="f_Text" style="font-style: italic;">new</span><span class="f_Text"> is called not at the time of initialization of a new variable, but is moved to some later lines of the source code), contains a special null pointer, which is denoted as NULL (to distinguish it from numbers) but is actually equal to 0.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text" style="page-break-after: avoid;"><span class="f_Text" style="font-weight: bold;">Operator </span><span class="f_Text" style="font-style: italic; font-weight: bold;">delete</span></p>
+<p class="p_Text"><span class="f_Text">Pointers received via </span><span class="f_Text" style="font-style: italic;">new</span><span class="f_Text"> should be freed at the end of an algorithm using the operator </span><span class="f_Text" style="font-style: italic;">delete</span><span class="f_Text">. For example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">delete</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pr</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If this is not done, the instance allocated by the operator </span><span class="f_Text" style="font-style: italic;">new</span><span class="f_Text"> will remain in memory. If more and more new objects are created in this way, and then not deleted when they are no longer needed, this will lead to unnecessary memory consumption. The remaining unreleased dynamic objects cause warnings to be printed when the program terminates. For example, if you don't delete the pointer </span><span class="f_Text" style="font-style: italic;">pr</span><span class="f_Text">, you'll get something like this in the log after the script is unloaded: &lt;segment 0809&gt;</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">1&nbsp;undeleted&nbsp;object&nbsp;left</span>
+<br><span class="f_CodeExample">1&nbsp;object&nbsp;of&nbsp;type&nbsp;Rectangle&nbsp;left</span>
+<br><span class="f_CodeExample">168&nbsp;bytes&nbsp;of&nbsp;leaked&nbsp;memory</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The terminal reports how many objects and what class were forgotten by the programmer, as well as how much memory they occupied.</span></p>
+<p class="p_Text"><span class="f_Text">Once the operator </span><span class="f_Text" style="font-style: italic;">delete</span><span class="f_Text"> is called for a pointer, the pointer is invalidated because the object no longer exists. A subsequent attempt to access its properties causes a run-time error &quot;Invalid pointer accessed&quot;:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Critical&nbsp;error&nbsp;while&nbsp;running&nbsp;script&nbsp;'shapes&nbsp;(EURUSD,H1)'.</span>
+<br><span class="f_CodeExample">Invalid&nbsp;pointer&nbsp;access.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The MQL program is then interrupted.</span></p>
+<p class="p_Text"><span class="f_Text">This, however, does not mean that the same pointer variable can no longer be used. It is enough to assign a pointer to another newly created instance of the object.</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 has a built-in function that allows you to check the validity of a pointer in a variable – </span><span class="f_Text" style="font-style: italic;">CheckPointer</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">ENUM_POINTER_TYPE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">CheckPointer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">object</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">pointer</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It takes one parameter of a pointer to a type class and returns a value from the ENUM_POINTER_TYPE enumeration:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">POINTER_INVALID – incorrect pointer;</span></li>
+<li class="p_li"><span class="f_li">POINTER_DYNAMIC – valid pointer to a dynamic object;</span></li>
+<li class="p_li"><span class="f_li">P</span><span class="f_Text">OINTER_AUTOMATIC – valid pointer to an automatic object.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Execution of the statement </span><span class="f_Text" style="font-style: italic;">delete</span><span class="f_Text"> only makes sense for a pointer for which the function returned POINTER_DYNAMIC. For an automatic object, it will have no effect (such objects are deleted automatically when control returns from the block of code in which the variable is defined).</span></p>
+<p class="p_Text"><span class="f_Text">The following macro simplifies and ensures the correct cleanup for a pointer:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">FREE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">P</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CheckPointer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">P</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">POINTER_DYNAMIC</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">delete</span><span class="f_CodeExample">&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">P</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The necessity to explicitly &quot;clean up&quot; is an inevitable price to pay for the flexibility provided by dynamic objects and pointers.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Working with Optimization Results</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a>/ Working with Optimization Results
+          </td>
+          <td width="70" align="right">
+          <a href="ivolumes.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="framefirst.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Working with Optimization Results</span></p>
+<p class="p_Text"><span class="f_Text">Functions for organizing custom processing of the optimization results in the strategy tester. They can be called during optimization in testing agents, as well as locally in Expert Advisors and scripts.</span></p>
+<p class="p_Text"><span class="f_Text">When you run an Expert Advisor in the strategy tester, you can create your own data array based on the simple types or <a href="classes.htm#simple_structure" class="topiclink">simple structures</a> (they do not contain strings, class objects or objects of dynamic arrays). This data set can be saved using the <a href="frameadd.htm" class="topiclink">FrameAdd()</a> function in a special structure called a frame. During the optimization of an Expert Advisor, each agent can send a series of frames to the terminal. All the received frames are written in the *.MQD file named as the Expert Advisor in the terminal_directory\MQL5\Files\Tester folder. They are written in the order they are received from the agents. Receipt of a frame in the client terminal from a testing agent generates the <a href="event_fire.htm#testerpass" class="topiclink">TesterPass</a> event.</span></p>
+<p class="p_Text"><span class="f_Text">Frames can be stored in the computer memory and in a file with the specified name. The MQL5 language sets no limitations on the number of frames.</span></p>
+<p class="p_H3"><span class="f_H3">Memory and disk space limits in MQL5 Cloud Network</span></p>
+<p class="p_Text"><span class="f_Text">The following limitation applies to optimizations run in the <a href="https://www.metatrader5.com/en/terminal/help/algotrading/strategy_optimization#cloud_start" target="_blank" class="weblink">MQL5 Cloud Network</a>: the Expert Advisor must not write to disk more than 4GB of information or use more than 4GB of RAM. If the limit is exceeded, the network agent will not be able to complete the calculation correctly, and you will not receive the result. However, you will be charged for all the time spent on the calculations.</span></p>
+<p class="p_Text"><span class="f_Text">If you need to get information from each optimization pass, <a href="optimization_frames.htm" class="topiclink">send frames</a> without writing to disk. To avoid using <a href="files.htm" class="topiclink">file operations</a> in Expert Advisors during calculations in the MQL5 Cloud Network, you can use the following check:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #ff0000;">INVALID_HANDLE</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">file_operations_allowed</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #ff0000;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">MQLInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">MQL_OPTIMIZATION</span><span class="f_CodeExample">)&nbsp;||&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MQLInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">MQL_FORWARD</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">file_operations_allowed</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file_operations_allowed</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(...);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:153px;"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Function</span></p>
+</th>
+<th class="EnumTable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Action</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:153px;"><p class="p_fortable"><span class="f_fortable"><a href="framefirst.htm" class="topiclink">FrameFirst</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Moves a pointer of frame reading to the beginning and resets the previously set filter</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:153px;"><p class="p_fortable"><span class="f_fortable"><a href="framefilter.htm" class="topiclink">FrameFilter</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Sets the frame reading filter and moves the pointer to the beginning</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:153px;"><p class="p_fortable"><span class="f_fortable"><a href="framenext.htm" class="topiclink">FrameNext</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Reads a frame and moves the pointer to the next one</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:153px;"><p class="p_fortable"><span class="f_fortable"><a href="frameinputs.htm" class="topiclink">FrameInputs</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Receives <a href="inputvariables.htm" class="topiclink">input parameters</a>, on which the frame is formed</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:153px;"><p class="p_fortable"><span class="f_fortable"><a href="frameadd.htm" class="topiclink">FrameAdd</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Adds a frame with data</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:153px;"><p class="p_fortable"><span class="f_fortable"><a href="parametergetrange.htm" class="topiclink">ParameterGetRange</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Receives data on the values range and the change step for an <a href="inputvariables.htm" class="topiclink">input variable</a> when optimizing an Expert Advisor in the Strategy Tester</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:153px;"><p class="p_fortable"><span class="f_fortable"><a href="parametersetrange.htm" class="topiclink">ParameterSetRange</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Specifies the use of <a href="inputvariables.htm" class="topiclink">input variable</a> when optimizing an Expert Advisor in the Strategy Tester: value, change step, initial and final values</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">See also</span></p>
+<p class="p_SeeAlso"><span class="f_SeeAlso"><a href="statistics.htm" class="topiclink">Testing Statistics</a>, <a href="mql5_programm_info.htm" class="topiclink">Properties of a Running MQL5 Program</a></span></p>
+
+</div>
+
+</body>
+</html>

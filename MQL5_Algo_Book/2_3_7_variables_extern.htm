@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>2.3.7 External variables</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part2.htm"> Part 2. Programming fundamentals </a> / <a class="h_m" href="2_3_variables.htm"> 2.3 Variables </a>/ 2.3.7 External variables
+          </td>
+          <td width="70" align="right">
+          <a href="2_3_6_input_variables.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="2_4_arrays.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">2.3.7 External variables</span></p>
+<p class="p_Quote"><span class="f_Quote">The material in this section is simultaneously complex and optional. It requires the knowledge of the concepts that are based on the analogy to C++ and those considered hereinbelow. At the same time, the effect of the language structure described can be achieved in another manner, while its flexibility is a potential source of errors.</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 allows describing variables as external ones. This is made using the </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text"> keyword and is only permitted in the <a href="2_3_2_scope_and_lifetime.htm" class="topiclink">global context</a>.</span></p>
+<p class="p_Text"><span class="f_Text">For an external variable, syntax basically repeats a normal description but it additionally has the 'extern' keyword while initialization is prohibited:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">extern</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">identifier</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Describing a variable as external means that its description is delayed and must occur later in the source code, usually in another file (connecting files using the </span><span class="f_Text" style="font-style: italic;"><a href="2_9_1_preprocessor_include.htm" class="topiclink">#include</a></span><span class="f_Text"><a href="2_9_1_preprocessor_include.htm" class="topiclink"> directive</a> will be considered in the chapter dealing with the <a href="2_9_preprocessor.htm" class="topiclink">preprocessor</a>). Several different source files can have a description of the same external variable, that is, those having identical types and identifiers. All such descriptions refer to the same variable.</span></p>
+<p class="p_Text"><span class="f_Text">It is assumed that this variable will be completely described in one of the files. If the variable is not defined anywhere in the code without the </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text"> keyword, the &quot;unresolved extern variable&quot; compilation error is returned (similar to a linker error in C++ in such cases).</span></p>
+<p class="p_Text"><span class="f_Text">Describing an external variable allows using it efficiently in the source code of a particular file. In other words, it enables compiling a given module, although the variable is not created in this module.</span></p>
+<p class="p_Text"><span class="f_Text">Using </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text"> in MQL5 is not so insistent as in C++ and in most cases, may be replaced by enabling a header file with general descriptions of the variables to be declared as </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text">. It is sufficient to perform these definitions conventionally. The compiler ensures adding each attached file to the source code only once. Considering that in MQL5 a program always consists of one compilable unit mq5, there is no C++ problem here, with the potential error of the multiple definitions of the same variable due to enabling the header in different units.</span></p>
+<p class="p_Text"><span class="f_Text">Even an additional mq5 (not </span><span class="f_Text" style="font-style: italic;">mqh</span><span class="f_Text">) file is attached in the </span><span class="f_Text" style="font-style: italic;">#include</span><span class="f_Text"> directive, it does not equally compete with the main unit, for which compilation is launched; instead, it is considered as one of the headers.</span></p>
+<p class="p_Text"><span class="f_Text">Unlike C++, MQL5 does not allow specifying an initial value for an external variable (initialization in C++ leads to ignoring the word </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text">). If you try to set an initial value, you will get a compilation error &quot;extern variable initialization is not allowed&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">Generally, describing a variable as external can be considered a kind of &quot;soft&quot; description: It ensures the appearance of the variable and excludes the overriding error that would occur if the variable is described in several files without the </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text"> modifier.</span></p>
+<p class="p_Text"><span class="f_Text">However, this can be a source of errors. If in different header files, by coincidence, identical variables are described for different purposes, then no keyword </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text"> allows identifying a collision, while with </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text">, the variables will become one, and the program operation logic will most likely be broken.</span></p>
+<p class="p_Text"><span class="f_Text">As external, both variables and functions can be described (they will be considered <a href="2_8_functions.htm" class="topiclink">below</a>). For functions, describing them with the attribute as external is a rudiment (i.e., it is compiled, but does not make any changes). The following two declarations of a function are equivalent:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">extern</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">return_type</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">([</span><span class="f_CodeExample" style="color: #333333;">parameters]</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">return_type</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">([</span><span class="f_CodeExample" style="color: #333333;">parameters]</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In this sense, the presence/absence of </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text"> can only be used to stylistically distinguish between a forward description of a function from the current unit (no </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text">) or from an external one (</span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text"> is present).</span></p>
+<p class="p_Text"><span class="f_Text">You can use </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text"> in both the mq5 unit to be compiled and header files to be attached.</span></p>
+<p class="p_Text"><span class="f_Text">Let's consider some options for using </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text">: They are entered in different files, i.e., main script </span><span class="f_Text" style="font-style: italic;">ExternMain.mq5</span><span class="f_Text"> and 3 attachable files: </span><span class="f_Text" style="font-style: italic;">ExternHeader1.mqh</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">ExternHeader2.mqh</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">ExternCommon.mqh</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In the main file, only </span><span class="f_Text" style="font-style: italic;">ExternHeader1.mqh</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ExternHeader2.mqh</span><span class="f_Text"> are attached, while we will need </span><span class="f_Text" style="font-style: italic;">ExternCommon.mqh</span><span class="f_Text"> a bit later.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//&nbsp;source&nbsp;code&nbsp;from&nbsp;mqh&nbsp;files&nbsp;will&nbsp;be&nbsp;substituted&nbsp;implicitly</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;in&nbsp;the&nbsp;main&nbsp;mq5&nbsp;file,&nbsp;instead&nbsp;of&nbsp;these&nbsp;directives</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ExternHeader1.mqh&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ExternHeader2.mqh&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In header files, two conditionally useful functions are defined: In the first one, function </span><span class="f_Text" style="font-style: italic;">inc</span><span class="f_Text"> for the </span><span class="f_Text" style="font-style: italic;">x</span><span class="f_Text"> variable increment, while in the second, function </span><span class="f_Text" style="font-style: italic;">dec</span><span class="f_Text"> for the </span><span class="f_Text" style="font-style: italic;">x</span><span class="f_Text"> variable decrement. It is variable </span><span class="f_Text" style="font-style: italic;">x</span><span class="f_Text"> that is described in both files as external:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//&nbsp;ExternHeader1.mqh</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">extern</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">inc</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;-----------------</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;ExternHeader2.mqh</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">extern</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dec</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">--;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Due to this description, each of the mqh files is compiled in a regular way. When they are included in an mq5 file together, the entire program is compiled, too.</span></p>
+<p class="p_Text"><span class="f_Text">If the variable were defined in each file without the word </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text">, the re-defining error would occur in compiling the program as a whole. If we had transferred the definition of </span><span class="f_Text" style="font-style: italic;">x</span><span class="f_Text"> from header files into the main unit, header files would have stopped being compiled (it is not a problem for somebody, perhaps; however, in larger programs, developers like checking the compilation ability of immediate corrections without compiling the entire project).</span></p>
+<p class="p_Text"><span class="f_Text">In the main script, we define a variable (in this case, with an initial value of 2, while if we do not specify the value, the default 0 will be used) and call the conditionally useful functions, as well as print the </span><span class="f_Text" style="font-style: italic;">x</span><span class="f_Text"> value.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">inc</span><span class="f_CodeExample">();&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;uses&nbsp;x</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dec</span><span class="f_CodeExample">();&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;uses&nbsp;x</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;2</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In file </span><span class="f_Text" style="font-style: italic;">ExternHeader1.mqh</span><span class="f_Text">, there is the description of variable </span><span class="f_Text" style="font-style: italic;">short z</span><span class="f_Text"> (without </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text">). A similar description is commented upon in the main script. If we make this string active, we will get the error mentioned before (&quot;variable already defined&quot;). This is done to illustrate the potential problem.</span></p>
+<p class="p_Text"><span class="f_Text">In </span><span class="f_Text" style="font-style: italic;">ExternHeader1.mqh</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">extern long y</span><span class="f_Text"> is described, too. At the same time, in file </span><span class="f_Text" style="font-style: italic;">ExternHeader2.mqh</span><span class="f_Text">, the homonym external variable has another type: </span><span class="f_Text" style="font-style: italic;">extern short y</span><span class="f_Text">. If the latter description were not &quot;moved&quot; into a comment preemptively, the types incompatibility error (&quot;variable 'y' already defined with different type&quot;) would occur here. Summary: Either types must coincide or variables must not be external. If both options are not good, it means that there is a mistype in the name of one of the variables.</span></p>
+<p class="p_Text"><span class="f_Text">Moreover, it should be noted that variable </span><span class="f_Text" style="font-style: italic;">y</span><span class="f_Text"> is not explicitly initialized. However, the main script calls it successfully and prints 0 in the log:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">y</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;0</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, there is a possibility provided in the script to try an alternative of the external twin variables, exemplified by the already known variable </span><span class="f_Text" style="font-style: italic;">x</span><span class="f_Text">. Instead of describing </span><span class="f_Text" style="font-style: italic;">extern int x</span><span class="f_Text">, each of the files </span><span class="f_Text" style="font-style: italic;">ExternHeader1.mqh</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ExternHeader2.mqh</span><span class="f_Text"> can include another common header, </span><span class="f_Text" style="font-style: italic;">ExternCommon.mqh</span><span class="f_Text">, in which there is the description of </span><span class="f_Text" style="font-style: italic;">int x</span><span class="f_Text"> (without </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text">). It becomes the only description of </span><span class="f_Text" style="font-style: italic;">x</span><span class="f_Text"> in the project.</span></p>
+<p class="p_Text"><span class="f_Text">This alternative mode of assembling the program is enabled when activating <a href="2_9_3_preprocessor_define_simple.htm" class="topiclink">macro</a> USE_INCLUDE_WORKAROUND: It is in the comment at the beginning of the script:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">USE_INCLUDE_WORKAROUND</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;this&nbsp;string&nbsp;was&nbsp;in&nbsp;the&nbsp;comment</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ExternHeader1.mqh&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ExternHeader2.mqh&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In this configuration, particular include files will still be compilable, as well as the entire project. In a real project, without using this method, the common mqh file would be included in </span><span class="f_Text" style="font-style: italic;">ExternHeader1.mqh</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ExternHeader2.mqh</span><span class="f_Text"> unconditionally (no USE_INCLUDE_WORKAROUND conditions). In this example, switching between the two threads of instructions is based on USE_INCLUDE_WORKAROUND is only needed to demonstrate both modes. For example, the simplified version of </span><span class="f_Text" style="font-style: italic;">ExternHeader2.mqh</span><span class="f_Text"> should appear as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//&nbsp;ExternHeader2.mqh</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ExternCommon.mqh&quot;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;int&nbsp;x;&nbsp;now&nbsp;here</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dec</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">--;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We can check in the MetaEditor log that file </span><span class="f_Text" style="font-style: italic;">ExternCommon.mqh</span><span class="f_Text"> loaded only once, although it is referenced in both </span><span class="f_Text" style="font-style: italic;">ExternHeader1.mqh</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ExternHeader2.mqh</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">'ExternMain.mq5'</span>
+<br><span class="f_CodeExample">'ExternHeader1.mqh'</span>
+<br><span class="f_CodeExample">'ExternCommon.mqh'</span>
+<br><span class="f_CodeExample">'ExternHeader2.mqh'</span>
+<br><span class="f_CodeExample">code&nbsp;generated</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If the </span><span class="f_Text" style="font-style: italic;">x</span><span class="f_Text"> variable is &quot;registered&quot; in </span><span class="f_Text" style="font-style: italic;">ExternCommon.mqh</span><span class="f_Text">, we shall not re-define it (without </span><span class="f_Text" style="font-style: italic;">extern</span><span class="f_Text">) in the main unit since this would cause a compilation error, but we can simply assign to it the desired value at the beginning of the algorithm.</span></p>
+
+</div>
+
+</body>
+</html>

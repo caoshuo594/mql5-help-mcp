@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Pseudo Inverse</title>
+  <meta name="keywords" content="Inverse" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="matrix.htm"> Matrix and Vector Methods </a> / <a class="h_m" href="openblas.htm"> OpenBLAS </a> / <a class="h_m" href="factored_calculations.htm"> Factored Calculations </a>/ Pseudo Inverse
+          </td>
+          <td width="70" align="right">
+          <a href="sylvesterequationschurblocked.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="polar_decomposition.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_Function"><span class="f_Function">There is no special function in the OpenBLAS library to calculate the pseudo-inverse of a matrix. However, for this purpose can be used <a href="singular_value_decomposition.htm" class="topiclink">singular value decomposition</a> (SVD):</span></p>
+<p class="p_Function"><span class="f_Function">1. Decompose matrix A into U * &#931; * VT</span></p>
+<p class="p_Function"><span class="f_Function">2. Invert &#931; (non-zero singular values &#8203;&#8203;only)</span></p>
+<p class="p_Function"><span class="f_Function">3. Get the pseudo-inverse matrix using the formula</span></p>
+<p style="text-align: left; margin: 0 0 0 40px;"><span class="f_Normal" style="font-size: 12pt; font-family: 'Times New Roman',Times,Georgia,serif; background-color: transparent;">A+ = V * &#931;+ * UT</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Example</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&#1058;&#1077;&#1089;&#1090;&nbsp;&#1092;&#1091;&#1085;&#1082;&#1094;&#1080;&#1080;&nbsp;PseudoInverse:&nbsp;&#1087;&#1088;&#1086;&#1074;&#1077;&#1088;&#1082;&#1072;&nbsp;A&nbsp;*&nbsp;A+&nbsp;*&nbsp;A&nbsp;&#8776;&nbsp;A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TestPseudoInverse</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">size_m</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">size_n</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">Random</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">size_m</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">size_n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_pi</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">PseudoInverse</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">matrix_pi</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;pseudo&nbsp;inverse&nbsp;test&nbsp;&nbsp;A&nbsp;*&nbsp;A+&nbsp;*&nbsp;A&nbsp;=&nbsp;A</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_a2</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">&nbsp;@&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_pi</span><span class="f_CodeExample">&nbsp;@&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">=(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Compare</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">matrix_a2</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">1e</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">11</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">printf</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Pseudo&nbsp;Inverse&nbsp;via&nbsp;SVD&nbsp;%s&nbsp;&nbsp;matrix&nbsp;size&nbsp;%d&nbsp;x&nbsp;%d&nbsp;&nbsp;errors=%d&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">==</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">?</span><span class="f_CodeExample" style="color: #008080;">&quot;passed&quot;</span><span class="f_CodeExample">:</span><span class="f_CodeExample" style="color: #008080;">&quot;failed&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">size_m</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">size_n</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&#1042;&#1099;&#1095;&#1080;&#1089;&#1083;&#1103;&#1077;&#1090;&nbsp;&#1087;&#1089;&#1077;&#1074;&#1076;&#1086;&#1086;&#1073;&#1088;&#1072;&#1090;&#1085;&#1091;&#1102;&nbsp;&#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1091;&nbsp;&#1089;&nbsp;&#1087;&#1086;&#1084;&#1086;&#1097;&#1100;&#1102;&nbsp;&#1089;&#1080;&#1085;&#1075;&#1091;&#1083;&#1103;&#1088;&#1085;&#1086;&#1075;&#1086;&nbsp;&#1088;&#1072;&#1079;&#1083;&#1086;&#1078;.&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;A+&nbsp;=&nbsp;V&nbsp;*&nbsp;&#931;&#8315;&sup1;&nbsp;*&nbsp;U&#7488;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PseudoInverse</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_pi</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;1.&nbsp;SVD</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_u</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">matrix_vt</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">vector</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">vector_s</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">SingularValueDecompositionDC</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">SVDZ_S</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">vector_s</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">matrix_u</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">matrix_vt</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;2.&nbsp;inverse&nbsp;diagonal&nbsp;matrix</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">diag</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #333333;">vector_s</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Size</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_si</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">Zeros</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">diag</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">diag</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">diag</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">vector_s</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]!=</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_si</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]=</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">vector_s</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;3.&nbsp;pseudo&nbsp;inverse&nbsp;&nbsp;A+&nbsp;=&nbsp;V&nbsp;*&nbsp;&#931;+&nbsp;*&nbsp;UT</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_pi</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #333333;">matrix_vt</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Transpose</span><span class="f_CodeExample">()&nbsp;@&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_si</span><span class="f_CodeExample">&nbsp;@&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_u</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Transpose</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

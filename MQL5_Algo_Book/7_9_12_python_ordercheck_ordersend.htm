@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.9.12 Checking and sending a trade order</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_9_python.htm"> 7.9 Native python support </a>/ 7.9.12 Checking and sending a trade order
+          </td>
+          <td width="70" align="right">
+          <a href="7_9_11_python_margin_profit.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_9_13_python_orders.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.9.12 Checking and sending a trade order</span></p>
+<p class="p_Text"><span class="f_Text">If necessary, you can trade directly from a Python script. The pair of functions </span><span class="f_Text" style="font-style: italic;">order_check</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">order_send</span><span class="f_Text"> allows you to pre-check and then execute a trading operation.</span></p>
+<p class="p_Text"><span class="f_Text">For both functions, the only parameter is the request structure </span><span class="f_Text" style="font-style: italic;">TradeRequest</span><span class="f_Text"> (it can be initialized as a dictionary in Python, see an example). The structure fields are exactly the same as for </span><span class="f_Text" style="font-style: italic;"><a href="6_4_9_experts_mqltraderequest.htm" class="topiclink">MqlTradeRequest</a></span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">OrderCheckResult order_check(request)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">order_check</span><span class="f_Text"> function checks the correctness of trade request fields and the sufficiency of funds to complete the required trading operation.</span></p>
+<p class="p_Text"><span class="f_Text">The result of the function is returned as the </span><span class="f_Text" style="font-style: italic;">OrderCheckResult</span><span class="f_Text"> structure. It repeats the structure of </span><span class="f_Text" style="font-style: italic;"><a href="6_4_10_experts_mqltradecheckresult.htm" class="topiclink">MqlTradeCheckResult</a></span><span class="f_Text"> but additionally contains the </span><span class="f_Text" style="font-style: italic;">request</span><span class="f_Text"> field with a copy of the original request.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">order_check</span><span class="f_Text"> function is an analog of </span><span class="f_Text" style="font-style: italic;"><a href="6_4_11_experts_ordercheck.htm" class="topiclink">OrderCheck</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Example (</span><span class="f_Text" style="font-style: italic;">MQL5/Scripts/MQL5Book/python/ordercheck.py</span><span class="f_Text">):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;MetaTrader5&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;mt5</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;let's&nbsp;establish&nbsp;a&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample">...&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;get&nbsp;account&nbsp;currency&nbsp;for&nbsp;information</span>
+<br><span class="f_CodeExample">account_currency=mt5.account_info().currency</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;Account&nbsp;currency:&quot;</span><span class="f_CodeExample">,&nbsp;account_currency)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;get&nbsp;the&nbsp;necessary&nbsp;properties&nbsp;of&nbsp;the&nbsp;deal&nbsp;symbol</span>
+<br><span class="f_CodeExample">symbol&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;USDJPY&quot;</span>
+<br><span class="f_CodeExample">symbol_info&nbsp;=&nbsp;mt5.symbol_info(symbol)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;symbol_info&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">is</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">None</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(symbol,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;not&nbsp;found,&nbsp;can&nbsp;not&nbsp;call&nbsp;order_check()&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;mt5.shutdown()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">point&nbsp;=&nbsp;mt5.symbol_info(symbol).point</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;if&nbsp;the&nbsp;symbol&nbsp;is&nbsp;not&nbsp;available&nbsp;in&nbsp;the&nbsp;Market&nbsp;Watch,&nbsp;add&nbsp;it</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;symbol_info.visible:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(symbol,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;is&nbsp;not&nbsp;visible,&nbsp;trying&nbsp;to&nbsp;switch&nbsp;on&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;mt5.symbol_select(symbol,&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">True</span><span class="f_CodeExample">):</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;symbol_select({})&nbsp;failed,&nbsp;exit&quot;</span><span class="f_CodeExample">,&nbsp;symbol)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mt5.shutdown()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;prepare&nbsp;the&nbsp;query&nbsp;structure&nbsp;as&nbsp;a&nbsp;dictionary</span>
+<br><span class="f_CodeExample">request&nbsp;=&nbsp;\</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;action&quot;</span><span class="f_CodeExample">:&nbsp;mt5.TRADE_ACTION_DEAL,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;symbol&quot;</span><span class="f_CodeExample">:&nbsp;symbol,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;volume&quot;</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">1.0</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;type&quot;</span><span class="f_CodeExample">:&nbsp;mt5.ORDER_TYPE_BUY,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;price&quot;</span><span class="f_CodeExample">:&nbsp;mt5.symbol_info_tick(symbol).ask,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;sl&quot;</span><span class="f_CodeExample">:&nbsp;mt5.symbol_info_tick(symbol).ask&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">100</span><span class="f_CodeExample">&nbsp;*&nbsp;point,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;tp&quot;</span><span class="f_CodeExample">:&nbsp;mt5.symbol_info_tick(symbol).ask&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">100</span><span class="f_CodeExample">&nbsp;*&nbsp;point,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;deviation&quot;</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">10</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;magic&quot;</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">234000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;comment&quot;</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;python&nbsp;script&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;type_time&quot;</span><span class="f_CodeExample">:&nbsp;mt5.ORDER_TIME_GTC,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;type_filling&quot;</span><span class="f_CodeExample">:&nbsp;mt5.ORDER_FILLING_RETURN,</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;run&nbsp;the&nbsp;test&nbsp;and&nbsp;display&nbsp;the&nbsp;result&nbsp;as&nbsp;is</span>
+<br><span class="f_CodeExample">result&nbsp;=&nbsp;mt5.order_check(request)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(result)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;[?this&nbsp;is&nbsp;not&nbsp;in&nbsp;the&nbsp;help&nbsp;log?]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;convert&nbsp;the&nbsp;result&nbsp;to&nbsp;a&nbsp;dictionary&nbsp;and&nbsp;output&nbsp;element&nbsp;by&nbsp;element</span>
+<br><span class="f_CodeExample">result_dict&nbsp;=&nbsp;result._asdict()</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;field&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;result_dict.keys():</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;&nbsp;{}={}&quot;</span><span class="f_CodeExample">.format(field,&nbsp;result_dict[field]))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;if&nbsp;this&nbsp;is&nbsp;the&nbsp;structure&nbsp;of&nbsp;a&nbsp;trade&nbsp;request,&nbsp;then&nbsp;output&nbsp;it&nbsp;element&nbsp;by&nbsp;element&nbsp;as&nbsp;well</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;field&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;request&quot;</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest_dict&nbsp;=&nbsp;result_dict[field]._asdict()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;tradereq_filed&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;traderequest_dict:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;{}={}&quot;</span><span class="f_CodeExample">.format(tradereq_filed,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest_dict[tradereq_filed]))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;terminate&nbsp;the&nbsp;connection&nbsp;to&nbsp;the&nbsp;terminal</span>
+<br><span class="f_CodeExample">mt5.shutdown()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Account&nbsp;currency:&nbsp;USD</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">OrderCheckResult(retcode=0,&nbsp;balance=10000.17,&nbsp;equity=10000.17,&nbsp;profit=0.0,&nbsp;margin=1000.0,...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;retcode=0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;balance=10000.17</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;equity=10000.17</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;profit=0.0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;margin=1000.0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;margin_free=9000.17</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;margin_level=1000.017</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;comment=Done</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;request=TradeRequest(action=1,&nbsp;magic=234000,&nbsp;order=0,&nbsp;symbol='USDJPY',&nbsp;volume=1.0,&nbsp;price=144.128,...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;action=1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;magic=234000</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;order=0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;symbol=USDJPY</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;volume=1.0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;price=144.128</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;stoplimit=0.0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;sl=144.028</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;tp=144.228</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;deviation=10</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;type=0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;type_filling=2</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;type_time=0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;expiration=0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;comment=python&nbsp;script</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;position=0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;position_by=0</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_H4"><span class="f_H4">OrderSendResult order_send(request)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">order_send</span><span class="f_Text"> function sends a request from the terminal to the trading server to make a trade operation.</span></p>
+<p class="p_Text"><span class="f_Text">The result of the function is returned as the </span><span class="f_Text" style="font-style: italic;">OrderSendResult</span><span class="f_Text"> structure. It repeats the structure of </span><span class="f_Text" style="font-style: italic;"><a href="6_4_12_experts_mqltraderesult.htm" class="topiclink">MqlTradeResult</a></span><span class="f_Text"> but additionally contains the </span><span class="f_Text" style="font-style: italic;">request</span><span class="f_Text"> field with a copy of the original request.</span></p>
+<p class="p_Text"><span class="f_Text">The function is an analog of </span><span class="f_Text" style="font-style: italic;"><a href="6_4_13_experts_ordersend_ordersendasync.htm" class="topiclink">OrderSend</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Example (</span><span class="f_Text" style="font-style: italic;">MQL5/Scripts/MQL5Book/python/ordersend.py</span><span class="f_Text">):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;time&nbsp;</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;MetaTrader5&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;mt5&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;let's&nbsp;establish&nbsp;a&nbsp;connection&nbsp;to&nbsp;the&nbsp;MetaTrader&nbsp;5&nbsp;terminal</span>
+<br><span class="f_CodeExample">...&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;assign&nbsp;the&nbsp;properties&nbsp;of&nbsp;the&nbsp;working&nbsp;symbol</span>
+<br><span class="f_CodeExample">symbol&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;USDJPY&quot;</span>
+<br><span class="f_CodeExample">symbol_info&nbsp;=&nbsp;mt5.symbol_info(symbol)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;symbol_info&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">is</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">None</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(symbol,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;not&nbsp;found,&nbsp;can&nbsp;not&nbsp;trade&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;mt5.shutdown()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;if&nbsp;the&nbsp;symbol&nbsp;is&nbsp;not&nbsp;available&nbsp;in&nbsp;the&nbsp;Market&nbsp;Watch,&nbsp;add&nbsp;it</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;symbol_info.visible:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(symbol,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;is&nbsp;not&nbsp;visible,&nbsp;trying&nbsp;to&nbsp;switch&nbsp;on&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;mt5.symbol_select(symbol,&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">True</span><span class="f_CodeExample">):</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;symbol_select({})&nbsp;failed,&nbsp;exit&quot;</span><span class="f_CodeExample">,&nbsp;symbol)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mt5.shutdown()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;let's&nbsp;prepare&nbsp;the&nbsp;request&nbsp;structure&nbsp;for&nbsp;the&nbsp;purchase</span>
+<br><span class="f_CodeExample">lot&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">0.1</span>
+<br><span class="f_CodeExample">point&nbsp;=&nbsp;mt5.symbol_info(symbol).point</span>
+<br><span class="f_CodeExample">price&nbsp;=&nbsp;mt5.symbol_info_tick(symbol).ask</span>
+<br><span class="f_CodeExample">deviation&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">20</span>
+<br><span class="f_CodeExample">request&nbsp;=&nbsp;\</span>
+<br><span class="f_CodeExample">{&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;action&quot;</span><span class="f_CodeExample">:&nbsp;mt5.TRADE_ACTION_DEAL,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;symbol&quot;</span><span class="f_CodeExample">:&nbsp;symbol,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;volume&quot;</span><span class="f_CodeExample">:&nbsp;lot,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;type&quot;</span><span class="f_CodeExample">:&nbsp;mt5.ORDER_TYPE_BUY,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;price&quot;</span><span class="f_CodeExample">:&nbsp;price,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;sl&quot;</span><span class="f_CodeExample">:&nbsp;price&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">100</span><span class="f_CodeExample">&nbsp;*&nbsp;point,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;tp&quot;</span><span class="f_CodeExample">:&nbsp;price&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">100</span><span class="f_CodeExample">&nbsp;*&nbsp;point,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;deviation&quot;</span><span class="f_CodeExample">:&nbsp;deviation,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;magic&quot;</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">234000</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;comment&quot;</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;python&nbsp;script&nbsp;open&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;type_time&quot;</span><span class="f_CodeExample">:&nbsp;mt5.ORDER_TIME_GTC,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;type_filling&quot;</span><span class="f_CodeExample">:&nbsp;mt5.ORDER_FILLING_RETURN,&nbsp;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;send&nbsp;a&nbsp;trade&nbsp;request&nbsp;to&nbsp;open&nbsp;a&nbsp;position</span>
+<br><span class="f_CodeExample">result&nbsp;=&nbsp;mt5.order_send(request)</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;check&nbsp;the&nbsp;execution&nbsp;result</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;1.&nbsp;order_send():&nbsp;by&nbsp;{}&nbsp;{}&nbsp;lots&nbsp;at&nbsp;{}&quot;</span><span class="f_CodeExample">.format(symbol,&nbsp;lot,&nbsp;price));</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;result.retcode&nbsp;!=&nbsp;mt5.TRADE_RETCODE_DONE:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;2.&nbsp;order_send&nbsp;failed,&nbsp;retcode={}&quot;</span><span class="f_CodeExample">.format(result.retcode))</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">&nbsp;&nbsp;&nbsp;#&nbsp;request&nbsp;the&nbsp;result&nbsp;as&nbsp;a&nbsp;dictionary&nbsp;and&nbsp;display&nbsp;it&nbsp;element&nbsp;by&nbsp;element</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;result_dict&nbsp;=&nbsp;result._asdict()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;field&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;result_dict.keys():</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;&nbsp;{}={}&quot;</span><span class="f_CodeExample">.format(field,&nbsp;result_dict[field]))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;if&nbsp;this&nbsp;is&nbsp;the&nbsp;structure&nbsp;of&nbsp;a&nbsp;trade&nbsp;request,&nbsp;then&nbsp;output&nbsp;it&nbsp;element&nbsp;by&nbsp;element&nbsp;as&nbsp;well</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;field&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;request&quot;</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest_dict&nbsp;=&nbsp;result_dict[field]._asdict()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;tradereq_filed&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;traderequest_dict:&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;{}={}&quot;</span><span class="f_CodeExample">.format(tradereq_filed,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest_dict[tradereq_filed]))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;shutdown()&nbsp;and&nbsp;quit&quot;</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;mt5.shutdown()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;2.&nbsp;order_send&nbsp;done,&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;result)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;&nbsp;opened&nbsp;position&nbsp;with&nbsp;POSITION_TICKET={}&quot;</span><span class="f_CodeExample">.format(result.order))</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;&nbsp;sleep&nbsp;2&nbsp;seconds&nbsp;before&nbsp;closing&nbsp;position&nbsp;#{}&quot;</span><span class="f_CodeExample">.format(result.order))</span>
+<br><span class="f_CodeExample">time.sleep(</span><span class="f_CodeExample" style="color: #0000ff;">2</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;create&nbsp;a&nbsp;request&nbsp;to&nbsp;close&nbsp;</span>
+<br><span class="f_CodeExample">position_id&nbsp;=&nbsp;result.order</span>
+<br><span class="f_CodeExample">price&nbsp;=&nbsp;mt5.symbol_info_tick(symbol).bid</span>
+<br><span class="f_CodeExample">request&nbsp;=&nbsp;\</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;action&quot;</span><span class="f_CodeExample">:&nbsp;mt5.TRADE_ACTION_DEAL,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;symbol&quot;</span><span class="f_CodeExample">:&nbsp;symbol,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;volume&quot;</span><span class="f_CodeExample">:&nbsp;lot,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;type&quot;</span><span class="f_CodeExample">:&nbsp;mt5.ORDER_TYPE_SELL,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;position&quot;</span><span class="f_CodeExample">:&nbsp;position_id,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;price&quot;</span><span class="f_CodeExample">:&nbsp;price,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;deviation&quot;</span><span class="f_CodeExample">:&nbsp;deviation,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;magic&quot;</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">234000</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;comment&quot;</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;python&nbsp;script&nbsp;close&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;type_time&quot;</span><span class="f_CodeExample">:&nbsp;mt5.ORDER_TIME_GTC,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;type_filling&quot;</span><span class="f_CodeExample">:&nbsp;mt5.ORDER_FILLING_RETURN,&nbsp;</span>
+<br><span class="f_CodeExample">}&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;send&nbsp;a&nbsp;trade&nbsp;request&nbsp;to&nbsp;close&nbsp;the&nbsp;position</span>
+<br><span class="f_CodeExample">result&nbsp;=&nbsp;mt5.order_send(request)</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;check&nbsp;the&nbsp;execution&nbsp;result</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;3.&nbsp;close&nbsp;position&nbsp;#{}:&nbsp;sell&nbsp;{}&nbsp;{}&nbsp;lots&nbsp;at&nbsp;{}&quot;</span><span class="f_CodeExample">.format(position_id,</span>
+<br><span class="f_CodeExample">symbol,&nbsp;lot,&nbsp;price));</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;result.retcode&nbsp;!=&nbsp;mt5.TRADE_RETCODE_DONE:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;4.&nbsp;order_send&nbsp;failed,&nbsp;retcode={}&quot;</span><span class="f_CodeExample">.format(result.retcode))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;&nbsp;result&quot;</span><span class="f_CodeExample">,&nbsp;result)</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">else</span><span class="f_CodeExample">:&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;4.&nbsp;position&nbsp;#{}&nbsp;closed,&nbsp;{}&quot;</span><span class="f_CodeExample">.format(position_id,&nbsp;result))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;request&nbsp;the&nbsp;result&nbsp;as&nbsp;a&nbsp;dictionary&nbsp;and&nbsp;display&nbsp;it&nbsp;element&nbsp;by&nbsp;element</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;result_dict&nbsp;=&nbsp;result._asdict()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;field&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;result_dict.keys():</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;&nbsp;{}={}&quot;</span><span class="f_CodeExample">.format(field,&nbsp;result_dict[field]))&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;if&nbsp;this&nbsp;is&nbsp;the&nbsp;structure&nbsp;of&nbsp;a&nbsp;trade&nbsp;request,&nbsp;then&nbsp;output&nbsp;it&nbsp;element&nbsp;by&nbsp;element&nbsp;as&nbsp;well</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;field&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">&quot;request&quot;</span><span class="f_CodeExample">:&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest_dict&nbsp;=&nbsp;result_dict[field]._asdict()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;tradereq_filed&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;traderequest_dict:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;{}={}&quot;</span><span class="f_CodeExample">.format(tradereq_filed,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest_dict[tradereq_filed]))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;terminate&nbsp;the&nbsp;connection&nbsp;to&nbsp;the&nbsp;terminal</span>
+<br><span class="f_CodeExample">mt5.shutdown()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">1.&nbsp;order_send():&nbsp;by&nbsp;USDJPY&nbsp;0.1&nbsp;lots&nbsp;at&nbsp;144.132</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">2.&nbsp;order_send&nbsp;done,&nbsp;&nbsp;OrderSendResult(retcode=10009,&nbsp;deal=1445796125,&nbsp;order=1468026008,&nbsp;volume=0.1,&nbsp;price=144.132,...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;opened&nbsp;position&nbsp;with&nbsp;POSITION_TICKET=1468026008</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;sleep&nbsp;2&nbsp;seconds&nbsp;before&nbsp;closing&nbsp;position&nbsp;#1468026008</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">3.&nbsp;close&nbsp;position&nbsp;#1468026008:&nbsp;sell&nbsp;USDJPY&nbsp;0.1&nbsp;lots&nbsp;at&nbsp;144.124</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">4.&nbsp;position&nbsp;#1468026008&nbsp;closed,&nbsp;OrderSendResult(retcode=10009,&nbsp;deal=1445796155,&nbsp;order=1468026041,&nbsp;volume=0.1,&nbsp;price=144.124,...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;retcode=10009</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;deal=1445796155</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;order=1468026041</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;volume=0.1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;price=144.124</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;bid=144.124</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;ask=144.132</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;comment=Request&nbsp;executed</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;request_id=2</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;retcode_external=0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;request=TradeRequest(action=1,&nbsp;magic=234000,&nbsp;order=0,&nbsp;symbol='USDJPY',&nbsp;volume=0.1,&nbsp;price=144.124,&nbsp;stoplimit=0.0,...</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;action=1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;magic=234000</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;order=0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;symbol=USDJPY</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;volume=0.1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;price=144.124</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;stoplimit=0.0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;sl=0.0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;tp=0.0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;deviation=20</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;type=1</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;type_filling=2</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;type_time=0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;expiration=0</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;comment=python&nbsp;script&nbsp;close</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;position=1468026008</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traderequest:&nbsp;position_by=0</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

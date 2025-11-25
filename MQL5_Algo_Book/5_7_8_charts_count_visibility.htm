@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.7.8 Getting the number and visibility of windows/subwindows</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_7_charts.htm"> 5.7 Working with charts </a>/ 5.7.8 Getting the number and visibility of windows/subwindows
+          </td>
+          <td width="70" align="right">
+          <a href="5_7_7_charts_window_state.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_7_9_charts_mode.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.7.8 Getting the number and visibility of windows/subwindows</span></p>
+<p class="p_Text"><span class="f_Text">Using the </span><span class="f_Text" style="font-style: italic;">ChartGetInteger</span><span class="f_Text"> function, an MQL program can find the number of windows on a chart (including subwindows), as well as their visibility.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Value&nbsp;type</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">CHART_WINDOWS_TOTAL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Total number of chart windows, including indicator subwindows (r/o)</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">int</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">CHART_WINDOW_IS_VISIBLE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Subwindow visibility, the 'window' parameter is the subwindow number (r/o)</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">bool</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Some subwindows can be hidden if the indicators placed in them are disabled on the current timeframe in the Properties dialog, on the Visualization tab. It is impossible to reset all flags: due to the nature of storage of <a href="5_7_24_charts_tpl.htm" class="topiclink">tpl templates</a>, such a state is interpreted as the enabling of all timeframes. Therefore, if the user wants to hide the subwindow for some time, it is necessary to leave at least one enabled flag on the most rarely used timeframe.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Setting indicator visibility on different timeframes" title="Setting indicator visibility on different timeframes" width="441" height="267" style="margin:0 auto 0 auto;width:441px;height:267px;border:none" src="indicator_visualization_timeframes_en.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Setting indicator visibility on different timeframes</span></p>
+<p class="p_Text"><span class="f_Text">It should be noted that there are no standard tools in MQL5 for programmatic determination of the state and switching of specific flags. The easiest way to simulate such control is to save the tpl template and analyze it, with possible subsequent editing and loading (see section <a href="5_7_24_charts_tpl.htm" class="topiclink">Working with tpl templates</a>).</span></p>
+<p class="p_Text"><span class="f_Text">In the new version of the script </span><span class="f_Text" style="font-style: italic;">ChartList4.mq5</span><span class="f_Text">, we output the number of subwindows (one window, which is the main one, is always present), a sign of chart activity, a sign of a chart object, and a Windows handle.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">win</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_WINDOWS_TOTAL</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">header</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&nbsp;%lld&nbsp;%s&nbsp;%s&nbsp;%s&nbsp;%s&nbsp;%s&nbsp;%s&nbsp;%lld&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartSymbol</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">PeriodToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ChartPeriod</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">)),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">win</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;#&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #333333;">win</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">),&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">me</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;*&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_BRING_TO_TOP</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;active&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_IS_OBJECT</span><span class="f_CodeExample">)&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;object&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_WINDOW_HANDLE</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">win</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">++)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">visible</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_WINDOW_IS_VISIBLE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">visible</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;/Hidden&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here's what the result might be.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Chart&nbsp;List</span>
+<br><span class="f_CodeExample">N,&nbsp;ID,&nbsp;Symbol,&nbsp;TF,&nbsp;#subwindows,&nbsp;*active,&nbsp;Windows&nbsp;handle</span>
+<br><span class="f_CodeExample">0&nbsp;132358585987782873&nbsp;EURUSD&nbsp;M15&nbsp;#1&nbsp;&nbsp;&nbsp;&nbsp;68030</span>
+<br><span class="f_CodeExample">1&nbsp;132360375330772909&nbsp;EURUSD&nbsp;H1&nbsp;&nbsp;*&nbsp;active&nbsp;&nbsp;68048</span>
+<br><span class="f_CodeExample">&nbsp;[S]&nbsp;ChartList4</span>
+<br><span class="f_CodeExample">2&nbsp;132544239145024745&nbsp;XAUUSD&nbsp;H1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;395756</span>
+<br><span class="f_CodeExample">3&nbsp;132544239145024732&nbsp;USDRUB&nbsp;D1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;395768</span>
+<br><span class="f_CodeExample">4&nbsp;132544239145024744&nbsp;EURUSD&nbsp;H1&nbsp;#2&nbsp;&nbsp;&nbsp;&nbsp;461286</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;2/Hidden</span>
+<br><span class="f_CodeExample">Total&nbsp;chart&nbsp;number:&nbsp;5,&nbsp;with&nbsp;MQL-programs:&nbsp;1</span>
+<br><span class="f_CodeExample">Experts:&nbsp;0,&nbsp;Scripts:&nbsp;1</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">On the first chart (index 0) there is one subwindow (#1). There are two subwindows (#2) on the last chart, and the second one is currently hidden. Later, in the section <a href="5_7_22_charts_indicators.htm" class="topiclink">Managing indicators on the chart</a>, we will present the full version of </span><span class="f_Text" style="font-style: italic;">ChartList.mq5</span><span class="f_Text">, where we include in the report information about the indicators located in the subwindows and the main window.</span></p>
+<p class="p_Quote"><span class="f_Quote">Attention! A chart inside a <a href="5_8_28_objects_chart.htm" class="topiclink">chart object</a> always has the CHART_WINDOW_IS_VISIBLE property equal to </span><span class="f_Quote" style="font-style: italic;">true</span><span class="f_Quote">, even if object visualization is disabled on the current timeframe or on all timeframes.</span></p>
+
+</div>
+
+</body>
+</html>

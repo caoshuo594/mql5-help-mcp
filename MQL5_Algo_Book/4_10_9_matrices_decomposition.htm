@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.10.9 Transformations (decomposition) of matrices</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_10_matrices.htm"> 4.10 Matrices and vectors </a>/ 4.10.9 Transformations (decomposition) of matrices
+          </td>
+          <td width="70" align="right">
+          <a href="4_10_8_matrices_mul.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_10_10_matrices_stats.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.10.9 Transformations (decomposition) of matrices</span></p>
+<p class="p_Text"><span class="f_Text">Matrix transformations are the most commonly used operations when working with data. However, many complex transformations cannot be performed analytically and with absolute accuracy.</span></p>
+<p class="p_Text"><span class="f_Text">Matrix transformations (or in other words, decompositions) are methods that decompose a matrix into its component parts, which makes it easier to calculate more complex matrix operations. Matrix decomposition methods, also called matrix factorization methods, are the basis of linear algebra algorithms, such as solving systems of linear equations and calculating the inverse of a matrix or determinant.</span></p>
+<p class="p_Text"><span class="f_Text">In particular, Singular Values Decomposition (SVD) is widely used in machine learning, which allows you to represent the original matrix as a product of three other matrices. SVD decomposition is used to solve a variety of problems, from least squares approximation to compression and image recognition.</span></p>
+<p class="p_Text"><span class="f_Text">List of available methods:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">Cholesky</span><span class="f_li">: calculate the Cholesky decomposition</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Eig</span><span class="f_li">: calculate eigenvalues and right eigenvectors of a square matrix</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Eig Vals</span><span class="f_li">: calculate eigenvalues of the common matrix</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">LU</span><span class="f_li">: implement LU factorization of a matrix as a product of a lower triangular matrix and an upper triangular matrix</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">LUP</span><span class="f_li">: implement LUP factorization with partial rotation, which is an LU factorization with row permutations only: PA=LU</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">QR</span><span class="f_li">: implement QR factorization of the matrix</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">SVD</span><span class="f_li">: singular value decomposition</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Below are the method prototypes.</span></p>
+<p class="p_H4"><span class="f_H4">bool matrix&lt;T&gt;::Cholesky(matrix&lt;T&gt; &amp;L)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool matrix&lt;T&gt;::Eig(matrix&lt;T&gt; &amp;eigen_vectors, vector&lt;T&gt; &amp;eigen_values)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool matrix&lt;T&gt;::EigVals(vector&lt;T&gt; &amp;eigen_values)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool matrix&lt;T&gt;::LU(matrix&lt;T&gt; &amp;L, matrix&lt;T&gt; &amp;U)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool matrix&lt;T&gt;::LUP(matrix&lt;T&gt; &amp;L, matrix&lt;T&gt; &amp;U, matrix&lt;T&gt; &amp;P)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool matrix&lt;T&gt;::QR(matrix&lt;T&gt; &amp;Q, matrix&lt;T&gt; &amp;R)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool matrix&lt;T&gt;::SVD(matrix&lt;T&gt; &amp;U, matrix&lt;T&gt; &amp;V, vector&lt;T&gt; &amp;singular_values)</span></p>
+<p class="p_Text"><span class="f_Text">Let's show an example of a singular value decomposition using the SVD method (see. file </span><span class="f_Text" style="font-style: italic;">MatrixSVD.mq5</span><span class="f_Text">). First, we initialize the original matrix.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">&nbsp;=&nbsp;{{</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">7</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">}};</span>
+<br><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Reshape</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;matrix&nbsp;a&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now let's make an SVD decomposition:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">U</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">V</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #333333;">vector</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">singular_values</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">SVD</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">U</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">V</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">singular_values</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;U&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">U</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;V&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">V</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;singular_values&nbsp;=&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">singular_values</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's check the expansion: the following equality must hold: </span><span class="f_Text" style="font-style: italic;">U * &quot;singular diagonal&quot; * V = A</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_s</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #333333;">matrix_s</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Diag</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">singular_values</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;matrix_s&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_s</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #333333;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_vt</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">V</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Transpose</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;matrix_vt&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_vt</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #333333;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_usvt</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">U</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">MatMul</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">matrix_s</span><span class="f_CodeExample">)).</span><span class="f_CodeExample" style="color: #333333;">MatMul</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">matrix_vt</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;matrix_usvt&nbsp;\n&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_usvt</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's compare the resulting and original matrix for errors.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Compare</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">matrix_usvt</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1e</span><span class="f_CodeExample">-</span><span class="f_CodeExample" style="color: #333333;">9</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;errors=&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The log should look like this:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">matrix&nbsp;a</span>
+<br><span class="f_CodeExample">[[-4,-3,-2]</span>
+<br><span class="f_CodeExample">&nbsp;[-1,0,1]</span>
+<br><span class="f_CodeExample">&nbsp;[2,3,4]]</span>
+<br><span class="f_CodeExample">U</span>
+<br><span class="f_CodeExample">[[-0.7071067811865474,0.5773502691896254,0.408248290463863]</span>
+<br><span class="f_CodeExample">&nbsp;[-6.827109697437648e-17,0.5773502691896253,-0.8164965809277256]</span>
+<br><span class="f_CodeExample">&nbsp;[0.7071067811865472,0.5773502691896255,0.4082482904638627]]</span>
+<br><span class="f_CodeExample">V</span>
+<br><span class="f_CodeExample">[[0.5773502691896258,-0.7071067811865474,-0.408248290463863]</span>
+<br><span class="f_CodeExample">&nbsp;[0.5773502691896258,1.779939029415334e-16,0.8164965809277258]</span>
+<br><span class="f_CodeExample">&nbsp;[0.5773502691896256,0.7071067811865474,-0.408248290463863]]</span>
+<br><span class="f_CodeExample">singular_values&nbsp;=&nbsp;[7.348469228349533,2.449489742783175,3.277709923350408e-17]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">matrix_s</span>
+<br><span class="f_CodeExample">[[7.348469228349533,0,0]</span>
+<br><span class="f_CodeExample">&nbsp;[0,2.449489742783175,0]</span>
+<br><span class="f_CodeExample">&nbsp;[0,0,3.277709923350408e-17]]</span>
+<br><span class="f_CodeExample">matrix_vt</span>
+<br><span class="f_CodeExample">[[0.5773502691896258,0.5773502691896258,0.5773502691896256]</span>
+<br><span class="f_CodeExample">&nbsp;[-0.7071067811865474,1.779939029415334e-16,0.7071067811865474]</span>
+<br><span class="f_CodeExample">&nbsp;[-0.408248290463863,0.8164965809277258,-0.408248290463863]]</span>
+<br><span class="f_CodeExample">matrix_usvt</span>
+<br><span class="f_CodeExample">[[-3.999999999999997,-2.999999999999999,-2]</span>
+<br><span class="f_CodeExample">&nbsp;[-0.9999999999999981,-5.977974170712231e-17,0.9999999999999974]</span>
+<br><span class="f_CodeExample">&nbsp;[2,2.999999999999999,3.999999999999996]]</span>
+<br><span class="f_CodeExample">errors=0</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Another practical case of applying the </span><span class="f_Text" style="font-style: italic;">Convolve</span><span class="f_Text"> method is included in the example in <a href="4_10_13_matrices_ml.htm" class="topiclink">Machine learning methods</a>.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.8.4 Creating objects</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_8_objects.htm"> 5.8 Graphical objects </a>/ 5.8.4 Creating objects
+          </td>
+          <td width="70" align="right">
+          <a href="5_8_3_objects_screen_coordinates.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_8_5_objects_delete.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.8.4 Creating objects</span></p>
+<p class="p_Text"><span class="f_Text">To create an object, a certain minimum set of attributes is required that is common to all types. Additional properties specific to each type can be set or changed later on an already existing object. The required attributes include the identifier of the chart where the object should be created, the name of the object, the number of the window/subwindow, and two coordinates for the first anchor point: time and price.</span></p>
+<p class="p_Text"><span class="f_Text">Even though there is a group of objects positioned in screen coordinates, creating them still requires you to pass two values, usually zero because they aren't used.</span></p>
+<p class="p_Text"><span class="f_Text">In general, a prototype of the </span><span class="f_Text" style="font-style: italic;">ObjectCreate</span><span class="f_Text"> function looks as follows:</span></p>
+<p class="p_H4"><span class="f_H4">bool ObjectCreate(long chartId, const string name, ENUM_OBJECT type, int window,</span><br>
+<span class="f_H4"> &nbsp; datetime time1, double price1, datetime time2 = 0, double price2 = 0, ...)</span></p>
+<p class="p_Text"><span class="f_Text">A value of 0 for </span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text"> implies the current chart. The </span><span class="f_Text" style="font-style: italic;">name</span><span class="f_Text"> parameter parameter must be unique within the entire chart, including subwindows, and should not exceed 63 characters.</span></p>
+<p class="p_Text"><span class="f_Text">We have given in the previous sections object types for the </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> parameter: these are the elements of the ENUM_OBJECT enumeration.</span></p>
+<p class="p_Text"><span class="f_Text">As we know, the numbering of windows/subwindows for the </span><span class="f_Text" style="font-style: italic;">window</span><span class="f_Text"> parameter starts from 0, which means the main chart window. If a larger index is specified for a subwindow, it must exist, as otherwise, the function will terminate with an error and return </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Just to remind you, the returned success flag (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) only indicates that the command to create the object has been successfully placed in the queue. The result of its execution is not immediately known. This is the flip side of the asynchronous call, which is employed to enhance performance.</span></p>
+<p class="p_Text"><span class="f_Text">To check the execution result, you can use the </span><span class="f_Text" style="font-style: italic;"><a href="5_8_6_objects_find.htm" class="topiclink">ObjectFind</a></span><span class="f_Text"> function or any <a href="5_8_7_objects_properties_get_set.htm" class="topiclink">ObjectGet functions</a>, which query the properties of an object. But you should keep in mind that such functions wait for the execution of the entire queue of chart commands and only then return the actual result (the state of the object). This process may take some time, during which the MQL program code will be suspended. In other words, the functions for checking the state of objects are synchronous, unlike the functions for creating and modifying objects.</span></p>
+<p class="p_Text"><span class="f_Text">Additional anchor points, starting with the second one, are optional. The allowed number of anchor points, up to 30, is provided for future use, and no more than 5 are used in current object types.</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that the call to the </span><span class="f_Text" style="font-style: italic;">ObjectCreate</span><span class="f_Text"> function with the name of an already existing object simply changes the anchor point(s) (if the coordinates have been changed since the previous call). This is convenient to use for writing unified code without branching into conditions based on the presence or absence of an object. In other words, an unconditional </span><span class="f_Text" style="font-style: italic;">ObjectCreate</span><span class="f_Text"> call guarantees the existence of the object, if we do not care whether it existed before or not. However, there is a nuance. If, when calling </span><span class="f_Text" style="font-style: italic;">ObjectCreate</span><span class="f_Text">, the object type or the subwindow index is different from an already existing object, the relevant data remains the same, while no errors occur.</span></p>
+<p class="p_Text"><span class="f_Text">When calling </span><span class="f_Text" style="font-style: italic;">ObjectCreate</span><span class="f_Text">, you can leave all anchor points with default values (null), provided that ObjectSet functions with the appropriate OBJPROP_TIME and OBJPROP_PRICE properties are called after this instruction.</span></p>
+<p class="p_Quote"><span class="f_Quote">The order in which anchor points are specified can be important for some object types. For channels such as OBJ_REGRESSION (Linear Regression Channel) and OBJ_STDDEVCHANNEL (Standard Deviation Channel), it is mandatory for the conditions </span><span class="f_Quote" style="font-style: italic;">time1&lt;time2</span><span class="f_Quote"> to be met. Otherwise, the channel will not be built normally, although the object will be created without errors.</span></p>
+<p class="p_Text"><span class="f_Text">As an example of the function, let's take the </span><span class="f_Text" style="font-style: italic;">ObjectSimpleShowcase.mq5</span><span class="f_Text"> script which creates several objects of different types on the last bars of the chart, requiring a single anchor point.</span></p>
+<p class="p_Text"><span class="f_Text">All examples of working with objects will use the </span><span class="f_Text" style="font-style: italic;">ObjectPrefix.mqh</span><span class="f_Text"> header file, which contains a string definition with a common prefix for object names. Thus, it will be more convenient for us, if necessary, to clear the charts from &quot;its own&quot; objects.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ObjNamePrefix</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ObjShow-&quot;</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function, an array is defined containing object types.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_OBJECT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">types</span><span class="f_CodeExample">[]&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;straight&nbsp;lines</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_VLINE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_HLINE</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;labels&nbsp;(arrows&nbsp;and&nbsp;other&nbsp;signs)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_ARROW_THUMB_UP</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_ARROW_THUMB_DOWN</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_ARROW_UP</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_ARROW_DOWN</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_ARROW_STOP</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_ARROW_CHECK</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_ARROW_LEFT_PRICE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_ARROW_RIGHT_PRICE</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_ARROW_BUY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_ARROW_SELL</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;OBJ_ARROW,&nbsp;//&nbsp;see&nbsp;the&nbsp;ObjectWingdings.mq5&nbsp;example</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;text</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_TEXT</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;event&nbsp;flag&nbsp;(like&nbsp;in&nbsp;a&nbsp;calendar)&nbsp;at&nbsp;the&nbsp;bottom&nbsp;of&nbsp;the&nbsp;window</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">OBJ_EVENT</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, in the loop through its elements, we create objects in the main window, passing the time and closing price of the i-th bar.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">types</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ObjectCreate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ObjNamePrefix</span><span class="f_CodeExample">&nbsp;+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">iTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">types</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&nbsp;objects&nbsp;of&nbsp;various&nbsp;types&nbsp;created&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here's the possible result from running the script.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Objects of simple types at the closing points of the last bars" title="Objects of simple types at the closing points of the last bars" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="xauusd1_objshow.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Objects of simple types at the closing points of the last bars</span></p>
+<p class="p_Text"><span class="f_Text">The drawing of lines by the </span><span class="f_Text" style="font-style: italic;">Close</span><span class="f_Text"> price and the grid display are enabled in this example. We will learn how to adjust the size, color, and other attributes of objects later. In particular, the anchor points of most icons are located by default in the middle of the top side, so they are visually offset under the line. However, the sell icon is above the line because the anchor point is always in the middle of the bottom side.</span></p>
+<p class="p_Quote"><span class="f_Quote">Please note that objects created programmatically are not displayed by default in the list of objects in the dialog of the same name. To see them there, click the </span><span class="f_Quote" style="font-style: italic;">All</span><span class="f_Quote"> button.</span></p>
+
+</div>
+
+</body>
+</html>

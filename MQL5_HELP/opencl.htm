@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Working with OpenCL</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a>/ Working with OpenCL
+          </td>
+          <td width="70" align="right">
+          <a href="eventchartcustom.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="clhandletype.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Working with OpenCL</span></p>
+<p class="p_Text"><span class="f_Text"><a href="https://www.khronos.org/opencl/" target="_blank" class="weblink" title="The official website of the OpenCL standard">OpenCL</a> programs are used for performing computations on video cards that support OpenCL 1.1 or higher. Modern video cards contain hundreds of small specialized processors that can simultaneously perform simple mathematical operations with incoming data streams. The OpenCL language organizes parallel computing and provides greater speed for a certain class of tasks.</span></p>
+<p class="p_Text"><span class="f_Text">In some graphic cards working with the <a href="double.htm" class="topiclink">double</a> type numbers is disabled by default. This can lead to compilation error 5105. To enable support for the double type numbers, please add the following directive to your OpenCL program: <a href="https://www.khronos.org/registry/OpenCL/sdk/1.0/docs/man/xhtml/cl_khr_fp64.html" target="_blank" class="weblink">#pragma OPENCL EXTENSION cl_khr_fp64 : enable</a>. However if a graphic card doesn't support double, enabling this directive won't be of help.</span></p>
+<p class="p_Text"><span class="f_Text">It is recommended to write the source code for OpenCL in separate CL files, which can later be included in the MQL5 program using the <a href="resources.htm#resourcevariables" class="topiclink">resource variables</a>.</span></p>
+<p class="p_H3"><span class="f_H3">Handling errors in OpenCL programs</span></p>
+<p class="p_Text"><span class="f_Text">To get information about the last error in an OpenCL program, use the <a href="clgetinfointeger.htm" class="topiclink">CLGetInfoInteger</a> and <a href="clgetinfostring.htm" class="topiclink">CLGetInfoString</a>functions that allow getting the error code and text description.</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">OpenCL last error code</span><span class="f_Text">: To get the latest OpenCL error, call <a href="clgetinfointeger.htm" class="topiclink">CLGetInfoInteger</a>, while the</span><span class="f_Text" style="font-style: italic;">handle</span><span class="f_Text">parameter is ignored (can be set to zero). Description of errors: <a href="https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#CL_SUCCESS" target="_blank" class="weblink">https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#CL_SUCCESS</a>.</span></p>
+<p class="p_Text"><span class="f_Text">For an unknown error code, the&quot;unknown OpenCL error N&quot; string is returned where N is an error code. Example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;the&nbsp;first&nbsp;'handle'&nbsp;parameter&nbsp;is&nbsp;ignored&nbsp;when&nbsp;getting&nbsp;the&nbsp;last&nbsp;error&nbsp;code</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample" style="color: #333333;">code</span><span class="f_CodeExample">=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">CLGetInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">CL_LAST_ERROR</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Text description of the OpenCL error</span><span class="f_Text">: To get the latest OpenCL error, call <a href="clgetinfostring.htm" class="topiclink">CLGetInfoString</a>. The error code should be passed as the</span><span class="f_Text" style="font-style: italic;">handle</span><span class="f_Text">parameter.</span></p>
+<p class="p_Text"><span class="f_Text">Description of errors: <a href="https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#CL_SUCCESS" target="_blank" class="weblink">https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#CL_SUCCESS</a>. If CL_LAST_ERROR is passed instead of the error code, then the function returns the description of the last error. For example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;get&nbsp;the&nbsp;code&nbsp;of&nbsp;the&nbsp;last&nbsp;OpenCL&nbsp;error</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">code</span><span class="f_CodeExample">=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">CLGetInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">CL_LAST_ERROR</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample" style="color: #333333;">desc</span><span class="f_CodeExample">;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;to&nbsp;get&nbsp;an&nbsp;error&nbsp;text&nbsp;description</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;use&nbsp;the&nbsp;error&nbsp;code&nbsp;to&nbsp;get&nbsp;an&nbsp;error&nbsp;text&nbsp;description</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">CLGetInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">code</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">CL_ERROR_DESCRIPTION</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">desc</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">desc</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #008080;">&quot;cannot&nbsp;get&nbsp;OpenCL&nbsp;error&nbsp;description,&quot;</span><span class="f_CodeExample">+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">GetLastError</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">desc</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;in&nbsp;order&nbsp;to&nbsp;get&nbsp;the&nbsp;description&nbsp;of&nbsp;the&nbsp;last&nbsp;OpenCL&nbsp;error&nbsp;without&nbsp;getting&nbsp;the&nbsp;code&nbsp;first,&nbsp;pass&nbsp;CL_LAST_ERROR&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">CLGetInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CL_LAST_ERROR</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">CL_ERROR_DESCRIPTION</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">desc</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">desc</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #008080;">&quot;cannot&nbsp;get&nbsp;OpenCL&nbsp;error&nbsp;description,&quot;</span><span class="f_CodeExample">+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">GetLastError</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">desc</span><span class="f_CodeExample">);;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">So far, the name of the internal enumeration is given as an error description. You can find its decoding here: <a href="https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#CL_SUCCESS" target="_blank" class="weblink">https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#CL_SUCCESS</a>. For example, the CL_INVALID_KERNEL_ARGS value means &quot;Returned when enqueuing a kernel when some kernel arguments have not been set or are invalid.&quot;</span></p>
+<p class="p_Text"><span class="f_Text">Functions for running programs in OpenCL:</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Function</span></p>
+</th>
+<th class="EnumTable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Action</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clhandletype.htm" class="topiclink">CLHandleType</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Returns the type of an OpenCL handle as a value of the ENUM_OPENCL_HANDLE_TYPE enumeration</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clgetinfointeger.htm" class="topiclink">CLGetInfoInteger</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Returns the value of an integer property for an OpenCL object or device</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clcontextcreate.htm" class="topiclink">CLContextCreate</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Creates an OpenCL context</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clcontextfree.htm" class="topiclink">CLContextFree</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Removes an OpenCL context</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clgetdeviceinfo.htm" class="topiclink">CLGetDeviceInfo</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Receives device property from OpenCL driver</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clprogramcreate.htm" class="topiclink">CLProgramCreate</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Creates an OpenCL program from a source code</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clprogramfree.htm" class="topiclink">CLProgramFree</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Removes an OpenCL program</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clkernelcreate.htm" class="topiclink">CLKernelCreate</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Creates an OpenCL start function</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clkernelfree.htm" class="topiclink">CLKernelFree</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Removes an OpenCL start function</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clsetkernelarg.htm" class="topiclink">CLSetKernelArg</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Sets a parameter for the OpenCL function</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clsetkernelargmem.htm" class="topiclink">CLSetKernelArgMem</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Sets an OpenCL buffer as a parameter of the OpenCL function</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clsetkernelargmemlocal.htm" class="topiclink">CLSetKernelArgMemLocal</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Sets the local buffer as an argument of the kernel function</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clbuffercreate.htm" class="topiclink">CLBufferCreate</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Creates an OpenCL buffer</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clbufferfree.htm" class="topiclink">CLBufferFree</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Deletes an OpenCL buffer</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clbufferwrite.htm" class="topiclink">CLBufferWrite</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Writes an array into an OpenCL buffer</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clbufferread.htm" class="topiclink">CLBufferRead</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Reads an OpenCL buffer into an array</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clexecute.htm" class="topiclink">CLExecute</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Runs an OpenCL program</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:170px;"><p class="p_fortable"><span class="f_fortable"><a href="clexecutionstatus.htm" class="topiclink">CLExecutionStatus</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Returns the OpenCL program execution status</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">See also</span></p>
+<p class="p_SeeAlso"><span class="f_SeeAlso"><a href="copencl.htm" class="topiclink">OpenCL</a>, <a href="resources.htm#resourcevariables" class="topiclink">Resources</a></span></p>
+
+</div>
+
+</body>
+</html>

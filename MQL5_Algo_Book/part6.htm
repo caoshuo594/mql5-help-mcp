@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>Part 6. Trading automation</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a>/ Part 6. Trading automation
+          </td>
+          <td width="70" align="right">
+          <a href="5_9_7_events_custom.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_symbols.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Part 6. Trading automation</span></p>
+<p class="p_Text"><span class="f_Text">In this part, we will study the most complex and important component of the MQL5 API which allows the automation of trading actions.</span></p>
+<p class="p_Text"><span class="f_Text">We will start by describing the entities without which it is impossible to write a proper Expert Advisor. These include <a href="6_1_symbols.htm" class="topiclink">financial symbols</a> and <a href="6_3_account.htm" class="topiclink">trading account</a> settings.</span></p>
+<p class="p_Text"><span class="f_Text">Then we will look at built-in <a href="6_4_experts.htm" class="topiclink">trading functions</a> and data structures, along with robot-specific <a href="6_4_1_experts_ontick.htm" class="topiclink">events</a> and operating modes. In particular, the key feature of Expert Advisors is integration with the <a href="6_5_tester.htm" class="topiclink">tester</a>, which allows users to evaluate financial performance and optimize trading strategies. We will consider the internal optimization mechanisms and optimization management through the API.</span></p>
+<p class="p_Text"><span class="f_Text">The strategy tester is an essential tool for developing MQL programs since it provides the ability to debug programs in various modes, including bars and ticks, based on modeled or real ticks, with or without visualization of the price stream.</span></p>
+<p class="p_Text"><span class="f_Text">We've already tried to <a href="5_4_18_indicators_test.htm" class="topiclink">test indicators</a> in visual mode. However, the set of testing parameters is limited for indicators. When developing Expert Advisors, we will have access to the full range of tester capabilities.</span></p>
+<p class="p_Text"><span class="f_Text">In addition, we will be introduced to a new form of market information: the <a href="6_2_marketbook.htm" class="topiclink">Depth of Market</a> and its software interface.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table id="footer-links" cellspacing="0" cellpadding="0" border="0" style="text-align: justify;width:100%; border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:middle; width:21px; padding:0; border:none"><p class="p_fortableFooterLinks"><img class="help" alt="MQL5 Programming for Traders – Source Codes from the Book. Part 6" title="MQL5 Programming for Traders – Source Codes from the Book. Part 6" width="16" height="16" style="margin:0;width:16px;height:16px;border:none" src="code_base_icon.png"/></p>
+</td>
+<td style="vertical-align:middle; padding:0; border:none"><p class="p_fortableFooterLinks"><span class="f_fortableFooterLinks"><a href="https://www.mql5.com/en/code/45595" target="_blank" class="weblink">MQL5 Programming for Traders – Source Codes from the Book. Part 6</a></span></p>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:middle; width:21px; padding:0; border:none"><p class="p_fortableFooterLinks"><img class="help" alt="&#1055;&#1088;&#1080;&#1084;&#1077;&#1088;&#1099; &#1080;&#1079; &#1082;&#1085;&#1080;&#1075;&#1080; &#1090;&#1072;&#1082;&#1078;&#1077; &#1076;&#1086;&#1089;&#1090;&#1091;&#1087;&#1085;&#1099; &#1074; &#1087;&#1091;&#1073;&#1083;&#1080;&#1095;&#1085;&#1086;&#1084; &#1087;&#1088;&#1086;&#1077;&#1082;&#1090;&#1077; \MQL5\Shared Projects\MQL5Book. " title="&#1055;&#1088;&#1080;&#1084;&#1077;&#1088;&#1099; &#1080;&#1079; &#1082;&#1085;&#1080;&#1075;&#1080; &#1090;&#1072;&#1082;&#1078;&#1077; &#1076;&#1086;&#1089;&#1090;&#1091;&#1087;&#1085;&#1099; &#1074; &#1087;&#1091;&#1073;&#1083;&#1080;&#1095;&#1085;&#1086;&#1084; &#1087;&#1088;&#1086;&#1077;&#1082;&#1090;&#1077; \MQL5\Shared Projects\MQL5Book. " width="16" height="16" style="margin:0;width:16px;height:16px;border:none" src="metaeditor_icon.png"/></p>
+</td>
+<td style="vertical-align:middle; padding:0; border:none"><p class="p_fortableFooterLinks"><span class="f_fortableFooterLinks">Examples from the book are also available in the <a href="https://www.metatrader5.com/en/metaeditor/help/mql5storage/projects#public" target="_blank" class="weblink">public project</a> \MQL5\Shared Projects\MQL5Book</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

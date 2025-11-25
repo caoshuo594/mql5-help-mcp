@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>1.8 Data input</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part1.htm"> Part 1. Introduction to MQL5 and development environment </a>/ 1.8 Data input
+          </td>
+          <td width="70" align="right">
+          <a href="1_7_init_assign_express.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="1_9_errors_debug.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">1.8 Data input</span></p>
+<p class="p_Text"><span class="f_Text">The basic way of data transfer into an MQL program is to use input parameters. They are similar to those of functions and just variables, from many aspects, particularly, in terms of description syntax and principles of their further use in the code.</span></p>
+<p class="p_Text"><span class="f_Text">Moreover, an input parameter description has some essential differences:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">It is placed in the text outside of all blocks (we have learned just the blocks constituting the body of functions yet, but we will learn about the other ones later) or, in other words, beyond any pairs of braces;</span></li>
+<li class="p_li"><span class="f_li">It starts with the keyword </span><span class="f_li" style="font-style: italic;">input</span><span class="f_li">; and</span></li>
+<li class="p_li"><span class="f_li">It is initialized with a default value.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">It is usually recommended to place input parameters at the start of the source code.</span></p>
+<p class="p_Text"><span class="f_Text">For instance, to define an input parameter for entering the hour number in our script, the next string should be added immediately upon the triple of directives </span><span class="f_Text" style="font-style: italic;">#property</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GreetingHour</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This record means several things.</span></p>
+<ul>
+<li class="p_li"><span class="f_li">First, there is the </span><span class="f_li" style="font-style: italic;">GreetingHour</span><span class="f_li"> variable in the script now, which is available from any place of the source code, including from inside of any function. This definition is called a global-level definition, which is due to the execution of item 1 from the list above.</span></li>
+<li class="p_li"><span class="f_li">Second, using the </span><span class="f_li" style="font-style: italic;">input</span><span class="f_li"> keyword makes such a variable visible inside the program and in the user interface, in the </span><span class="f_Text">MQL5 program properties dialog, which opens when it starts. Thus, when starting the program, a user sets the necessary value of parameters (in our case, one parameter </span><span class="f_Text" style="font-style: italic;">GreetingHour</span><span class="f_Text">), and they become the values of the corresponding variables during the execution of the program.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Let's note again that the default value that we have specified in the code will be shown to the user in the dialog. However, the user will be able to change it. In this case, it is that new, manually entered value that will be included in the program (not the initialization value).</span></p>
+<p class="p_Text"><span class="f_Text">The initial value of input parameters is affected by both the initialization in the code and the user's interactive choice in launching them, and the MQL5 program type, and the way it is launched. The matter is that different types of MQL5 programs have different life cycles after being launched on charts. Thus, upon a one-time placement in the chart, indicators and Expert Advisors are 'registered' in it forever, until the user removes them explicitly. Therefore, the terminal remembers the latest settings selected and uses them automatically, for example, upon the terminal restart. However, scripts are not saved in charts between the terminal sessions. Therefore, only the default value may be shown to us when we launch the script.</span></p>
+<p class="p_Text"><span class="f_Text">Unfortunately, for some reason, the description of an input parameter does not guarantee calling the dialog of settings at the script start (for scripts as an independent MQL5 program type). For this to happen, it is necessary to add one more, script-specific directive </span><span class="f_Text" style="font-style: italic;">#property</span><span class="f_Text"> into the code:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">script_show_inputs</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As we will see further, this directive is not required for other types of MQL5 programs.</span></p>
+<p class="p_Text"><span class="f_Text">We needed </span><span class="f_Text" style="font-style: italic;">GreetingHour</span><span class="f_Text"> to transfer its value into the </span><span class="f_Text" style="font-style: italic;">Greeting</span><span class="f_Text"> function. To do so, it is sufficient to insert it into the </span><span class="f_Text" style="font-style: italic;">Greeting</span><span class="f_Text"> function call, instead of 0:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Greeting</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">GreetingHour</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Symbol</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Considering the changes we have made to describe the input parameter, let's save the new script version in file </span><span class="f_Text" style="font-style: italic;">GoodTime1.mq5</span><span class="f_Text">. If we compile and start it, we will see the data entry dialog:</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Dialog to enter the parameters of script GoodTime1.mq5" title="Dialog to enter the parameters of script GoodTime1.mq5" width="615" height="312" style="margin:0 auto 0 auto;width:615px;height:312px;border:none" src="goodtime1_en.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Dialog to enter the parameters of script GoodTime1.mq5</span></p>
+<p class="p_Text"><span class="f_Text">For instance, if we edit the value </span><span class="f_Text" style="font-style: italic;">GreetingHour</span><span class="f_Text"> to 10, then the script will display the following greeting:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">GoodTime1&nbsp;(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Good&nbsp;afternoon,&nbsp;EURUSD</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This is a correct and expected result.</span></p>
+<p class="p_Text"><span class="f_Text">Just for the fun of it, let's run the script again and enter 100. Instead of any meaningful response, we will get:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">GoodTime1&nbsp;(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;array&nbsp;out&nbsp;of&nbsp;range&nbsp;in&nbsp;'GoodTime1.mq5'&nbsp;(19,18)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We have just encountered a new phenomenon, i.e., runtime error. In this case, the terminal notifies that in position 18 of string 19, our script has tried to read the value of an array element having a non-existing index (beyond the array size).</span></p>
+<p class="p_Text"><span class="f_Text">Since errors are a permanent and necessary companion of a programmer and we have to learn how to fix them, let's talk in some more details about them.</span></p>
+
+</div>
+
+</body>
+</html>

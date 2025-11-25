@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.6.10 Executing prepared queries: DatabaseRead/Bind</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_6_sqlite.htm"> 7.6 SQLite database </a>/ 7.6.10 Executing prepared queries: DatabaseRead/Bind
+          </td>
+          <td width="70" align="right">
+          <a href="7_6_9_sqlite_bind.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_6_11_sqlite_columns.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.6.10 Executing prepared queries: DatabaseRead/Bind</span></p>
+<p class="p_Text"><span class="f_Text">Prepared queries are executed using the </span><span class="f_Text" style="font-style: italic;">DatabaseRead</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">DatabaseReadBind</span><span class="f_Text"> functions. The first function extracts the results from the database in such a way that later individual fields can be read from each record received in turn in response, and the second extracts each matching record in its entirety, in the form of a structure.</span></p>
+<p class="p_H4"><span class="f_H4">bool DatabaseRead(int request)</span></p>
+<p class="p_Text"><span class="f_Text">On the first call, after </span><span class="f_Text" style="font-style: italic;"><a href="7_6_7_sqlite_prepare.htm" class="topiclink">Database Prepare</a></span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;"><a href="7_6_8_sqlite_reset.htm" class="topiclink">DatabaseReset</a></span><span class="f_Text">, the </span><span class="f_Text" style="font-style: italic;">DatabaseRead</span><span class="f_Text"> function executes the query and sets the internal query result pointer to the first record retrieved (if the query expects records to be returned). The </span><span class="f_Text" style="font-style: italic;"><a href="7_6_11_sqlite_columns.htm" class="topiclink">DatabaseColumn</a></span><span class="f_Text"><a href="7_6_11_sqlite_columns.htm" class="topiclink"> functions</a> enable the reading of the values of the record fields, i.e., the columns specified in the query.</span></p>
+<p class="p_Text"><span class="f_Text">On subsequent calls, the </span><span class="f_Text" style="font-style: italic;">DatabaseRead</span><span class="f_Text"> function jumps to the next record in the query results until the end is reached.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> upon successful completion. The </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> value is used as an indicator of an error (for example, the database may be blocked or busy), as well as when the end of the results is normally reached, so you should analyze the code in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">. In particular, the value ERR_DATABASE_NO_MORE_DATA (5126) indicates that the results are finished.</span></p>
+<p class="p_Quote"><span class="f_Quote">Attention! If </span><span class="f_Quote" style="font-style: italic;">DatabaseRead</span><span class="f_Quote"> is used to execute queries that don't return data, such as INSERT, UPDATE, etc., the function immediately returns </span><span class="f_Quote" style="font-style: italic;">false</span><span class="f_Quote"> and sets the error code ERR_DATABASE_NO_MORE_DATA if the request was successful.</span></p>
+<p class="p_Text"><span class="f_Text">The usual pattern of using the function is illustrated by the following pseudo-code (</span><span class="f_Text" style="font-style: italic;">DatabaseColumn</span><span class="f_Text"> functions for different types are presented in the <a href="7_6_11_sqlite_columns.htm" class="topiclink">next section</a>).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">DatabasePrepare</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;SELECT...&nbsp;WHERE...?&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">param</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//compiling&nbsp;the&nbsp;query</span><span class="f_CodeExampleCondensed" style="color: #808080;">(optional&nbsp;with&nbsp;parameters)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">DatabaseRead</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">))&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;query&nbsp;execution&nbsp;(on&nbsp;the&nbsp;first&nbsp;iteration)</span>
+<br><span class="f_CodeExample">{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;loop&nbsp;through&nbsp;result&nbsp;records</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">DatabaseColumnInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;read&nbsp;one&nbsp;field&nbsp;from&nbsp;the&nbsp;current&nbsp;record</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">number</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">DatabaseColumnDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">number</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;read&nbsp;another&nbsp;field&nbsp;from&nbsp;the&nbsp;current&nbsp;record</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExampleCondensed" style="color: #808080;">//&nbsp;column&nbsp;types&nbsp;and&nbsp;numbers&nbsp;in&nbsp;record&nbsp;are&nbsp;determined&nbsp;by&nbsp;program</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExampleCondensed" style="color: #808080;">//&nbsp;process&nbsp;the&nbsp;received&nbsp;values&nbsp;of&nbsp;count,&nbsp;number,&nbsp;etc.</span>
+<br><span class="f_CodeExample">}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExampleCondensed" style="color: #808080;">//&nbsp;loop&nbsp;is&nbsp;interrupted&nbsp;when&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;results&nbsp;is&nbsp;reached</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">DatabaseFinalize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Note that since the query (reading conditional data) is actually executed only once (on the very first iteration), there is no need to call </span><span class="f_Text" style="font-style: italic;"><a href="7_6_8_sqlite_reset.htm" class="topiclink">DatabaseReset</a></span><span class="f_Text">, as we did when recording changing data. However, if we want to run the query again and &quot;walk&quot; through the new results, calling </span><span class="f_Text" style="font-style: italic;">DatabaseReset</span><span class="f_Text"> would be necessary.</span></p>
+<p class="p_H4"><span class="f_H4">bool DatabaseReadBind(int request, void &amp;object)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabaseReadBind</span><span class="f_Text"> function works in a similar way to </span><span class="f_Text" style="font-style: italic;">DatabaseRead</span><span class="f_Text">: the first call executes the SQL query and, in case of success (there is suitable data in the result), fills the </span><span class="f_Text" style="font-style: italic;">object</span><span class="f_Text"> structure passed by reference with fields of the first record; subsequent calls continue moving the internal pointer through the records in the query results, filling the structure with the data of the next record.</span></p>
+<p class="p_Text"><span class="f_Text">The structure must have only numeric types and/or strings as members (arrays are not allowed), it cannot cannot inherit from or contain static members of object types.</span></p>
+<p class="p_Text"><span class="f_Text">The number of fields in the </span><span class="f_Text" style="font-style: italic;">object</span><span class="f_Text"> structure should not exceed the number of columns in the query results; otherwise, we will get an error. The number of columns can be found dynamically using the </span><span class="f_Text" style="font-style: italic;"><a href="7_6_11_sqlite_columns.htm" class="topiclink">DatabaseColumnsCount</a></span><span class="f_Text"> function, however, the caller usually needs to &quot;know&quot; in advance the expected data configuration according to the original request.</span></p>
+<p class="p_Text"><span class="f_Text">If the number of fields in the structure is less than the number of fields in the record, a partial read will be performed. The rest of the data can be obtained using the appropriate </span><span class="f_Text" style="font-style: italic;"><a href="7_6_11_sqlite_columns.htm" class="topiclink">DatabaseColumn </a></span><span class="f_Text"><a href="7_6_11_sqlite_columns.htm" class="topiclink">functions</a>.</span></p>
+<p class="p_Text"><span class="f_Text">It is assumed that the field types of the structure match the data types in the result columns. Otherwise, an automatic implicit conversion will be performed, which can lead to unexpected consequences (for example, a string read into a numeric field will give 0).</span></p>
+<p class="p_Text"><span class="f_Text">In the simplest case, when we calculate a certain total value for the database records, for example, by calling an aggregate function like </span><span class="f_Text" style="font-style: italic;">SUM(column)</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">COUNT(column)</span><span class="f_Text">, or </span><span class="f_Text" style="font-style: italic;">AVERAGE(column)</span><span class="f_Text">, the result of the query will be a single record with a single field.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">SELECT&nbsp;SUM(swap)&nbsp;FROM&nbsp;trades;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Because reading the results is related to </span><span class="f_Text" style="font-style: italic;">DatabaseColumn</span><span class="f_Text"> functions, we will defer the development of the example until the next section, where they are presented.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.2.4 Implementing recurrent models in Python</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="4_main_layer_types.htm"> 4. Basic types of neural layers </a> / <a class="h_m" href="4_2_rnn.htm"> 4.2 Recurrent neural networks </a>/ 4.2.4 Implementing recurrent models in Python
+          </td>
+          <td width="70" align="right">
+          <a href="4_2_3_rnn_opencl.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_2_4_1_rnn_lstm_py.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">4.2.4 Implementing recurrent models in Python</span></p>
+<p class="p_Text"><span class="f_Text">In the previous sections, we reviewed the principles of organizing a recurrent model architecture, and even built a recurrent neural layer using the </span><span class="f_Text" style="font-style: italic;">LSTM</span><span class="f_Text"> block algorithm. Earlier, we used the </span><span class="f_Text" style="font-style: italic;">Keras</span><span class="f_Text"> library for </span><span class="f_Text" style="font-style: italic;">TensorFlow</span><span class="f_Text"> to build previous neural network models in Python. The same library offers a number of options for building recurrent neural layers. These include classes of basic recurrent neural layers as well as more complex models. </span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">AbstractRNNCell</span><span class="f_li"> – abstract object representing an RNN cell</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">Bidirectional</span><span class="f_li"> – bidirectional shell for RNN</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">ConvLSTM1D</span><span class="f_li"> – 1D convolutional LSTM block</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">ConvLSTM2D</span><span class="f_li"> – 2D</span><span class="f_li" style="font-style: italic;"> </span><span class="f_li">convolutional LSTM block</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">ConvLSTM3D</span><span class="f_li"> – 3D convolutional LSTM block</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">GRU</span><span class="f_li"> – recurrent block by Cho et al. (2014)</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">LSTM</span><span class="f_li"> – layer of long-term short-term memory by Hochreiter (1997)</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">RNN</span><span class="f_li"> – base class for the recurrent layer</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">SimpleRNN</span><span class="f_li"> – fully connected recurrent layer in which the output must be returned to the input</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">In the presented list, in addition to the basic recurrence layer class, you can find already familiar </span><span class="f_Text" style="font-style: italic;">LSTM</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">GRU</span><span class="f_Text"> models. It is also possible to create bidirectional recurrent layers, which are most often used in text translation tasks. The </span><span class="f_li" style="font-style: italic;">ConvLSTM</span><span class="f_li"> model is built based on the architecture of the </span><span class="f_li" style="font-style: italic;">LSTM</span><span class="f_li"> block but uses convolutional layers instead of fully connected layers as gates and a new content layer.</span></p>
+<p class="p_Text"><span class="f_li">Additionally, there is an abstract recurrent cell class for creating custom architectural solutions for recurrent models.</span></p>
+<p class="p_Text"><span class="f_li">We won't go deep into the</span><span class="f_Text"> </span><span class="f_li" style="font-style: italic;">Keras</span><span class="f_li"> library API right now. We will use the </span><span class="f_li" style="font-style: italic;">LSTM</span><span class="f_li"> block to create our test recurrent models. Exactly this kind of model we recreated using MQL5 and will be able to compare the performance of our models created in different programming languages.</span></p>
+<p class="p_Text"><span class="f_li">The </span><span class="f_li" style="font-style: italic;">LSTM</span><span class="f_li"> block class is designed to automatically choose between </span><span class="f_li" style="font-style: italic;">CuDNN</span><span class="f_li"> or pure </span><span class="f_li" style="font-style: italic;">TensorFlow</span><span class="f_Text"> implementations based on available hardware and environment constraints, ensuring optimal performance</span><span class="f_li">. </span></p>
+<p class="p_Text"><span class="f_li">Users have access to an excessive range of parameters for fine-tuning the recurrent block:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">units</span><span class="f_li"> – dimensionality of the output space</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">activation</span><span class="f_li"> – activation function</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">recurrent_activation</span><span class="f_li"> – activation function for the recurrent step (gate)</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">use_bias</span><span class="f_li"> – flag of using an offset vector</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">kernel_initializer</span><span class="f_li"> – method to initialize the weights matrix for the new context layer</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">recurrent_initializer</span><span class="f_li"> – method to initialize the weight matrix for gates</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">bias_initializer</span><span class="f_li"> – initialization method for bias vector</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">kernel_regularizer</span><span class="f_li"> – function to regularize the weight matrix for the new content layer</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">recurrent_regularizer</span><span class="f_li"> – function to regularize the weight matrix for gates</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">bias_regularizer</span><span class="f_li"> – bias vector regularization function</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">activity_regularizer</span><span class="f_li"> – output layer regularization function</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">kernel_constraint</span><span class="f_li"> – function of constraints for the weight matrix of the new content layer</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">recurrent_constraint</span><span class="f_li"> – function of constraints for the weight matrix of gates</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">bias_constraint</span><span class="f_li"> – function of vector constraints</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">dropout</span><span class="f_li"> – floating-point number from 0 to 1, defining the share of elements to be dropped out during linear transformation of input data</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">recurrent_dropout</span><span class="f_li"> – floating-point number from 0 to 1, determining the share of elements to be dropped out during linear transformation of memory state</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">return_sequences</span><span class="f_li"> – boolean flag to specify whether to return the last result in the output sequence or the results of the whole sequence</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">return_state</span><span class="f_li"> – boolean flag to indicate whether to return the last state in addition to the output</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">go_backwards</span><span class="f_li"> – boolean flag to instruct the processing of the input sequence in the backward order and return the reverse sequence</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">stateful</span><span class="f_li"> – boolean flag to indicate the use of the last state for each sample with the </span><span class="f_li" style="font-style: italic;">i</span><span class="f_li"> index in the batch as the initial state for the sample with the </span><span class="f_li" style="font-style: italic;">i</span><span class="f_li"> index in the next batch</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">time_major</span><span class="f_li"> – the format of the input and output sequence tensor shapes</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">unroll</span><span class="f_li"> – boolean flag used to indicate whether to unroll the recurrent network or use a simple loop; unrolling can accelerate the training of the recurrent network, but it requires more memory</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">After acquainting ourselves with the control parameters of the </span><span class="f_Text" style="font-style: italic;">LSTM</span><span class="f_Text"> layer class, we will proceed to the practical implementation of various models using the recurrence layer.</span></p>
+
+</div>
+
+</body>
+</html>

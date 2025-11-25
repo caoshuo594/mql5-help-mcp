@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>Types of programs and their construction features</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="2_algotrading.htm"> 2. MetaTrader 5 features for algorithmic trading </a>/ 2.1 Program types and their construction features
+          </td>
+          <td width="70" align="right">
+          <a href="2_algotrading.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="2_2_statistics.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">2.1 Program types and their construction features</span></p>
+<p class="p_Text"><span class="f_Text">The <a href="https://www.metaquotes.net/en/metatrader5" target="_blank" rel="external" class="weblink" title="MetaTrader 5">MetaTrader 5 platform</a> package includes a modern development environment <a href="https://www.metatrader5.com/en/metaeditor/help" target="_blank" rel="external" class="weblink" title="MetaEditor">MetaEditor</a> which enables the creation of various programs for algorithmic trading. Programs can be written in the specially designed programming language called MetaQuotes Language 5 (MQL5). The language syntax is closely aligned with C++, enabling programming in an object-oriented style. This facilitates the transition to using MQL5 for a large community of programmers.</span></p>
+<p class="p_Text"><span class="f_Text">The interaction of the MetaTrader 5 platform with programs is organized in such a way that the price movements of instruments and changes in the trading account are tracked by the platform. When predetermined changes occur, the platform generates <a href="https://www.mql5.com/en/docs/runtime/event_fire" target="_blank" rel="external" class="weblink">events</a> in the instrument chart open in the platform. When an event occurs, the user programs attached to the chart are checked. These can be software Expert Advisors, indicators, and scripts. <a href="https://www.mql5.com/en/docs/basis/function/events" target="_blank" rel="external" class="weblink">Event handlers</a> are defined in the platform for each event and program type.</span></p>
+<p class="p_Text"><span class="f_Text">An event handler is a special function defined by the </span><span class="f_Text" style="font-style: italic;">MQL5</span><span class="f_Text"> programming language. Such a function has a strictly specified name, return value type, and a list and type of parameters. Based on the return value type and the parameter types, the event handler of the client terminal identifies functions for processing the occurred event. If a function has parameters that do not match the predetermined ones or if a different return value type is specified, then such a function will not be used to process the event.</span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:597px"><img class="help" id="metaeditor" alt="Built-in development environment MetaEditor" title="Built-in development environment MetaEditor" width="597" height="394" style="width:597px;height:394px;border:none" src="metaeditor.png"/><p style="text-align:center"><span class="f_ImageCaption">Built-in development environment MetaEditor</span></p></div></div>
+<p class="p_Text"><span class="f_Text">Each type of program can only handle certain events. Thus, if the event handler does not correspond to the program type, such a function will not be called by the terminal.</span></p>
+<p class="p_Text"><span class="f_Text">The MQL5 language includes a series of <a href="https://www.mql5.com/en/docs/trading" target="_blank" rel="external" class="weblink">trading functions</a> and predefined event handlers, which are used for Expert Advisors to allow them to execute the trading strategies embedded in them. It also offers an opportunity to write your own technical analysis indicators, scripts, services, and libraries of included functions.</span></p>
+<p class="p_Text"><span class="f_Text">Each program type is designed to perform its specific tasks and has special features of construction.</span></p>
+<p class="p_H3"><span class="f_H3">Expert Advisors (EAs)</span></p>
+<p class="p_Text"><span class="f_Text">Probably, at the forefront of algorithmic trading are Expert Advisors (trading robots) which are programs capable of independently analyzing the market and conducting trading operations based on a programmed strategy and its trading rules.</span></p>
+<p class="p_Text"><span class="f_Text">Technically, in MetaTrader 5, an Expert Advisor is tied to a specific chart on which it runs. In doing so, it only handles predefined <a href="https://www.mql5.com/en/docs/basis/function/events" target="_blank" rel="external" class="weblink">events</a> from this specific chart. The occurrence of each event triggers the corresponding functionality of the trading strategy. Among such events can be program launch and deinitialization, timer triggering, arrival of a new tick, scheduled events, and user events.</span></p>
+<p class="p_Text"><span class="f_Text">At the same time, the trading strategy of the Expert Advisor can include the analysis of other timeframes of the current instrument, as well as the analysis of any instrument in the terminal on any timeframe. This allows you to build multi-currency and multi-timeframe strategies.</span></p>
+<p class="p_Text"><span class="f_Text">In addition, Expert Advisors have the technical ability to receive data from any technical indicator installed in the terminal. This greatly expands the possibilities for building different trading strategies.</span></p>
+<p class="p_Text"><span class="f_Text">Each predefined event calls the corresponding EA function, in which the program code for event processing is written.</span></p>
+<p class="p_Text"><span class="f_Text">Immediately after launching the Expert Advisor, the terminal generates an </span><span class="f_Text" style="font-style: italic; font-weight: bold;">Init</span><span class="f_Text"> event, which triggers the </span><span class="f_Text" style="font-style: italic; font-weight: bold;">OnInit</span><span class="f_Text"> function. Global variables and objects are initialized in the body of this function. If necessary, a timer is started. The function has no input parameters but returns an integer value of the return code as a result of its execution. A non-zero return code indicates a failed initialization. In this case, the terminal generates a program termination event called </span><span class="f_Text" style="font-style: italic; font-weight: bold;">Deinit</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;initialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span><br>
+<span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #8000ff;">OnInit</span><span class="f_CodeExample">()</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;{</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---</span><br>
+<span class="f_CodeExample">&nbsp;</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---&nbsp;create&nbsp;timer</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #8000ff;">EventSetTimer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">60</span><span class="f_CodeExample">);</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">INIT_SUCCEEDED</span><span class="f_CodeExample">);</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When the program is completed, the </span><span class="f_Text" style="font-style: italic;">MetaTrader 5</span><span class="f_Text"> terminal generates a </span><span class="f_Text" style="font-style: italic; font-weight: bold;">Deinit</span><span class="f_Text"> event that triggers the execution of the </span><span class="f_Text" style="font-style: italic; font-weight: bold;">OnDeinit</span><span class="f_Text"> function. The function has one input integer parameter which receives the code of the reason for the program termination. Inside the function body, if necessary, global variables, classes, and graphical objects are removed, data is saved in file resources, the timer initiated during program initialization is closed, and other operations required for the proper termination of the program and the cleanup of its traces in the terminal are performed.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;deinitialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span><br>
+<span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #8000ff;">OnDeinit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">reason</span><span class="f_CodeExample">)</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;{</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---</span><br>
+<span class="f_CodeExample" style="color: #808080;">&nbsp;</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---&nbsp;destroy&nbsp;timer</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #8000ff;">EventKillTimer</span><span class="f_CodeExample">();</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When a new tick arrives for the symbol chart on which the Expert Advisor is running, the </span><span class="f_Text" style="font-style: italic; font-weight: bold;">NewTick</span><span class="f_Text"> event is generated. This triggers the </span><span class="f_Text" style="font-style: italic; font-weight: bold;">OnTick</span><span class="f_Text"> function. This event is generated only for Expert Advisors, so the </span><span class="f_Text" style="font-style: italic; font-weight: bold;">OnTick</span><span class="f_Text"> function will not be launched in other programs. Of course, the specified function can always be called forcibly from any place in the program, but it will no longer be the </span><span class="f_Text" style="font-style: italic; font-weight: bold;">NewTick</span><span class="f_Text"> event processing.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic; font-weight: bold;">OnTick</span><span class="f_Text"> function has no input parameters and does not return any code. The main purpose of the function is to execute the price fluctuations handler in the advisor, which evaluates changes in the market situation and checks the rules of the embedded strategy for the need to perform any trading operations. Sometimes, according to the trading strategy rules, the Expert Advisor should perform operations not at every price movement, but, for example, at the opening of a new candlestick. In such cases, checking for the occurrence of the expected event is added to the </span><span class="f_Text" style="font-style: italic; font-weight: bold;">OnTick</span><span class="f_Text"> function.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;tick&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span><br>
+<span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #8000ff;">OnTick</span><span class="f_CodeExample">()</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;{</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If the algorithm of an Expert Advisor does not require the processing of each price movement but is based on the execution of cyclic operations with a certain time interval, even if there are no price movements observed during this time, the use of a timer can be very beneficial.</span></p>
+<p class="p_Text"><span class="f_Text">For this, when initializing the program in the </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> function, it is necessary to initialize the timer using the </span><span class="f_Text" style="font-style: italic;">EventSetTimer</span><span class="f_Text"> function. The function parameters specify the timer delay period in seconds. After that, the terminal will generate a </span><span class="f_Text" style="font-style: italic; font-weight: bold;">Timer</span><span class="f_Text"> event for the chart, and the </span><span class="f_Text" style="font-style: italic; font-weight: bold;">OnTimer</span><span class="f_Text"> function of the Expert Advisor will be launched for execution.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #808080;">//|&nbsp;Timer&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span><br>
+<span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #8000ff;">OnTimer</span><span class="f_CodeExample">()</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;{</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When using a timer in the program's code, it is necessary to unload it from the terminal's memory upon program termination within the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> function. The </span><span class="f_Text" style="font-style: italic;">EventKillTimer </span><span class="f_Text">function is used for this purpose. This function has no parameters. It should be noted that the platform provides for the use of only one timer on the chart.</span></p>
+<p class="p_Text"><span class="f_Text">Within one EA, you can use both the OnTick and OnTimer functions, if necessary.</span></p>
+<p class="p_Text"><span class="f_Text">Among Expert Advisors, there is a subclass of semi-automatic Expert Advisors and trading panels. Such programs are not capable of independent trading without human intervention. Programs of this type perform trading operations at the trader's command. The programs themselves are designed to facilitate the trader's work and to take over some routine operations. This can be money management, setting stop loss and take profit levels, position maintenance, and much more.</span></p>
+<p class="p_Text"><span class="f_Text">The interaction between the program and the user is implemented through </span><span class="f_Text" style="font-style: italic; font-weight: bold;">ChartEvent</span><span class="f_Text"> group events in Expert Advisors. These events trigger the execution of the OnChartEvent function, which accepts four parameters from the terminal:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">id</span><span class="f_li">: event identifier,</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">lparam</span><span class="f_li">: event parameter of type </span><span class="f_li" style="font-style: italic;">long</span><span class="f_li">,</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">dparam</span><span class="f_li">: event parameter of type </span><span class="f_li" style="font-style: italic;">double</span><span class="f_li">,</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">sparam</span><span class="f_li">: event parameter of type </span><span class="f_li" style="font-style: italic;">string</span><span class="f_li">.</span></li>
+</ul>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #808080;">//|&nbsp;ChartEvent&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span><br>
+<span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #8000ff;">OnChartEvent</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">lparam</span><span class="f_CodeExample">,</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">dparam</span><span class="f_CodeExample">,</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">sparam</span><span class="f_CodeExample">)</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;{</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The event can be generated for Expert Advisors and technical indicators. In this case, for each type of event, the input parameters of the function have certain values required to process the event.</span></p>
+<p class="p_H3"><span class="f_H3">Technical indicators</span></p>
+<p class="p_Text"><span class="f_Text">Another program type is a custom indicator. Indicators are programs that perform analytical functions to assist traders in conducting technical analysis of the market situation. During their operation, indicators process each price movement on the chart of their trading instrument. They can display various graphical objects, thus generating signals for subsequent analysis by the trader.</span></p>
+<p class="p_Text"><span class="f_Text">Like Expert Advisors, custom indicators can use data from other indicators, instruments, and timeframes in their calculations. But at the same time, indicators cannot perform trading operations. Thus, the indicator application scope is limited to the framework of technical analysis.</span></p>
+<p class="p_Text"><span class="f_Text">Similar to Expert Advisors, technical indicators have </span><span class="f_Text" style="font-style: italic;">Init</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Timer</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">ChartEvent</span><span class="f_Text"> event handlers. The construction of functions for processing these events is similar to the corresponding functions of electronic Expert Advisors, but instead of the </span><span class="f_Text" style="font-style: italic;">NewTick</span><span class="f_Text"> event, the </span><span class="f_Text" style="font-style: italic;">Calculate</span><span class="f_Text"> event is generated for indicators. This event is handled by the </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> function. There are two types of </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> function depending on the scope of the indicator:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_Text"><span class="f_li">shorthand</span></li>
+</ul>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #808080;">//|&nbsp;Custom&nbsp;indicator&nbsp;iteration&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span><br>
+<span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #8000ff;">OnCalculate</span><span class="f_CodeExample">&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">,&nbsp;</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">,</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">begin</span><span class="f_CodeExample">,</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">[]&nbsp;</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;{</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---&nbsp;return&nbsp;value&nbsp;of&nbsp;prev_calculated&nbsp;for&nbsp;the&nbsp;next&nbsp;call</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">);</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<ul style="list-style-type:disc">
+<li class="p_Text"><span class="f_li">full</span></li>
+</ul>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #808080;">//|&nbsp;Custom&nbsp;indicator&nbsp;iteration&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span><br>
+<span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #8000ff;">OnCalculate</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">,</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prev_calculated</span><span class="f_CodeExample">,</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">[],</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">open</span><span class="f_CodeExample">[],</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">high</span><span class="f_CodeExample">[],</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">low</span><span class="f_CodeExample">[],</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">[],</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">tick_volume</span><span class="f_CodeExample">[],</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">volume</span><span class="f_CodeExample">[],</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">spread</span><span class="f_CodeExample">[])</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;{</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---&nbsp;return&nbsp;value&nbsp;of&nbsp;prev_calculated&nbsp;for&nbsp;the&nbsp;next&nbsp;call</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rates_total</span><span class="f_CodeExample">);</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Within a single indicator, you can only use one of the versions of the function.</span></p>
+<p class="p_li"><span class="f_Text">Both versions of the</span><span class="f_li"> </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_li"> </span><span class="f_Text">function have parameters:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">rates_total</span><span class="f_li">: number of items in the timeseries,</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">prev_calculated</span><span class="f_li">: number of recalculated elements of the time series at the previous run of the function.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The use of the </span><span class="f_Text" style="font-style: italic;">prev_calculated</span><span class="f_Text"> parameter allows you to implement algorithms in which the indicator does not recalculate previously calculated historical values. This reduces the number of iterations in processing each new price fluctuation.</span></p>
+<p class="p_Text"><span class="f_Text">The work of indicators in the </span><span class="f_Text" style="font-style: italic;">MetaTrader 5</span><span class="f_Text"> terminal is organized as follows. The </span><span class="f_Text" style="font-style: italic;">prev_calculated</span><span class="f_Text"> parameter receives the value that the function returned at the previous run. Therefore, in the general case, at the end of a successful function completion, it's sufficient to return the value of the </span><span class="f_Text" style="font-style: italic;">rates_total</span><span class="f_Text"> parameter. If errors occur while the function is running, you can return the current value of </span><span class="f_Text" style="font-style: italic;">prev_calculated</span><span class="f_Text">. In this case, the function will start recalculating from the current location the next time it is run. If you return 0, upon the next launch, the indicator will be recalculated for the entire history, as it was during the initial launch.</span></p>
+<p class="p_Text"><span class="f_Text">When defined briefly, the function has only one input array of time series (</span><span class="f_Text" style="font-style: italic;">price</span><span class="f_Text">) and a parameter for shifting significant values relative to the beginning of the time series (</span><span class="f_Text" style="font-style: italic;">begin</span><span class="f_Text">). In this version, the calculation of indicator values is based on the data of one time series. Which time series will be used is set by the trader when launching the technical indicator. This can be either any of the price time series or the buffer values of another indicator.</span></p>
+<p class="p_Text"><span class="f_Text">When using the full version of the </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> function, the function gets all price time series in its parameters. In such a case, the user does not have the option to choose a time series when launching the indicator. If it's necessary to use a buffer of data from another indicator, it needs to be explicitly written in the program code of the indicator. </span></p>
+<p class="p_Text"><span class="f_Text">In </span><span class="f_Text" style="font-style: italic;">MetaTrader 5</span><span class="f_Text">, there is a limitation in the ability to run only one Expert Advisor for each chart. If you need to run two or more Expert Advisors in one terminal, you should open an individual chart for each Expert Advisor. There is no such limitation for indicators as </span><span class="f_Text" style="font-style: italic;">MetaTrader 5</span><span class="f_Text"> allows you to use built-in and custom indicators in different versions in parallel on one chart of a trading instrument. The indicator can display data both on the price chart of the instrument itself and in sub-windows. </span></p>
+<p class="p_H3"><span class="f_H3">Scripts</span></p>
+<p class="p_Text"><span class="f_Text">Following launching, Expert Advisors and custom indicators remain in the terminal memory until they are forcibly closed by the trader. As certain events occur, the terminal launches the relevant functionality of Expert Advisors and indicators. Scripts are provided to perform any one-time operations. This is a separate type of program that does not handle any events other than its startup event.</span></p>
+<p class="p_Text"><span class="f_Text">Immediately after being launched, they perform the designated functionality and are unloaded from the terminal's memory. Along with Expert Advisors, scripts are able to perform trading operations, but it is impossible to run more than one script on a symbol chart at the same time. </span></p>
+<p class="p_Text"><span class="f_Text">There is only one </span><span class="f_Text" style="font-style: italic; font-weight: bold;">OnStart</span><span class="f_Text"> event handler in the body of the script, which is launched immediately after the program starts. The </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function does not receive any parameters and does not return any codes.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #808080;">//|&nbsp;Script&nbsp;program&nbsp;start&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span><br>
+<span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span><br>
+<span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #8000ff;">OnStart</span><span class="f_CodeExample">()</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;{</span><br>
+<span class="f_CodeExample" style="color: #808080;">//---</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">A separate program type is Services. Unlike the aforementioned types of programs, a service does not require binding to a specific price chart of a trading instrument. Just like scripts, services do not process any events other than their own launch. However, they are capable of generating custom events themselves and sending them to charts for further processing in Expert Advisors. </span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">MetaEditor</span><span class="f_Text"> development environment provides the possibility to create libraries and include files. These files are designed to store and distribute frequently used program blocks. Libraries are compiled files and provide individual functions for export to other running programs. The code of the executed functions itself is hidden. Plug-in files, unlike libraries, are open-source files. In terms of performance, it's preferable to use include files, but they do not ensure code secrecy during distribution.</span></p>
+<p class="p_Text"><span class="f_Text">In addition to event handlers, all programs can contain other functions and classes that will need to be called from the event handler functions. They can also have external input parameters set by the user when the program is launched.</span></p>
+<p class="p_Text"><span class="f_Text">Another technical aspect should also be taken into consideration. </span><span class="f_Text" style="font-style: italic;">MetaTrader 5</span><span class="f_Text"> is positioned as a platform with multi-threaded computing. In this case, three threads are allocated for each trading instrument's chart: one for the Expert Advisor, one for the script, and one for indicators. All indicators loaded onto one trading instrument's chart operate within the same thread as the chart itself. Therefore, it's not recommended to perform complex calculations within indicators.</span></p>
+<p class="p_Text"><span class="f_Text">Hence, we can use EAs or scripts to build our neural network.</span></p>
+
+</div>
+
+</body>
+</html>

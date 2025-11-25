@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>OnBookEvent</title>
+  <meta name="keywords" content="OnBookEvent" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="event_handlers.htm"> Event Handling </a>/ OnBookEvent
+          </td>
+          <td width="70" align="right">
+          <a href="ontradetransaction.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="onchartevent.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">OnBookEvent</span></p>
+<p class="p_Function"><span class="f_Function">The function is called in indicators and EAs when the <a href="event_fire.htm#bookevent" class="topiclink">BookEvent</a> event occurs. It is meant for handling Depth of Market changes.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_Keywords">void&nbsp;&nbsp;</span><span class="f_Functions">OnBookEvent</span><span class="f_CodeExample">(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Keywords">const&nbsp;string&amp;</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Param">symbol</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;symbol</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">Parameters</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">symbol</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[in] &nbsp;Name of a symbol the </span><span class="f_Function"><a href="event_fire.htm#bookevent" class="topiclink">BookEvent</a></span><span class="f_ParameterDesrciption"> has arrived for</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">Return Value</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">No return value</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">Note</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">To get the BookEvent events for any symbol, simply subscribe to receive them for this symbol using the <a href="symbolinfosessiontrade.htm" class="topiclink">MarketBookAdd()</a> function. To cancel subscription for receiving the BookEvent for a certain symbol, call the <a href="marketbookrelease.htm" class="topiclink">MarketBookRelease()</a> function.</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">The BookEvent broadcasts within the entire chart. This means that if one application on a chart subscribes to the BookEvent using the MarketBookAdd function, all other indicators and EAs launched on the same chart and having the OnBookEvent() handler receive this event as well. Therefore, it is necessary to analyze a symbol name passed to the OnBookEvent() handler as the </span><span class="f_FunctionRemark" style="font-style: italic;">symbol</span><span class="f_FunctionRemark"> parameter.</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">Separate BookEvent counters sorted by symbols are provided for all applications running on the same chart. This means that each chart may have multiple subscriptions to different symbols, and a counter is provided for each symbol. Subscribing and unsubscribing from BookEvent changes the subscription counter for specified symbols only within one chart. In other words, there may be two adjacent charts to the BookEvent for the same symbol but different subscription counter values.</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">The initial subscription counter value is zero. At each <a href="symbolinfosessiontrade.htm" class="topiclink">MarketBookAdd()</a> call, the subscription counter for a specified symbol on the chart is increased by one (chart symbol and symbol in MarketBookAdd() do not have to match). When calling <a href="marketbookrelease.htm" class="topiclink">MarketBookRelease()</a>, the counter of subscriptions for a specified symbol within the chart is decreased by one. The BookEvent events for any symbol are broadcast within the chart till the counter is equal to zero. Therefore, it is important that each MQL5 program that contains <a href="symbolinfosessiontrade.htm" class="topiclink">MarketBookAdd ()</a> calls correctly unsubscribes from getting events for each symbol using <a href="marketbookrelease.htm" class="topiclink">MarketBookRelease ()</a> at the end of its work. To achieve this, the number of <a href="symbolinfosessiontrade.htm" class="topiclink">MarketBookAdd()</a> and  <a href="marketbookrelease.htm" class="topiclink">MarketBookRelease()</a> calls should be even for each call during the entire MQL5 program lifetime. Using flags or custom subscription counters within the program allows you to safely work with BookEvent events and prevents disabling subscriptions for getting this event in third-party programs within the same chart.</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark"><a href="event_fire.htm#bookevent" class="topiclink">BookEvent</a> events are never skipped and are always placed into a queue even if handling the previous BookEvent handling is not over yet. </span></p>
+<p class="p_FunctionRemLI"><span class="f_FunctionRemLI">&nbsp;</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Example</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OnBookEvent_Sample.mq5&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copyright&nbsp;2018,&nbsp;MetaQuotes&nbsp;Software&nbsp;Corp.&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://www.mql5.com&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">copyright</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Copyright&nbsp;2000-2024,&nbsp;MetaQuotes&nbsp;Ltd.&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">link</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;https://www.mql5.com/en/articles/2635&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">version</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;1.00&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">description</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Example&nbsp;of&nbsp;measuring&nbsp;the&nbsp;market&nbsp;depth&nbsp;refresh&nbsp;rate&nbsp;using&nbsp;OnBookEvent()&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">description</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;The&nbsp;code&nbsp;is&nbsp;taken&nbsp;from&nbsp;the&nbsp;article&nbsp;https://www.mql5.com/en/articles/2635&quot;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;input&nbsp;parameters</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #c0504d;">ExtCollectTime</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;=30;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;test&nbsp;time&nbsp;in&nbsp;seconds</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #c0504d;">ExtSkipFirstTicks</span><span class="f_CodeExample">=10;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;number&nbsp;of&nbsp;ticks&nbsp;skipped&nbsp;at&nbsp;start</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;flag&nbsp;of&nbsp;subscription&nbsp;to&nbsp;BookEvent&nbsp;events</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;book_subscribed=</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;array&nbsp;for&nbsp;accepting&nbsp;requests&nbsp;from&nbsp;the&nbsp;market&nbsp;depth</span>
+<br><span class="f_CodeExample" style="color: #ff00ff;">MqlBookInfo</span><span class="f_CodeExample">&nbsp;&nbsp;book[];</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;initialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;show&nbsp;the&nbsp;start</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Waiting&nbsp;for&nbsp;the&nbsp;first&nbsp;%I64u&nbsp;ticks&nbsp;to&nbsp;arrive&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="font-weight: bold; color: #c0504d;">ExtSkipFirstTicks</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Waiting&nbsp;for&nbsp;the&nbsp;first&nbsp;%I64u&nbsp;ticks&nbsp;to&nbsp;arrive&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="font-weight: bold; color: #c0504d;">ExtSkipFirstTicks</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;enable&nbsp;market&nbsp;depth&nbsp;broadcast</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">MarketBookAdd</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff00ff;">_Symbol</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;book_subscribed=</span><span class="f_CodeExample" style="color: #ff0000;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%s:&nbsp;MarketBookAdd(%s)&nbsp;function&nbsp;returned&nbsp;true&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">__FUNCTION__</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #ff00ff;">_Symbol</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%s:&nbsp;MarketBookAdd(%s)&nbsp;function&nbsp;returned&nbsp;false!&nbsp;GetLastError()=%d&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">__FUNCTION__</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #ff00ff;">_Symbol</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">GetLastError</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;successful&nbsp;initialization</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">INIT_SUCCEEDED</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Deinitialize&nbsp;expert&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnDeinit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;reason)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;display&nbsp;deinitialization&nbsp;reason&nbsp;code</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">__FUNCTION__</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">&quot;:&nbsp;Deinitialization&nbsp;reason&nbsp;code&nbsp;=&nbsp;&quot;</span><span class="f_CodeExample">,reason);&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;cancel&nbsp;subscription&nbsp;for&nbsp;getting&nbsp;market&nbsp;depth&nbsp;events</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(book_subscribed)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">MarketBookRelease</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff00ff;">_Symbol</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%s:&nbsp;MarketBookRelease(%s)&nbsp;returned&nbsp;false!&nbsp;GetLastError()=%d&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #ff00ff;">_Symbol</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">GetLastError</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;book_subscribed=</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;BookEvent&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnBookEvent</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;starttime=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;test&nbsp;start&nbsp;time</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;tickcounter=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;market&nbsp;depth&nbsp;update&nbsp;counter</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;work&nbsp;with&nbsp;depth&nbsp;market&nbsp;events&nbsp;only&nbsp;if&nbsp;we&nbsp;subscribed&nbsp;to&nbsp;them&nbsp;ourselves</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!book_subscribed)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;count&nbsp;updates&nbsp;only&nbsp;for&nbsp;a&nbsp;certain&nbsp;symbol</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">!=</span><span class="f_CodeExample" style="color: #ff00ff;">_Symbol</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;skip&nbsp;first&nbsp;ticks&nbsp;to&nbsp;clear&nbsp;the&nbsp;queue&nbsp;and&nbsp;to&nbsp;prepare</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;tickcounter++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(tickcounter&lt;</span><span class="f_CodeExample" style="font-weight: bold; color: #c0504d;">ExtSkipFirstTicks</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;remember&nbsp;the&nbsp;start&nbsp;time</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(tickcounter==</span><span class="f_CodeExample" style="font-weight: bold; color: #c0504d;">ExtSkipFirstTicks</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;starttime=</span><span class="f_CodeExample" style="color: #8000ff;">GetMicrosecondCount</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;request&nbsp;for&nbsp;the&nbsp;market&nbsp;depth&nbsp;data</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MarketBookGet</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,book);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;when&nbsp;to&nbsp;stop?&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;endtime=</span><span class="f_CodeExample" style="color: #8000ff;">GetMicrosecondCount</span><span class="f_CodeExample">()-starttime;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;ticks&nbsp;&nbsp;=1+tickcounter-</span><span class="f_CodeExample" style="font-weight: bold; color: #c0504d;">ExtSkipFirstTicks</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;how&nbsp;much&nbsp;time&nbsp;has&nbsp;passed&nbsp;in&nbsp;microseconds&nbsp;since&nbsp;the&nbsp;start&nbsp;of&nbsp;the&nbsp;test?</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(endtime&gt;</span><span class="f_CodeExample" style="font-weight: bold; color: #c0504d;">ExtCollectTime</span><span class="f_CodeExample">*1000*1000)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%I64u&nbsp;ticks&nbsp;for&nbsp;%.1f&nbsp;seconds:&nbsp;%.1f&nbsp;ticks/sec&nbsp;&quot;</span><span class="f_CodeExample">,ticks,endtime/1000.0/1000.0,ticks*1000.0*1000.0/endtime);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ExpertRemove</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;display&nbsp;the&nbsp;counters&nbsp;in&nbsp;the&nbsp;comment&nbsp;field</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(endtime&gt;0)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%I64u&nbsp;ticks&nbsp;for&nbsp;%.1f&nbsp;seconds:&nbsp;%.1f&nbsp;ticks/sec&nbsp;&quot;</span><span class="f_CodeExample">,ticks,endtime/1000.0/1000.0,ticks*1000.0*1000.0/endtime));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Normal"><span class="f_Normal">&nbsp;</span></p>
+<p class="p_Normal"><span class="f_Normal">&nbsp;</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">See also</span></p>
+<p class="p_SeeAlso"><span class="f_SeeAlso"><a href="marketbookadd.htm" class="topiclink">MarketBookAdd</a>, <a href="marketbookrelease.htm" class="topiclink">MarketBookRelease</a>, <a href="marketbookget.htm" class="topiclink">MarketBookGet</a>, <a href="ontrade.htm" class="topiclink">OnTrade</a>, <a href="ontradetransaction.htm" class="topiclink">OnTradeTransaction</a>, <a href="ontick.htm" class="topiclink">OnTick</a>, <a href="events.htm" class="topiclink">Event handling functions</a>, <a href="running.htm" class="topiclink">Program running</a>, <a href="event_fire.htm" class="topiclink">Client terminal events</a></span></p>
+
+</div>
+
+</body>
+</html>

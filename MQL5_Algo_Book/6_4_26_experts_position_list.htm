@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.4.26 Getting the list of positions</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_4_experts.htm"> 6.4 Creating Expert Advisors </a>/ 6.4.26 Getting the list of positions
+          </td>
+          <td width="70" align="right">
+          <a href="6_4_25_experts_order_filter.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_4_27_experts_position_properties.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.4.26 Getting the list of positions</span></p>
+<p class="p_Text"><span class="f_Text">In many examples of Expert Advisors, we have already used the MQL5 API functions designed to analyze open trading positions. This section presents their formal description.</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that the functions of this group are not able to create, modify, or delete positions. As we saw earlier, all such actions are performed indirectly through the sending of orders. If they are successfully executed, transactions are made, as a result of which positions are formed.</span></p>
+<p class="p_Text"><span class="f_Text">Another feature is that the functions are only applicable to online positions. To restore the history of positions, it is necessary to analyze the history of trades.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">PositionsTotal</span><span class="f_Text"> function allows you to find out the total number of open positions on the account (for all financial instruments).</span></p>
+<p class="p_H4"><span class="f_H4">int PositionsTotal()</span></p>
+<p class="p_Text"><span class="f_Text">With netting accounting of positions (ACCOUNT_MARGIN_MODE_RETAIL_NETTING and ACCOUNT_MARGIN_MODE_EXCHANGE), there can be only one position for each symbol at any time. This position can result from one or more deals.</span></p>
+<p class="p_Text"><span class="f_Text">With the independent representation of positions (ACCOUNT_MARGIN_MODE_RETAIL_HEDGING), several positions can be opened simultaneously for each symbol, including multidirectional ones. Each market entry trade creates a separate position, so a partial step-by-step execution of one order can generate several positions.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">PositionGetSymbol</span><span class="f_Text"> function returns the symbol of a position by its number.</span></p>
+<p class="p_H4"><span class="f_H4">string PositionGetSymbol(int index)</span></p>
+<p class="p_Text"><span class="f_Text">The index must be between 0 and N-1, where N is the value received by the pre-call of </span><span class="f_Text" style="font-style: italic;">PositionsTotal</span><span class="f_Text">. The order of positions is not regulated.</span></p>
+<p class="p_Text"><span class="f_Text">If the position is not found, then an empty string will be returned, and the error code will be available in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Examples of using these two functions were provided in several test Experts Advisors (</span><span class="f_Text" style="font-style: italic;"><a href="6_4_16_experts_trailing_stop.htm" class="topiclink">TrailingStop.mq5</a></span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;"><a href="6_4_18_experts_closeby.htm" class="topiclink">TradeCloseBy.mq5</a></span><span class="f_Text">, and others) in functions with names </span><span class="f_Text" style="font-style: italic;">GetMyPosition/GetMyPositions</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">An open position is characterized by a unique ticket which is the number that distinguishes it from other positions, but may change during its life in some cases, such as a position reversal in netting mode by one trade, or as a result of service operations on the server (reopening for swap accrual, clearing).</span></p>
+<p class="p_Text"><span class="f_Text">To get a position ticket by its number, we use the </span><span class="f_Text" style="font-style: italic;">PositionGetTicket</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">ulong PositionGetTicket(int index)</span></p>
+<p class="p_Text"><span class="f_Text">Additionally, the function highlights a position in the trading environment of the terminal, which then allows you to read its properties using a group of special </span><span class="f_Text" style="font-style: italic;"><a href="6_4_28_experts_positionget_funcs.htm" class="topiclink">PositionGet</a></span><span class="f_Text"><a href="6_4_28_experts_positionget_funcs.htm" class="topiclink"> functions</a>. In other words, by analogy with orders, the terminal maintains an internal cache for each MQL program to store the properties of one position. To highlight a position, in addition to </span><span class="f_Text" style="font-style: italic;">PositionGetTicket</span><span class="f_Text">, there are two functions: </span><span class="f_Text" style="font-style: italic;">PositionSelect</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">PositionSelectByTicket</span><span class="f_Text"> which we will discuss below.</span></p>
+<p class="p_Text"><span class="f_Text">In case of an error, the </span><span class="f_Text" style="font-style: italic;">PositionGetTicket</span><span class="f_Text"> function will return 0.</span></p>
+<p class="p_Quote"><span class="f_Quote">The ticket should not be confused with the identifier that is assigned to each position and never changes. It is the identifiers that are used to link positions with orders and deals. We will talk about this a little later. </span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">Tickets are needed to fulfill requests involving positions: the tickets are specified in the </span><span class="f_Quote" style="font-style: italic;">position</span><span class="f_Quote"> and </span><span class="f_Quote" style="font-style: italic;">position_by</span><span class="f_Quote"> fields of the </span><span class="f_Quote" style="font-style: italic;">MqlTradeRequest</span><span class="f_Quote"> structure. Besides, by saving the ticket in a variable, the program can subsequently select a specific position using the </span><span class="f_Quote" style="font-style: italic;">PositionSelectByTicket</span><span class="f_Quote"> function (see below) and work with it without resorting to repeated enumeration of positions in the loop.</span></p>
+<p class="p_Text"><span class="f_Text">When a position is reversed on a netting account, POSITION_TICKET is changed to the ticket of the order that initiated this operation. However, such a position can still be tracked using an ID. Position reversal is not supported in hedging mode.</span></p>
+<p class="p_H4"><span class="f_H4">bool PositionSelect(const string symbol)</span></p>
+<p class="p_Text"><span class="f_Text">The function selects an open position by the name of the financial instrument.</span></p>
+<p class="p_Text"><span class="f_Text">With the independent representation of positions (ACCOUNT_MARGIN_MODE_RETAIL_HEDGING), there can be several open positions for each symbol at the same time. In this case, </span><span class="f_Text" style="font-style: italic;">PositionSelect</span><span class="f_Text"> will select the position with the smallest ticket.</span></p>
+<p class="p_Text"><span class="f_Text">The returned result signals a successful (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or unsuccessful (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">) function execution.</span></p>
+<p class="p_Text"><span class="f_Text">The fact that the properties of the selected position are cached means that the position itself may no longer exist, or it may be changed if the program reads its properties after some time. It is recommended to call the </span><span class="f_Text" style="font-style: italic;">PositionSelect</span><span class="f_Text"> function just before accessing the data.</span></p>
+<p class="p_H4"><span class="f_H4">bool PositionSelectByTicket(ulong ticket)</span></p>
+<p class="p_Text"><span class="f_Text">The function selects an open position for further work on the specified ticket.</span></p>
+<p class="p_Text"><span class="f_Text">We will look at examples of using functions later when studying <a href="6_4_27_experts_position_properties.htm" class="topiclink">properties</a> and related </span><span class="f_Text" style="font-style: italic;"><a href="6_4_28_experts_positionget_funcs.htm" class="topiclink">PositionGet</a></span><span class="f_Text"><a href="6_4_28_experts_positionget_funcs.htm" class="topiclink"> functions</a>.</span></p>
+<p class="p_Text"><span class="f_Text">When constructing algorithms using the </span><span class="f_Text" style="font-style: italic;">PositionsTotal</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">OrdersTotal</span><span class="f_Text">, and similar functions, the asynchronous principles of the terminal operation should be taken into account. We have already touched on this topic when writing the </span><span class="f_Text" style="font-style: italic;">MqlTradeSync.mqh</span><span class="f_Text"> classes and implementing waiting for the execution results from trade requests. However, this wait is not always possible on the client side. In particular, if we place a pending order, then its transformation into a market order and subsequent execution will take place on the server. At this moment, the order may cease to be listed among the active ones (</span><span class="f_Text" style="font-style: italic;">OrdersTotal</span><span class="f_Text"> will return 0), but the position is not displayed yet (</span><span class="f_Text" style="font-style: italic;">PositionsTotal</span><span class="f_Text"> also equals 0). Therefore, an MQL program that has a condition for placing an order in the absence of a position may erroneously initiate a new order, as a result of which the position will eventually double.</span></p>
+<p class="p_Text"><span class="f_Text">To solve this problem, an MQL program must analyze the trading environment more deeply than just checking the number of orders and positions at once. For example, you can keep a snapshot of the last correct state of the trading environment and not allow any entities to disappear without some kind of confirmation. Only then can a new cast be formed. Thus, an order can be deleted only together with a position change (creation, closing) or moved to history with a cancel status. One of the possible solutions is proposed in the form of the </span><span class="f_Text" style="font-style: italic;">TradeGuard</span><span class="f_Text"> class in the </span><span class="f_Text" style="font-style: italic;">TradeGuard.mqh</span><span class="f_Text"> file. The book also includes the demo script </span><span class="f_Text" style="font-style: italic;">TradeGuardExample.mq5</span><span class="f_Text"> which you can study additionally.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.2.1 Initialization and measurement of strings</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_2_strings.htm"> 4.2 Working with strings and symbols </a>/ 4.2.1 Initialization and measurement of strings
+          </td>
+          <td width="70" align="right">
+          <a href="4_2_strings.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_2_2_strings_concatenation.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.2.1 Initialization and measurement of strings</span></p>
+<p class="p_Text"><span class="f_Text">As we know from the <a href="2_2_4_strings.htm" class="topiclink">String type</a> section, it is enough to describe in the code a variable of type </span><span class="f_Text" style="font-style: italic;">string</span><span class="f_Text">, and it will be ready to go.</span></p>
+<p class="p_Text"><span class="f_Text">For any variable of </span><span class="f_Text" style="font-style: italic;">string</span><span class="f_Text"> type 12 bytes are allocated for the service structure which is the internal representation of the string. The structure contains the memory address (pointer) where the text is stored, along with some other meta-information. The text itself also requires sufficient memory, but this buffer is allocated with some less obvious optimizations.</span></p>
+<p class="p_Text"><span class="f_Text">In particular, we can describe a string along with explicit initialization, including an empty literal:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;pointer&nbsp;to&nbsp;the&nbsp;literal&nbsp;containing&nbsp;'\0'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In that case, the pointer will be set directly to the literal, and no memory is allocated for the buffer (even if the literal is long). Obviously, static memory has already been allocated for the literal, and it can be used directly. The memory for the buffer will be allocated only if any instruction in the program changes the contents of the line. For example (note the addition operation '+' is allowed for strings):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;+=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;pointer&nbsp;to&nbsp;memory&nbsp;containing&nbsp;&quot;1&quot;'\0'[plus&nbsp;reserve]</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">From this point on, the string actually contains the text &quot;1&quot; and, strictly speaking, requires memory for two characters: the digit &quot;1&quot; and the implicit terminal zero '\0' (terminator of the string). However, the system will allocate a larger buffer, with some space reserved.</span></p>
+<p class="p_Text"><span class="f_Text">When we declare a variable without an initial value, it is still implicitly initialized by the compiler, though in this case with a special NULL value:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">z</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;memory&nbsp;for&nbsp;the&nbsp;pointer&nbsp;is&nbsp;not&nbsp;allocated,&nbsp;pointer&nbsp;=&nbsp;NULL</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Such a string requires only 12 bytes per structure, and the pointer doesn't point anywhere: that's what NULL stands for.</span></p>
+<p class="p_Quote"><span class="f_Quote">In future versions of the MQL5 compiler, this behavior may change, and a small area of memory will always be initially allocated for an empty string, providing some reserved space.</span></p>
+<p class="p_Text"><span class="f_Text">In addition to these internal features, variables of the </span><span class="f_Text" style="font-style: italic;">string</span><span class="f_Text"> type are no different from variables of other types. However, due to the fact that strings can be variable in length and, more importantly, they can change their length during the algorithm, this can adversely affect the efficiency of memory allocation and performance.</span></p>
+<p class="p_Text"><span class="f_Text">For example, if at some point the program needs to add a new word to a string, it may turn out that there is not enough memory allocated for the string. Then the MQL program execution environment, imperceptible to the user, will find a new free memory block of increased size and copy the old value there along with the added word. After that, the old address is replaced by a new one in the line's service structure.</span></p>
+<p class="p_Text"><span class="f_Text">If there are many such operations, slowdown due to copying can become noticeable, and in addition, program memory is subject to fragmentation: old small memory areas released after copying form voids that are not suitable in size for large strings, and therefore lead to waste of memory. Of course, the terminal is able to control such situations and reorganize the memory, but this also comes at a cost.</span></p>
+<p class="p_Text"><span class="f_Text">The most effective way to solve this problem is to explicitly indicate in advance the size of the buffer for the string and initialize it using the built-in MQL5 API functions, which we will consider later in this section.</span></p>
+<p class="p_Text"><span class="f_Text">The basis for this optimization is just that the size of the allocated memory may exceed the current (and, potentially, the future) length of the string, which is determined by the first null character in the text. Thus, we can allocate a buffer for 100 characters, but from the start put '\0' at the very beginning, which will give a zero-length string (&quot;&quot;).</span></p>
+<p class="p_Text"><span class="f_Text">Naturally, it is assumed that in such cases the programmer can roughly calculate in advance the expected length of the string or its growth rate.</span></p>
+<p class="p_Text"><span class="f_Text">Since strings in MQL5 are based on double-byte characters (which ensures Unicode support), the size of the string and buffer in characters should be multiplied by 2 to get the amount of occupied and allocated memory in bytes.</span></p>
+<p class="p_Text"><span class="f_Text">A general example of using all functions (</span><span class="f_Text" style="font-style: italic;">StringInit.mq5</span><span class="f_Text">) will be given at the end of the section.</span></p>
+<p class="p_H4"><span class="f_H4">bool StringInit(string &amp;variable, int capacity = 0, ushort character = 0)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">StringInit</span><span class="f_Text"> function is used to initialize (allocate and fill memory) and deinitialize (free memory) strings. The variable to be processed is passed in the first parameter.</span></p>
+<p class="p_Text"><span class="f_Text">If the </span><span class="f_Text" style="font-style: italic;">capacity</span><span class="f_Text"> parameter is greater than 0, then a buffer (memory area) of the specified size is allocated for the string and is filled with the symbol </span><span class="f_Text" style="font-style: italic;">character</span><span class="f_Text">. If the </span><span class="f_Text" style="font-style: italic;">character</span><span class="f_Text"> is 0, then the length of the string will be zero, because the first character is terminal.</span></p>
+<p class="p_Text"><span class="f_Text">If the </span><span class="f_Text" style="font-style: italic;">capacity</span><span class="f_Text"> parameter is 0, then previously allocated memory is freed. The state of the variable becomes identical to how it was if just declared without initialization (the pointer to the buffer is NULL). More simply, the same can be done by setting the string variable to NULL.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns a success indicator (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or errors (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">).</span></p>
+<p class="p_H4"><span class="f_H4">bool StringReserve(string &amp;variable, uint capacity)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">StringReserve</span><span class="f_Text"> function increases or decreases the buffer size of the string </span><span class="f_Text" style="font-style: italic;">variable</span><span class="f_Text">, at least up to the number of characters specified in the </span><span class="f_Text" style="font-style: italic;">capacity</span><span class="f_Text"> parameter. If the </span><span class="f_Text" style="font-style: italic;">capacity</span><span class="f_Text"> value is less than the current string length, the function does nothing. In fact, the buffer size may be larger than requested: the environment does this for reasons of efficiency in future manipulations with the string. Thus, if the function is called with a reduced value for the buffer, it can ignore the request and still return </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> (&quot;no errors&quot;).</span></p>
+<p class="p_Text"><span class="f_Text">The current buffer size can be obtained using the function </span><span class="f_Text" style="font-style: italic;">StringBufferLen</span><span class="f_Text"> (see below).</span></p>
+<p class="p_Text"><span class="f_Text">On success, the function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">, otherwise — </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Unlike </span><span class="f_Text" style="font-style: italic;">StringInit</span><span class="f_Text"> the </span><span class="f_Text" style="font-style: italic;">StringReserve</span><span class="f_Text"> function does not change the contents of the string and does not fill it with characters.</span></p>
+<p class="p_H4"><span class="f_H4">bool StringFill(string &amp;variable, ushort character)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">StringFill</span><span class="f_Text"> function fills the specified </span><span class="f_Text" style="font-style: italic;">variable</span><span class="f_Text"> string with the </span><span class="f_Text" style="font-style: italic;">character </span><span class="f_Text">character for its entire current length (up to the first zero). If a buffer is allocated for a string, the modification is done in-place, without intermediate newline and copy operations.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns a success indicator (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or errors (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">).</span></p>
+<p class="p_H4"><span class="f_H4">int StringBufferLen(const string &amp;variable)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the size of the buffer allocated for the </span><span class="f_Text" style="font-style: italic;">variable </span><span class="f_Text">string.</span></p>
+<p class="p_Text"><span class="f_Text">Note that for a literal-initialized string, no buffer is initially allocated because the pointer points to the literal. Therefore, the function will return 0 even though the length of the </span><span class="f_Text" style="font-style: italic;">StringLen</span><span class="f_Text"> string (see below) may be more.</span></p>
+<p class="p_Text"><span class="f_Text">The value -1 means that the line belongs to the client terminal and cannot be changed.</span></p>
+<p class="p_H4"><span class="f_H4">bool StringSetLength(string &amp;variable, uint length)</span></p>
+<p class="p_Text"><span class="f_Text">The function sets the specified length in characters </span><span class="f_Text" style="font-style: italic;">length </span><span class="f_Text">for the </span><span class="f_Text" style="font-style: italic;">variable</span><span class="f_Text"> string. The value of the </span><span class="f_Text" style="font-style: italic;">length</span><span class="f_Text"> must not be greater than the current length of the string. In other words, the function only allows you to shorten the string, but not lengthen it. The length of the string is increased automatically when the </span><span class="f_Text" style="font-style: italic;"><a href="4_2_2_strings_concatenation.htm" class="topiclink">StringAdd</a></span><span class="f_Text"> function is called, or the addition operation '+' is performed.</span></p>
+<p class="p_Text"><span class="f_Text">The equivalent of the function </span><span class="f_Text" style="font-style: italic;">StringSetLength</span><span class="f_Text"> is the call </span><span class="f_Text" style="font-style: italic;">StringSetCharacter(variable, length, 0)</span><span class="f_Text"> (see section <a href="4_2_6_strings_codepages.htm" class="topiclink">Working with symbols and code pages</a>).</span></p>
+<p class="p_Text"><span class="f_Text">If a buffer has already been allocated for the string before the function call, the function does not change it. If the string did not have a buffer (it was pointing to a literal), decreasing the length results in allocating a new buffer and copying the shortened string into it.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> in case of success or failure, respectively.</span></p>
+<p class="p_H4"><span class="f_H4">int StringLen(const string text)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of characters in the string </span><span class="f_Text" style="font-style: italic;">text</span><span class="f_Text">. Terminal zero is not taken into account.</span></p>
+<p class="p_Text"><span class="f_Text">Please note that the parameter is passed by value, so you can calculate the length of strings not only in variables but also for any other intermediate values: calculation results or literals.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">StringInit.mq5</span><span class="f_Text"> script has been created to demonstrate the above functions. It uses a special version of the PRT macro, PRTE, which parses the result of an expression into </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">, and in the case of the latter additionally outputs an error code:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">#A</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;=&quot;</span><span class="f_CodeExample">,&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">)&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;true&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;false:&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">GetLastError</span><span class="f_CodeExample">())</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For debug output to the log of a string and its current metrics (line length and buffer size), the </span><span class="f_Text" style="font-style: italic;">StrOut</span><span class="f_Text"> function is implemented:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StrOut</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;'&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;'&nbsp;[&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;]&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringBufferLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It uses the built-in </span><span class="f_Text" style="font-style: italic;">StringLen</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">StringBufferLen</span><span class="f_Text"> functions.</span></p>
+<p class="p_Text"><span class="f_Text">The test script performs a series of actions on a string in </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;message&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StrOut</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringReserve</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok,&nbsp;but&nbsp;we&nbsp;get&nbsp;a&nbsp;buffer&nbsp;larger&nbsp;than&nbsp;requested:&nbsp;260</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StrOut</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringReserve</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">500</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok,&nbsp;buffer&nbsp;is&nbsp;increased&nbsp;to&nbsp;500</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StrOut</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringSetLength</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok:&nbsp;string&nbsp;is&nbsp;shortened</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StrOut</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;+=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;age&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringReserve</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">100</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok:&nbsp;buffer&nbsp;remains&nbsp;at&nbsp;500</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StrOut</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringSetLength</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;no:&nbsp;string&nbsp;lengthening&nbsp;is&nbsp;not&nbsp;supported</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StrOut</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;via&nbsp;StringSetLength</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringInit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">,&nbsp;'</span><span class="f_CodeExample" style="color: #008100;">$</span><span class="f_CodeExample">'));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok:&nbsp;line&nbsp;increased&nbsp;by&nbsp;padding</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StrOut</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer&nbsp;remains&nbsp;the&nbsp;same</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFill</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok:&nbsp;string&nbsp;collapsed&nbsp;to&nbsp;empty&nbsp;because</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StrOut</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;was&nbsp;filled&nbsp;with&nbsp;0s,&nbsp;the&nbsp;buffer&nbsp;is&nbsp;the&nbsp;same</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringInit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok:&nbsp;line&nbsp;is&nbsp;zeroed,&nbsp;including&nbsp;buffer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;we&nbsp;could&nbsp;just&nbsp;write&nbsp;s&nbsp;=&nbsp;NULL;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">StrOut</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The script will log the following messages:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">'message'&nbsp;[7]&nbsp;0</span>
+<br><span class="f_CodeExample">StringReserve(s,100)=true</span>
+<br><span class="f_CodeExample">'message'&nbsp;[7]&nbsp;260</span>
+<br><span class="f_CodeExample">StringReserve(s,500)=true</span>
+<br><span class="f_CodeExample">'message'&nbsp;[7]&nbsp;500</span>
+<br><span class="f_CodeExample">StringSetLength(s,4)=true</span>
+<br><span class="f_CodeExample">'mess'&nbsp;[4]&nbsp;500</span>
+<br><span class="f_CodeExample">StringReserve(s,10)=true</span>
+<br><span class="f_CodeExample">'message'&nbsp;[7]&nbsp;500</span>
+<br><span class="f_CodeExample">StringSetLength(s,8)=false:5035</span>
+<br><span class="f_CodeExample">'message'&nbsp;[7]&nbsp;500</span>
+<br><span class="f_CodeExample">StringInit(s,8,'$')=true</span>
+<br><span class="f_CodeExample">'$$$$$$$$'&nbsp;[8]&nbsp;500</span>
+<br><span class="f_CodeExample">StringFill(s,0)=true</span>
+<br><span class="f_CodeExample">''&nbsp;[0]&nbsp;500</span>
+<br><span class="f_CodeExample">StringInit(s,0)=true</span>
+<br><span class="f_CodeExample">''&nbsp;[0]&nbsp;0</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Please note that the call </span><span class="f_Text" style="font-style: italic;">StringSetLength</span><span class="f_Text"> with increased string length ended with error 5035 (ERR_STRING_SMALL_LEN).</span></p>
+
+</div>
+
+</body>
+</html>

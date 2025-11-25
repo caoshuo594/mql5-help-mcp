@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1.2.3 File operations</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="6_improvement_realization.htm"> 6. Architectural solutions for improving model convergence </a> / <a class="h_m" href="6_1_batch_norm.htm"> 6.1 Batch normalization </a> / <a class="h_m" href="6_1_2_batch_norm_mql.htm"> 6.1.2 Building a batch normalization class in MQL5 </a>/ 6.1.2.3 File operations
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_2_2_batch_norm_backprop.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_3_batch_norm_opencl.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.1.2.3 File operations</span></p>
+<p class="p_Text"><span class="f_Text">We are confidently approaching the completion of work on the methods of the </span><span class="f_Text" style="font-style: italic;">CNeuronBatchNorm </span><span class="f_Text">batch normalization class. Previously, we have already built methods for initializing the class, as well as built an algorithm for the operation of feed-forward and backpropagation passes using standard MQL5 capabilities. Let's move on to working on file handling methods. We have discussed the importance of having and correctly functioning these methods several times as the performance of these methods determines how quickly we can deploy a trained model into operational use.</span></p>
+<p class="p_Text"><span class="f_Text">We have already done similar work more than once for other classes in our library. Now we will follow the same established algorithm. First, we evaluate the need to write each element of the class to the data file. In the structure of our class, we have created only one new data buffer and one variable. Both of these elements are important for organizing correct object operations in our class. Therefore, we save both elements to a data file.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CNeuronBatchNorm</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CNeuronBase</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CBufferType</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_cBatchOptions</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_iBatchSize</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;batch&nbsp;size</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CNeuronBatchNorm</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~</span><span class="f_CodeExample" style="color: #333333;">CNeuronBatchNorm</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Init</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CLayerDescription</span><span class="f_CodeExample">*&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">description</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SetOpenCL</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CMyOpenCL</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">opencl</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FeedForward</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CNeuronBase</span><span class="f_CodeExample">*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CalcHiddenGradient</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CNeuronBase</span><span class="f_CodeExample">*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CalcDeltaWeights</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CNeuronBase</span><span class="f_CodeExample">*&nbsp;</span><span class="f_CodeExample" style="color: #333333;">prevLayer</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">read</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">override</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;methods&nbsp;for&nbsp;working&nbsp;with&nbsp;files</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Save</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">file_handle</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Load</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">file_handle</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;object&nbsp;identification&nbsp;method</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Type</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">)&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;{</span><span class="f_CodeExample" style="color: #0000ff;">return&nbsp;</span><span class="f_Definition">defNeuronBatchNorm</span><span class="f_CodeExample">;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Having determined the scope of our work, we now proceed directly to creating the file handling methods for our class. As always, the first step is to create the </span><span class="f_Text" style="font-style: italic;">CNeuronBatchNorm::Save</span><span class="f_Text"> method for writing data to the file. Like all the methods we have discussed so far, this one is also created as a virtual method in the base neural layer class and is overridden in each new neural layer class to fully save all the necessary information for subsequent restoration of the correct operation of the saved objects. In parameters, the method receives a file handle of to write the data.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CNeuronBatchNorm</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">Save</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">file_handle</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;call&nbsp;the&nbsp;method&nbsp;of&nbsp;the&nbsp;parent&nbsp;class</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">CNeuronBase</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">Save</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file_handle</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The obtained file handle for writing data is not checked, as this control is already implemented in the same-named method of the parent class, which is called in the body of this method. Thus, we check the result of the operations of the method of the parent class.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">CNeuronBase</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">Save</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file_handle</span><span class="f_CodeExample">))</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It is very convenient to use the method of the parent class. This usage serves a dual purpose. The first purpose is a control function because the parent class already implements a set of controls that do not need to be duplicated in the new method. We only need to call the parent class method and check its execution result. The second purpose is functional. The method of the parent class already stores all inherited objects and variables. Here, it's the same situation: we call the parent class method once, thereby saving all inherited objects and variables. Convenient, isn't it? Moreover, we do not need to call the method for each individual functionality. With one call, we accomplish two tasks: control and saving of inherited objects. Checking the result of the function execution confirms the correct execution of both functions of the method.</span></p>
+<p class="p_Text"><span class="f_Text">After successfully executing the parent class method, we understand that the handle to the file provided as a parameter is valid. Now we can proceed with further file operations without the risk of getting a critical error. First, we save the normalization batch size, which is stored in the </span><span class="f_Text" style="font-style: italic;">m_iBatchSize</span><span class="f_Text"> variable. Also, we make sure to check the result of the operation.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;save&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;normalization&nbsp;batch</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_Functions">FileWriteInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file_handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_iBatchSize</span><span class="f_CodeExample">)&nbsp;&lt;=&nbsp;</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">At the end of the method, we save the buffer of </span><span class="f_Text" style="font-style: italic;">m_cBatchOptions</span><span class="f_Text"> normalization parameters. To do this, we just call the corresponding method of the specified object and check its operation result.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;save&nbsp;normalization&nbsp;settings</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">m_cBatchOptions</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Save</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file_handle</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As you can see, by using parent class methods and internal objects, we have described the method for saving all the necessary information easily and quite concisely. The main data saving controls and operations are hidden in these methods.</span></p>
+<p class="p_Text"><span class="f_Text">Similarly, let's create a method for loading data from the </span><span class="f_Text" style="font-style: italic;">CNeuronBatchNorm::Load</span><span class="f_Text"> file. It should be noted that this method is responsible not only for reading data from a file but also for fully restoring the functionality of the object to the state at the time of data saving. Therefore, this method should include operations for creating instances of objects required for the correct functioning of our batch normalization class. In addition, we must initialize all unsaved objects and variables with initial values.</span></p>
+<p class="p_Text"><span class="f_Text">In the parameters, the </span><span class="f_Text" style="font-style: italic;">CNeuronBatchNorm::Load</span><span class="f_Text"> method, like the previous data saving method, receives the handle of the file with the saved data. We have to organize the reading of data from the file in strict accordance with the sequence of their writing to the file. This time, in the body of the method, we immediately call the method of the parent class. The calculation here is the same: by calling the parent class method once, we immediately execute the entire functionality with inherited objects and variables. At the same time, we only need to check the result of the parent class method once to ensure the correctness of all its operations.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CNeuronBatchNorm</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">Load</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">file_handle</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;call&nbsp;the&nbsp;method&nbsp;of&nbsp;the&nbsp;parent&nbsp;class</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">CNeuronBase</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">Load</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file_handle</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After the successful execution of the parent class method, we move on to loading the data of the objects of the batch normalization class. According to the sequence in which the data is written to the file, we first read the size of the normalization batch.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m_iBatchSize</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_Functions">FileReadInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file_handle</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, it remains to load the buffer data of the </span><span class="f_Text" style="font-style: italic;">m_cBatchOptions</span><span class="f_Text"> normalization parameters. </span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;initialize&nbsp;a&nbsp;dynamic&nbsp;array&nbsp;of&nbsp;optimization&nbsp;parameters</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">m_cBatchOptions</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Load</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file_handle</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After successfully loading all the data, we will conclude the method execution with a positive result.</span></p>
+<p class="p_Text"><span class="f_Text">We have finished creating a batch data normalization layer using standard MQL5 tools. To complete the work on the </span><span class="f_Text" style="font-style: italic;">CNeuronBatchNorm</span><span class="f_Text"> class, we need to supplement its functionality with the ability to perform multi-threaded mathematical operations using OpenCL. We'll do that in the next section. But now we have the opportunity to conduct the first tests.</span></p>
+
+</div>
+
+</body>
+</html>

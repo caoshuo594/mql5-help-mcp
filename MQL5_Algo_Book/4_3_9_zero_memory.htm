@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.3.9 Zeroing objects and arrays</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_3_arrays.htm"> 4.3 Working with arrays </a>/ 4.3.9 Zeroing objects and arrays
+          </td>
+          <td width="70" align="right">
+          <a href="4_3_8_arrays_as_series.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_4_maths.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.3.9 Zeroing objects and arrays</span></p>
+<p class="p_Text"><span class="f_Text">Usually, initialization or filling of variables and arrays does not cause problems. So, for simple variables, we can simply use the operator '=' in the definition statement along with <a href="2_3_3_initialization.htm" class="topiclink">initialization</a>, or assign the desired value at any later time.</span></p>
+<p class="p_Text"><span class="f_Text">Aggregate view initialization is available for structures (see section <a href="3_1_1_structs_definition.htm" class="topiclink">Defining Structures</a>):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Struct&nbsp;struct&nbsp;=&nbsp;{value1,&nbsp;value2,&nbsp;...};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">But it is possible only if there are no dynamic arrays and strings in the structure. Moreover, the aggregate initialization syntax cannot be used to clean up a structure again. Instead, you must either assign values to each field individually or reserve an instance of the empty structure in the program and copy it to clearable instances.</span></p>
+<p class="p_Text"><span class="f_Text">If at the same time, we are talking about an array of structures, then the source code will quickly grow due to auxiliary but necessary instructions.</span></p>
+<p class="p_Text"><span class="f_Text">For arrays, there are the </span><span class="f_Text" style="font-style: italic;"><a href="4_3_4_arrays_init_fill.htm" class="topiclink">ArrayInitialize</a></span><span class="f_Text"><a href="4_3_4_arrays_init_fill.htm" class="topiclink"> and </a></span><span class="f_Text" style="font-style: italic;"><a href="4_3_4_arrays_init_fill.htm" class="topiclink">ArrayFill</a></span><span class="f_Text"> functions, but they only support numeric types: an array of strings or structures cannot be filled with them.</span></p>
+<p class="p_Text"><span class="f_Text">In such cases, the </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text"> function can be useful. It is not a panacea, since it has significant limitations in the scope, but it is good to know it.</span></p>
+<p class="p_H4"><span class="f_H4">void ZeroMemory(void &amp;entity)</span></p>
+<p class="p_Text"><span class="f_Text">The function can be applied to a wide range of different entities: variables of simple or object types, as well as their arrays (fixed, dynamic, or multidimensional).</span></p>
+<p class="p_Text"><span class="f_Text">Variables get the 0 value (for numbers) or its equivalent (NULL for strings and pointers).</span></p>
+<p class="p_Text"><span class="f_Text">In the case of an array, all its elements are set to zero. Do not forget that the elements can be objects, and in turn, contain objects. In other words, the </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text"> function performs a deep memory cleanup in a single call.</span></p>
+<p class="p_Text"><span class="f_Text">However, there are restrictions on valid objects. You can only populate with zeros the objects of structures and classes, which:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">contain only public fields (i.e., they do not contain data with access type </span><span class="f_li" style="font-style: italic;">private</span><span class="f_li"> or </span><span class="f_li" style="font-style: italic;">protected</span><span class="f_li">)</span></li>
+<li class="p_li"><span class="f_li">do not contain fields with the </span><span class="f_li" style="font-style: italic;">const</span><span class="f_li"> modifier</span></li>
+<li class="p_li"><span class="f_li">do not contain pointers</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The first two restrictions are built into the compiler: an attempt to nullify objects with fields that do not meet the specified requirements will cause errors (see below).</span></p>
+<p class="p_Text"><span class="f_Text">The third limitation is a recommendation: external zeroing of a pointer will make it difficult to check the integrity of the data, which is likely to lead to the loss of the associated object and to a memory leak.</span></p>
+<p class="p_Text"><span class="f_Text">Strictly speaking, the requirement of publicity of fields in nullable objects violates the <a href="3_2_2_classes_encapsulation.htm" class="topiclink">encapsulation</a> principle, which is inherent in class objects, and therefore </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text"> is mainly used with objects of simple structures and their arrays.</span></p>
+<p class="p_Text"><span class="f_Text">Examples of working with </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text"> are given in the script </span><span class="f_Text" style="font-style: italic;">ZeroMemory.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The problems with the aggregate initialization list are demonstrated using the structure </span><span class="f_Text" style="font-style: italic;">Simple</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LIMIT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Simple</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlDateTime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">[];&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;dynamic&nbsp;array&nbsp;disables&nbsp;initialization&nbsp;list,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;string&nbsp;s;&nbsp;//&nbsp;and&nbsp;a&nbsp;string&nbsp;field&nbsp;would&nbsp;also&nbsp;forbid,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ClassType&nbsp;*ptr;&nbsp;//&nbsp;and&nbsp;a&nbsp;pointer&nbsp;too</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Simple</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;allocating&nbsp;memory,&nbsp;it&nbsp;will&nbsp;contain&nbsp;arbitrary&nbsp;data</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LIMIT</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function or in the global context, we cannot define and immediately nullify an object of such a structure:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Simple</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">simple</span><span class="f_CodeExample">&nbsp;=&nbsp;{};&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error:&nbsp;cannot&nbsp;be&nbsp;initialized&nbsp;with&nbsp;initializer&nbsp;list</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The compiler throws the error &quot;cannot use initialization list&quot;. It is specific to fields like dynamic arrays, string variables, and pointers. In particular, if the </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> array were of a fixed size, no error would occur.</span></p>
+<p class="p_Text"><span class="f_Text">Therefore, instead of an initialization list, we use </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Simple</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">simple</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ZeroMemory</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">simple</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The initial filling with zeros could also be done in the structure constructor, but it is more convenient to do subsequent cleanups outside (or provide a method for this with the same function </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">The following class is defined in </span><span class="f_Text" style="font-style: italic;">Base</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;public&nbsp;is&nbsp;required&nbsp;for&nbsp;ZeroMemory</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;const&nbsp;for&nbsp;any&nbsp;field&nbsp;will&nbsp;cause&nbsp;a&nbsp;compilation&nbsp;error&nbsp;when&nbsp;calling&nbsp;ZeroMemory:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;not&nbsp;allowed&nbsp;for&nbsp;objects&nbsp;with&nbsp;protected&nbsp;members&nbsp;or&nbsp;inheritance&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*&nbsp;const&nbsp;*/</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Simple</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;using&nbsp;a&nbsp;nested&nbsp;structure:&nbsp;it&nbsp;will&nbsp;also&nbsp;be&nbsp;nulled</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">rand</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;&amp;</span><span class="f_CodeExample" style="color: #0000ff;">this</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">x</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">t</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Since the class is further used in arrays of objects nullable with </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text">, we are forced to write an access section </span><span class="f_Text" style="font-style: italic;">public</span><span class="f_Text"> for its fields (which, in principle, is not typical for classes and is done to illustrate the requirements imposed by </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text">). Also, note that fields cannot have the modifier </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text">. Otherwise, we'll get a compilation error with text that unfortunately doesn't really fit the problem: &quot;forbidden for objects with protected members or inheritance&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">The class constructor fills the field </span><span class="f_Text" style="font-style: italic;">x</span><span class="f_Text"> with a random number so that later you can clearly see its cleaning by the function </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text">. The </span><span class="f_Text" style="font-style: italic;">print</span><span class="f_Text"> method displays the contents of all fields for analysis, including the unique object number (descriptor) </span><span class="f_Text" style="font-style: italic;">&amp;this</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 does not prevent </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text"> from being applied to a pointer variable:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">base</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ZeroMemory</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">base</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;will&nbsp;set&nbsp;the&nbsp;pointer&nbsp;to&nbsp;NULL&nbsp;but&nbsp;leave&nbsp;the&nbsp;object</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">However, this should not be done, because the function resets only the </span><span class="f_Text" style="font-style: italic;">base</span><span class="f_Text"> variable itself, and, if it referred to an object, this object will remain &quot;hanging&quot; in memory, inaccessible from the program due to the loss of the pointer.</span></p>
+<p class="p_Text"><span class="f_Text">You can nullify a pointer only after the pointer instance has been freed using the </span><span class="f_Text" style="font-style: italic;">delete</span><span class="f_Text"> operator. Furthermore, it is easier to reset a separate pointer from the above example, like any other simple variable (non-composite), using an assignment operator. It makes sense to use </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text"> for composite objects and arrays.</span></p>
+<p class="p_Text"><span class="f_Text">The function allows you to work with objects of the class hierarchy. For example, we can describe the derivative of the </span><span class="f_Text" style="font-style: italic;">Dummy </span><span class="f_Text">class derived from </span><span class="f_Text" style="font-style: italic;">Base</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">[];&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;could&nbsp;also&nbsp;be&nbsp;multidimensional:&nbsp;ZeroMemory&nbsp;will&nbsp;work</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">pointer</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;public&nbsp;pointer&nbsp;(dangerous)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LIMIT</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;due&nbsp;to&nbsp;subsequent&nbsp;application&nbsp;of&nbsp;ZeroMemory&nbsp;to&nbsp;the&nbsp;object</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;we'll&nbsp;lose&nbsp;the&nbsp;'pointer'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;and&nbsp;get&nbsp;warnings&nbsp;when&nbsp;the&nbsp;script&nbsp;ends</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;about&nbsp;undeleted&nbsp;objects&nbsp;of&nbsp;type&nbsp;Base</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pointer</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;~</span><span class="f_CodeExample" style="color: #333333;">Dummy</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;due&nbsp;to&nbsp;the&nbsp;use&nbsp;of&nbsp;ZeroMemory,&nbsp;this&nbsp;pointer&nbsp;will&nbsp;be&nbsp;lost</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;and&nbsp;will&nbsp;not&nbsp;be&nbsp;freed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CheckPointer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">pointer</span><span class="f_CodeExample">)&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">POINTER_INVALID</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">delete</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pointer</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">virtual</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">()&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">override</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Base</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">pointer</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CheckPointer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">pointer</span><span class="f_CodeExample">)&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">POINTER_INVALID</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">pointer</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It includes fields with a dynamic array of type </span><span class="f_Text" style="font-style: italic;">double</span><span class="f_Text">, string and pointer of type </span><span class="f_Text" style="font-style: italic;">Base</span><span class="f_Text"> (this is the same type from which the class is derived, but it is used here only to demonstrate the pointer problems, so as not to describe another dummy class). When the </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text"> function nullifies the </span><span class="f_Text" style="font-style: italic;">Dummy </span><span class="f_Text">object, an object at </span><span class="f_Text" style="font-style: italic;">pointer</span><span class="f_Text"> is lost and cannot be freed in the destructor. As a result, this leads to warnings about memory leaks in the remaining objects after the script terminates.</span></p>
+<p class="p_Text"><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text"> is used in </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> to clear the </span><span class="f_Text" style="font-style: italic;">Dummy</span><span class="f_Text"> objects array:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Initial&nbsp;state&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Dummy</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LIMIT</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LIMIT</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ZeroMemory</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;ZeroMemory&nbsp;done&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LIMIT</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The log will output something like the following (the initial state will be different because it prints the contents of the &quot;dirty&quot;, newly allocated memory; here is a small code part):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Initial&nbsp;state</span>
+<br><span class="f_CodeExample">1048576&nbsp;31539</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[year]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[mon]&nbsp;&nbsp;&nbsp;&nbsp;[day]&nbsp;[hour]&nbsp;[min]&nbsp;[sec]&nbsp;[day_of_week]&nbsp;[day_of_year]</span>
+<br><span class="f_CodeExample">[0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;65665&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;65624&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8</span>
+<br><span class="f_CodeExample">[2]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[3]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[4]&nbsp;5242880&nbsp;531430129&nbsp;51557552&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;65665&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">0.0&nbsp;0.0&nbsp;0.0&nbsp;0.0&nbsp;0.0</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">ZeroMemory&nbsp;done</span>
+<br><span class="f_CodeExample">1048576&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[year]&nbsp;[mon]&nbsp;[day]&nbsp;[hour]&nbsp;[min]&nbsp;[sec]&nbsp;[day_of_week]&nbsp;[day_of_year]</span>
+<br><span class="f_CodeExample">[0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[2]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[3]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[4]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">0.0&nbsp;0.0&nbsp;0.0&nbsp;0.0&nbsp;0.0</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">5&nbsp;undeleted&nbsp;objects&nbsp;left</span>
+<br><span class="f_CodeExample">5&nbsp;objects&nbsp;of&nbsp;type&nbsp;Base&nbsp;left</span>
+<br><span class="f_CodeExample">3200&nbsp;bytes&nbsp;of&nbsp;leaked&nbsp;memory</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To compare the state of objects before and after cleaning, use descriptors.</span></p>
+<p class="p_Text"><span class="f_Text">So, a single call to </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text"> is able to reset the state of an arbitrary branched data structure (arrays, structures, arrays of structures with nested structure fields and arrays).</span></p>
+<p class="p_Text"><span class="f_Text">Finally, let's see how </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text"> can solve the problem of string array initialization. The </span><span class="f_Text" style="font-style: italic;">ArrayInitialize</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ArrayFill</span><span class="f_Text"> functions do not work with strings.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">LIMIT</span><span class="f_CodeExample">]&nbsp;=&nbsp;{};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;an&nbsp;algorithm&nbsp;populates&nbsp;and&nbsp;uses&nbsp;'text'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;then&nbsp;you&nbsp;need&nbsp;to&nbsp;re-use&nbsp;the&nbsp;array</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;//&nbsp;calling&nbsp;functions&nbsp;gives&nbsp;errors:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ArrayInitialize(text,&nbsp;NULL);</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`-&gt;&nbsp;no&nbsp;one&nbsp;of&nbsp;the&nbsp;overloads&nbsp;can&nbsp;be&nbsp;applied&nbsp;to&nbsp;the&nbsp;function&nbsp;call</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ArrayFill(text,&nbsp;0,&nbsp;10,&nbsp;NULL);</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`-&gt;&nbsp;&nbsp;'string'&nbsp;type&nbsp;cannot&nbsp;be&nbsp;used&nbsp;in&nbsp;ArrayFill&nbsp;function</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ZeroMemory</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the commented instructions, the compiler would generate errors, stating that the type </span><span class="f_Text" style="font-style: italic;">string</span><span class="f_Text"> is not supported in these functions.</span></p>
+<p class="p_Text"><span class="f_Text">The way out of this problem is the </span><span class="f_Text" style="font-style: italic;">ZeroMemory</span><span class="f_Text"> function.</span></p>
+
+</div>
+
+</body>
+</html>

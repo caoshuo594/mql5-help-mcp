@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.7.1 Local and server time</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_7_timing.htm"> 4.7 Functions for working with time </a>/ 4.7.1 Local and server time
+          </td>
+          <td width="70" align="right">
+          <a href="4_7_timing.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_7_2_timing_daylight_saving.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.7.1 Local and server time</span></p>
+<p class="p_Text"><span class="f_Text">There are always two types of time on the MetaTrader 5 platform: local (client) and server (broker).</span></p>
+<p class="p_Text"><span class="f_Text">Local time corresponds to the time of the computer on which the terminal is running, and increases continuously, at the same rate as in the real world.</span></p>
+<p class="p_Text"><span class="f_Text">Server time flows differently. The basis for it is set by the time on the broker’s computer, however, the client receives information about it only together with the next price changes, which are packed into special structures called ticks (see the section about </span><span class="f_Text" style="font-style: italic;"><a href="5_3_11_timeseries_ticks_mqltick.htm" class="topiclink">MqlTick</a></span><span class="f_Text">) and are passed to MQL programs using <a href="5_9_events.htm" class="topiclink">events</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, the updated server time becomes known in the terminal only as a result of a change in the price of at least one financial instrument on the market, that is, from among those selected in the Market Watch window. The last known time of the server is displayed in the title bar of this window. If there are no ticks, the server time in the terminal stands still. This is especially noticeable on weekends and holidays when all exchanges and Forex platforms are closed.</span></p>
+<p class="p_Text"><span class="f_Text">In particular, on a Sunday, the server time will most likely be displayed as Friday evening. The only exceptions are those instances of MetaTrader 5 that offer continuously traded instruments such as cryptocurrencies. However, even in this case, during periods of low volatility, server time can noticeably lag behind local time.</span></p>
+<p class="p_Text"><span class="f_Text">All functions in this section operate on time with an accuracy of up to a second (the accuracy of time representation in the </span><span class="f_Text" style="font-style: italic;"><a href="2_2_6_datetime.htm" class="topiclink">datetime</a></span><span class="f_Text"> type).</span></p>
+<p class="p_Text"><span class="f_Text">To get local and server time, the MQL5 API provides three functions: </span><span class="f_Text" style="font-style: italic;">TimeLocal</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">TimeCurrent</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">TimeTradeServer</span><span class="f_Text">. All three functions have two versions of the prototype: the first one returns the time as a value of the </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text"> type, and the second one additionally accepts by reference and fills the </span><span class="f_Text" style="font-style: italic;">MqlDateTime</span><span class="f_Text"> structure with time components.</span></p>
+<p class="p_H4"><span class="f_H4">datetime TimeLocal()</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">datetime TimeLocal(MqlDateTime &amp;dt)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the local computer time in the </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text"> format.</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that time includes Daylight Savings Time if enabled. I.e., </span><span class="f_Text" style="font-style: italic;">TimeLocal</span><span class="f_Text"> equals the standard time of the computer's time zone, minus the correction </span><span class="f_Text" style="font-style: italic;"><a href="4_7_2_timing_daylight_saving.htm" class="topiclink">TimeDaylightSavings</a></span><span class="f_Text">. Conditionally, the formula can be represented as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">TimeLocal</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">summer</span><span class="f_CodeExample">()&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeLocal</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">winter</span><span class="f_CodeExample">()&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeDaylightSavings</span><span class="f_CodeExample">()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here </span><span class="f_Text" style="font-style: italic;">TimeDaylightSavings</span><span class="f_Text"> usually equals -3600, that is, moving the clock forward 1 hour (1 hour is lost). So the summer value of </span><span class="f_Text" style="font-style: italic;">TimeLocal</span><span class="f_Text"> is greater than the winter value (with equal astronomical time of day) relative to UTC. For example, if in winter </span><span class="f_Text" style="font-style: italic;">TimeLocal</span><span class="f_Text"> equals UTC+2, then in summer it is UTC+3. UTC can be obtained using the </span><span class="f_Text" style="font-style: italic;"><a href="4_7_3_timing_gmt.htm" class="topiclink">TimeGMT</a></span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">datetime TimeCurrent()</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">datetime TimeCurrent(MqlDateTime &amp;dt)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the last known server time in the </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text"> format. This is the time of arrival of the last quote from the list of all financial instruments in the Market Watch. The only exception is the </span><span class="f_Text" style="font-style: italic;"><a href="6_4_1_experts_ontick.htm" class="topiclink">OnTick</a></span><span class="f_Text"> event handler in Expert Advisors, where this function will return the time of the processed tick (even if ticks with a more recent time have already appeared in the Market Watch).</span></p>
+<p class="p_Text"><span class="f_Text">Also, note that the time on the horizontal axis of all charts in MetaTrader 5 corresponds to the server time (in history). The last (current, rightmost) bar contains </span><span class="f_Text" style="font-style: italic;">TimeCurrent</span><span class="f_Text">. See details in the <a href="5_7_charts.htm" class="topiclink">Charts</a> section.</span></p>
+<p class="p_H4"><span class="f_H4">datetime TimeTradeServer()</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">datetime TimeTradeServer(MqlDateTime &amp;dt)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the estimated current time of the trade server. Unlike </span><span class="f_Text" style="font-style: italic;">TimeCurrent</span><span class="f_Text">, the results of which may not change if there are no new quotes, </span><span class="f_Text" style="font-style: italic;">TimeTradeServer</span><span class="f_Text"> allows you to get an estimate of continuously increasing server time. The calculation is based on the last known difference between the time zones of the client and the server, which is added to the current local time.</span></p>
+<p class="p_Text"><span class="f_Text">In the tester, the </span><span class="f_Text" style="font-style: italic;">TimeTradeServer</span><span class="f_Text"> value is always equal to </span><span class="f_Text" style="font-style: italic;">TimeCurrent</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">An example of how the functions work is given in the script </span><span class="f_Text" style="font-style: italic;">TimeCheck.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The main function has an infinite loop that logs all types of time every second until the user stops the script.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">IsStopped</span><span class="f_CodeExample">())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TimeLocal</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TimeCurrent</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TimeTradeServer</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">TimeTradeServerExact</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Sleep</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In addition to the standard functions, a custom function </span><span class="f_Text" style="font-style: italic;">TimeTradeServerExact</span><span class="f_Text"> is applied here.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TimeTradeServerExact</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">enum</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">LOCATION</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">LOCAL</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SERVER</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">]&nbsp;=&nbsp;{},&nbsp;</span><span class="f_CodeExample" style="color: #333333;">then</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">]&nbsp;=&nbsp;{};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shiftInHours</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shiftInSeconds</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;constantly&nbsp;detect&nbsp;the&nbsp;last&nbsp;2&nbsp;timestamps&nbsp;here&nbsp;and&nbsp;there</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">then</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">LOCAL</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">LOCAL</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">then</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">SERVER</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">SERVER</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">LOCAL</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeLocal</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">SERVER</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeCurrent</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;at&nbsp;the&nbsp;first&nbsp;call&nbsp;we&nbsp;don't&nbsp;have&nbsp;2&nbsp;labels&nbsp;yet,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;needed&nbsp;to&nbsp;calculate&nbsp;the&nbsp;stable&nbsp;difference</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">then</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">LOCAL</span><span class="f_CodeExample">]&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">then</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">SERVER</span><span class="f_CodeExample">]&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;when&nbsp;the&nbsp;time&nbsp;course&nbsp;is&nbsp;the&nbsp;same&nbsp;on&nbsp;the&nbsp;client&nbsp;and&nbsp;on&nbsp;the&nbsp;server,</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;//&nbsp;and&nbsp;the&nbsp;server&nbsp;is&nbsp;not&nbsp;&quot;frozen&quot;&nbsp;due&nbsp;to&nbsp;weekends/holidays,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;updating&nbsp;difference</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">LOCAL</span><span class="f_CodeExample">]&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">SERVER</span><span class="f_CodeExample">]&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">then</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">LOCAL</span><span class="f_CodeExample">]&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">then</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">SERVER</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&amp;&amp;&nbsp;now[SERVER]&nbsp;!=&nbsp;then[SERVER])</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shiftInSeconds</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">LOCAL</span><span class="f_CodeExample">]&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">now</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">SERVER</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shiftInHours</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">MathRound</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">shiftInSeconds</span><span class="f_CodeExample">&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3600</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;debug&nbsp;print</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Shift&nbsp;update:&nbsp;hours:&nbsp;%d;&nbsp;seconds:&nbsp;%lld&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shiftInHours</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shiftInSeconds</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;NB:&nbsp;The&nbsp;built-in&nbsp;function&nbsp;TimeTradeServer&nbsp;calculates&nbsp;like&nbsp;this:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TimeLocal()&nbsp;-&nbsp;shiftInHours&nbsp;*&nbsp;3600</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #0000ff;">TimeLocal</span><span class="f_CodeExample">()&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">shiftInSeconds</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It was required because the algorithm of the built-in </span><span class="f_Text" style="font-style: italic;">TimeTradeServer</span><span class="f_Text"> function may not suit everyone. The built-in function finds the difference between local and server time in hours (that is, the time zone difference), and then gets the server time as a local time correction for this difference. As a result, if the minutes and seconds go on the client and server not synchronously (which is very likely), the standard approximation of server time will show the minutes and seconds of the client, not the server.</span></p>
+<p class="p_Text"><span class="f_Text">Ideally, the local clocks of all computers should be synchronized with global time, but in practice, deviations occur. So, if there is even a small shift on one of the sides, </span><span class="f_Text" style="font-style: italic;">TimeTradeServer</span><span class="f_Text"> can no longer repeat the time on the server with the highest precision.</span></p>
+<p class="p_Text"><span class="f_Text">In our implementation of the same function in MQL5, we do not round the difference between the client and server time to hourly timezones. Instead, the exact difference in seconds is used in the calculation. That's why </span><span class="f_Text" style="font-style: italic;">TimeTradeServerExact</span><span class="f_Text"> returns the time at which minutes and seconds go just like on the server.</span></p>
+<p class="p_Text"><span class="f_Text">Here is an example of a log generated by the script.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">TimeLocal()=2021.09.02&nbsp;16:03:34&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeCurrent()=2021.09.02&nbsp;15:59:39&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeTradeServer()=2021.09.02&nbsp;16:03:34&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeTradeServerExact()=1970.01.01&nbsp;00:00:00&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It can be seen that the time zones of the client and server are the same, but there is a desynchronization of several minutes (for clarity). On the first call, </span><span class="f_Text" style="font-style: italic;">TimeTradeServerExact</span><span class="f_Text"> returned 0. Further, the data for calculating the difference will already arrive, and we will see all four time types, uniformly &quot;walking&quot; with an interval of a few seconds.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">TimeLocal()=2021.09.02&nbsp;16:03:35&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeCurrent()=2021.09.02&nbsp;15:59:40&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeTradeServer()=2021.09.02&nbsp;16:03:35&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">Shift&nbsp;update:&nbsp;hours:&nbsp;0;&nbsp;seconds:&nbsp;235</span>
+<br><span class="f_CodeExample">TimeTradeServerExact()=2021.09.02&nbsp;15:59:40&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeLocal()=2021.09.02&nbsp;16:03:36&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeCurrent()=2021.09.02&nbsp;15:59:41&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeTradeServer()=2021.09.02&nbsp;16:03:36&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">Shift&nbsp;update:&nbsp;hours:&nbsp;0;&nbsp;seconds:&nbsp;235</span>
+<br><span class="f_CodeExample">TimeTradeServerExact()=2021.09.02&nbsp;15:59:41&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeLocal()=2021.09.02&nbsp;16:03:37&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeCurrent()=2021.09.02&nbsp;15:59:41&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeTradeServer()=2021.09.02&nbsp;16:03:37&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeTradeServerExact()=2021.09.02&nbsp;15:59:42&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeLocal()=2021.09.02&nbsp;16:03:38&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeCurrent()=2021.09.02&nbsp;15:59:43&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeTradeServer()=2021.09.02&nbsp;16:03:38&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TimeTradeServerExact()=2021.09.02&nbsp;15:59:43&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

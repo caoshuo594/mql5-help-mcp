@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.3.7 Getting quotes as an array of MqlRates structures</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_3_timeseries.htm"> 5.3 Timeseries </a>/ 5.3.7 Getting quotes as an array of MqlRates structures
+          </td>
+          <td width="70" align="right">
+          <a href="5_3_6_timeseries_copy_funcs_overview.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_3_8_timeseries_ohlcvs.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.3.7 Getting quotes as an array of MqlRates structures</span></p>
+<p class="p_Text"><span class="f_Text">To request an array of quotes that includes all bar characteristics, use the </span><span class="f_Text" style="font-style: italic;">CopyRates</span><span class="f_Text"> function which has multiple overloads.</span></p>
+<p class="p_H4"><span class="f_H4" style="letter-spacing: -1px;">int CopyRates(const string symbol, ENUM_TIMEFRAMES timeframe, int offset, int count, MqlRates &amp;rates[])</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4" style="letter-spacing: -1px;">int CopyRates(const string symbol, ENUM_TIMEFRAMES timeframe, datetime start, int count, MqlRates &amp;rates[])</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4" style="letter-spacing: -1px;">int CopyRates(const string symbol, ENUM_TIMEFRAMES timeframe, datetime start, datetime stop, MqlRates &amp;rates[])</span></p>
+<p class="p_Text"><span class="f_Text">The function gets into the </span><span class="f_Text" style="font-style: italic;">rates</span><span class="f_Text"> array historical data for the specified parameters: symbol, timeframe, and time range specified either by bar numbers or values </span><span class="f_Text" style="font-style: italic;">start/stop</span><span class="f_Text"> of type </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of array elements copied, or -1 in case of an error, the code of which can be found from </span><span class="f_Text" style="font-style: italic;"><a href="4_9_15_env_last_error.htm" class="topiclink">_LastError</a></span><span class="f_Text">. In particular, an error will occur if a non-existent symbol is specified, the interval does not contain data on the server, or it goes beyond the limit on the number of bars on the chart (</span><span class="f_Text" style="font-style: italic;"><a href="4_9_10_env_bar_lang.htm" class="topiclink">TerminalInfoInteger</a></span><span class="f_Text"> </span><span class="f_Text" style="font-style: italic;">(TERMINAL_MAXBARS)</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">The basics of working with this function are common to all </span><span class="f_Text" style="font-style: italic;">Copy</span><span class="f_Text"> functions and were outlined in the section <a href="5_3_6_timeseries_copy_funcs_overview.htm" class="topiclink">Overview of Copy-functions for obtaining arrays of quotes</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Inline Type Structure </span><span class="f_Text" style="font-style: italic;">MqlRates</span><span class="f_Text"> is described as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlRates</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime&nbsp;</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;bar&nbsp;opening&nbsp;time</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">open</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;opening&nbsp;price</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">high</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;maximum&nbsp;price&nbsp;per&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">low</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;minimum&nbsp;price&nbsp;per&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;closing&nbsp;price</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">tick_volume</span><span class="f_CodeExample">;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;tick&nbsp;volume&nbsp;per&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">spread</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;minimum&nbsp;spread&nbsp;per&nbsp;bar&nbsp;in&nbsp;points</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">real_volume</span><span class="f_CodeExample">;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;exchange&nbsp;volume&nbsp;per&nbsp;bar</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's try to apply the function for calculating the average size of bars in the script </span><span class="f_Text" style="font-style: italic;">SeriesStats.mq5</span><span class="f_Text">. In the input variables, we will provide the ability to select a working symbol, timeframe, the number of analyzed bars, and the initial offset to the past (0 means analysis from the current bar).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WorkSymbol</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Symbol&nbsp;(leave&nbsp;empty&nbsp;for&nbsp;current)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_TIMEFRAMES</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TimeFrame</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PERIOD_CURRENT</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BarOffset</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BarCount</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10000</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlRates</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">range</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">move</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;calculate&nbsp;the&nbsp;range&nbsp;and&nbsp;price&nbsp;movement&nbsp;in&nbsp;bars</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Requesting&nbsp;%d&nbsp;bars&nbsp;on&nbsp;%s&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BarCount</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">WorkSymbol</span><span class="f_CodeExample">)&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">WorkSymbol</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #800080;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">TimeFrame</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PERIOD_CURRENT</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #800080;">_Period</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TimeFrame</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;request&nbsp;all&nbsp;information&nbsp;about&nbsp;BarCount&nbsp;bars&nbsp;to&nbsp;the&nbsp;MqlRates&nbsp;array</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CopyRates</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">WorkSymbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TimeFrame</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BarOffset</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">BarCount</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;in&nbsp;the&nbsp;loop&nbsp;we&nbsp;calculate&nbsp;the&nbsp;average&nbsp;for&nbsp;the&nbsp;range&nbsp;and&nbsp;movement</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">range</span><span class="f_CodeExample">&nbsp;+=&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">high</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">low</span><span class="f_CodeExample">)&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">move</span><span class="f_CodeExample">&nbsp;+=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">fmax</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">open</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">fmin</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">open</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">))&nbsp;/&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Stats&nbsp;per&nbsp;bar:&nbsp;range=%f,&nbsp;movement=%f&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">range</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">move</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Dates:&nbsp;%s&nbsp;-&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">rates</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">time</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Having thrown the script on the EURUSD,H1 chart, we can get approximately the following result.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Requesting&nbsp;100000&nbsp;bars&nbsp;on&nbsp;EURUSD&nbsp;PERIOD_H1</span>
+<br><span class="f_CodeExample">CopyRates(WorkSymbol,TimeFrame,BarOffset,BarCount,rates)=20018&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">Stats&nbsp;per&nbsp;bar:&nbsp;range=0.001280,&nbsp;movement=0.000621</span>
+<br><span class="f_CodeExample">Dates:&nbsp;2018.07.19&nbsp;15:00&nbsp;-&nbsp;2021.10.11&nbsp;17:00</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Since the terminal had a limit of 20,000 bars, a request for 100,000 bars could return only 20018 (the limit and newly formed bars after the session started). The very first element of the array (with index 0) contains a bar with the time 2018.07.19 15:00, and the last one — 2021.10.11 17:00.</span></p>
+<p class="p_Text"><span class="f_Text">According to the statistics, the average range of the bar during this time was 128 points, and the movement between open and close was 62 points.</span></p>
+<p class="p_Text"><span class="f_Text">When requesting information using a start and end date (</span><span class="f_Text" style="font-style: italic;">start/stop</span><span class="f_Text">) keep in mind that both boundaries are treated inclusively. Therefore, to set an interval corresponding to any bar of a higher timeframe, one should subtract 1 second from the right border. We will apply this technique in the example </span><span class="f_Text" style="font-style: italic;">SeriesSpread.mq5</span><span class="f_Text"> in the section <a href="5_3_9_timeseries_single_value.htm" class="topiclink">Reading price, volume, spread, and time by bar index</a>.</span></p>
+
+</div>
+
+</body>
+</html>

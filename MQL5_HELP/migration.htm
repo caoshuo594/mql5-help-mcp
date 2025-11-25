@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Moving from MQL4</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a>/ Moving from MQL4
+          </td>
+          <td width="70" align="right">
+          <a href="cappdialogsubwinoff.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="function_indices.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Moving from MQL4 to MQL5</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 is the evolution of its predecessor - the MQL4 programming language, in which numerous indicators, scripts, and Expert Advisors were written. Despite the fact that the new programming language is maximally compatible with the previous-generation language, there are still some differences between these languages. And when transferring programs these differences should be noted.</span></p>
+<p class="p_Text"><span class="f_Text">This section contains information intended to facilitate the adaptation of codes to the new MQL5 language for programmers who know MQL4.</span></p>
+<p class="p_Text"><span class="f_Text">First it should be noted:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">The new language does not contain functions start(), init() and deinit().</span></li>
+<li class="p_li"><span class="f_li">No limit for the number of indicator buffers.</span></li>
+<li class="p_li"><span class="f_li">DLLs are loaded immediately after loading an Expert Advisor (or any other mql5 program).</span></li>
+<li class="p_li"><span class="f_li">Check of logical conditions is shortened.</span></li>
+<li class="p_li"><span class="f_li">When limits of an array are exceeded, the current performance is terminated (critically - with the output of an errors).</span></li>
+<li class="p_li"><span class="f_li">Precedence of operators like in C + +.</span></li>
+<li class="p_li"><span class="f_li">The language offers the implicit type cast (even from string to a number).</span></li>
+<li class="p_li"><span class="f_li">Local variables are not initialized automatically (except for strings).</span></li>
+<li class="p_li"><span class="f_li">Common local arrays are automatically deleted.</span></li>
+</ul>
+<p class="p_H2"><span class="f_H2">Special Functions init, start and deinit</span></p>
+<p class="p_Text"><span class="f_Text">The MQL4 language contained only three predefined functions that could be used in the indicator, script or Expert Advisor (not taking into account the include files *.mqh and library files). In MQL5 there are no such functions, but there are their analogues. The table shows the approximate correspondence of functions.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable"><p class="p_EnumHeader"><span class="f_EnumHeader">MQL4</span></p>
+</th>
+<th class="EnumTable"><p class="p_EnumHeader"><span class="f_EnumHeader">MQL5</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">init</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">OnInit</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">start</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">OnStart</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">deinit</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">OnDeinit</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Functions <a href="oninit.htm" class="topiclink">OnInit</a> and <a href="ondeinit.htm" class="topiclink">OnDeinit</a> perform the same role as init and deinit in MQL4 - they are designed to locate the code, which must be performed during initialization and deinitialization of mql5 programs. You can either just rename these functions accordingly, or leave them as they are, but add calls of these functions in corresponding places.</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Call&nbsp;function&nbsp;upon&nbsp;initialization</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;init();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnDeinit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;reason)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Call&nbsp;function&nbsp;upon&nbsp;deinitialization</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;deinit();</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The start function is replaced by <a href="onstart.htm" class="topiclink">OnStart</a> only in scripts. In Expert Advisors and indicators it should be renamed to <a href="ontick.htm" class="topiclink">OnTick</a> and <a href="oncalculate.htm" class="topiclink">OnCalculate</a>, respectively. The code that is to be executed during a mql5 program operation should be located in these three functions:</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable"><p class="p_EnumHeader"><span class="f_EnumHeader">mql5-program</span></p>
+</th>
+<th class="EnumTable"><p class="p_EnumHeader"><span class="f_EnumHeader">main function</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="index.htm#script" class="topiclink">script</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">OnStart</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="index.htm#indicator" class="topiclink">indicator</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">OnCalculate</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="index.htm#expert" class="topiclink">Expert Advisor</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">OnTick</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If the indicator or script code does not contain the main function, or the function name differs from the required one, the call of this function is not performed. It means, if the source code of a script doesn't contain OnStart, such a code will be compiled as an Expert Advisor.</span></p>
+<p class="p_Text"><span class="f_Text">If an indicator code doesn't contain the OnCalculate function, the compilation of such an indicator is impossible.</span></p>
+<p class="p_H2"><span class="f_H2">Predefined Variables</span></p>
+<p class="p_Text"><span class="f_Text">In MQL5 there are no such predefined variables as Ask, Bid, Bars. Variables Point and Digits have a slightly different spelling:</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable"><p class="p_EnumHeader"><span class="f_EnumHeader">MQL4</span></p>
+</th>
+<th class="EnumTable"><p class="p_EnumHeader"><span class="f_EnumHeader">MQL5</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Digits</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">_Digits</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Point</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">_Point</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">_LastError</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">_Period</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">_Symbol</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">_StopFlag</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">&nbsp;</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">_UninitReason</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_H2"><span class="f_H2">Access to Timeseries</span></p>
+<p class="p_Text"><span class="f_Text">In MQL5 there are no such predefined timeseries as Open[], High[], Low[], Close[], Volume[] and Time[]. The necessary depth of a timeseries can now be set using corresponding <a href="series.htm" class="topiclink">functions to access timeseries</a>.</span></p>
+<p class="p_H2"><span class="f_H2">Expert Advisors</span></p>
+<p class="p_Text"><span class="f_Text">Expert Advisors in MQL5 do not require the obligatory presence of functions that handle the <a href="events.htm" class="topiclink">events</a> of a new tick receipt - OnTick, as it was in MQL4 (the start function in MQL4 is executed when a new tick is received). In MQL5 Expert Advisors can contain pre-defined handler functions of several types of events:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li"><a href="ontick.htm" class="topiclink">OnTick</a> – receipt of a new tick;</span></li>
+<li class="p_li"><span class="f_li"><a href="ontimer.htm" class="topiclink">OnTimer</a> – timer event;</span></li>
+</ul>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li"><a href="ontrade.htm" class="topiclink">OnTrade</a> - trade event;</span></li>
+</ul>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li"><a href="onchartevent.htm" class="topiclink">OnChartEvent</a> – events of input from the keyboard and mouse, events of a graphic object moving, event of a text editing completion in the entry field of the LabelEdit object;</span></li>
+<li class="p_li"><span class="f_li"><a href="onbookevent.htm" class="topiclink">OnBookEvent</a> – event of Depth of Market status change.</span></li>
+</ul>
+<p class="p_H2"><span class="f_H2">Custom Indicators</span></p>
+<p class="p_Text"><span class="f_Text">In MQL4, the number of indicator buffers is limited and can't exceed 8. In MQL5 there are no such limitations, but it should be remembered that each indicator buffer requires allocation of a certain part of memory for its location in the terminal, so the new possibility should not be abused.</span></p>
+<p class="p_Text"><span class="f_Text">MQL4 offered only 6 types of custom indicator plotting; while MQL5 now offers 18 <a href="drawstyles.htm#enum_draw_type" class="topiclink">drawing styles</a>. The names of drawing types haven't changed, but the ideology of the graphical representation of indicators has changed significantly.</span></p>
+<p class="p_Text"><span class="f_Text">The direction of indexing in indicator buffers also differs. By default, in MQL5 all the indicator buffers have the behavior of common arrays, i.e. 0 indexed element is the oldest one in the history, and as the index increases, we move from the oldest data to the most recent ones.</span></p>
+<p class="p_Text"><span class="f_Text">The only function for working with <a href="customind.htm" class="topiclink">custom indicators</a> that was preserved from MQL4 is <a href="setindexbuffer.htm" class="topiclink">SetIndexBuffer</a>. But its call has changed; now you should specify <a href="customindicatorproperties.htm#enum_indexbuffer_type_enum" class="topiclink">type of data to be stored in an array</a>, linked to the indicator buffer.</span></p>
+<p class="p_Text"><span class="f_Text">Properties of custom indicators also have changed and expanded. New functions for <a href="series.htm" class="topiclink">accessing timeseries</a> have been added, so the total calculation algorithm must be reconsidered.</span></p>
+<p class="p_H2"><span class="f_H2">Graphical Objects</span></p>
+<p class="p_Text"><span class="f_Text">The number of graphical objects in MQL5 has been significantly increased. Besides, graphical objects can now be positioned in time with the accuracy of a second in a chart of any timeframe - now object anchor points are not rounded off to the bar opening time in the current price chart.</span></p>
+<p class="p_Text"><span class="f_Text">For the Arrow, Text and Label objects now you can specify <a href="enum_anchorpoint.htm" class="topiclink">binding methods</a>, and for the Label, Button, Chart, Bitmap Label and Edit objects you can set <a href="enum_basecorner.htm" class="topiclink">chart corner to which an object is attached</a>.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.3.4 Number of available bars (Bars/iBars)</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_3_timeseries.htm"> 5.3 Timeseries </a>/ 5.3.4 Number of available bars (Bars/iBars)
+          </td>
+          <td width="70" align="right">
+          <a href="5_3_3_timeseries_properties.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_3_5_timeseries_ibarshift.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.3.4 Number of available bars (Bars/iBars)</span></p>
+<p class="p_Text"><span class="f_Text">A shorter way to find out the total number of bars in a timeseries by symbol/period is provided by the functions </span><span class="f_Text" style="font-style: italic;">Bars</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">iBars</span><span class="f_Text"> (there is no difference between them as </span><span class="f_Text" style="font-style: italic;">iBars</span><span class="f_Text"> is available for compatibility with MQL4).</span></p>
+<p class="p_H4"><span class="f_H4">int Bars(const string symbol, ENUM_TIMEFRAMES timeframe) &nbsp; &nbsp; &nbsp; &nbsp;</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">int iBars(const string symbol, ENUM_TIMEFRAMES timeframe) &nbsp; &nbsp; &nbsp; &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">The functions return the number of bars available for the MQL program for the given symbol and period. This value is influenced by the parameter </span><span class="f_Text" style="font-style: italic;">Max. bars in chart</span><span class="f_Text"> in the terminal </span><span class="f_Text" style="font-style: italic;">Options</span><span class="f_Text"> (see the note in the section <a href="5_3_2_timeseries_storage_tech.htm" class="topiclink">Technical features of organization and storage of timeseries</a>). For example, if a history is downloaded to the terminal, which for a specific timeframe is 20,000 bars, but the limit is set to 10,000 bars in the settings, then the second value will be decisive. Immediately after the launch of the terminal, the functions will return the number of 10,000 bars, but as new bars are formed, it will increase (if free memory allows). In MQL5, this limit can be found by calling </span><span class="f_Text" style="font-style: italic;"><a href="4_9_10_env_bar_lang.htm" class="topiclink">TerminalInfoInteger</a>(TERMINAL_MAXBARS)</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In addition, the </span><span class="f_Text" style="font-style: italic;">Bars</span><span class="f_Text"> function has a second option that allows you to find out the number of bars in the range between two dates.</span></p>
+<p class="p_H4"><span class="f_H4">int Bars(const string symbol, ENUM_TIMEFRAMES timeframe, datetime start, datetime stop)</span></p>
+<p class="p_Text"><span class="f_Text">Such a request queries only those bars, the opening time of which falls within the range from </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> to </span><span class="f_Text" style="font-style: italic;">stop</span><span class="f_Text"> (inclusive). It doesn't matter in which order </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">stop</span><span class="f_Text"> are specified: the function will analyze quotes from a smaller time to a larger one.</span></p>
+<p class="p_Text"><span class="f_Text">If the data for the timeseries with the specified parameters has not yet been generated or synchronized with the trade server by the time the </span><span class="f_Text" style="font-style: italic;">Bars/iBars </span><span class="f_Text">function is called, the function will return null. In this case, the error attribute in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> will also be 0 (there is no error because the data is simply not yet downloaded or ready). After receiving 0, check the synchronization of a specific timeframe using </span><span class="f_Text" style="font-style: italic;"><a href="5_3_3_timeseries_properties.htm" class="topiclink">SeriesInfoInteger</a>(..., SERIES_SYNCHRONIZED)</span><span class="f_Text"> or the synchronization of the symbol using the special </span><span class="f_Text" style="font-style: italic;"><a href="6_1_4_symbols_sync.htm" class="topiclink">SymbolIsSynchronized</a></span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">Examples of how to work with the functions will be shown in the script </span><span class="f_Text" style="font-style: italic;">SeriesBars.mq5</span><span class="f_Text"> in the next section, along with the associated </span><span class="f_Text" style="font-style: italic;">iBarShift</span><span class="f_Text"> function.</span></p>
+
+</div>
+
+</body>
+</html>

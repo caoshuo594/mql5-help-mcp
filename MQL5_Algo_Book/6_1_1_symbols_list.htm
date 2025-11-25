@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1.1 Getting available symbols and Market Watch lists</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_1_symbols.htm"> 6.1 Financial instruments and Market Watch </a>/ 6.1.1 Getting available symbols and Market Watch lists
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_symbols.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_2_symbols_select.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.1.1 Getting available symbols and Market Watch lists</span></p>
+<p class="p_Text"><span class="f_Text">The MQL5 API has several functions for operations with symbols. Using them, you can find the total number of available symbols, the number of symbols selected in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text">, as well as their names. As you know, the general list of symbols available in the terminal is indicated in the form of a hierarchical structure in the dialog </span><span class="f_Text" style="font-style: italic;">Symbols</span><span class="f_Text">, which the user can open with the command </span><span class="f_Text" style="font-style: italic;">View -&gt; Symbols</span><span class="f_Text">, or from the </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> context menu. This list includes both the symbols provided by the broker and <a href="7_2_custom_symbols.htm" class="topiclink">custom symbols</a> created locally. You can use the </span><span class="f_Text" style="font-style: italic;">SymbolsTotal</span><span class="f_Text"> function to find the total number of symbols.</span></p>
+<p class="p_H4"><span class="f_H4">int SymbolsTotal(bool selected)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">selected</span><span class="f_Text"> parameter specifies whether only symbols in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or all available symbols (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">) are requested.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">SymbolName</span><span class="f_Text"> function is often used along with </span><span class="f_Text" style="font-style: italic;">SymbolsTotal</span><span class="f_Text">. It returns the name of the symbol by its index (grouping the storage of symbols into logical folders is not taken into account here, see property <a href="6_1_21_symbols_description.htm" class="topiclink">SYMBOL_PATH</a>).</span></p>
+<p class="p_H4"><span class="f_H4">string SymbolName(int index, bool selected)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">index</span><span class="f_Text"> parameter specifies the index of the requested symbol. </span><span class="f_Text" style="font-style: italic;">Index</span><span class="f_Text"> value must be between 0 and the number of symbols, subject to the request context specified by the second parameter </span><span class="f_Text" style="font-style: italic;">selected</span><span class="f_Text">: </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> limits the enumeration to the symbols chosen in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text">, while </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> matches absolutely all symbols (by analogy with </span><span class="f_Text" style="font-style: italic;">SymbolsTotal</span><span class="f_Text">). Therefore, when calling </span><span class="f_Text" style="font-style: italic;">SymbolName</span><span class="f_Text">, set the </span><span class="f_Text" style="font-style: italic;">selected</span><span class="f_Text"> parameter to the same value as in the previous </span><span class="f_Text" style="font-style: italic;">SymbolsTotal</span><span class="f_Text"> call which is used to define the index range.</span></p>
+<p class="p_Text"><span class="f_Text">In case of an error, in particular, if the requested index is out of the list range, the function will return an empty string, and the error code will be written to the variable </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">.</span></p>
+<p class="p_Quote"><span class="f_Quote">It is important to note that when the option </span><span class="f_Quote" style="font-style: italic;">selected</span><span class="f_Quote"> is enabled, the pair of functions </span><span class="f_Quote" style="font-style: italic;">SymbolsTotal</span><span class="f_Quote"> and </span><span class="f_Quote" style="font-style: italic;">SymbolName</span><span class="f_Quote"> returns information for the list of symbols actually updated by the terminal, that is, symbols for which constant synchronization with the server is performed and for which the history of quotes is available for MQL programs. This list may be larger than the list visible in </span><span class="f_Quote" style="font-style: italic;">Market Watch</span><span class="f_Quote">, where elements are added explicitly: by the user or by an MQL program (to learn how to do this, see the section <a href="6_1_2_symbols_select.htm" class="topiclink">Editing the list</a> in </span><span class="f_Quote" style="font-style: italic;">Market Watch</span><span class="f_Quote">). Such symbols, invisible in the window, are automatically connected by the terminal when they are needed for calculating cross-rates. Among the symbol properties, there are two that allow you to distinguish between explicit selection (SYMBOL_VISIBLE) and implicit selection (SYMBOL_SELECT); they will be discussed in the section on <a href="6_1_9_symbols_state.htm" class="topiclink">symbol status check</a>. Strictly speaking, for the </span><span class="f_Quote" style="font-style: italic;">SymbolsTotal</span><span class="f_Quote"> and </span><span class="f_Quote" style="font-style: italic;">SymbolName</span><span class="f_Quote"> functions, the setting of </span><span class="f_Quote" style="font-style: italic;">selected</span><span class="f_Quote"> to </span><span class="f_Quote" style="font-style: italic;">true</span><span class="f_Quote"> matches the extended symbols set with SYMBOL_SELECT cocked, not just those with SYMBOL_VISIBLE equal to </span><span class="f_Quote" style="font-style: italic;">true</span><span class="f_Quote">.</span></p>
+<p class="p_Text"><span class="f_Text">The order in which </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> symbols are returned corresponds to the terminal window (taking into account the possible rearrangement made by the user, and not taking into account sorting by any column, if it is enabled). Changing the order of symbols in </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> programmatically is not possible.</span></p>
+<p class="p_Text"><span class="f_Text">The order in the general list of </span><span class="f_Text" style="font-style: italic;">Symbols</span><span class="f_Text"> is set by the terminal itself (content and sorting of </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> does not affect it).</span></p>
+<p class="p_Text"><span class="f_Text">As an example, let's look at the simple script </span><span class="f_Text" style="font-style: italic;">SymbolList.mq5</span><span class="f_Text">, which prints the available symbols to the log. The input parameter </span><span class="f_Text" style="font-style: italic;">MarketWatchOnly</span><span class="f_Text"> allows the user to limit the list to the </span><span class="f_Text" style="font-style: italic;">Market Watch</span><span class="f_Text"> symbols only (if the parameter is </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or to get the full list (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">script_show_inputs</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">MQL5Book</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">PRTF</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MarketWatchOnly</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolsTotal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">MarketWatchOnly</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Total&nbsp;symbol&nbsp;count:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;write&nbsp;a&nbsp;list&nbsp;of&nbsp;symbols&nbsp;in&nbsp;the&nbsp;Market&nbsp;Watch&nbsp;or&nbsp;all&nbsp;available</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%4d&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">SymbolName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MarketWatchOnly</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;intentionally&nbsp;asking&nbsp;for&nbsp;out-of-range&nbsp;to&nbsp;show&nbsp;an&nbsp;error</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SymbolName</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MarketWatchOnly</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;MARKET_UNKNOWN_SYMBOL(4301)</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Below is an example log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Total&nbsp;symbol&nbsp;count:&nbsp;10</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;0&nbsp;EURUSD</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;1&nbsp;XAUUSD</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;2&nbsp;BTCUSD</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;3&nbsp;GBPUSD</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;4&nbsp;USDJPY</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;5&nbsp;USDCHF</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;6&nbsp;AUDUSD</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;7&nbsp;USDCAD</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;8&nbsp;NZDUSD</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;9&nbsp;USDRUB</span>
+<br><span class="f_CodeExample">SymbolName(n,MarketWatchOnly)=&nbsp;/&nbsp;MARKET_UNKNOWN_SYMBOL(4301)</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

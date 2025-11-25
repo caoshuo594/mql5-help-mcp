@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.8.5 Sound alerts</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_8_output.htm"> 4.8 User interaction </a>/ 4.8.5 Sound alerts
+          </td>
+          <td width="70" align="right">
+          <a href="4_8_4_output_messagebox.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_9_environment.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.8.5 Sound alerts</span></p>
+<p class="p_Text"><span class="f_Text">To work with sound, the MQL5 API provides one function: </span><span class="f_Text" style="font-style: italic;">PlaySound</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">bool PlaySound(const string soundfile)</span></p>
+<p class="p_Text"><span class="f_Text">The function plays the specified sound file in the format </span><span class="f_Text" style="font-style: italic;">wav</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">If the file name is specified without a path (for example, &quot;Ring.wav&quot;), it must be located in the </span><span class="f_Text" style="font-style: italic;">Sounds</span><span class="f_Text"> folder inside the terminal installation directory. If needed, you can organize subfolders inside the </span><span class="f_Text" style="font-style: italic;">Sounds</span><span class="f_Text"> folder. In such cases, the file name in the </span><span class="f_Text" style="font-style: italic;">soundfile</span><span class="f_Text"> parameter should be preceded by a relative path. For example, &quot;Example/Ring.wav&quot; refers to the folders and file </span><span class="f_Text" style="font-style: italic;">Sounds/Example/Ring.wav</span><span class="f_Text"> inside the terminal installation directory.</span></p>
+<p class="p_Text"><span class="f_Text">In addition, you can use sound files located in any other MQL5 subfolder in the terminal's data directory. Such a path must be preceded by a leading slash (forward single '/' or double backslash '\\'), which is the delimiter character you use between adjacent folder levels in the file system. For example, if the sound file </span><span class="f_Text" style="font-style: italic;">Demo.wav</span><span class="f_Text"> is in the </span><span class="f_Text" style="font-style: italic;">terminal_data_directory/MQL5/Files</span><span class="f_Text">, then in the </span><span class="f_Text" style="font-style: italic;">PlaySound</span><span class="f_Text"> call, we will write the path &quot;/Files/Demo.wav&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">Calling the function with a NULL parameter stops the sound from playing. Calling a function with a new file while the old one is still playing will cause the old one to be interrupted and the new one to start playing.</span></p>
+<p class="p_Text"><span class="f_Text">In addition to files located in the file system, a path to the resources – data blocks embedded in the MQL program – can be passed to the function. In particular, a developer can create a sound resource from a file that is available locally at compile time within a sandbox. All resources are located inside the ex5 file, which ensures that the user has them and simplifies the distribution of the program as a single module.</span></p>
+<p class="p_Text"><span class="f_Text">A detailed article about all ways of using resources, including not only sound but also images, arbitrary binary and text data, and dependent programs (indicators), is presented in the corresponding <a href="7_1_resources.htm" class="topiclink">section</a> in the seventh part of the book.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">PlaySound</span><span class="f_Text"> function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> if the file is found, or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> otherwise. Note that even if the file is not an audio file and cannot be played, the function will return </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Sound playback is performed asynchronously, in parallel with the execution of subsequent program instructions. In other words, the function returns control to the calling code immediately after the call, without waiting for the audio effect to complete.</span></p>
+<p class="p_Text"><span class="f_Text">In the strategy tester, the </span><span class="f_Text" style="font-style: italic;">PlaySound</span><span class="f_Text"> function is not executed.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OutputSound.mq5</span><span class="f_Text"> script allows you to test the operation of the function.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">PlaySound</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;new.txt&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">PlaySound</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;abracadabra.wav&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">start</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">GetTickCount</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">PlaySound</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;request.wav&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">GetTickCount</span><span class="f_CodeExample">()&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">start</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The program is trying to play multiple files. The file &quot;new.txt&quot; exists (created specifically for testing), the file &quot;abracadabra.wav&quot; does not exist, and the &quot;request.wav&quot; file is included in the standard distribution of MetaTrader 5. The time of the last function call is measured using a pair of calls to </span><span class="f_Text" style="font-style: italic;">GetTickCount</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">As a result of running the script, we get the following log entries:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">PlaySound(new.txt)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">PlaySound(abracadabra.wav)=false&nbsp;/&nbsp;FILE_NOT_EXIST(5019)</span>
+<br><span class="f_CodeExample">PlaySound(request.wav)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">GetTickCount()-start=0&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The file &quot;new.txt&quot; was found and therefore the function returned </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">, although it did not produce a sound. A call for a second, non-existent file returned </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">, and the error code in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> is 5019 (FILE_NOT_EXIST). Finally, playing the last file (assuming it exists) should succeed in every sense: the function will return </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">, and the terminal will play the audio. The call processing time is virtually zero (the duration of the sound does not matter).</span></p>
+
+</div>
+
+</body>
+</html>

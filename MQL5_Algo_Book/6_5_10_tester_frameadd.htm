@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.5.10 Sending data frames from agents to the terminal</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_5_tester.htm"> 6.5 Testing and optimization of Expert Advisors </a>/ 6.5.10 Sending data frames from agents to the terminal
+          </td>
+          <td width="70" align="right">
+          <a href="6_5_9_tester_ontester_init_pass_deinit.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_5_11_tester_framenext.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.5.10 Sending data frames from agents to the terminal</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 provides a group of functions for organizing the transfer and processing of your own (applied) optimization results, in addition to standard financial indicators and statistics. One of them, </span><span class="f_Text" style="font-style: italic;">FrameAdd</span><span class="f_Text">, is designed to send data from testing agents. Other functions are intended to receive data in the terminal.</span></p>
+<p class="p_Text"><span class="f_Text">The data exchange format is based on frames. This is a special internal structure that an Expert Advisor can fill in the tester based on an array of a simple type (which does not contain strings, class objects, or dynamic arrays) or using a file with a specified name (the file must first be created in the agent's sandbox). By calling the </span><span class="f_Text" style="font-style: italic;">FrameAdd</span><span class="f_Text"> function multiple times, the Expert Advisor can send a series of frames to the terminal. There are no limits on the number of frames.</span></p>
+<p class="p_Text"><span class="f_Text">There are two versions of the </span><span class="f_Text" style="font-style: italic;">FrameAdd</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">bool FrameAdd(const string name, ulong id, double value, const string filename)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool FrameAdd(const string name, ulong id, double value, const void &amp;data[])</span></p>
+<p class="p_Text"><span class="f_Text">The function adds a data frame to the buffer to be sent to the terminal. The </span><span class="f_Text" style="font-style: italic;">name</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">id</span><span class="f_Text"> parameters are public labels that can be used to filter frames in the </span><span class="f_Text" style="font-style: italic;"><a href="6_5_11_tester_framenext.htm" class="topiclink">FrameFilter</a></span><span class="f_Text"> function. The </span><span class="f_Text" style="font-style: italic;">value</span><span class="f_Text"> parameter allows you to pass an arbitrary numeric value that can be used when one value is enough. More bulky data is indicated either in the </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> array (may be an array of simple structures) or in a file named </span><span class="f_Text" style="font-style: italic;">filename</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">If there is no bulk data to transfer (for example, you only need to transfer the status of the process), use the first form of the function and specify NULL instead of a string with the file name or the second form with a dummy array of zero size.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> in case of success.</span></p>
+<p class="p_Text"><span class="f_Text">The function can only be called in the </span><span class="f_Text" style="font-style: italic;">OnTester</span><span class="f_Text"> handler.</span></p>
+<p class="p_Text"><span class="f_Text">The function has no effect when called during a simple test, that is, outside of optimization.</span></p>
+<p class="p_Quote"><span class="f_Quote">You can send data only from agents to the terminal. There are no mechanisms in MQL5 for sending data in the opposite direction during optimization. All data that the Expert Advisor wants to send to agents must be prepared and available (in the form of input parameters or files connected by <a href="6_5_12_tester_directives.htm" class="topiclink">directives</a>) before starting the optimization.</span></p>
+<p class="p_Text"><span class="f_Text">We will look at an example of using </span><span class="f_Text" style="font-style: italic;">FrameAdd</span><span class="f_Text"> after we get familiar with the functions of the host in the next section.</span></p>
+
+</div>
+
+</body>
+</html>

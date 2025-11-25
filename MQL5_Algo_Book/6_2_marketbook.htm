@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.2 Depth of market</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a>/ 6.2 Depth of Market
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_24_symbols_special.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_2_1_marketbook_add_release.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">6.2 Depth of market</span></p>
+<p class="p_Text"><span class="f_Text">In addition to several types of up-to-date market price data (</span><span class="f_Text" style="font-style: italic;">Ask/Bid/Last</span><span class="f_Text">) and the last traded volumes are received in the terminal in the form of <a href="6_1_5_symbols_tick.htm" class="topiclink">ticks</a>, MetaTrader 5 supports the Depth of Market (order book), which is an array of records about the volumes of placed buy and sell orders around the current market price. Volumes are aggregated at several levels above and below the current price, with the smallest increment of price movement according to the symbol specification. As we have seen, the maximum order book size (number of price levels) is set in the <a href="6_1_22_symbols_market_depth.htm" class="topiclink">SYMBOL_TICKS_BOOKDEPTH</a> symbol property.</span></p>
+<p class="p_Text"><span class="f_Text">Terminal users know the Depth of Market feature in the interface and its operating principles. If you need further details, please see the <a href="https://www.metatrader5.com/en/terminal/help/trading/depth_of_market" target="_blank" class="weblink" title="MetaTrader 5 documentation">documentation</a>.</span></p>
+<p class="p_Text"><span class="f_Text">The order book contains extended market information which is commonly referred to as &quot;market depth&quot;. Knowing it allows you to create more sophisticated trading systems.</span></p>
+<p class="p_Text"><span class="f_Text">Indeed, information about a tick is only a small slice of the order book. In a somewhat simplified sense, a tick is a 2-level order book with one nearest </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> price (available offer) and one nearest </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> price (available demand). Furthermore, ticks do not provide order volumes at these prices.</span></p>
+<p class="p_Text"><span class="f_Text">Depth of Market changes can occur much more frequently than ticks, since they affect not only the reaction to concluded deals but also changes in the volume of pending limit orders in the Depth of Market.</span></p>
+<p class="p_Text"><span class="f_Text">Usually, data providers for the order book and quotes (ticks, deals) are different instances, and tick events (</span><span class="f_Text" style="font-style: italic;"><a href="6_4_1_experts_ontick.htm" class="topiclink">OnTick</a></span><span class="f_Text"> in Expert Advisors or </span><span class="f_Text" style="font-style: italic;"><a href="5_4_2_indicators_oncalculate.htm" class="topiclink">OnCalculate</a></span><span class="f_Text"> in indicators) do not match the Depth of Market events. Both threads arrive asynchronously and in parallel but eventually end up in the <a href="5_1_3_runtime_events_overview.htm" class="topiclink">event queue</a> of an MQL program.</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that an order book is available, as a rule, for exchange instruments, but there are exceptions both in one direction and in the other:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Depth of Market may be missing for one reason or another for an exchange instrument</span></li>
+<li class="p_li"><span class="f_li">Depth of Market can be provided by a broker for an OTC instrument based on the information they have collected about their clients' orders</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">In MQL5, Depth of Market data is available for Expert Advisors and indicators. By using special functions (</span><span class="f_Text" style="font-style: italic;"><a href="6_2_1_marketbook_add_release.htm" class="topiclink">MarketBookAdd</a></span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;"><a href="6_2_1_marketbook_add_release.htm" class="topiclink">MarketBookRelease</a></span><span class="f_Text">), programs can enable or disable their subscription to receive notifications about Depth of Market changes in the platform. To receive the notifications, the program must define the </span><span class="f_Text" style="font-style: italic;"><a href="6_2_2_marketbook_events.htm" class="topiclink">OnBookEvent</a></span><span class="f_Text"> event handler function in its code. After receiving a notification, the order book data can be read using the </span><span class="f_Text" style="font-style: italic;"><a href="6_2_3_marketbook_get.htm" class="topiclink">MarketBookGet</a></span><span class="f_Text"> function.</span></p>
+<p class="p_Quote"><span class="f_Quote">The terminal maintains the history of quotes and ticks, but not of the Depth of Market data. In particular, the user or an MQL program can download the history at the required retrospective (if the broker has it) and test Expert Advisors and indicators on it. </span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">In contrast, the Depth of Market is only broadcast online and is not available in the tester. A broker does not have an archive of Depth of Market data on the server. To emulate the behavior of the order book in the tester, you should collect the Depth of Market history online and then read it from the MQL program running in the tester. You can find ready-made products in the MQL5 Market.</span></p>
+
+</div>
+
+</body>
+</html>

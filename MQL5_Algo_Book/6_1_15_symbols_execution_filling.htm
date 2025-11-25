@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1.15 Symbol trading conditions and order execution modes</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_1_symbols.htm"> 6.1 Financial instruments and Market Watch </a>/ 6.1.15 Symbol trading conditions and order execution modes
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_14_symbols_trade_mode.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_16_symbols_margin.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.1.15 Symbol trading conditions and order execution modes</span></p>
+<p class="p_Text"><span class="f_Text">In this section, we will dive deeper into aspects of trading automation that depend on the settings of financial instruments. For now, we will study only the properties, while their practical application will be presented in later chapters. It is assumed that the reader is already familiar with the basic terminology such as market and pending order, trade, and position.</span></p>
+<p class="p_Text"><span class="f_Text">When sending a trade request for execution, it should be taken into account that in the financial markets there is no guarantee that at a particular moment, the entire requested volume is available for this financial instrument at the desired price. Therefore, real-time trading is regulated by price and volume execution modes. Modes, or in other words, execution policies, define the rules for cases when the price has changed or the requested volume cannot be fully executed at the current moment.</span></p>
+<p class="p_Text"><span class="f_Text">In the MQL5 API, these modes are available for each symbol as the following properties which can be obtained through the function </span><span class="f_Text" style="font-style: italic;">SymbolInfoInteger</span><span class="f_Text">.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:45%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortable"><span class="f_fortable">SYMBOL_TRADE_EXEMODE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Trade execution modes related to the price</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortable"><span class="f_fortable">SYMBOL_FILLING_MODE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Flags of allowed order filling modes related to the volume (bitmask, see further)</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The value of the SYMBOL_TRADE_EXEMODE property is a member of the ENUM_SYMBOL_TRADE_EXECUTION enumeration.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:45%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_TRADE_EXECUTION_REQUEST</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Trade at the requested price</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_TRADE_EXECUTION_INSTANT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Instant execution (trading at streamed prices)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_TRADE_EXECUTION_MARKET</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Market execution</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_TRADE_EXECUTION_EXCHANGE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Exchange execution</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">All or most of these modes should be known to terminal users from the drop-down list </span><span class="f_Text" style="font-style: italic;">Type</span><span class="f_Text"> in the </span><span class="f_Text" style="font-style: italic;">New order</span><span class="f_Text"> dialogue (F9). Let's briefly recall what they mean. For further details, please refer to the terminal documentation.</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Execution on request (SYMBOL_TRADE_EXECUTION_REQUEST) – execution of a market order at a price previously received from the broker. Before sending a market order, the trader requests the current price from the broker. Further execution of the order at this price can either be confirmed or rejected.</span></li>
+<li class="p_li"><span class="f_li">Instant execution (SYMBOL_TRADE_EXECUTION_INSTANT) – execution of a market order at the current price. When sending a trade request for execution, the terminal automatically inserts the current prices into the order. If the broker accepts the price, the order is executed. If the broker does not accept the requested price, the broker returns the prices at which this order can be executed, which is called a requote.</span></li>
+<li class="p_li"><span class="f_li">Market execution (SYMBOL_TRADE_EXECUTION_MARKET) – the broker inserts the execution price into the order without additional confirmation from the trader. Sending a market order in this mode implies an early agreement with the price at which it will be executed.</span></li>
+<li class="p_li"><span class="f_li">Exchange execution (SYMBOL_TRADE_EXECUTION_EXCHANGE) – trading operations are performed at the prices of current market offers.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">As for the bits in SYMBOL_FILLING_MODE that can be combined with the logical operator OR ('|'), their presence or absence indicates the following actions.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table" style="width:20%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Value</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Fill&nbsp;policy</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">SYMBOL_FILLING_FOK</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Fill Or Kill (FOK); the order must be executed exclusively in the specified volume or canceled</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">SYMBOL_FILLING_IOC</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Immediate or Cancel (IOC); trade the maximum volume available on the market within the limits specified in the order or cancel</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">(Identifier missing)</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">(any, including 0)</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Return; in case of partial execution, the market or limit order with the remaining volume is not canceled but stays valid</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The possibility of using FOK and IOC modes is determined by the trade server.</span></p>
+<p class="p_Text"><span class="f_Text">If the SYMBOL_FILLING_FOK mode is enabled, then, while sending an order with the </span><span class="f_Text" style="font-style: italic;"><a href="6_4_13_experts_ordersend_ordersendasync.htm" class="topiclink">OrderSend</a></span><span class="f_Text"> function, the MQL program will be able to use the relevant order fill type in the </span><span class="f_Text" style="font-style: italic;"><a href="6_4_9_experts_mqltraderequest.htm" class="topiclink">MqlTradeRequest</a></span><span class="f_Text"> structure: ORDER_FILLING_FOK. If at the same time, there is not enough volume of the financial instrument on the market, the order will not be executed. It should be taken into account that the required volume can be made up of several offers currently available on the market, resulting in several transactions.</span></p>
+<p class="p_Text"><span class="f_Text">If the SYMBOL_FILLING_IOC mode is enabled, the MQL program will have access to the ORDER_FILLING_IOC order filling method of the same name (it is also specified in the special &quot;filling&quot; field (</span><span class="f_Text" style="font-style: italic;">type_filling</span><span class="f_Text">) in the </span><span class="f_Text" style="font-style: italic;">MqlTradeRequest</span><span class="f_Text"> structure before sending the order to the </span><span class="f_Text" style="font-style: italic;">OrderSend</span><span class="f_Text"> function). When using this mode, in case of impossibility of full execution, the order will be executed on the available volume, and the remaining volume of the order will be canceled.</span></p>
+<p class="p_Text"><span class="f_Text">The last policy without an identifier is the default mode and is available regardless of other modes (which is why it matches zero or any other value). In other words, even if we get the value 1 (SYMBOL_FILLING_FOK), 2 (SYMBOL_FILLING_IOC), or 3 (SYMBOL_FILLING_FOK | SYMBOL_FILLING_IOC) for the SYMBOL_FILLING_MODE property, the return mode will be implied. To use this policy, when forming an order (filling in the </span><span class="f_Text" style="font-style: italic;"><a href="6_4_9_experts_mqltraderequest.htm" class="topiclink">MqlTradeRequest</a></span><span class="f_Text"> structure) we should specify the fill type ORDER_FILLING_RETURN.</span></p>
+<p class="p_Quote"><span class="f_Quote">Among all SYMBOL_TRADE_EXEMODE modes, there is one specificity regarding market execution (SYMBOL_TRADE_EXECUTION_MARKET): Return orders are always prohibited in market execution mode.</span></p>
+<p class="p_Text"><span class="f_Text">Since ORDER_FILLING_FOK corresponds to the constant 0, the absence of an explicit indication of the filling type in a trade request will imply this particular mode.</span></p>
+<p class="p_Text"><span class="f_Text">We will consider all these nuances in practice when developing Expert Advisors but for now, let's check the reading of properties in a simple script </span><span class="f_Text" style="font-style: italic;">SymbolFilterExecMode.mq5</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">MQL5Book</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">SymbolFilter</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolFilter</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;filter&nbsp;object</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;array&nbsp;of&nbsp;symbol&nbsp;names</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">permissions</span><span class="f_CodeExample">[][2];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;array&nbsp;with&nbsp;property&nbsp;value&nbsp;vectors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;properties&nbsp;to&nbsp;read</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_INFO_INTEGER</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">modes</span><span class="f_CodeExample">[]&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_TRADE_EXEMODE</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_FILLING_MODE</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;apply&nbsp;filter&nbsp;-&nbsp;fill&nbsp;arrays</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">select</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">modes</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">permissions</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;=====&nbsp;Trade&nbsp;execution&nbsp;and&nbsp;filling&nbsp;modes&nbsp;for&nbsp;the&nbsp;symbols&nbsp;(%d)&nbsp;=====&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;:&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">modes</span><span class="f_CodeExample">);&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;output&nbsp;properties&nbsp;as&nbsp;descriptions&nbsp;and&nbsp;numbers</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;&nbsp;&nbsp;%s&nbsp;(%d)&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolMonitor</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">stringify</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">permissions</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">modes</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">]),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">permissions</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">]);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Below is a fragment of the log with the results of the script. Almost all symbols here have an immediate execution mode at prices (SYMBOL_TRADE_EXECUTION_INSTANT) except for the last SP500m (SYMBOL_TRADE_EXECUTION_MARKET). Here we can find various volume filling modes, both separate SYMBOL_FILLING_FOK, SYMBOL_FILLING_IOC, and their combination. Only BTCUSD has SYMBOL_FILLING_RETURN specified, i.e. a value of 0 was received (no FOK and IOC bits).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">=====&nbsp;Trade&nbsp;execution&nbsp;and&nbsp;filling&nbsp;modes&nbsp;for&nbsp;the&nbsp;symbols&nbsp;(13)&nbsp;=====</span>
+<br><span class="f_CodeExample">EURUSD:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;SYMBOL_TRADE_EXECUTION_INSTANT&nbsp;(1)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;_SYMBOL_FILLING_FOK&nbsp;]&nbsp;(1)</span>
+<br><span class="f_CodeExample">GBPUSD:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;SYMBOL_TRADE_EXECUTION_INSTANT&nbsp;(1)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;_SYMBOL_FILLING_FOK&nbsp;]&nbsp;(1)</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">USDCNH:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;SYMBOL_TRADE_EXECUTION_INSTANT&nbsp;(1)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;_SYMBOL_FILLING_FOK&nbsp;_SYMBOL_FILLING_IOC&nbsp;]&nbsp;(3)</span>
+<br><span class="f_CodeExample">USDRUB:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;SYMBOL_TRADE_EXECUTION_INSTANT&nbsp;(1)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;_SYMBOL_FILLING_IOC&nbsp;]&nbsp;(2)</span>
+<br><span class="f_CodeExample">AUDUSD:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;SYMBOL_TRADE_EXECUTION_INSTANT&nbsp;(1)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;_SYMBOL_FILLING_FOK&nbsp;]&nbsp;(1)</span>
+<br><span class="f_CodeExample">NZDUSD:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;SYMBOL_TRADE_EXECUTION_INSTANT&nbsp;(1)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;_SYMBOL_FILLING_FOK&nbsp;_SYMBOL_FILLING_IOC&nbsp;]&nbsp;(3)</span>
+<br><span class="f_CodeExample">...</span>
+<br><span class="f_CodeExample">XAUUSD:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;SYMBOL_TRADE_EXECUTION_INSTANT&nbsp;(1)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;_SYMBOL_FILLING_FOK&nbsp;_SYMBOL_FILLING_IOC&nbsp;]&nbsp;(3)</span>
+<br><span class="f_CodeExample">BTCUSD:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;SYMBOL_TRADE_EXECUTION_INSTANT&nbsp;(1)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[(_SYMBOL_FILLING_RETURN)]&nbsp;(0)</span>
+<br><span class="f_CodeExample">SP500m:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;SYMBOL_TRADE_EXECUTION_MARKET&nbsp;(2)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;[&nbsp;_SYMBOL_FILLING_FOK&nbsp;]&nbsp;(1)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Recall that the underscores in the fill mode identifiers appear due to the fact that we had to define our own enumeration SYMBOL_FILLING (</span><span class="f_Text" style="font-style: italic;">SymbolMonitor.mqh</span><span class="f_Text">) with elements with constant values. This was done because MQL5 does not have such a built-in enumeration, but at the same time, we cannot name the elements of our enumeration exactly as built-in constants as this would cause a name conflict.</span></p>
+
+</div>
+
+</body>
+</html>

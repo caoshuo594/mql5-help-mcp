@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.6.9 Binding data to query parameters: DatabaseBind/Array</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_6_sqlite.htm"> 7.6 SQLite database </a>/ 7.6.9 Binding data to query parameters: DatabaseBind/Array
+          </td>
+          <td width="70" align="right">
+          <a href="7_6_8_sqlite_reset.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_6_10_sqlite_read.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.6.9 Binding data to query parameters: DatabaseBind/Array</span></p>
+<p class="p_Text"><span class="f_Text">After the SQL query has been compiled by the </span><span class="f_Text" style="font-style: italic;"><a href="7_6_7_sqlite_prepare.htm" class="topiclink">DatabasePrepare</a></span><span class="f_Text"> function, you can use the received query handle to bind data to the query parameters, which is what the </span><span class="f_Text" style="font-style: italic;">DatabaseBind</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">DatabaseBindArray</span><span class="f_Text"> functions are for. Both functions can be called not only immediately after creating a query in </span><span class="f_Text" style="font-style: italic;">DatabasePrepare</span><span class="f_Text"> but also after resetting the request to its initial state with </span><span class="f_Text" style="font-style: italic;"><a href="7_6_8_sqlite_reset.htm" class="topiclink">DatabaseReset</a></span><span class="f_Text"> (if the request is executed many times in a loop).</span></p>
+<p class="p_Text"><span class="f_Text">The data binding step is not always required because prepared queries may not have parameters. As a rule, this situation occurs when a query returns data from SQL to MQL5, and therefore a query descriptor is required: how to read query results by their handles is described in the sections on </span><span class="f_Text" style="font-style: italic;"><a href="7_6_10_sqlite_read.htm" class="topiclink">DatabaseRead/DatabaseReadBind</a></span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;"><a href="7_6_11_sqlite_columns.htm" class="topiclink">DatabaseColumn</a></span><span class="f_Text"><a href="7_6_11_sqlite_columns.htm" class="topiclink">-functions</a>.</span></p>
+<p class="p_H4"><span class="f_H4">bool DatabaseBind(int request, int index, T value)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabaseBind</span><span class="f_Text"> function sets the value of the </span><span class="f_Text" style="font-style: italic;">index</span><span class="f_Text"> parameter for the query with the </span><span class="f_Text" style="font-style: italic;">request</span><span class="f_Text"> handle. By default, numbering starts from 0 if the parameters in the query are marked with substituted symbols '?' (without a number). However, parameters can be specified in the query string and with a number (?1, '?5', ?21): in this case, the actual indexes to be passed to the function must be 1 less than the corresponding number in the string. This is because the numbering in the query string starts from 1.</span></p>
+<p class="p_Text"><span class="f_Text">For example, the following query requires one parameter (index 0):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">DatabasePrepare</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;SELECT&nbsp;*&nbsp;FROM&nbsp;table&nbsp;WHERE&nbsp;id=?&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #333333;">DatabaseBind</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">r</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1234</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If the &quot;... id=?10&quot; substitution were used in the query string, it would be necessary to call </span><span class="f_Text" style="font-style: italic;">DatabaseBind</span><span class="f_Text"> with index 9.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">value</span><span class="f_Text"> in the </span><span class="f_Text" style="font-style: italic;">DatabaseBind</span><span class="f_Text"> prototype can be of any <a href="4_1_5_conversions_structs.htm" class="topiclink">simple type</a> or string. If a parameter needs to map composite type data (structures) or arbitrary binary data that can be represented as an array of bytes, use the </span><span class="f_Text" style="font-style: italic;">DatabaseBindArray</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> if successful. Otherwise, it returns </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">bool DatabaseBindArray(int request, int index, T &amp;array[])</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabaseBindArray</span><span class="f_Text"> function sets the value of the </span><span class="f_Text" style="font-style: italic;">index</span><span class="f_Text"> parameter as an array of a simple type or of simple structures (including strings) for the query with the </span><span class="f_Text" style="font-style: italic;">request</span><span class="f_Text"> handle. This function allows you to write <a href="7_6_2_sqlite_scheme_types.htm" class="topiclink">BLOB</a> and NULL (the absence of a value that is considered a separate type in SQL and is not equal to 0) to the database.</span></p>
+<p class="p_Text"><span class="f_Text">Now let's go back to the </span><span class="f_Text" style="font-style: italic;">DBQuery</span><span class="f_Text"> class in the </span><span class="f_Text" style="font-style: italic;">DBSQLite.mqh</span><span class="f_Text"> file and add data binding support.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBQuery</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bind</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">index</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">DatabaseBind</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">index</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bindBlob</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">index</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">[])</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">DatabaseBindArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">index</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bindNull</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">index</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">null</span><span class="f_CodeExample">[]&nbsp;=&nbsp;{};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bindBlob</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">index</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">null</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">BLOB is suitable for transferring any file to the database unchanged, for example, if you first read it into a byte array using the </span><span class="f_Text" style="font-style: italic;"><a href="4_5_2_files_save_load.htm" class="topiclink">FileLoad</a></span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">The need to explicitly bind a null value is not so obvious. When inserting new records into the database, the calling program usually passes only the fields known to it, and all the missing ones (if they are not marked with the NOT NULL constraint or do not have a different DEFAULT value in the table description) will be automatically left equal to NULL by the engine. However, when using the ORM approach, it is convenient to write the entire object to the database, including the field with a unique primary key (PRIMARY KEY). The new object does not yet have this identifier, since the database itself adds it when the object is first written, so it is important to bind this field in the new object to the NULL value.</span></p>
+
+</div>
+
+</body>
+</html>

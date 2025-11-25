@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.4.33 Types of trading transactions</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_4_experts.htm"> 6.4 Creating Expert Advisors </a>/ 6.4.33 Types of trading transactions
+          </td>
+          <td width="70" align="right">
+          <a href="6_4_32_experts_historydealget_funcs.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_4_34_experts_ontradetransaction.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.4.33 Types of trading transactions</span></p>
+<p class="p_Text"><span class="f_Text">In addition to performing trading operations, MQL programs can respond to trading events. It is important to note that such events occur not only as a result of the actions of programs, but also for other reasons, for example, when manually managed by the user or performing automatic actions on the server (activation of a pending order, </span><span class="f_Text" style="font-style: italic;">Stop Loss</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Take Profit</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Stop Out</span><span class="f_Text">, position transfer to a new day, depositing or withdrawing funds from the account, and much more).</span></p>
+<p class="p_Text"><span class="f_Text">Regardless of the initiator of the actions, they result in the execution of trading transactions on the account. Trading transactions are indivisible steps that include:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Processing a trade request</span></li>
+<li class="p_li"><span class="f_li">Changing the list of active orders (including adding a new order, executing and deleting a triggered order)</span></li>
+<li class="p_li"><span class="f_li">Changing the history of orders</span></li>
+<li class="p_li"><span class="f_li">Changing the history of deals</span></li>
+<li class="p_li"><span class="f_li">Changing positions</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Depending on the nature of the operation, some steps may be optional. For example, modifying the protective levels of a position will miss three middle points. And when a buy order is sent, the market will go through a full cycle: the request is processed, a corresponding order is created for the account, the order is executed, it is removed from the active list, added to the order history, then the corresponding deal is added to the history and a new position is created. All these actions are trading transactions.</span></p>
+<p class="p_Text"><span class="f_Text">To receive notifications about such events, the special </span><span class="f_Text" style="font-style: italic;">OnTradeTransaction</span><span class="f_Text"> handler function should be described in an Expert Advisor or an indicator. We will look at it in detail in the next section. The fact is that one of its parameters, the first and most important, has the type of a predefined structure </span><span class="f_Text" style="font-style: italic;">MqlTradeTransaction</span><span class="f_Text">. So let's first talk about transactions as such.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlTradeTransaction</span>
+<br><span class="f_CodeExample">{&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">deal</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Deal&nbsp;ticket&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">order</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Order&nbsp;ticket&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Name&nbsp;of&nbsp;the&nbsp;trading&nbsp;instrument&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_TRADE_TRANSACTION_TYPE</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Trade&nbsp;transaction&nbsp;type&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_ORDER_TYPE</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">order_type</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Order&nbsp;type</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_ORDER_STATE</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">order_state</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Order&nbsp;state</span><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_DEAL_TYPE</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">deal_type</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Deal&nbsp;type&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_ORDER_TYPE_TIME</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">time_type</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Order&nbsp;type&nbsp;by&nbsp;duration</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">time_expiration</span><span class="f_CodeExample">;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Order&nbsp;expiration&nbsp;date&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Price&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price_trigger</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Stop&nbsp;limit&nbsp;order&nbsp;trigger&nbsp;price&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price_sl</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Stop&nbsp;Loss&nbsp;Level&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price_tp</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Take&nbsp;Profit&nbsp;Level&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">volume</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Volume&nbsp;in&nbsp;lots&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Position&nbsp;ticket&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position_by</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Opposite&nbsp;position&nbsp;ticket&nbsp;</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The following table describes each structure field.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:30%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Field</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">deal</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Deal ticket</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">order</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order ticket</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">symbol</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The name of the trading instrument on which the transaction was made</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">type</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Trade transaction type ENUM_TRADE_TRANSACTION_TYPE (see below)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">order_type</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order type <a href="6_4_4_experts_order_type.htm" class="topiclink">ENUM_ORDER_TYPE</a></span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">order_state</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order status <a href="6_4_23_experts_order_properties.htm" class="topiclink">ENUM_ORDER_STATE</a></span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">deal_type</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Deal type <a href="6_4_29_experts_deal_properties.htm" class="topiclink">ENUM_DEAL_TYPE</a></span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">time_type</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Order type by expiration <a href="6_4_6_experts_pending_expiration.htm" class="topiclink">ENUM_ORDER_TYPE_TIME</a></span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">time_expiration</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Pending order expiration date</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">price</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The price of an order, deal or position, depending on the transaction</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">price_trigger</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Stop price (trigger price) of a stop limit order</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">price_sl</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable" style="font-style: italic;">Stop Loss</span><span class="f_fortable"> price; it may refer to an order, deal, or position, depending on the transaction</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">price_tp</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable" style="font-style: italic;">Take Profit</span><span class="f_fortable"> price; it may refer to an order, deal, or position, depending on the transaction</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">volume</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Volume in lots; it may indicate the current volume of the order, deal, or position, depending on the transaction</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">position</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Ticket of the position affected by the transaction</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:30%;"><p class="p_fortable"><span class="f_fortable">position_by</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Opposite position ticket</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Some fields only make sense in certain cases. In particular, the </span><span class="f_Text" style="font-style: italic;">time_expiration</span><span class="f_Text"> field is filled for orders with </span><span class="f_Text" style="font-style: italic;">time_type</span><span class="f_Text"> equal to the ORDER_TIME_SPECIFIED or ORDER_TIME_SPECIFIED_DAY &nbsp;expiration type. The </span><span class="f_Text" style="font-style: italic;">price_trigger</span><span class="f_Text"> field is reserved for stop-limit orders only (ORDER_TYPE_BUY_STOP_LIMIT and ORDER_TYPE_SELL_STOP_LIMIT).</span></p>
+<p class="p_Text"><span class="f_Text">It is also obvious that position modifications operate on the position ticket (field </span><span class="f_Text" style="font-style: italic;">position</span><span class="f_Text">), but do not use order or deal tickets. In addition, the </span><span class="f_Text" style="font-style: italic;">position_by</span><span class="f_Text"> field is reserved exclusively for closing a counter position, that is, the one opened for the same instrument but in the opposite direction.</span></p>
+<p class="p_Text"><span class="f_Text">The defining characteristic for the analysis of a transaction is its type (field </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text">). To describe it, the MQL5 API introduces a special enumeration ENUM_TRADE_TRANSACTION_TYPE, which contains all possible types of transactions.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TRADE_TRANSACTION_ORDER_ADD</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Adding a new order</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TRADE_TRANSACTION_ORDER_UPDATE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Changing an active order</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TRADE_TRANSACTION_ORDER_DELETE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Deleting an active order</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TRADE_TRANSACTION_DEAL_ADD</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Adding a deal to history</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TRADE_TRANSACTION_DEAL_UPDATE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Changing a deal in history</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TRADE_TRANSACTION_DEAL_DELETE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Deleting a deal from history</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TRADE_TRANSACTION_HISTORY_ADD</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Adding an order to history as a result of execution or cancellation</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TRADE_TRANSACTION_HISTORY_UPDATE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Changing an order in history</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TRADE_TRANSACTION_HISTORY_DELETE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Deleting an order from history</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TRADE_TRANSACTION_POSITION</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Change a position</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">TRADE_TRANSACTION_REQUEST</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Notification that a trade request has been processed by the server and the result of its processing has been received</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's provide some explanations.</span></p>
+<p class="p_Text"><span class="f_Text">In a transaction of the TRADE_TRANSACTION_ORDER_UPDATE type, order changes include not only explicit changes on the part of the client terminal or trade server but also changes in its state (for example, transition from the ORDER_STATE_STARTED state to ORDER_STATE_PLACED or from ORDER_STATE_PLACED to ORDER_STATE_PARTIAL, etc.).</span></p>
+<p class="p_Text"><span class="f_Text">During the TRADE_TRANSACTION_ORDER_DELETE transaction, an order can be deleted as a result of a corresponding explicit request or execution (fill) on the server. In both cases, it will be transferred to history and the transaction TRADE_TRANSACTION_HISTORY_ADD must also occur.</span></p>
+<p class="p_Text"><span class="f_Text">The TRADE_TRANSACTION_DEAL_ADD transaction is carried out not only as a result of order execution but also as a result of transactions with the account balance.</span></p>
+<p class="p_Text"><span class="f_Text">Some transactions, such as TRADE_TRANSACTION_DEAL_UPDATE, TRADE_TRANSACTION_DEAL_DELETE, TRADE_TRANSACTION_HISTORY_DELETE are quite rare because they describe situations when a deal or order in the history is changed or deleted on the server retroactively. This, as a rule, is a consequence of synchronization with an external trading system (exchange).</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that adding or liquidating a position does not entail the appearance of the TRADE_TRANSACTION_POSITION transaction. This type of transaction informs that the position has been changed on the side of the trade server, programmatically or manually by the user. In particular, a position can experience changes of the volume (partial opposite closing, reversal), opening price, as well as </span><span class="f_Text" style="font-style: italic;">Stop Loss</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Take Profit</span><span class="f_Text"> levels. Some actions, such as refills, do not trigger this event.</span></p>
+<p class="p_Text"><span class="f_Text">All trade requests issued by MQL programs are reflected in TRADE_TRANSACTION_REQUEST transactions, which allows analyzing their execution in a deferred way. This is especially important when using the function </span><span class="f_Text" style="font-style: italic;">OrderSendAsync</span><span class="f_Text">, which immediately returns control to the calling code, so the result is not known. At the same time, transactions are generated in the same way when using the synchronous </span><span class="f_Text" style="font-style: italic;">OrderSend</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">In addition, using the TRADE_TRANSACTION_REQUEST transactions, you can analyze the user's trading actions from the terminal interface.</span></p>
+
+</div>
+
+</body>
+</html>

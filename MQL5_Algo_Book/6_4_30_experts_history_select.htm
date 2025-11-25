@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.4.30 Selecting orders and deals from history</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_4_experts.htm"> 6.4 Creating Expert Advisors </a>/ 6.4.30 Selecting orders and deals from history
+          </td>
+          <td width="70" align="right">
+          <a href="6_4_29_experts_deal_properties.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_4_31_experts_historyorderget_funcs.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.4.30 Selecting orders and deals from history</span></p>
+<p class="p_Text"><span class="f_Text">MetaTrader 5 allows you to create a snapshot of history for a specific time period for an Expert Advisor or a script. The snapshot is a list of orders and deals which can be further accessed through the appropriate functions. In addition, history can be requested in relation to specific orders, deals or positions.</span></p>
+<p class="p_Text"><span class="f_Text">Selecting the required period explicitly (by dates) is performed by the </span><span class="f_Text" style="font-style: italic;">HistorySelect</span><span class="f_Text"> function. After that, the size of the list of deals and the list of orders can be found using the </span><span class="f_Text" style="font-style: italic;">HistoryDealsTotal</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">HistoryOrdersTotal</span><span class="f_Text"> functions, respectively. The elements of the orders list can be checked using the </span><span class="f_Text" style="font-style: italic;">HistoryOrderGetTicket</span><span class="f_Text"> function; for elements of the deals list use </span><span class="f_Text" style="font-style: italic;">HistoryDealGetTicket</span><span class="f_Text">.</span></p>
+<p class="p_Quote"><span class="f_Quote">It is necessary to distinguish between active (working) orders and orders in history, i.e., those executed, canceled or rejected. To analyze active orders, use the functions discussed in the sections related to <a href="6_4_22_experts_order_list.htm" class="topiclink">getting a list of active orders</a> and <a href="6_4_24_experts_orderget_funcs.htm" class="topiclink">reading their properties</a>.</span></p>
+<p class="p_H4"><span class="f_H4">bool HistorySelect(datetime from, datetime to)</span></p>
+<p class="p_Text"><span class="f_Text">The function requests the history of deals and orders for the specified period of server time (</span><span class="f_Text" style="font-style: italic;">from</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">to</span><span class="f_Text"> inclusive, </span><span class="f_Text" style="font-style: italic;">to &gt;= from</span><span class="f_Text">) and returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> in case of success.</span></p>
+<p class="p_Text"><span class="f_Text">Even if there are no orders and transactions in the requested period, the function will return </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> in the absence of errors. An error can be, for example, a lack of memory for building a list of orders or deals.</span></p>
+<p class="p_Quote"><span class="f_Quote">Please note that orders have two times: set (ORDER_TIME_SETUP) and execution (ORDER_TIME_DONE). The function </span><span class="f_Quote" style="font-style: italic;">HistorySelect</span><span class="f_Quote"> selects orders by execution time.</span></p>
+<p class="p_Text"><span class="f_Text">To extract the entire account history, you can use the syntax </span><span class="f_Text" style="font-style: italic;">HistorySelect(0, LONG_MAX)</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Another way to access a part of the history is by position ID.</span></p>
+<p class="p_H4"><span class="f_H4">bool HistorySelectByPosition(ulong positionID)</span></p>
+<p class="p_Text"><span class="f_Text">The function requests the history of deals and orders with the specified position ID in the ORDER_POSITION_ID, DEAL_POSITION_ID properties.</span></p>
+<p class="p_Quote"><span class="f_Quote">Attention! The function does not select orders by the ID of the opposite position for Close By operations. In other words, the ORDER_POSITION_BY_ID property is ignored, despite the fact that the order data was involved in the formation of the position. </span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">For example, an Expert Advisor could complete a buy (order #1) and sell (order #2) on a hedging-enabled account. This will then lead to the formation of positions #1 and #2. Opposite closing of positions requires the ORDER_TYPE_CLOSE_BY (#3) order. As a result, the </span><span class="f_Quote" style="font-style: italic;">HistorySelectByPosition(#1)</span><span class="f_Quote"> call will select orders #1 and #3, which is expected. However, the call of </span><span class="f_Quote" style="font-style: italic;">HistorySelectByPosition(#2)</span><span class="f_Quote"> will select only order #2 (despite the fact that order #3 has #2 in the ORDER_POSITION_BY_ID property, and strictly speaking, order #3 participated in closing position #2).</span></p>
+<p class="p_Text"><span class="f_Text">Upon successful execution of either of the two functions, </span><span class="f_Text" style="font-style: italic;">HistorySelect</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">HistorySelectByPosition</span><span class="f_Text">, the terminal generates an internal list of orders and deals for the MQL program. You can also change the historical context with the functions </span><span class="f_Text" style="font-style: italic;">HistoryOrderSelect</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">HistoryDealSelect</span><span class="f_Text">, for which you need to know the ticket of the corresponding object in advance (for example, save it from the request result).</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that </span><span class="f_Text" style="font-style: italic;">HistoryOrderSelect</span><span class="f_Text"> affects only the list of orders, and </span><span class="f_Text" style="font-style: italic;">HistoryDealSelect</span><span class="f_Text"> is only used for the list of deals.</span></p>
+<p class="p_Text"><span class="f_Text">All context selection functions return a </span><span class="f_Text" style="font-style: italic;">bool</span><span class="f_Text"> value for success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or error (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">). The error code can be read in the built-in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text"> variable.</span></p>
+<p class="p_H4"><span class="f_H4">bool HistoryOrderSelect(ulong ticket)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">HistoryOrderSelect</span><span class="f_Text"> function selects an order in the history by its ticket. The order is then used for further operations with the deal (reading properties).</span></p>
+<p class="p_Text"><span class="f_Text">During the application of the </span><span class="f_Text" style="font-style: italic;">HistoryOrderSelect</span><span class="f_Text"> function, if the search for an order by ticket was successful, the new list of orders selected in the history will consist of the only order just found. In other words, the previous list of selected orders (if any) is reset. However, the function does not reset the previously selected transaction history, i.e., it does not select the transaction(s) associated with the order.</span></p>
+<p class="p_H4"><span class="f_H4">bool HistoryDealSelect(ulong ticket)</span></p>
+<p class="p_Text"><span class="f_Text">The function </span><span class="f_Text" style="font-style: italic;">HistoryDealSelect</span><span class="f_Text"> selects a deal in the history for further access to it through the appropriate functions. The function does not reset the order history, i.e., it does not select the order associated with the selected deal.</span></p>
+<p class="p_Text"><span class="f_Text">After a certain context is selected in the history by calling one of the above functions, the MQL program can call the functions to iterate over the orders and deals that fall into this context and read their properties.</span></p>
+<p class="p_H4"><span class="f_H4">int HistoryOrdersTotal()</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">HistoryOrdersTotal</span><span class="f_Text"> function returns the number of orders in history (in the selection).</span></p>
+<p class="p_H4"><span class="f_H4">ulong HistoryOrderGetTicket(int index)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">HistoryOrderGetTicket</span><span class="f_Text"> function allows you to get an order ticket by its serial number in the selected history context. The index must be between 0 and N-1, where N is obtained from the </span><span class="f_Text" style="font-style: italic;">HistoryOrdersTotal</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">Knowing the order ticket, it is easy to get all the necessary properties of it using </span><span class="f_Text" style="font-style: italic;"><a href="6_4_31_experts_historyorderget_funcs.htm" class="topiclink">HistoryOrderGet</a></span><span class="f_Text"><a href="6_4_31_experts_historyorderget_funcs.htm" class="topiclink"> functions</a>. The properties of historical orders are exactly the same as those of <a href="6_4_23_experts_order_properties.htm" class="topiclink">existing</a> orders.</span></p>
+<p class="p_Text"><span class="f_Text">There is a similar pair of functions for working with deals.</span></p>
+<p class="p_H4"><span class="f_H4">int HistoryDealsTotal()</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">HistoryDealsTotal</span><span class="f_Text"> function returns the number of deals in history (in the selection).</span></p>
+<p class="p_H4"><span class="f_H4">ulong HistoryDealGetTicket(int index)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">HistoryDealGetTicket</span><span class="f_Text"> function allows you to get a deal ticket by its serial number in the selected history context. This is necessary for further processing of the deal using </span><span class="f_Text" style="font-style: italic;"><a href="6_4_32_experts_historydealget_funcs.htm" class="topiclink">HistoryDealGet</a></span><span class="f_Text"><a href="6_4_32_experts_historydealget_funcs.htm" class="topiclink"> functions</a>. The list of <a href="6_4_29_experts_deal_properties.htm" class="topiclink">deal properties</a> accessible through these functions was described in the previous section.</span></p>
+<p class="p_Text"><span class="f_Text">We will consider an example of using functions after studying </span><span class="f_Text" style="font-style: italic;">HistoryOrderGet</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">HistoryDealGet</span><span class="f_Text"> functions.</span></p>
+
+</div>
+
+</body>
+</html>

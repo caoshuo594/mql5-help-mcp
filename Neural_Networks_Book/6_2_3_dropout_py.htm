@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.2.3 Implementing Dropout in Python</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="6_improvement_realization.htm"> 6. Architectural solutions for improving model convergence </a> / <a class="h_m" href="6_2_dropout_realization.htm"> 6.2 Dropout </a>/ 6.2.3 Implementing Dropout in Python
+          </td>
+          <td width="70" align="right">
+          <a href="6_2_2_dropout_opencl.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_2_4_dropout_comparison.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.2.3 Implementing Dropout in Python</span></p>
+<p class="p_Text"><span class="f_Text">To build models in Python</span><span class="f_Text" style="font-style: italic;">,</span><span class="f_Text"> we previously used the </span><span class="f_Text" style="font-style: italic;">Keras</span><span class="f_Text"> library for </span><span class="f_Text" style="font-style: italic;">TensorFlow</span><span class="f_Text">. This library already has a ready-made implementation of the </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text"> layer.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">tf.keras.layers.Dropout(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;rate,&nbsp;noise_shape=</span><span class="f_CodeExample" style="color: #ff0000;">None</span><span class="f_CodeExample">,&nbsp;seed=</span><span class="f_CodeExample" style="color: #ff0000;">None</span><span class="f_CodeExample">,&nbsp;**kwargs</span>
+<br><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text"> layer randomly sets the input units to 0 at a certain frequency equal to </span><span class="f_Text" style="font-style: italic;">rate</span><span class="f_Text"> at each iteration during the training process. This helps prevent the model from overfitting. Initial data that is not set to 0 is scaled by 1/(1 - </span><span class="f_Text" style="font-style: italic;">rate</span><span class="f_Text">). Therefore, the sum of all initial data transmitted remains unchanged.</span></p>
+<p class="p_Text"><span class="f_Text">Note that the Dropout layer is only applied if its </span><span class="f_Text" style="font-style: italic;">training</span><span class="f_Text"> field is set to </span><span class="f_Text" style="font-style: italic;">True. </span><span class="f_Text">Otherwise, no values are masked. When training the model, the </span><span class="f_Text" style="font-style: italic;">training</span><span class="f_Text"> flag will be automatically set to </span><span class="f_Text" style="font-style: italic;">True</span><span class="f_Text">. In other cases, the user can explicitly set </span><span class="f_Text" style="font-style: italic;">training</span><span class="f_Text"> to </span><span class="f_Text" style="font-style: italic;">True</span><span class="f_Text"> when calling the layer.</span></p>
+<p class="p_Text"><span class="f_Text">This is different from setting </span><span class="f_Text" style="font-style: italic;">trainable = False</span><span class="f_Text"> for the Dropout layer. In this case, the value of the </span><span class="f_Text" style="font-style: italic;">trainable</span><span class="f_Text"> flag does not affect the behavior of the layer, since Dropout does not have any weights that could be frozen during training.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">Dropout </span><span class="f_Text">layer constructor has the following arguments:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">rate</span><span class="f_li"> – a floating point number in the range from 0 to 1, which represents the proportion of elements of the initial data that are masked during the training process.</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">noise_shape</span><span class="f_li"> – a one-dimensional integer tensor representing the shape of a binary exception mask as (</span><span class="f_li" style="font-style: italic;">batch_size, timesteps, features</span><span class="f_li">). The shape will be multiplied by the tensor of the initial data. For example, if the initial data has a shape and you want the exclusion mask to be the same for all time steps, you can use </span><span class="f_li" style="font-style: italic;">noise_shape=(batch_size, 1, features)</span><span class="f_li">.</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">seed</span><span class="f_li"> – an integer to use as a random seed.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">When calling a layer, two arguments are allowed:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li" style="font-style: italic;">inputs</span><span class="f_li"> – a tensor of the source data, it is possible to use a tensor of any rank.</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">training</span><span class="f_li"> – a Boolean flag indicating the operating mode of the layer</span><span class="f_Text">.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">To test the effectiveness of using </span><span class="f_Text" style="font-style: italic;">Dropout </span><span class="f_Text">technology, we will create a script and train several models using this layer. We will not create overly complex models. Instead, let's take the script </span><span class="f_Text" style="font-style: italic;"><a href="6_1_4_1_batch_norm_py_sript.htm" class="topiclink">batch_norm.py</a>,</span><span class="f_Text"> which was used when testing batch normalization. We will create a copy of this script in a file </span><span class="f_Text" style="font-style: italic;">dropout.py </span><span class="f_Text">and add </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text"> layers to each model.</span></p>
+<p class="p_Text"><span class="f_Text">First, we add two </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text"> layers to the model with one hidden layer without using batch normalization. We will insert new layers before each fully connected layer.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Adding&nbsp;a&nbsp;Dropout&nbsp;to&nbsp;a&nbsp;model&nbsp;with&nbsp;one&nbsp;hidden&nbsp;layer</span>
+<br><span class="f_CodeExample">model1do&nbsp;=&nbsp;keras.Sequential([keras.layers.InputLayer(input_shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targets,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span>
+<br><span class="f_CodeExample">model1do.</span><span class="f_CodeExample" style="color: #ff0000;">compile</span><span class="f_CodeExample">(optimizer=</span><span class="f_CodeExample" style="color: #008080;">'Adam'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss=</span><span class="f_CodeExample" style="color: #008080;">'mean_squared_error'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metrics=[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">model1do.summary()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Please note that in all </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text"> layers, we will be masking 30% of the neurons of the previous layer. </span></p>
+<p class="p_Text"><span class="f_Text">Then, in a similar manner, we will add two </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text"> layers to the model with one hidden layer and batch normalization of the initial data. Please note that we are being a little disingenuous here. It is currently not recommended to use batch normalization and </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text"> simultaneously within this model, as this will only reduce the overall result of the model. Let's test this statement with practical examples.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Adding&nbsp;Dropout&nbsp;to&nbsp;the&nbsp;model&nbsp;with&nbsp;batch&nbsp;normalization&nbsp;of&nbsp;the&nbsp;initial&nbsp;data&nbsp;</span><br>
+<span class="f_CodeExample" style="color: #808080;">#&nbsp;and&nbsp;one&nbsp;hidden&nbsp;layer</span><br>
+<span class="f_CodeExample">model1bndo&nbsp;=&nbsp;keras.Sequential([keras.layers.InputLayer(input_shape=inputs),</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.BatchNormalization(),</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targets,&nbsp;activation=tf.nn.tanh)&nbsp;</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span><br>
+<span class="f_CodeExample">model1bndo.</span><span class="f_CodeExample" style="color: #ff0000;">compile</span><span class="f_CodeExample">(optimizer=</span><span class="f_CodeExample" style="color: #008080;">'Adam'</span><span class="f_CodeExample">,&nbsp;</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss=</span><span class="f_CodeExample" style="color: #008080;">'mean_squared_error'</span><span class="f_CodeExample">,&nbsp;</span><br>
+<span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metrics=[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">])</span><br>
+<span class="f_CodeExample">model1bndo.summary()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Similarly, we add </span><span class="f_Text" style="font-style: italic;">Dropout </span><span class="f_Text">batches to models with three hidden layers.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Adding&nbsp;a&nbsp;Dropout&nbsp;to&nbsp;a&nbsp;model&nbsp;with&nbsp;three&nbsp;hidden&nbsp;layers</span>
+<br><span class="f_CodeExample">model2do&nbsp;=&nbsp;keras.Sequential([keras.layers.InputLayer(input_shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targets,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span>
+<br><span class="f_CodeExample">model2do.</span><span class="f_CodeExample" style="color: #ff0000;">compile</span><span class="f_CodeExample">(optimizer=</span><span class="f_CodeExample" style="color: #008080;">'Adam'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss=</span><span class="f_CodeExample" style="color: #008080;">'mean_squared_error'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metrics=[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">model2do.summary()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Adding&nbsp;Dropout&nbsp;to&nbsp;the&nbsp;model&nbsp;with&nbsp;batch&nbsp;normalization&nbsp;of&nbsp;the&nbsp;initial&nbsp;data&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;and&nbsp;three&nbsp;hidden&nbsp;layers</span>
+<br><span class="f_CodeExample">model2bndo&nbsp;=&nbsp;keras.Sequential([keras.layers.InputLayer(input_shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.BatchNormalization(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.BatchNormalization(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.BatchNormalization(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dropout(</span><span class="f_CodeExample" style="color: #0000ff;">0.3</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targets,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span>
+<br><span class="f_CodeExample">model2bndo.</span><span class="f_CodeExample" style="color: #ff0000;">compile</span><span class="f_CodeExample">(optimizer=</span><span class="f_CodeExample" style="color: #008080;">'Adam'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss=</span><span class="f_CodeExample" style="color: #008080;">'mean_squared_error'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metrics=[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">model2bndo.summary()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After creating the models, we add code to start the new model training process.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">history1do&nbsp;=&nbsp;model1do.fit(train_data,&nbsp;train_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_CodeExample" style="color: #0000ff;">0.1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">model1do.save(os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'perceptron1do.h5'</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">history1bndo&nbsp;=&nbsp;model1bndo.fit(train_nn_data,&nbsp;train_nn_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_CodeExample" style="color: #0000ff;">0.1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">model1bndo.save(os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'perceptron1bndo.h5'</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">history2do&nbsp;=&nbsp;model2do.fit(train_data,&nbsp;train_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_CodeExample" style="color: #0000ff;">0.1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">model2do.save(os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'perceptron2do.h5'</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">history2bndo&nbsp;=&nbsp;model2bndo.fit(train_nn_data,&nbsp;train_nn_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_CodeExample" style="color: #0000ff;">0.1</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">model2bndo.save(os.path.join(path,</span><span class="f_CodeExample" style="color: #008080;">'perceptron2bndo.h5'</span><span class="f_CodeExample">))</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We also add the ability to run models on a test dataset.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">test_loss1do,&nbsp;test_acc1do&nbsp;=&nbsp;model1do.evaluate(test_data,&nbsp;test_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss1bndo,&nbsp;test_acc1bndo&nbsp;=&nbsp;model1bndo.evaluate(test_nn_data,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;test_nn_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss2do,&nbsp;test_acc2do&nbsp;=&nbsp;model2do.evaluate(test_data,&nbsp;test_target,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss2bndo,&nbsp;test_acc2bndo&nbsp;=&nbsp;model2bndo.evaluate(test_nn_data,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;test_nn_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In addition to changes in terms of training and testing models, we will also add a block for rendering model results. First, let's change the code that creates dynamics graphs for the mean square error and </span><span class="f_Text" style="font-style: italic;">Accuracy</span><span class="f_Text"> during the training process. The changes here are not global, as we are just adding new variables to the graph.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Rendering&nbsp;the&nbsp;results&nbsp;of&nbsp;training&nbsp;models&nbsp;with&nbsp;one&nbsp;hidden&nbsp;layer</span>
+<br><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1do.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs\nvs&nbsp;Dropout&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1do.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs\nvs&nbsp;Dropout&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bn.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bn.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bndo.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;and&nbsp;Dropout&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bndo.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;and&nbsp;Dropout&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$MSE$&nbsp;$loss$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics\n1&nbsp;hidden&nbsp;layer'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'upper&nbsp;right'</span><span class="f_CodeExample">,ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;trin'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1do.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs\nvs&nbsp;Dropout&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1do.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs\nvs&nbsp;Dropout&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bn.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bn.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bndo.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;and&nbsp;Dropout&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1bndo.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;and&nbsp;Dropout&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$Accuracy$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics\n1&nbsp;hidden&nbsp;layer'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'lower&nbsp;right'</span><span class="f_CodeExample">,ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Rendering&nbsp;the&nbsp;results&nbsp;of&nbsp;training&nbsp;models&nbsp;with&nbsp;three&nbsp;hidden&nbsp;layers</span>
+<br><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2do.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs\nvs&nbsp;Dropout&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2do.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalizedinputs\nvs&nbsp;Dropout&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bn.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bn.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bndo.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;and&nbsp;Dropout&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bndo.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;and&nbsp;Dropout&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$MSE$&nbsp;$loss$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics\n3&nbsp;hidden&nbsp;layers'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'upper&nbsp;right'</span><span class="f_CodeExample">,ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2do.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs\nvs&nbsp;Dropout&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2do.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs\nvs&nbsp;Dropout&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bn.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bn.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bndo.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;and&nbsp;Dropout&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2bndo.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNormalization&nbsp;and&nbsp;Dropout&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$Accuracy$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics\n3&nbsp;hidden&nbsp;layers'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'lower&nbsp;right'</span><span class="f_CodeExample">,ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The last changes in the script concern the display of model performance results on the test dataset. Here, in addition to adding new data, we split the graphs: we will separately show the results of models with one hidden layer, and we will place the results of models with three hidden layers on a new graph.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.bar([</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'\n\nNormalized&nbsp;inputs\nvs&nbsp;Dropout'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNornalization'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">'\n\nUnnormalized&nbsp;inputs\nvs&nbsp;BatchNornalization&nbsp;and&nbsp;Dropout'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[test_loss1,test_loss1do,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;test_loss1bn,test_loss1bndo])</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$MSE$&nbsp;$loss$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;results\n1&nbsp;hidden&nbsp;layer'</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.bar([</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'\n\nNormalized&nbsp;inputs\nvs&nbsp;Dropout'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNornalization'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">'\n\nUnnormalized&nbsp;inputs\nvs&nbsp;BatchNornalization&nbsp;and&nbsp;Dropout'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[test_loss2,test_loss2do,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;test_loss2bn,test_loss2bndo])</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$MSE$&nbsp;$loss$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;results\n3&nbsp;hidden&nbsp;layers'</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.bar([</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'\n\nNormalized&nbsp;inputs\nvs&nbsp;Dropout'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNornalization'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">'\n\nUnnormalized&nbsp;inputs\nvs&nbsp;BatchNornalization&nbsp;and&nbsp;Dropout'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[test_acc1,test_acc1do,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;test_acc1bn,test_acc1bndo])</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$Accuracy$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;results\n1&nbsp;hidden&nbsp;layer'</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.bar([</span><span class="f_CodeExample" style="color: #008080;">'Normalized&nbsp;inputs'</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008080;">'\n\nNormalized&nbsp;inputs\nvs&nbsp;Dropout'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">'Unnormalized&nbsp;inputs\nvs&nbsp;BatchNornalization'</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">'\n\nUnnormalized&nbsp;inputs\nvs&nbsp;BatchNornalization&nbsp;and&nbsp;Dropout'</span><span class="f_CodeExample">],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[test_acc2,test_acc2do,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;test_acc2bn,test_acc2bndo])</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$Accuracy$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;results\n3&nbsp;hidden&nbsp;layers'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">plt.show()</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The rest of the script code remained unchanged.</span></p>
+<p class="p_Text"><span class="f_Text">We will learn about the results of testing the models in the next section.</span></p>
+
+</div>
+
+</body>
+</html>

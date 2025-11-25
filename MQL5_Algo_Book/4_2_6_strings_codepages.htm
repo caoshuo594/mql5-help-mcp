@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.2.6 Working with symbols and code pages</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_2_strings.htm"> 4.2 Working with strings and symbols </a>/ 4.2.6 Working with symbols and code pages
+          </td>
+          <td width="70" align="right">
+          <a href="4_2_5_strings_find_replace_split.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_2_7_strings_format.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.2.6 Working with symbols and code pages</span></p>
+<p class="p_Text"><span class="f_Text">Since strings are made up of characters, it is sometimes necessary or simply more convenient to manipulate individual characters or groups of characters in a string at the level of their integer codes. For example, you need to read or replace characters one at a time or convert them into arrays of integer codes for transmission over communication protocols or into third-party programming interfaces of <a href="7_7_4_libraries_dll.htm" class="topiclink">dynamic libraries</a> DLL. In all such cases, passing strings as text can be accompanied by various difficulties:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">ensuring the correct encoding (of which there are a great many, and the choice of a specific one depends on the operating system locale, program settings, the configuration of the servers with which communication is carried out, and much more)</span></li>
+<li class="p_li"><span class="f_li">conversion of national language characters from the local text encoding to Unicode and vice versa</span></li>
+<li class="p_li"><span class="f_li">allocation and deallocation of memory in a unified way</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The use of arrays with integer codes (while such use actually produces a binary rather than a textual representation of the string) simplifies these problems.</span></p>
+<p class="p_Text"><span class="f_Text">The MQL5 API provides a set of functions to operate on individual characters or their groups, taking into account encoding features.</span></p>
+<p class="p_Text"><span class="f_Text">Strings in MQL5 contain characters in two-byte Unicode encoding. This provides universal support for the entire variety of national alphabets in a single (but very large) character table. Two bytes allow the encoding of 65535 elements.</span></p>
+<p class="p_Text"><span class="f_Text">The default character type is </span><span class="f_Text" style="font-style: italic;">ushort</span><span class="f_Text">. However, if necessary, the string can be converted to a sequence of single-byte </span><span class="f_Text" style="font-style: italic;">uchar</span><span class="f_Text"> characters in a specific language encoding. This conversion may be accompanied by the loss of some information (in particular, letters that are not in the localized character table may &quot;lose&quot; umlauts or even &quot;turn&quot; into some kind of substitute character: depending on the context, it can be displayed differently, but usually as ' ?' or a square character).</span></p>
+<p class="p_Quote"><span class="f_Quote">To avoid problems with texts that may contain arbitrary characters, it is recommended that you always use Unicode. An exception can be made if some external services or programs that should be integrated with your MQL program do not support Unicode, or if the text is intended from the beginning to store a limited set of characters (for example, only numbers and Latin letters).</span></p>
+<p class="p_Text"><span class="f_Text">When converting to/from single-byte characters, the MQL5 API uses the ANSI encoding by default, depending on the current Windows settings. However, the developer can specify a different code table (see further functions </span><span class="f_Text" style="font-style: italic;">CharArrayToString</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">StringToCharArray</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">Examples of using the functions described below are given in the </span><span class="f_Text" style="font-style: italic;">StringSymbols.mq5 </span><span class="f_Text">file.</span></p>
+<p class="p_H4"><span class="f_H4">bool StringSetCharacter(string &amp;variable, int position, ushort character)</span></p>
+<p class="p_Text"><span class="f_Text">The function changes the character at </span><span class="f_Text" style="font-style: italic;">position</span><span class="f_Text"> to the </span><span class="f_Text" style="font-style: italic;">character </span><span class="f_Text">value in the passed </span><span class="f_Text" style="font-style: italic;">variable</span><span class="f_Text"> string. The number must be between 0 and the string length (</span><span class="f_Text" style="font-style: italic;"><a href="4_2_1_strings_init.htm" class="topiclink">StringLen</a></span><span class="f_Text">) minus 1.</span></p>
+<p class="p_Text"><span class="f_Text">If the character to be written is 0, it specifies a new line ending (acts as a terminal zero), i.e. the length of the line becomes equal to </span><span class="f_Text" style="font-style: italic;">position</span><span class="f_Text">. The size of the buffer allocated for the line does not change.</span></p>
+<p class="p_Text"><span class="f_Text">If the </span><span class="f_Text" style="font-style: italic;">position</span><span class="f_Text"> parameter is equal to the length of the string and the character being written is not equal to 0, then the character is added to the string and its length is increased by 1. This is equivalent to the expression: </span><span class="f_Text" style="font-style: italic;">variable += ShortToString(character)</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> upon successful completion, or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> in case of error.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">numbers</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;0123456789&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">numbers</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringSetCharacter</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">numbers</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">7</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;cut&nbsp;off&nbsp;at&nbsp;the&nbsp;7th&nbsp;character</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">numbers</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;0123456</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringSetCharacter</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">numbers</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">numbers</span><span class="f_CodeExample">),&nbsp;'*'));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;add&nbsp;'*'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">numbers</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;0123456*</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H4"><span class="f_H4">ushort StringGetCharacter(string value, int position)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the code of the character located at the specified position in the string. The position number must be between 0 and the string length (</span><span class="f_Text" style="font-style: italic;"><a href="4_2_1_strings_init.htm" class="topiclink">StringLen</a></span><span class="f_Text">) minus 1. In case of an error, the function will return 0.</span></p>
+<p class="p_Text"><span class="f_Text">The function is equivalent to writing using the operator '[]': </span><span class="f_Text" style="font-style: italic;">value[position]</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">numbers</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;0123456789&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringGetCharacter</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">numbers</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;53&nbsp;=&nbsp;code&nbsp;'5'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">numbers</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">]);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;53&nbsp;-&nbsp;is&nbsp;the&nbsp;same&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H4"><span class="f_H4">string CharToString(uchar code)</span></p>
+<p class="p_Text"><span class="f_Text">The function converts the ANSI code of a character to a single-character string. Depending on the set Windows code page, the upper half of the codes (greater than 127) can generate different letters (the character style is different, while the code remains the same). For example, the symbol with the code 0xB8 (184 in decimal) denotes a cedilla (lower hook) in Western European languages, while in the Russian language the letter '&#1105;' is located here. Here's another example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CharToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0xA9</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;&copy;&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CharToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0xE6</span><span class="f_CodeExample">));&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;&aelig;&quot;,&nbsp;&quot;&#1078;&quot;,&nbsp;or&nbsp;another&nbsp;character</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;depending&nbsp;on&nbsp;your&nbsp;Windows&nbsp;locale</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H4"><span class="f_H4">string ShortToString(ushort code)</span></p>
+<p class="p_Text"><span class="f_Text">The function converts the Unicode code of a character to a single-character string. For the </span><span class="f_Text" style="font-style: italic;">code</span><span class="f_Text"> parameter, you can use a literal or an integer. For example, the Greek capital letter &quot;sigma&quot; (the sign of the sum in mathematical formulas) can be specified as 0x3A3 or '&#931;'.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ShortToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0x3A3</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;&#931;&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ShortToString</span><span class="f_CodeExample">('&#931;'));&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;&#931;&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H4"><span class="f_H4">int StringToShortArray(const string text, ushort &amp;array[], int start = 0, int count = -1)</span></p>
+<p class="p_Text"><span class="f_Text">The function converts a string to a sequence of </span><span class="f_Text" style="font-style: italic;">ushort </span><span class="f_Text">character codes that are copied to the specified location in the array: starting from the element numbered </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> (0 by default, that is, the beginning of the array) and in the amount of </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text">.</span></p>
+<p class="p_Quote"><span class="f_Quote">Please note: the </span><span class="f_Quote" style="font-style: italic;">start</span><span class="f_Quote"> parameter refers to the position in the array, not in the string. If you want to convert part of a string, you must first extract it using the </span><span class="f_Quote" style="font-style: italic;"><a href="4_2_5_strings_find_replace_split.htm" class="topiclink">StringSubstr</a></span><span class="f_Quote"> function.</span></p>
+<p class="p_Text"><span class="f_Text">If the </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> parameter is equal to -1 (or WHOLE_ARRAY), all characters up to the end of the string (including the terminal null) or characters in accordance with the size of the array, if it is a fixed size, are copied.</span></p>
+<p class="p_Text"><span class="f_Text">In the case of a dynamic array, it will be automatically increased in size if necessary. If the size of a dynamic array is greater than the length of the string, then the size of the array is not reduced.</span></p>
+<p class="p_Text"><span class="f_Text">To copy characters without a terminating null, you must explicitly call </span><span class="f_Text" style="font-style: italic;">StringLen</span><span class="f_Text"> as the </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> argument. Otherwise, the length of the array will be by 1 more than the length of the string (and 0 in the last element).</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of copied characters.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ushort</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array1</span><span class="f_CodeExample">[],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array2</span><span class="f_CodeExample">[];&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;dynamic&nbsp;arrays&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ushort</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;fixed&nbsp;size&nbsp;array&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">alphabet</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ABCDE&#1040;&#1041;&#1042;&#1043;&#1044;&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;copy&nbsp;with&nbsp;the&nbsp;terminal&nbsp;'0'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringToShortArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">alphabet</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array1</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;11</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array1</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;65&nbsp;&nbsp;&nbsp;66&nbsp;&nbsp;&nbsp;67&nbsp;&nbsp;&nbsp;68&nbsp;&nbsp;&nbsp;69&nbsp;1040&nbsp;1041&nbsp;1042&nbsp;1043&nbsp;1044&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;copy&nbsp;without&nbsp;the&nbsp;terminal&nbsp;'0'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringToShortArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">alphabet</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">alphabet</span><span class="f_CodeExample">)));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;10</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array2</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;65&nbsp;&nbsp;&nbsp;66&nbsp;&nbsp;&nbsp;67&nbsp;&nbsp;&nbsp;68&nbsp;&nbsp;&nbsp;69&nbsp;1040&nbsp;1041&nbsp;1042&nbsp;1043&nbsp;1044</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;copy&nbsp;to&nbsp;a&nbsp;fixed&nbsp;array&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringToShortArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">alphabet</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;5</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">text</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;65&nbsp;66&nbsp;67&nbsp;68&nbsp;69</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;copy&nbsp;beyond&nbsp;the&nbsp;previous&nbsp;limits&nbsp;of&nbsp;the&nbsp;array&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;(elements&nbsp;[11-19]&nbsp;will&nbsp;be&nbsp;random)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringToShortArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">alphabet</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">array2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">20</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;11</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">/*</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;[&nbsp;0]&nbsp;&nbsp;&nbsp;&nbsp;65&nbsp;&nbsp;&nbsp;&nbsp;66&nbsp;&nbsp;&nbsp;&nbsp;67&nbsp;&nbsp;&nbsp;&nbsp;68&nbsp;&nbsp;&nbsp;&nbsp;69&nbsp;&nbsp;1040&nbsp;&nbsp;1041&nbsp;&nbsp;1042</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1043&nbsp;&nbsp;1044&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080; background-color: #ffff00;">0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;14245</span>
+<br><span class="f_CodeExample" style="color: #808080; background-color: #ffff00;">&nbsp;&nbsp;&nbsp;[16]&nbsp;15102&nbsp;37754&nbsp;48617&nbsp;54228</span><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;65&nbsp;&nbsp;&nbsp;&nbsp;66&nbsp;&nbsp;&nbsp;&nbsp;67&nbsp;&nbsp;&nbsp;&nbsp;68</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;69&nbsp;&nbsp;1040&nbsp;&nbsp;1041&nbsp;&nbsp;1042&nbsp;&nbsp;1043&nbsp;&nbsp;1044&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample" style="color: #808080;">&nbsp;&nbsp;&nbsp;*/</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Note that if the position for copying is beyond the size of the array, then the intermediate elements will be allocated but not initialized. As a result, they may contain random data (highlighted in yellow above).</span></p>
+<p class="p_H4"><span class="f_H4">string ShortArrayToString(const ushort &amp;array[], int start = 0, int count = -1)</span></p>
+<p class="p_Text"><span class="f_Text">The function converts part of the array with character codes to a string. The range of array elements is set by parameters </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text">, the starting position, and quantity, respectively. The parameter </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> must be between 0 and the number of elements in the array minus 1. If </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> is equal to -1 (or WHOLE_ARRAY) all elements up to the end of the array or up to the first null are copied.</span></p>
+<p class="p_Text"><span class="f_Text">Using the same example from </span><span class="f_Text" style="font-style: italic;">StringSymbols.mq5</span><span class="f_Text">, let's try to convert an array into the </span><span class="f_Text" style="font-style: italic;">array2</span><span class="f_Text"> string, which has a size of 30.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ShortArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">array2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">30</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">s</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;ABCDE&#1040;&#1041;&#1042;&#1043;&#1044;&quot;,&nbsp;additional&nbsp;random&nbsp;characters&nbsp;may&nbsp;appear&nbsp;here</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Because in the array </span><span class="f_Text" style="font-style: italic;">array2</span><span class="f_Text"> the string &quot;ABCDEABCD&quot; was copied twice, and specifically, firstly to the very beginning, and the second time –at offset 20, the intermediate characters will be random and able to form a longer string than we did.</span></p>
+<p class="p_H4"><span class="f_H4">int StringToCharArray(const string text, uchar &amp;array[], int start = 0, int count = -1, uint codepage = CP_ACP)</span></p>
+<p class="p_Text"><span class="f_Text">The function converts the </span><span class="f_Text" style="font-style: italic;">text</span><span class="f_Text"> string into a sequence of single-byte characters that are copied to the specified location in the array: starting from the element numbered </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> (0 by default, that is, the beginning of the array) and in the amount of </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text">. The copying process converts characters from Unicode to the selected code page </span><span class="f_Text" style="font-style: italic;">codepage</span><span class="f_Text"> – by default, CP_ACP, which means the language of the Windows operating system (more on this below).</span></p>
+<p class="p_Text"><span class="f_Text">If the </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> parameter is equal to -1 (or WHOLE_ARRAY), all characters up to the end of the string (including the terminal null) or in accordance with the size of the array, if it is a fixed size, are copied.</span></p>
+<p class="p_Text"><span class="f_Text">In the case of a dynamic array, it will be automatically increased in size if necessary. If the size of a dynamic array is greater than the length of the string, then the size of the array is not reduced.</span></p>
+<p class="p_Text"><span class="f_Text">To copy characters without a terminating null, you must explicitly call </span><span class="f_Text" style="font-style: italic;"><a href="4_2_1_strings_init.htm" class="topiclink">StringLen</a></span><span class="f_Text"> as an argument </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of copied characters.</span></p>
+<p class="p_Text"><span class="f_Text">See the list of valid code pages for the parameter </span><span class="f_Text" style="font-style: italic;">codepage</span><span class="f_Text"> in the documentation. Here are some of the widely used ANSI code pages:</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Language</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Code</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Central European Latin</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">1250</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Cyrillic</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">1251</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Western European Latin</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">1252</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Greek</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">1253</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Turkish</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">1254</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Hebrew</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">1255</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Arab</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">1256</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">Baltic</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">1257</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Thus, on computers with Western European languages, CP_ACP is 1252, and, for example, on computers with Russian, it is 1251.</span></p>
+<p class="p_Text"><span class="f_Text">During the conversion process, some characters may be converted with loss of information, since the Unicode table is much larger than ANSI (each ANSI code table has 256 characters).</span></p>
+<p class="p_Text"><span class="f_Text">In this regard, CP_UTF8 is of particular importance among all the CP_*** constants. It allows national characters to be properly preserved by variable-length encoding: the resulting array still stores bytes, but each national character can span multiple bytes, written in a special format. Because of this, the length of the array can be significantly larger than the length of the string. UTF-8 encoding is widely used on the Internet and in various software. Incidentally, UTF stands for Unicode Transformation Format, and there are other modifications, notably UTF-16 and UTF-32.</span></p>
+<p class="p_Text"><span class="f_Text">We will consider an example for </span><span class="f_Text" style="font-style: italic;">StringToCharArray</span><span class="f_Text"> after we get acquainted with the &quot;inverse&quot; function </span><span class="f_Text" style="font-style: italic;">CharArrayToString</span><span class="f_Text">: their work must be demonstrated in conjunction.</span></p>
+<p class="p_H4"><span class="f_H4">string CharArrayToString(const uchar &amp;array[], int start = 0, int count = -1, uint codepage = CP_ACP)</span></p>
+<p class="p_Text"><span class="f_Text">The function converts an array of bytes or part of it into a string. The array must contain characters in a specific encoding. The range of array elements is set by parameters </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text">, the starting position, and quantity, respectively. The parameter </span><span class="f_Text" style="font-style: italic;">start</span><span class="f_Text"> must be between 0 and the number of elements in the array. When </span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text"> is equal to -1 (or WHOLE_ARRAY) all elements up to the end of the array or up to the first null are copied.</span></p>
+<p class="p_Text"><span class="f_Text">Let's see how the functions </span><span class="f_Text" style="font-style: italic;">StringToCharArray</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">CharArrayToString</span><span class="f_Text"> work with different national characters with different code page settings. A test script </span><span class="f_Text" style="font-style: italic;">StringCodepages.mq5</span><span class="f_Text"> has been prepared for this.</span></p>
+<p class="p_Text"><span class="f_Text">Two lines will be used as the test subjects - in Russian and German:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Locales&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes1</span><span class="f_CodeExample">[],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes2</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">german</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;stra&szlig;enf&uuml;hrung&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">russian</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Russian&nbsp;text&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We will copy them into arrays </span><span class="f_Text" style="font-style: italic;">bytes1</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">bytes2</span><span class="f_Text"> and then restore them to strings.</span></p>
+<p class="p_Text"><span class="f_Text">First, let's convert the German text using the European code page 1252.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">german</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1252</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;115&nbsp;116&nbsp;114&nbsp;&nbsp;97&nbsp;223&nbsp;101&nbsp;110&nbsp;102&nbsp;252&nbsp;104&nbsp;114&nbsp;117&nbsp;110&nbsp;103&nbsp;&nbsp;&nbsp;0</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">On European copies of Windows, this is equivalent to a simpler function call with default parameters, because there CP_ACP = 1252:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">german</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes1</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then we restore the text from the array with the following call and make sure that everything matches the original:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CharArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1252</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;CharArrayToString(bytes1,0,WHOLE_ARRAY,1252)=</span><span class="f_CodeExample" style="color: #808080;">'stra&szlig;enf&uuml;hrung'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now let's try to convert the Russian text in the same European encoding (or you can call </span><span class="f_Text" style="font-style: italic;">StringToCharArray(english, bytes2)</span><span class="f_Text"> in the Windows environment where CP_ACP is set to 1252 as the default code page):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">russian</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1252</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;63&nbsp;63&nbsp;63&nbsp;63&nbsp;63&nbsp;63&nbsp;63&nbsp;32&nbsp;63&nbsp;63&nbsp;63&nbsp;63&nbsp;63&nbsp;&nbsp;0</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here you can already see that there was a problem during the conversion because 1252 does not have Cyrillic. Restoring a string from an array clearly shows the essence:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CharArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1252</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;CharArrayToString(bytes2,0,WHOLE_ARRAY,1252)='???????&nbsp;?????'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's repeat the experiment in a conditional Russian environment, i.e., we will convert both strings back and forth using the Cyrillic code page 1251.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">russian</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1251</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;on&nbsp;Russian&nbsp;Windows,&nbsp;this&nbsp;call&nbsp;is&nbsp;equivalent&nbsp;to&nbsp;a&nbsp;simpler&nbsp;one</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;StringToCharArray(russian,&nbsp;bytes2);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;because&nbsp;CP_ACP&nbsp;=&nbsp;1251</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes2</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;this&nbsp;time&nbsp;the&nbsp;character&nbsp;codes&nbsp;are&nbsp;meaningful</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;208&nbsp;243&nbsp;241&nbsp;241&nbsp;234&nbsp;232&nbsp;233&nbsp;&nbsp;32&nbsp;210&nbsp;229&nbsp;234&nbsp;241&nbsp;242&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;restore&nbsp;the&nbsp;string&nbsp;and&nbsp;make&nbsp;sure&nbsp;it&nbsp;matches&nbsp;the&nbsp;original</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CharArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1251</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;CharArrayToString(bytes2,0,WHOLE_ARRAY,1251)='&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;&nbsp;&#1058;&#1077;&#1082;&#1089;&#1090;'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;and&nbsp;for&nbsp;the&nbsp;German&nbsp;text...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">german</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1251</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;115&nbsp;116&nbsp;114&nbsp;&nbsp;97&nbsp;</span><span class="f_CodeExample" style="color: #808080; background-color: #ffff00;">&nbsp;63</span><span class="f_CodeExample" style="color: #808080;">&nbsp;101&nbsp;110&nbsp;102&nbsp;</span><span class="f_CodeExample" style="color: #808080; background-color: #ffff00;">117</span><span class="f_CodeExample" style="color: #808080;">&nbsp;104&nbsp;114&nbsp;117&nbsp;110&nbsp;103&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;if&nbsp;we&nbsp;compare&nbsp;this&nbsp;content&nbsp;of&nbsp;bytes1&nbsp;with&nbsp;the&nbsp;previous&nbsp;version,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;it's&nbsp;easy&nbsp;to&nbsp;see&nbsp;that&nbsp;a&nbsp;couple&nbsp;of&nbsp;characters&nbsp;are&nbsp;affected;&nbsp;here's&nbsp;what&nbsp;happened:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;115&nbsp;116&nbsp;114&nbsp;&nbsp;97&nbsp;</span><span class="f_CodeExample" style="color: #808080; background-color: #ffff00;">223</span><span class="f_CodeExample" style="color: #808080;">&nbsp;101&nbsp;110&nbsp;102&nbsp;</span><span class="f_CodeExample" style="color: #808080; background-color: #ffff00;">252</span><span class="f_CodeExample" style="color: #808080;">&nbsp;104&nbsp;114&nbsp;117&nbsp;110&nbsp;103&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;restore&nbsp;the&nbsp;string&nbsp;to&nbsp;see&nbsp;the&nbsp;differences&nbsp;visually:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CharArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1251</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;CharArrayToString(bytes1,0,WHOLE_ARRAY,1251)='stra?enfuhrung'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;specific&nbsp;German&nbsp;characters&nbsp;were&nbsp;corrupted</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Thus, the fragility of single-byte encodings is evident.</span></p>
+<p class="p_Text"><span class="f_Text">Finally, let's enable the CP_UTF8 encoding for both test strings. This part of the example will work stably regardless of Windows settings.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">german</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;115&nbsp;116&nbsp;114&nbsp;&nbsp;97&nbsp;195&nbsp;159&nbsp;101&nbsp;110&nbsp;102&nbsp;195&nbsp;188&nbsp;104&nbsp;114&nbsp;117&nbsp;110&nbsp;103&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CharArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;CharArrayToString(bytes1,0,WHOLE_ARRAY,CP_UTF8)='stra&szlig;enf&uuml;hrung'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">russian</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes2</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;208&nbsp;160&nbsp;209&nbsp;131&nbsp;209&nbsp;129&nbsp;209&nbsp;129&nbsp;208&nbsp;186&nbsp;208&nbsp;184&nbsp;208&nbsp;185</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;32&nbsp;208&nbsp;162&nbsp;208&nbsp;181&nbsp;208&nbsp;186&nbsp;209&nbsp;129&nbsp;209&nbsp;130&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CharArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bytes2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;CharArrayToString(bytes2,0,WHOLE_ARRAY,CP_UTF8)='&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;&nbsp;&#1058;&#1077;&#1082;&#1089;&#1090;'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Note that both of the UTF-8 encoded strings required larger arrays than ANSI ones. Moreover, the array with the Russian text has actually become 2 times longer, because all letters now occupy 2 bytes. Those who wish can find details in open sources on how exactly the UTF-8 encoding works. In the context of this book, it is important for us that the MQL5 API provides ready-made functions to work with.</span></p>
+
+</div>
+
+</body>
+</html>

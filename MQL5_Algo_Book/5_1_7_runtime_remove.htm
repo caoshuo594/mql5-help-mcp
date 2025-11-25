@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.1.7 Programmatic removal of Expert Advisors and scripts: ExpertRemove</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_1_runtime.htm"> 5.1 General principles for executing MQL programs </a>/ 5.1.7 Programmatic removal of Expert Advisors and scripts: ExpertRemove
+          </td>
+          <td width="70" align="right">
+          <a href="5_1_6_runtime_onstart.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_2_script_service.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.1.7 Programmatic removal of Expert Advisors and scripts: ExpertRemove</span></p>
+<p class="p_Text"><span class="f_Text">If necessary, the developer can organize the stopping and unloading of MQL programs of two types: Expert Advisors and scripts. This is done using the </span><span class="f_Text" style="font-style: italic;">ExpertRemove</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">void ExpertRemove()</span></p>
+<p class="p_Text"><span class="f_Text">The function has no parameters and does not return a value. It sends a request to the MQL program execution environment to delete the current program. In fact, this leads to setting the </span><span class="f_Text" style="font-style: italic;"><a href="4_9_13_env_stop.htm" class="topiclink">_StopFlag</a></span><span class="f_Text"> flag and stopping the reception (and processing) of all subsequent events. After that, the program is given 3 seconds to properly complete its work: release resources, break loops in algorithms, etc. If the program does not do this, it will be unloaded forcibly, with the loss of intermediate data.</span></p>
+<p class="p_Text"><span class="f_Text">This function does not work in indicators and services (the program continues to run).</span></p>
+<p class="p_Text"><span class="f_Text">For each function call, the log will contain the entry &quot;ExpertRemove() function called&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">The function is primarily used in Expert Advisors that cannot be interrupted in any other way. In the case of scripts, it is usually easier to break the loop (if there is one) with the </span><span class="f_Text" style="font-style: italic;"><a href="2_7_10_statements_break.htm" class="topiclink">break</a></span><span class="f_Text"> statement. But if the loops are nested, or the algorithm uses many function calls from one another, it is easier to take into account the stop flag at different levels in the conditions for continuing calculations, and in case of an erroneous situation, set this flag using </span><span class="f_Text" style="font-style: italic;">ExpertRemove</span><span class="f_Text">. If you do not use this built-in flag, in any case, you would have to introduce a global variable of the same purpose.</span></p>
+<p class="p_Text"><span class="f_Text">The script </span><span class="f_Text" style="font-style: italic;">ScriptRemove.mq5</span><span class="f_Text"> provides the </span><span class="f_Text" style="font-style: italic;">ExpertRemove</span><span class="f_Text"> usage example.</span></p>
+<p class="p_Text"><span class="f_Text">A potential problem in the operation of the algorithm, which leads to the need to unload the script, is emulated by the </span><span class="f_Text" style="font-style: italic;">ProblemSource</span><span class="f_Text"> class. </span><span class="f_Text" style="font-style: italic;">ExpertRemove</span><span class="f_Text"> is randomly called in its constructor.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ProblemSource</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ProblemSource</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;simulating&nbsp;a&nbsp;problem&nbsp;during&nbsp;object&nbsp;creation,&nbsp;for&nbsp;example,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;with&nbsp;the&nbsp;capture&nbsp;of&nbsp;some&nbsp;resources,&nbsp;such&nbsp;as&nbsp;a&nbsp;file,&nbsp;etc.</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">rand</span><span class="f_CodeExample">()&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">20000</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ExpertRemove</span><span class="f_CodeExample">();&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;will&nbsp;set&nbsp;_StopFlag&nbsp;to&nbsp;true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Further along, objects of this class are created at the global level and inside the helper function.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #333333;">ProblemSource</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">global</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;object&nbsp;may&nbsp;throw&nbsp;an&nbsp;error</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SubFunction</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ProblemSource</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">local</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//object&nbsp;may&nbsp;throw&nbsp;an&nbsp;error</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;simulate&nbsp;some&nbsp;work&nbsp;(we&nbsp;need&nbsp;to&nbsp;check&nbsp;the&nbsp;integrity&nbsp;of&nbsp;the&nbsp;object!)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Sleep</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now we use </span><span class="f_Text" style="font-style: italic;">SubFunction</span><span class="f_Text"> in the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> operation, inside the loop with the </span><span class="f_Text" style="font-style: italic;">IsStopped</span><span class="f_Text"> condition.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;loop&nbsp;until&nbsp;stopped&nbsp;by&nbsp;the&nbsp;user&nbsp;or&nbsp;the&nbsp;program&nbsp;itself</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">IsStopped</span><span class="f_CodeExample">())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SubFunction</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(++</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here is a log example (each run will be different due to randomness):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">1</span>
+<br><span class="f_CodeExample">2</span>
+<br><span class="f_CodeExample">3</span>
+<br><span class="f_CodeExample">ExpertRemove()&nbsp;function&nbsp;called</span>
+<br><span class="f_CodeExample">4</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Note that if an error occurs while creating the global object, the loop will never execute.</span></p>
+<p class="p_Text"><span class="f_Text">Because Exert Advisors can run in the <a href="6_5_tester.htm" class="topiclink">tester</a>, the </span><span class="f_Text" style="font-style: italic;">ExpertRemove</span><span class="f_Text"> function can also be used in the tester. Its effect depends on the place of the function call. If this is done inside the </span><span class="f_Text" style="font-style: italic;"><a href="5_1_5_runtime_oninit_ondeinit.htm" class="topiclink">OnInit</a></span><span class="f_Text"> handler, the function will cancel testing, that is, one run of the tester on the current set of the Expert Advisor parameters. Such termination is treated as an initialization error. When </span><span class="f_Text" style="font-style: italic;">ExpertRemove</span><span class="f_Text"> is called in any other place of the algorithm, the Expert Advisor testing will be interrupted early, but will be processed in a regular way, with </span><span class="f_Text" style="font-style: italic;"><a href="5_1_5_runtime_oninit_ondeinit.htm" class="topiclink">OnDeinit</a></span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;"><a href="6_5_7_tester_ontester.htm" class="topiclink">OnTester</a></span><span class="f_Text"> calls. In this case, the accumulated trading statistics and the value of the optimization criterion will be obtained, taking into account that the emulated server time </span><span class="f_Text" style="font-style: italic;"><a href="4_7_1_timing_local_server.htm" class="topiclink">TimeCurrent</a></span><span class="f_Text"> does not reach the end date in the tester settings.</span></p>
+
+</div>
+
+</body>
+</html>

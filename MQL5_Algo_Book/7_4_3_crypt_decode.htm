@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.4.3 Data decryption and decompression: CryptDecode</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_4_crypt.htm"> 7.4 Cryptography </a>/ 7.4.3 Data decryption and decompression: CryptDecode
+          </td>
+          <td width="70" align="right">
+          <a href="7_4_2_crypt_encode.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_5_network.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.4.3 Data decryption and decompression: CryptDecode</span></p>
+<p class="p_Text"><span class="f_Text">To perform data decryption and decompression operations, MQL5 provides the </span><span class="f_Text" style="font-style: italic;">CryptDecode</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">CryptDecode</span><span class="f_Text"> function performs an inverse transformation of the </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> array to the receiving </span><span class="f_Text" style="font-style: italic;">result</span><span class="f_Text"> array using the specified method.</span></p>
+<p class="p_H4"><span class="f_H4">int CryptDecode(ENUM_CRYPT_METHOD method, const uchar &amp;data[], const uchar &amp;key[], uchar &amp;result[])</span></p>
+<p class="p_Text"><span class="f_Text">Please note that the obtaining of hash sums performed, in particular, by the </span><span class="f_Text" style="font-style: italic;">CryptEncode</span><span class="f_Text"> function, is a one-way transformation: it is impossible to recover the original data from hashes.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns the number of bytes placed in the destination array or 0 on error. The error code will be added to </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">. This could be, for example, INVALID_PARAMETER (4003) if we try to decode the hash (</span><span class="f_Text" style="font-style: italic;">method</span><span class="f_Text"> equals one of the CRYPT_HASH constants) or INVALID_ARRAY (4006) if the decryption key is not long enough or is missing.</span></p>
+<p class="p_Text"><span class="f_Text">If the key is incorrect (different from the one used in encryption), we will get gibberish as a result instead of the encoded source data but the error code is zero. This is the normal behavior of the function.</span></p>
+<p class="p_Text"><span class="f_Text">Let's check the work of </span><span class="f_Text" style="font-style: italic;">CryptDecode</span><span class="f_Text"> using the same script </span><span class="f_Text" style="font-style: italic;">CryptDecode.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In the input parameters, you can specify the text or file to be converted. Text is always implied in encoding </span><span class="f_Text" style="font-style: italic;">Base64</span><span class="f_Text"> since all encoded data is in binary format and is not supported in </span><span class="f_Text" style="font-style: italic;">input</span><span class="f_Text"> parameters. The conversion method is selected from the </span><span class="f_Text" style="font-style: italic;">Method</span><span class="f_Text"> list.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Text</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Text&nbsp;(base64,&nbsp;or&nbsp;empty&nbsp;to&nbsp;process&nbsp;File)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">File</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;MQL5Book/clock10.htm.BASE64&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ENUM_CRYPT_METHOD_EXT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Method</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">_CRYPT_BASE64</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Encryption methods require a key which can be specified as a string in the </span><span class="f_Text" style="font-style: italic;">CustomKey</span><span class="f_Text"> field if </span><span class="f_Text" style="font-style: italic;">GenerateKey</span><span class="f_Text"> contains the DUMMY_KEY_CUSTOM option. You can also generate a demo key of the required length from the DUMMY_KEY_LENGTH enumeration (it's the same as in the </span><span class="f_Text" style="font-style: italic;">CryptEncode.mq5</span><span class="f_Text"> script).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DUMMY_KEY_LENGTH</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GenerateKey</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DUMMY_KEY_CUSTOM</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;GenerateKey&nbsp;(length,&nbsp;or&nbsp;from&nbsp;CustomKey)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CustomKey</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;My&nbsp;top&nbsp;secret&nbsp;key&nbsp;is&nbsp;very&nbsp;strong&quot;</span><span class="f_CodeExample">;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DisableCRCinZIP</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In </span><span class="f_Text" style="font-style: italic;">GenerateKey</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">CustomKey</span><span class="f_Text">, you should choose the same values as when launching </span><span class="f_Text" style="font-style: italic;">CryptEncode.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The algorithm in </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> starts with a description of the required arrays and obtaining a key from a string or by simple generation (only for a demo, use special software or algorithms to generate a working crypto-resistant key).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_CRYPT_METHOD</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">method</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">methods</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">[]&nbsp;=&nbsp;{};&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;default&nbsp;empty&nbsp;key&nbsp;suitable&nbsp;for&nbsp;zip&nbsp;and&nbsp;base64</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">[],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">zip</span><span class="f_CodeExample">[],&nbsp;</span><span class="f_CodeExample" style="color: #333333;">opt</span><span class="f_CodeExample">[]&nbsp;=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">GenerateKey</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DUMMY_KEY_CUSTOM</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CustomKey</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CustomKey</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">CustomKey</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;-1,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">)&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">GenerateKey</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DUMMY_KEY_0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GenerateKey</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GenerateKey</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Key&nbsp;(bytes):&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ByteArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Key&nbsp;is&nbsp;not&nbsp;provided&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, we read the contents of the file or decode </span><span class="f_Text" style="font-style: italic;">Base64</span><span class="f_Text"> from the </span><span class="f_Text" style="font-style: italic;">Text</span><span class="f_Text"> field (depending on what is filled in) to get the data to process.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">method</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_CRYPT_METHOD</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">Method</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;-&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">method</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;key&nbsp;required:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">KEY_REQUIRED</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">method</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Text</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">method</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CRYPT_BASE64</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;since&nbsp;all&nbsp;methods&nbsp;except&nbsp;Base64&nbsp;produce&nbsp;binary&nbsp;results,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;they&nbsp;are&nbsp;additionally&nbsp;converted&nbsp;to&nbsp;CryptEncode.mq5&nbsp;using&nbsp;Base64&nbsp;to&nbsp;text,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;so&nbsp;here&nbsp;we&nbsp;want&nbsp;to&nbsp;recover&nbsp;binary&nbsp;data&nbsp;from&nbsp;text&nbsp;input</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;before&nbsp;decryption</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">base64</span><span class="f_CodeExample">[];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dummy</span><span class="f_CodeExample">[]&nbsp;=&nbsp;{};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Text</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Text</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">base64</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;-1,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">base64</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">base64</span><span class="f_CodeExample">)&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Text&nbsp;(bytes):&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ByteArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">base64</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CryptDecode</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">CRYPT_BASE64</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">base64</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">dummy</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Raw&nbsp;data&nbsp;to&nbsp;decipher&nbsp;(after&nbsp;de-base64):&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ByteArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringToCharArray</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Text</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Text</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">)&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">File</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">File</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileLoad</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">File</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">))&nbsp;&lt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If the user tries to recover data from the hash, we will show a warning.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">IS_HASH</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">method</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;WARNING:&nbsp;hashes&nbsp;can&nbsp;not&nbsp;be&nbsp;used&nbsp;to&nbsp;restore&nbsp;data!&nbsp;CryptDecode&nbsp;will&nbsp;fail.&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, we perform the decryption or decompression (unpacking) directly. In the case of a text, the result is simply logged. In the case of a file, we add the extension &quot;.dec&quot; to the name and write a new file: it can be compared with the original one, which was processed using the </span><span class="f_Text" style="font-style: italic;">CryptEncode.mq5</span><span class="f_Text"> script.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ResetLastError</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CryptDecode</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">method</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">data</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">key</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringLen</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Text</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Text&nbsp;restored:&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CharArrayToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">WHOLE_ARRAY</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CP_UTF8</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;File</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filename</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">File</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;.dec&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">FileSave</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">filename</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;File&nbsp;saved:&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">filename</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If you run the script with default settings, it will try to decode the file </span><span class="f_Text" style="font-style: italic;">MQL5Book/clock10.htm.BASE64</span><span class="f_Text">. It is assumed that this was created during the experiments in the previous section, so the process should be successful.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">-&nbsp;CRYPT_BASE64,&nbsp;key&nbsp;required:&nbsp;false</span>
+<br><span class="f_CodeExample">File=MQL5Book/clock10.htm.BASE64&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileLoad(File,data)=1320&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">CryptDecode(method,data,key,result)=988&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileSave(filename,result)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">File&nbsp;saved:&nbsp;MQL5Book/clock10.htm.BASE64.dec</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The obtained file </span><span class="f_Text" style="font-style: italic;">clock10.htm.BASE64.dec</span><span class="f_Text"> is completely identical to the original </span><span class="f_Text" style="font-style: italic;">clock10.htm</span><span class="f_Text">. The same should happen if you decrypt files with extensions AES128, AES256, or DES, provided that you specify the same key as the one used when encrypting.</span></p>
+<p class="p_Text"><span class="f_Text">For clarity, let's check the decryption of the text. Previously, encryption of a known phrase using the AES128 method produced a binary which was converted into the following </span><span class="f_Text" style="font-style: italic;">Base64</span><span class="f_Text"> string for convenience.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">AQuvVCoSy1szaN8Owy8tQxl9rIrRj9hOqK7KgYYGh9E=</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's enter it in the </span><span class="f_Text" style="font-style: italic;">Text</span><span class="f_Text"> field and select AES128 in the </span><span class="f_Text" style="font-style: italic;">Method</span><span class="f_Text"> dropdown list. We will see the following logs.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">CustomKey=My&nbsp;top&nbsp;secret&nbsp;key&nbsp;is&nbsp;very&nbsp;strong&nbsp;/&nbsp;ok</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Key&nbsp;(bytes):</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[00]&nbsp;4D&nbsp;|&nbsp;79&nbsp;|&nbsp;20&nbsp;|&nbsp;74&nbsp;|&nbsp;6F&nbsp;|&nbsp;70&nbsp;|&nbsp;20&nbsp;|&nbsp;73&nbsp;|&nbsp;65&nbsp;|&nbsp;63&nbsp;|&nbsp;72&nbsp;|&nbsp;65&nbsp;|&nbsp;74&nbsp;|&nbsp;20&nbsp;|&nbsp;6B&nbsp;|&nbsp;65&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[16]&nbsp;79&nbsp;|&nbsp;20&nbsp;|&nbsp;69&nbsp;|&nbsp;73&nbsp;|&nbsp;20&nbsp;|&nbsp;76&nbsp;|&nbsp;65&nbsp;|&nbsp;72&nbsp;|&nbsp;79&nbsp;|&nbsp;20&nbsp;|&nbsp;73&nbsp;|&nbsp;74&nbsp;|&nbsp;72&nbsp;|&nbsp;6F&nbsp;|&nbsp;6E&nbsp;|&nbsp;67&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">-&nbsp;CRYPT_AES128,&nbsp;key&nbsp;required:&nbsp;true</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Text=AQuvVCoSy1szaN8Owy8tQxl9rIrRj9hOqK7KgYYGh9E=&nbsp;/&nbsp;ok</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">StringToCharArray(Text,base64,0,-1,CP_UTF8)=44&nbsp;/&nbsp;ok</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Text&nbsp;(bytes):</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[00]&nbsp;41&nbsp;|&nbsp;51&nbsp;|&nbsp;75&nbsp;|&nbsp;76&nbsp;|&nbsp;56&nbsp;|&nbsp;43&nbsp;|&nbsp;6F&nbsp;|&nbsp;53&nbsp;|&nbsp;79&nbsp;|&nbsp;31&nbsp;|&nbsp;73&nbsp;|&nbsp;7A&nbsp;|&nbsp;61&nbsp;|&nbsp;4E&nbsp;|&nbsp;38&nbsp;|&nbsp;4F&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[16]&nbsp;77&nbsp;|&nbsp;79&nbsp;|&nbsp;38&nbsp;|&nbsp;74&nbsp;|&nbsp;51&nbsp;|&nbsp;78&nbsp;|&nbsp;6C&nbsp;|&nbsp;39&nbsp;|&nbsp;72&nbsp;|&nbsp;49&nbsp;|&nbsp;72&nbsp;|&nbsp;52&nbsp;|&nbsp;6A&nbsp;|&nbsp;39&nbsp;|&nbsp;68&nbsp;|&nbsp;4F&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[32]&nbsp;71&nbsp;|&nbsp;4B&nbsp;|&nbsp;37&nbsp;|&nbsp;4B&nbsp;|&nbsp;67&nbsp;|&nbsp;59&nbsp;|&nbsp;59&nbsp;|&nbsp;47&nbsp;|&nbsp;68&nbsp;|&nbsp;39&nbsp;|&nbsp;45&nbsp;|&nbsp;3D&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">CryptDecode(CRYPT_BASE64,base64,dummy,data)=32&nbsp;/&nbsp;ok</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Raw&nbsp;data&nbsp;to&nbsp;decipher&nbsp;(after&nbsp;de-base64):</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[00]&nbsp;01&nbsp;|&nbsp;0B&nbsp;|&nbsp;AF&nbsp;|&nbsp;54&nbsp;|&nbsp;2A&nbsp;|&nbsp;12&nbsp;|&nbsp;CB&nbsp;|&nbsp;5B&nbsp;|&nbsp;33&nbsp;|&nbsp;68&nbsp;|&nbsp;DF&nbsp;|&nbsp;0E&nbsp;|&nbsp;C3&nbsp;|&nbsp;2F&nbsp;|&nbsp;2D&nbsp;|&nbsp;43&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[16]&nbsp;19&nbsp;|&nbsp;7D&nbsp;|&nbsp;AC&nbsp;|&nbsp;8A&nbsp;|&nbsp;D1&nbsp;|&nbsp;8F&nbsp;|&nbsp;D8&nbsp;|&nbsp;4E&nbsp;|&nbsp;A8&nbsp;|&nbsp;AE&nbsp;|&nbsp;CA&nbsp;|&nbsp;81&nbsp;|&nbsp;86&nbsp;|&nbsp;06&nbsp;|&nbsp;87&nbsp;|&nbsp;D1&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">CryptDecode(method,data,key,result)=32&nbsp;/&nbsp;ok</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Text&nbsp;restored:</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Let's&nbsp;encrypt&nbsp;this&nbsp;message</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The message was successfully decrypted.</span></p>
+<p class="p_Text"><span class="f_Text">If, with the same input text, you choose to generate an arbitrary key (albeit of sufficient length), you will get gibberish instead of a message.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Key&nbsp;(bytes):</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[00]&nbsp;00&nbsp;|&nbsp;01&nbsp;|&nbsp;02&nbsp;|&nbsp;03&nbsp;|&nbsp;04&nbsp;|&nbsp;05&nbsp;|&nbsp;06&nbsp;|&nbsp;07&nbsp;|&nbsp;08&nbsp;|&nbsp;09&nbsp;|&nbsp;0A&nbsp;|&nbsp;0B&nbsp;|&nbsp;0C&nbsp;|&nbsp;0D&nbsp;|&nbsp;0E&nbsp;|&nbsp;0F&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">-&nbsp;CRYPT_AES128,&nbsp;key&nbsp;required:&nbsp;true</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Text=AQuvVCoSy1szaN8Owy8tQxl9rIrRj9hOqK7KgYYGh9E=&nbsp;/&nbsp;ok</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">StringToCharArray(Text,base64,0,-1,CP_UTF8)=44&nbsp;/&nbsp;ok</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Text&nbsp;(bytes):</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[00]&nbsp;41&nbsp;|&nbsp;51&nbsp;|&nbsp;75&nbsp;|&nbsp;76&nbsp;|&nbsp;56&nbsp;|&nbsp;43&nbsp;|&nbsp;6F&nbsp;|&nbsp;53&nbsp;|&nbsp;79&nbsp;|&nbsp;31&nbsp;|&nbsp;73&nbsp;|&nbsp;7A&nbsp;|&nbsp;61&nbsp;|&nbsp;4E&nbsp;|&nbsp;38&nbsp;|&nbsp;4F&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[16]&nbsp;77&nbsp;|&nbsp;79&nbsp;|&nbsp;38&nbsp;|&nbsp;74&nbsp;|&nbsp;51&nbsp;|&nbsp;78&nbsp;|&nbsp;6C&nbsp;|&nbsp;39&nbsp;|&nbsp;72&nbsp;|&nbsp;49&nbsp;|&nbsp;72&nbsp;|&nbsp;52&nbsp;|&nbsp;6A&nbsp;|&nbsp;39&nbsp;|&nbsp;68&nbsp;|&nbsp;4F&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[32]&nbsp;71&nbsp;|&nbsp;4B&nbsp;|&nbsp;37&nbsp;|&nbsp;4B&nbsp;|&nbsp;67&nbsp;|&nbsp;59&nbsp;|&nbsp;59&nbsp;|&nbsp;47&nbsp;|&nbsp;68&nbsp;|&nbsp;39&nbsp;|&nbsp;45&nbsp;|&nbsp;3D&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">CryptDecode(CRYPT_BASE64,base64,dummy,data)=32&nbsp;/&nbsp;ok</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Raw&nbsp;data&nbsp;to&nbsp;decipher&nbsp;(after&nbsp;de-base64):</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[00]&nbsp;01&nbsp;|&nbsp;0B&nbsp;|&nbsp;AF&nbsp;|&nbsp;54&nbsp;|&nbsp;2A&nbsp;|&nbsp;12&nbsp;|&nbsp;CB&nbsp;|&nbsp;5B&nbsp;|&nbsp;33&nbsp;|&nbsp;68&nbsp;|&nbsp;DF&nbsp;|&nbsp;0E&nbsp;|&nbsp;C3&nbsp;|&nbsp;2F&nbsp;|&nbsp;2D&nbsp;|&nbsp;43&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">[16]&nbsp;19&nbsp;|&nbsp;7D&nbsp;|&nbsp;AC&nbsp;|&nbsp;8A&nbsp;|&nbsp;D1&nbsp;|&nbsp;8F&nbsp;|&nbsp;D8&nbsp;|&nbsp;4E&nbsp;|&nbsp;A8&nbsp;|&nbsp;AE&nbsp;|&nbsp;CA&nbsp;|&nbsp;81&nbsp;|&nbsp;86&nbsp;|&nbsp;06&nbsp;|&nbsp;87&nbsp;|&nbsp;D1&nbsp;|&nbsp;</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">CryptDecode(method,data,key,result)=32&nbsp;/&nbsp;ok</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">Text&nbsp;restored:</span></p>
+<p class="p_CodeExampleCondensed" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExampleCondensed">???&nbsp;?L??&nbsp;??J&nbsp;Q+?]?v?9?????n?N?&#368;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The program will behave similarly if you confuse the encryption method.</span></p>
+<p class="p_Text"><span class="f_Text">It doesn't make sense to choose &quot;unhashing&quot; methods: INVALID_PARAMETER (4003).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">-&nbsp;CRYPT_HASH_MD5,&nbsp;key&nbsp;required:&nbsp;false</span>
+<br><span class="f_CodeExample">File=MQL5Book/clock10.htm.MD5&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">FileLoad(File,data)=16&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">WARNING:&nbsp;hashes&nbsp;can&nbsp;not&nbsp;be&nbsp;used&nbsp;to&nbsp;restore&nbsp;data!&nbsp;CryptDecode&nbsp;will&nbsp;fail.</span>
+<br><span class="f_CodeExample">CryptDecode(method,data,key,result)=0&nbsp;/&nbsp;INVALID_PARAMETER(4003)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">An attempt to unpack (CRYPT_ARCH_ZIP) something that is not a compressed &quot;deflate&quot; block will result in INTERNAL_ERROR (4001). The same error can be obtained if you enable the skip CRC option for the &quot;archive&quot; without it, or, conversely, uncompress the data without the option, although packing was done with it.</span></p>
+
+</div>
+
+</body>
+</html>

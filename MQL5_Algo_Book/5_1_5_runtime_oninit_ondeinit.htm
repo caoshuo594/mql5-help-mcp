@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.1.5 Reference events of indicators and Expert Advisors: OnInit and OnDeinit</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_1_runtime.htm"> 5.1 General principles for executing MQL programs </a>/ 5.1.5 Reference events of indicators and Expert Advisors: OnInit and OnDeinit
+          </td>
+          <td width="70" align="right">
+          <a href="5_1_4_runtime_lifecycle.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_1_6_runtime_onstart.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.1.5 Reference events of indicators and Expert Advisors: OnInit and OnDeinit</span></p>
+<p class="p_Text"><span class="f_Text">In interactive MQL programs – indicators and Expert Advisors – the environment generates two events to prepare for launch (</span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text">) and stop (</span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text">). There are no such events in scripts and services because they do not accept asynchronous events: after control is passed to their single event handler </span><span class="f_Text" style="font-style: italic;"><a href="5_1_6_runtime_onstart.htm" class="topiclink">OnStart</a></span><span class="f_Text"> and until the end of the work, the execution context of the script/service thread is in the code of the MQL program. In contrast, for indicators and Expert Advisors, the normal course of work assumes that the environment will repeatedly call their specific event handling functions (we will discuss them in the sections on indicators and Expert Advisors), and each time, having taken the necessary actions, the programs will return control to the terminal for idle waiting for new events.</span></p>
+<p class="p_H4"><span class="f_H4">int OnInit()</span></p>
+<p class="p_Text"><span class="f_Text">Function </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> is a handler of the event of the same name, which is generated after loading an Expert Advisor or an indicator. The function can only be defined as needed.</span></p>
+<p class="p_Text"><span class="f_Text">The function must return one of the ENUM_INIT_RETCODE enum values.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table" style="width:65%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">INIT_SUCCEEDED</span></p>
+</td>
+<td class="table" style="width:65%;"><p class="p_fortable"><span class="f_fortable">Successful initialization, program execution can be continued; corresponds to value 0</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">INIT_FAILED</span></p>
+</td>
+<td class="table" style="width:65%;"><p class="p_fortable"><span class="f_fortable">Unsuccessful initialization, execution cannot be continued due to fatal errors (for example, it was not possible to create a file or an auxiliary indicator); value 1</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable" style="letter-spacing: -1px;">INIT_PARAMETERS_INCORRECT</span></p>
+</td>
+<td class="table" style="width:65%;"><p class="p_fortable"><span class="f_fortable">Incorrect set of input parameters, program execution is impossible</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable" style="letter-spacing: -1px;">INIT_AGENT_NOT_SUITABLE</span></p>
+</td>
+<td class="table" style="width:65%;"><p class="p_fortable"><span class="f_fortable">Specific code to work in <a href="6_5_tester.htm" class="topiclink">tester</a>: for some reason, this agent is not suitable for testing (for example, not enough RAM, no OpenCL support, etc.)</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> returns any non-zero return code, this means unsuccessful initialization, and then the </span><span class="f_Text" style="font-style: italic;">Deinit</span><span class="f_Text"> event is generated, with deinitialization reason code REASON_INITFAILED (see below).</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> function can be declared with a result type </span><span class="f_Text" style="font-style: italic;">void</span><span class="f_Text">: in this case, initialization is always considered successful.</span></p>
+<p class="p_Quote"><span class="f_Quote">In the </span><span class="f_Quote" style="font-style: italic;">OnInit</span><span class="f_Quote"> handler, it is important to check that all necessary environment information is present, and if it is not available, defer preparatory actions for the next tick or timer arrival events. The point is that when the terminal starts, the </span><span class="f_Quote" style="font-style: italic;">OnInit</span><span class="f_Quote"> event often triggers before a connection to the server is established, and therefore many properties of financial instruments and a trading account are still unknown. In particular, the value of one pip of a particular symbol may be returned as zero.</span></p>
+<p class="p_H4"><span class="f_H4">void OnDeinit(const int reason)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> function (if it is defined) is called when the Expert Advisor or indicator is deinitialized. The function is optional.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">reason</span><span class="f_Text"> parameter contains the deinitialization reason code. Possible values are shown in the following table.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Constant</span></p>
+</th>
+<th class="table" style="width:15%;"><p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables">Value</span></p>
+</th>
+<th class="table" style="width:50%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_PROGRAM</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">0</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Expert Advisor stopped operation by </span><span class="f_fortable" style="font-style: italic;"><a href="5_1_7_runtime_remove.htm" class="topiclink">ExpertRemove</a></span><span class="f_fortable"> function call</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_REMOVE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">1</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Program removed from the chart</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_RECOMPILE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">2</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Program recompiled</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_CHARTCHANGE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">3</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Chart symbol or period changed</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_CHARTCLOSE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">4</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Chart closed</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_PARAMETERS</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">5</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Input parameters changed</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_ACCOUNT</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">6</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Another account has been activated, or a reconnection to the trading server has occurred due to a change in the account settings</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_TEMPLATE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">7</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Different chart template applied</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_INITFAILED</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">8</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable" style="font-style: italic;">OnInit</span><span class="f_fortable"> handler returned a non-null value</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">REASON_CLOSE</span></p>
+</td>
+<td class="table" style="width:15%;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable">9</span></p>
+</td>
+<td class="table" style="width:50%;"><p class="p_fortable"><span class="f_fortable">Terminal closed</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The same code can be obtained anywhere in the program using the </span><span class="f_Text" style="font-style: italic;"><a href="4_9_13_env_stop.htm" class="topiclink">UninitializeReason</a></span><span class="f_Text"> function if the stop flag </span><span class="f_Text" style="font-style: italic;">_StopFlag</span><span class="f_Text"> is set in the MQL program.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">AllInOne.mqh</span><span class="f_Text"> file has the </span><span class="f_Text" style="font-style: italic;">Finalizer</span><span class="f_Text"> class which allows you to &quot;hook&quot; the deinitialization code in the destructor through the </span><span class="f_Text" style="font-style: italic;">UninitializeReason</span><span class="f_Text"> call. We must get the same value in the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> handler.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Finalizer</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Finalizer</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;~</span><span class="f_CodeExample" style="color: #333333;">Finalizer</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #333333;">ENUM_DEINIT_REASON</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">UninitializeReason</span><span class="f_CodeExample">()));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Finalizer</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Finalizer</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For the convenience of translating codes into a string representation (names of reasons) using </span><span class="f_Text" style="font-style: italic;">EnumToString</span><span class="f_Text">, enumeration ENUM_DEINIT_REASON with constants from the above table is described in the </span><span class="f_Text" style="font-style: italic;">Uninit.mqh</span><span class="f_Text"> file. The log will display entries like:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">OnDeinit&nbsp;DEINIT_REASON_REMOVE</span>
+<br><span class="f_CodeExample">EnumToString((ENUM_DEINIT_REASON)UninitializeReason())=DEINIT_REASON_REMOVE&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Quote"><span class="f_Quote">When you change the symbol or timeframe of the chart on which the indicator is located, it is unloaded and loaded again. In this case, the sequence of triggering the event </span><span class="f_Quote" style="font-style: italic;">OnDeinit</span><span class="f_Quote"> in the old copy and </span><span class="f_Quote" style="font-style: italic;">OnInit</span><span class="f_Quote"> is not defined in the new copy. This is due to the specifics of asynchronous event processing by the terminal. In other words, it may not be entirely logical that a new copy will be loaded and initialized before the old one is completely unloaded. If the indicator performs some chart adjustment in </span><span class="f_Quote" style="font-style: italic;">OnInit</span><span class="f_Quote"> (for example, creates a <a href="5_8_objects.htm" class="topiclink">graphic object</a>), then without taking special measures, the unloaded copy can immediately &quot;clean up&quot; the chart (delete the object, considering it to be its own). In the specific case of graphical objects, there is a particular solution: objects can be given names that include symbol and timeframe prefixes (as well as the checksum of input variable values), but in the general case it will not work. For a universal solution to the problem, some kind of synchronization mechanism should be implemented, for example, on <a href="4_6_globals.htm" class="topiclink">global variables</a> or <a href="7_1_resources.htm" class="topiclink">resources</a>.</span></p>
+<p class="p_Text"><span class="f_Text">When testing indicators in the tester, MetaTrader 5 developers decided not to generate the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> event. Their idea is that the indicator can create some graphical objects, which it usually removes in the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> handler, but the user would like to see them after the test is completed. In fact, the author of an MQL program can, if desired, provide similar behavior and leave objects with a positive check of the mode </span><span class="f_Text" style="font-style: italic;">MQLInfoInteger(MQL_TESTER)</span><span class="f_Text">. This is strange since the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> handler is called after the Expert Advisor test, and the Expert Advisor can delete objects in the same way in </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text">. Now, only for indicators, it turns out that the regular behavior of the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> handler cannot be guaranteed in the tester. Moreover, other finalization is not performed, for example, destructors of global objects are not called.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, if you need to perform a statistics calculation, file saving, or other action after the test run that was originally intended for the indicator's </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text">, you will have to transfer the indicator algorithms to the Expert Advisor.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.2.7 Universal formatted data output to a string</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_2_strings.htm"> 4.2 Working with strings and symbols </a>/ 4.2.7 Universal formatted data output to a string
+          </td>
+          <td width="70" align="right">
+          <a href="4_2_6_strings_codepages.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_3_arrays.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.2.7 Universal formatted data output to a string</span></p>
+<p class="p_Text"><span class="f_Text">When generating a string to display to the user, to save to a file, or to send over the Internet, it may be necessary to include the values of several variables of different types in it. This problem can be solved by explicitly casting all variables to the type </span><span class="f_Text" style="font-style: italic;">(string)</span><span class="f_Text"> and adding the resulting strings, but in this case, the MQL code instruction will be long and difficult to understand. It would probably be more convenient to use the </span><span class="f_Text" style="font-style: italic;"><a href="4_2_2_strings_concatenation.htm" class="topiclink">StringConcatenate</a></span><span class="f_Text"> function, but this method does not completely solve the problem.</span></p>
+<p class="p_Text"><span class="f_Text">The fact is that a string usually contains not only variables, but also some text inserts that act as connecting links and provide the correct structure of the overall message. It turns out that pieces of formatting text are mixed with variables. This kind of code is hard to maintain, which goes against one of the well-known principles of programming: the separation of content and presentation.</span></p>
+<p class="p_Text"><span class="f_Text">There is a special solution for this problem: the </span><span class="f_Text" style="font-style: italic;">StringFormat</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">The same scheme applies to another MQL5 API function: </span><span class="f_Text" style="font-style: italic;"><a href="4_8_1_output_print.htm" class="topiclink">PrintFormat</a></span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">string StringFormat(const string format, ...)</span></p>
+<p class="p_Text"><span class="f_Text">The function converts arbitrary built-in type arguments to a string according to the specified format. The first parameter is the template of the string to be prepared, in which the places for inserting variables are indicated in a special way and the format of their output is determined. These control commands may be interspersed with plain text, which is copied to the output string unchanged. The following function parameters, separated by commas, list all the variables in the order and types that are reserved for them in the template.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Interaction of format string and StringFormat arguments" title="Interaction of format string and StringFormat arguments" width="570" height="150" style="margin:0 auto 0 auto;width:570px;height:150px;border:none" src="sprintf.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Interaction of the format string and StringFormat arguments</span></p>
+<p class="p_Text"><span class="f_Text">Each variable insertion point in a string is marked with a format specifier: the character '%', after which several settings can be specified.</span></p>
+<p class="p_Text"><span class="f_Text">The format string is parsed from left to right. When the first specifier (if any) is encountered, the value of the first parameter after the format string is converted and added to the resulting string according to the specified settings. The second specifier causes the second parameter to be converted and printed, and so on, until the end of the format string. All other characters in the pattern between the specifiers are copied unchanged into the resulting string.</span></p>
+<p class="p_Text"><span class="f_Text">The template may not contain any specifier, that is, it can be a simple string. In this case, you need to pass a dummy argument to the function in addition to the string (the argument will not be placed in the string).</span></p>
+<p class="p_Text"><span class="f_Text">If you want to display the percent sign in the template, then you should write it twice in a row %%. If the % sign is not doubled, then the next few characters following % are always parsed as a specifier.</span></p>
+<p class="p_Text"><span class="f_Text">A mandatory attribute of a specifier is a symbol that indicates the expected type and interpretation of the next function argument. Let's conditionally call this symbol T. Then, in the simplest case, one format specifier looks like %T.</span></p>
+<p class="p_Text"><span class="f_Text">In a generalized form, the specifier can consist of several more fields (optional fields are indicated in square brackets):</span></p>
+<p class="p_Text"><span class="f_Text">%[Z][W][.P][M]T</span></p>
+<p class="p_Text"><span class="f_Text">Each field performs its function and takes one of the allowed values. Next, we will gradually consider all the fields.</span></p>
+<p class="p_Text" style="page-break-after: avoid;"><span class="f_Text" style="font-weight: bold;">Type T</span></p>
+<p class="p_Text"><span class="f_Text">For integers, the following characters can be used as T, with an explanation of how the corresponding numbers are displayed in the string:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">c – Unicode character</span></li>
+<li class="p_li"><span class="f_li">C – ANSI character</span></li>
+<li class="p_li"><span class="f_li">d, i – signed decimal</span></li>
+<li class="p_li"><span class="f_li">o – unsigned octal</span></li>
+<li class="p_li"><span class="f_li">u – unsigned decimal</span></li>
+<li class="p_li"><span class="f_li">x – unsigned hexadecimal (lowercase)</span></li>
+<li class="p_li"><span class="f_li">X – unsigned hexadecimal (capital letters)</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Recall that according to the method of internal data storage, integer types also include built-in MQL5 types </span><span class="f_Text" style="font-style: italic;">datetime</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">color</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">bool</span><span class="f_Text"> and enumerations.</span></p>
+<p class="p_Text"><span class="f_Text">For real numbers, the following symbols are applicable as T:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">e – scientific format with exponent (lowercase 'e')</span></li>
+<li class="p_li"><span class="f_li">E – scientific format with exponent (capital 'E')</span></li>
+<li class="p_li"><span class="f_li">f – normal format</span></li>
+<li class="p_li"><span class="f_li">g – analog of f or e (the most compact form is chosen)</span></li>
+<li class="p_li"><span class="f_li">G – analog of f or E (the most compact form is chosen)</span></li>
+<li class="p_li"><span class="f_li">a – scientific format with exponent, hexadecimal (lowercase)</span></li>
+<li class="p_li"><span class="f_li">A – scientific format with exponent, hexadecimal (capital letters)</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Finally, there is only one version of the T character available for strings: s.</span></p>
+<p class="p_Text" style="page-break-after: avoid;"><span class="f_Text" style="font-weight: bold;">Size of integers M</span></p>
+<p class="p_Text"><span class="f_Text">For integer types, you can additionally explicitly specify the size of the variable in bytes by prefixing T with one of the following characters or combinations of them (we have generalized them under the letter M):</span></p>
+<ul>
+<li class="p_li"><span class="f_li">h – 2 bytes (short, ushort)</span></li>
+<li class="p_li"><span class="f_li">l (lowercase L) – 4 bytes (int, uint)</span></li>
+<li class="p_li"><span class="f_li">I32 (capital i) – 4 bytes (int, uint)</span></li>
+<li class="p_li"><span class="f_li">ll (two lowercase Ls) – 8 bytes (long)</span></li>
+<li class="p_li"><span class="f_li">I64 (capital i) – 8 bytes (long, ulong)</span></li>
+</ul>
+<p class="p_Text" style="page-break-after: avoid;"><span class="f_Text" style="font-weight: bold;">Width W</span></p>
+<p class="p_Text"><span class="f_Text">The W field is a non-negative decimal number that specifies the minimum number of character spaces available for the formatted value. If the value of the variable fits into fewer characters, then the corresponding number of spaces is added to the left or right. The left or right side is selected depending on the alignment (see the flag further '–' in the Z field). If the '0' flag is present, the corresponding number of zeros is added in front of the output value. If the number of characters to be output is greater than the specified width, then the width setting is ignored and the output value is not truncated.</span></p>
+<p class="p_Text"><span class="f_Text">If an asterisk '*' is specified as the width, then the width of the output value should be specified in the list of passed parameters. It should be a value of type </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> at the position preceding the variable being formatted.</span></p>
+<p class="p_Text" style="page-break-after: avoid;"><span class="f_Text" style="font-weight: bold;">Precision P</span></p>
+<p class="p_Text"><span class="f_Text">The P field also contains a non-negative decimal number and is always preceded by a dot '.'. For integer T, this field specifies the minimum number of significant digits. If the value fits in fewer digits, it is prepended with zeros.</span></p>
+<p class="p_Text"><span class="f_Text">For real numbers, P specifies the number of decimal places (default is 6), except for the g and G specifiers, for which P is the total number of significant digits (mantissa and decimal).</span></p>
+<p class="p_Text"><span class="f_Text">For a string, P specifies the number of characters to display. If the string length exceeds the precision value, then the string will be shown as truncated.</span></p>
+<p class="p_Text"><span class="f_Text">If the asterisk '*' is specified as the precision, it is treated in the same way as for the width but controls the precision.</span></p>
+<p class="p_Text"><span class="f_Text">Fixed width and/or precision, together with the right-alignment, makes it possible to display values in a neat column.</span></p>
+<p class="p_Text" style="page-break-after: avoid;"><span class="f_Text" style="font-weight: bold;">Flags Z</span></p>
+<p class="p_Text"><span class="f_Text">Finally, the Z field describes the flags:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">- (minus) – left alignment within the specified width (in the absence of the flag, right alignment is done);</span></li>
+<li class="p_li"><span class="f_li">+ (plus) – unconditional display of a '+' or '-' sign before the value (without this flag, only '-' is displayed for negative values);</span></li>
+<li class="p_li"><span class="f_li">0 – zeros are added before the output value if it is less than the specified width;</span></li>
+<li class="p_li"><span class="f_li">(space) – a space is placed before the displayed value if it is signed and positive;</span></li>
+<li class="p_li"><span class="f_li"># – controls the display of octal and hexadecimal number prefixes in formats </span><span class="f_li" style="font-style: italic;">o</span><span class="f_li">, </span><span class="f_li" style="font-style: italic;">x</span><span class="f_li"> or </span><span class="f_li" style="font-style: italic;">X</span><span class="f_li"> (for example, for the format </span><span class="f_li" style="font-style: italic;">x</span><span class="f_li"> prefix &quot;0x&quot; is added before the displayed number, for the format </span><span class="f_li" style="font-style: italic;">X</span><span class="f_li"> – prefix &quot;0X&quot;), decimal point in real numbers (formats </span><span class="f_li" style="font-style: italic;">e</span><span class="f_li">, </span><span class="f_li" style="font-style: italic;">E</span><span class="f_li">, </span><span class="f_li" style="font-style: italic;">a</span><span class="f_li"> or </span><span class="f_li" style="font-style: italic;">A</span><span class="f_li">) with a zero fractional part, and some other nuances.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">You can learn more about the possibilities of formatted output to a string in the <a href="https://www.mql5.com/ru/docs/common/printformat" target="_blank" class="weblink" title="MQL5: printf">documentation</a>.</span></p>
+<p class="p_Text"><span class="f_Text">The total number of function parameters cannot exceed 64.</span></p>
+<p class="p_Text"><span class="f_Text">If the number of arguments passed to the function is greater than the number of specifiers, then the extra arguments are omitted.</span></p>
+<p class="p_Text"><span class="f_Text">If the number of specifiers in the format string is greater than the arguments, then the system will try to display zeros instead of missing data, but a text warning (&quot;missing string parameter&quot;) will be embedded for string specifiers.</span></p>
+<p class="p_Text"><span class="f_Text">If the type of the value does not match the type of the corresponding specifier, the system will try to read the data from the variable in accordance with the format and display the resulting value (it may look strange due to a misinterpretation of the internal bit representation of the real data). In the case of strings, a warning (&quot;non-string passed&quot;) may be embedded in the result.</span></p>
+<p class="p_Text"><span class="f_Text">Let's test the function with the script </span><span class="f_Text" style="font-style: italic;">StringFormat.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">First, let's try different options for T and data type specifier.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;[Infinity&nbsp;Sign]&nbsp;Unicode&nbsp;(ok):&nbsp;%c;&nbsp;ANSI&nbsp;(overflow):&nbsp;%C&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;'&#8734;',&nbsp;'&#8734;'));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;short&nbsp;(ok):&nbsp;%hi,&nbsp;short&nbsp;(overflow):&nbsp;%hi&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MAX</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INT_MAX</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;int&nbsp;(ok):&nbsp;%i,&nbsp;int&nbsp;(overflow):&nbsp;%i&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">INT_MAX</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LONG_MAX</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;long&nbsp;(ok):&nbsp;%lli,&nbsp;long&nbsp;(overflow):&nbsp;%i&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LONG_MAX</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">LONG_MAX</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;ulong&nbsp;(ok):&nbsp;%llu,&nbsp;long&nbsp;signed&nbsp;(overflow):&nbsp;%lli&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ULONG_MAX</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ULONG_MAX</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Both correct and incorrect specifiers are represented here (incorrect ones come second in each instruction and are marked with the word &quot;overflow&quot; since the value passed does not fit in the format type).</span></p>
+<p class="p_Text"><span class="f_Text">Here's what happens in the log (the breaks of long lines here and below are made for publication):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">StringFormat(Plain&nbsp;string,0)='Plain&nbsp;string'</span>
+<br><span class="f_CodeExample">StringFormat([Infinity&nbsp;Sign]&nbsp;Unicode:&nbsp;%c;&nbsp;ANSI:&nbsp;%C,'&#8734;','&#8734;')=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;'[Infinity&nbsp;Sign]&nbsp;Unicode&nbsp;(ok):&nbsp;&#8734;;&nbsp;ANSI&nbsp;(overflow):&nbsp;&nbsp;'</span>
+<br><span class="f_CodeExample">StringFormat(short&nbsp;(ok):&nbsp;%hi,&nbsp;short&nbsp;(overflow):&nbsp;%hi,SHORT_MAX,INT_MAX)=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;'short&nbsp;(ok):&nbsp;32767,&nbsp;short&nbsp;(overflow):&nbsp;-1'</span>
+<br><span class="f_CodeExample">StringFormat(int&nbsp;(ok):&nbsp;%i,&nbsp;int&nbsp;(overflow):&nbsp;%i,INT_MAX,LONG_MAX)=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;'int&nbsp;(ok):&nbsp;2147483647,&nbsp;int&nbsp;(overflow):&nbsp;-1'</span>
+<br><span class="f_CodeExample">StringFormat(long&nbsp;(ok):&nbsp;%lli,&nbsp;long&nbsp;(overflow):&nbsp;%i,LONG_MAX,LONG_MAX)=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;'long&nbsp;(ok):&nbsp;9223372036854775807,&nbsp;long&nbsp;(overflow):&nbsp;-1'</span>
+<br><span class="f_CodeExample">StringFormat(ulong&nbsp;(ok):&nbsp;%llu,&nbsp;long&nbsp;signed&nbsp;(overflow):&nbsp;%lli,ULONG_MAX,ULONG_MAX)=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;'ulong&nbsp;(ok):&nbsp;18446744073709551615,&nbsp;long&nbsp;signed&nbsp;(overflow):&nbsp;-1'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">All of the following instructions are correct:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;ulong&nbsp;(ok):&nbsp;%I64u&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ULONG_MAX</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;ulong&nbsp;(HEX):&nbsp;%I64X,&nbsp;ulong&nbsp;(hex):&nbsp;%I64x&quot;</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1234567890123456</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1234567890123456</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%f&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%e&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%g&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%a&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;string:&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ABCDEFGHIJ&quot;</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The result of their work is shown below:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">StringFormat(ulong&nbsp;(ok):&nbsp;%I64u,ULONG_MAX)=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;'ulong&nbsp;(ok):&nbsp;18446744073709551615'</span>
+<br><span class="f_CodeExample">StringFormat(ulong&nbsp;(HEX):&nbsp;%I64X,&nbsp;ulong&nbsp;(hex):&nbsp;%I64x,1234567890123456,1234567890123456)=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;'ulong&nbsp;(HEX):&nbsp;462D53C8ABAC0,&nbsp;ulong&nbsp;(hex):&nbsp;462d53c8abac0'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%f,M_PI)='double&nbsp;PI:&nbsp;3.141593'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%e,M_PI)='double&nbsp;PI:&nbsp;3.141593e+00'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%g,M_PI)='double&nbsp;PI:&nbsp;3.14159'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%a,M_PI)='double&nbsp;PI:&nbsp;0x1.921fb54442d18p+1'</span>
+<br><span class="f_CodeExample">StringFormat(string:&nbsp;%s,ABCDEFGHIJ)='string:&nbsp;ABCDEFGHIJ'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now let's look at the various modifiers.</span></p>
+<p class="p_Text"><span class="f_Text">With right alignment (by default) and a fixed field width (number of characters), we can use different options for padding the resulting string on the left: with a space or zeros. In addition, for any alignment, you can enable or disable the explicit indication of the sign of the value (so that not only minus is displayed for negative, but also plus for positive).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;space&nbsp;padding:&nbsp;%10i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MAX</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;0-padding:&nbsp;%010i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MAX</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;with&nbsp;sign:&nbsp;%+10i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MAX</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;precision:&nbsp;%.10i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MAX</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We get the following in the log:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">StringFormat(space&nbsp;padding:&nbsp;%10i,SHORT_MAX)='space&nbsp;padding:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;32767'</span>
+<br><span class="f_CodeExample">StringFormat(0-padding:&nbsp;%010i,SHORT_MAX)='0-padding:&nbsp;0000032767'</span>
+<br><span class="f_CodeExample">StringFormat(with&nbsp;sign:&nbsp;%+10i,SHORT_MAX)='with&nbsp;sign:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+32767'</span>
+<br><span class="f_CodeExample">StringFormat(precision:&nbsp;%.10i,SHORT_MAX)='precision:&nbsp;0000032767'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To align to the left, you must use the '-' (minus) flag, the addition of the string to the specified width occurs on the right:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;no&nbsp;sign&nbsp;(default):&nbsp;%-10i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MAX</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;with&nbsp;sign:&nbsp;%+-10i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MAX</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">StringFormat(no&nbsp;sign&nbsp;(default):&nbsp;%-10i,SHORT_MAX)='no&nbsp;sign&nbsp;(default):&nbsp;32767&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'</span>
+<br><span class="f_CodeExample">StringFormat(with&nbsp;sign:&nbsp;%+-10i,SHORT_MAX)='with&nbsp;sign:&nbsp;+32767&nbsp;&nbsp;&nbsp;&nbsp;'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If necessary, we can show or hide the sign of the value (by default, only minus is displayed for negative values), add a space for positive values, and thus ensure the same formatting when you need to display variables in a column:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;default:&nbsp;%i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MAX</span><span class="f_CodeExample">));&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;standard</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;default:&nbsp;%i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MIN</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;space&nbsp;&nbsp;:&nbsp;%&nbsp;i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MAX</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;extra&nbsp;space&nbsp;for&nbsp;positive</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;space&nbsp;&nbsp;:&nbsp;%&nbsp;i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MIN</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;sign&nbsp;&nbsp;&nbsp;:&nbsp;%+i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MAX</span><span class="f_CodeExample">));&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;force&nbsp;sign&nbsp;output</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;sign&nbsp;&nbsp;&nbsp;:&nbsp;%+i&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SHORT_MIN</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here's what it looks like in the log:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">StringFormat(default:&nbsp;%i,SHORT_MAX)='default:&nbsp;32767'</span>
+<br><span class="f_CodeExample">StringFormat(default:&nbsp;%i,SHORT_MIN)='default:&nbsp;-32768'</span>
+<br><span class="f_CodeExample">StringFormat(space&nbsp;&nbsp;:&nbsp;%&nbsp;i,SHORT_MAX)='space&nbsp;&nbsp;:&nbsp;&nbsp;32767'</span>
+<br><span class="f_CodeExample">StringFormat(space&nbsp;&nbsp;:&nbsp;%&nbsp;i,SHORT_MIN)='space&nbsp;&nbsp;:&nbsp;-32768'</span>
+<br><span class="f_CodeExample">StringFormat(sign&nbsp;&nbsp;&nbsp;:&nbsp;%+i,SHORT_MAX)='sign&nbsp;&nbsp;&nbsp;:&nbsp;+32767'</span>
+<br><span class="f_CodeExample">StringFormat(sign&nbsp;&nbsp;&nbsp;:&nbsp;%+i,SHORT_MIN)='sign&nbsp;&nbsp;&nbsp;:&nbsp;-32768'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now let's compare how width and precision affect real numbers.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%15.10f&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%15.10e&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%15.10g&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%15.10a&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;default&nbsp;precision&nbsp;=&nbsp;6</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%15f&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%15e&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%15g&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%15a&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%15.10f,M_PI)='double&nbsp;PI:&nbsp;&nbsp;&nbsp;&nbsp;3.1415926536'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%15.10e,M_PI)='double&nbsp;PI:&nbsp;3.1415926536e+00'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%15.10g,M_PI)='double&nbsp;PI:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.141592654'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%15.10a,M_PI)='double&nbsp;PI:&nbsp;0x1.921fb54443p+1'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%15f,M_PI)='double&nbsp;PI:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.141593'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%15e,M_PI)='double&nbsp;PI:&nbsp;&nbsp;&nbsp;&nbsp;3.141593e+00'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%15g,M_PI)='double&nbsp;PI:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.14159'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%15a,M_PI)='double&nbsp;PI:&nbsp;0x1.921fb54442d18p+1'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the explicit width is not specified, the values are output without padding with spaces.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%.10f&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%.10e&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%.10g&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%.10a&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%.10f,M_PI)='double&nbsp;PI:&nbsp;3.1415926536'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%.10e,M_PI)='double&nbsp;PI:&nbsp;3.1415926536e+00'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%.10g,M_PI)='double&nbsp;PI:&nbsp;3.141592654'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%.10a,M_PI)='double&nbsp;PI:&nbsp;0x1.921fb54443p+1'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Setting the width and precision of values using the sign '*' and based on additional function arguments is performed as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;PI:&nbsp;%*.*f&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;string:&nbsp;%*s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">15</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ABCDEFGHIJ&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;string:&nbsp;%-*s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">15</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ABCDEFGHIJ&quot;</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Please note that 1 or 2 integer type values are passed before the output value, according to the number of asterisks '*' in the specifier: you can control the precision and the width separately or both together.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">StringFormat(double&nbsp;PI:&nbsp;%*.*f,12,5,M_PI)='double&nbsp;PI:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.14159'</span>
+<br><span class="f_CodeExample">StringFormat(string:&nbsp;%*s,15,ABCDEFGHIJ)='string:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ABCDEFGHIJ'</span>
+<br><span class="f_CodeExample">StringFormat(string:&nbsp;%-*s,15,ABCDEFGHIJ)='string:&nbsp;ABCDEFGHIJ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, let's look at a few common formatting errors.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;string:&nbsp;%s&nbsp;%d&nbsp;%f&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ABCDEFGHIJ&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;string&nbsp;vs&nbsp;int:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;ABCDEFGHIJ&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;double&nbsp;vs&nbsp;int:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample" style="color: #ff0000;">PRT</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;string&nbsp;vs&nbsp;double:&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">M_PI</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The first instruction has more specifiers than arguments. In other cases, the types of specifiers and passed values do not match. As a result, we get the following output:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">StringFormat(string:&nbsp;%s&nbsp;%d&nbsp;%f&nbsp;%s,ABCDEFGHIJ)=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;'string:&nbsp;ABCDEFGHIJ&nbsp;0&nbsp;0.000000&nbsp;(missed&nbsp;string&nbsp;parameter)'</span>
+<br><span class="f_CodeExample">StringFormat(string&nbsp;vs&nbsp;int:&nbsp;%d,ABCDEFGHIJ)='string&nbsp;vs&nbsp;int:&nbsp;0'</span>
+<br><span class="f_CodeExample">StringFormat(double&nbsp;vs&nbsp;int:&nbsp;%d,M_PI)='double&nbsp;vs&nbsp;int:&nbsp;1413754136'</span>
+<br><span class="f_CodeExample">StringFormat(string&nbsp;vs&nbsp;double:&nbsp;%s,M_PI)=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;'string&nbsp;vs&nbsp;double:&nbsp;(non-string&nbsp;passed)'</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Having a single format string in every </span><span class="f_Text" style="font-style: italic;">StringFormat</span><span class="f_Text"> function call allows you to use it, in particular, to translate the external interface of programs and messages into different languages: simply download and substitute into </span><span class="f_Text" style="font-style: italic;">StringFormat</span><span class="f_Text"> various format strings (prepared in advance) depending on user preferences or terminal settings.</span></p>
+
+</div>
+
+</body>
+</html>

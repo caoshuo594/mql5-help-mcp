@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.6.1 Turning timer on and off</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_6_timer.htm"> 5.6 Working with timer </a>/ 5.6.1 Turning timer on and off
+          </td>
+          <td width="70" align="right">
+          <a href="5_6_timer.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_6_2_timer_ontimer.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.6.1 Turning timer on and off: EventSetTimer/EventKillTimer</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 allows you to enable or disable the standard timer to perform any scheduled actions. There are two functions for this: </span><span class="f_Text" style="font-style: italic;">EventSetTimer</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">EventKillTimer</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">bool EventSetTimer(int seconds)</span></p>
+<p class="p_Text"><span class="f_Text">The function indicates to the client terminal that for this Expert Advisor or indicator it is necessary to generate events from the timer with the specified frequency, which is set in seconds (parameter </span><span class="f_Text" style="font-style: italic;">seconds</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">The function returns a sign of success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or error (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">). The error code can be obtained from </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In order to process timer events, an Expert Advisor or an indicator must have the </span><span class="f_Text" style="font-style: italic;"><a href="5_6_2_timer_ontimer.htm" class="topiclink">OnTimer</a></span><span class="f_Text"> function in its code. The first timer event will not occur immediately after the call of </span><span class="f_Text" style="font-style: italic;">EventSetTimer</span><span class="f_Text">, but after </span><span class="f_Text" style="font-style: italic;">seconds</span><span class="f_Text"> seconds.</span></p>
+<p class="p_Text"><span class="f_Text">For each Expert Advisor or indicator that calls the </span><span class="f_Text" style="font-style: italic;">EventSetTimer</span><span class="f_Text"> function, it creates its own, dedicated timer. The program will receive events only from it. Timers in different programs work independently.</span></p>
+<p class="p_Text"><span class="f_Text">Each interactive MQL program placed on a chart has a separate event queue where the events received for it are added. If there is already an event in the queue </span><span class="f_Text" style="font-style: italic;">OnTimer</span><span class="f_Text"> or it is in processing state, then the new </span><span class="f_Text" style="font-style: italic;">OnTimer</span><span class="f_Text"> event is not queued.</span></p>
+<p class="p_Text"><span class="f_Text">If the timer is no longer needed, it should be disabled with the </span><span class="f_Text" style="font-style: italic;">EventKillTimer</span><span class="f_Text"> function.</span></p>
+<p class="p_H4"><span class="f_H4">void EventKillTimer(void)</span></p>
+<p class="p_Text"><span class="f_Text">The function stops the timer that was enabled before by the </span><span class="f_Text" style="font-style: italic;">EventSetTimer</span><span class="f_Text"> function (or by </span><span class="f_Text" style="font-style: italic;"><a href="5_6_3_timer_event_set_millisecond.htm" class="topiclink">EventSetMillisecondTimer</a></span><span class="f_Text">, which we will discuss next). The function can also be called from the </span><span class="f_Text" style="font-style: italic;">OnTimer</span><span class="f_Text"> handler. Thus, in particular, it is possible to perform a delayed single action.</span></p>
+<p class="p_Quote"><span class="f_Quote">The call of </span><span class="f_Quote" style="font-style: italic;">EventKillTimer</span><span class="f_Quote"> in indicators does not clear the queue, so after it you can get the last residual </span><span class="f_Quote" style="font-style: italic;">OnTimer</span><span class="f_Quote"> event.</span></p>
+<p class="p_Text"><span class="f_Text">When the MQL program terminates, the timer is forcibly destroyed if it was created but not disabled by the </span><span class="f_Text" style="font-style: italic;">EventKillTimer</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">Each program can only set one timer. Therefore, if you want to call different parts of the algorithm at different intervals, you should enable a timer with a period that is the least common divisor of the required periods (in the limiting case, with a minimum period of 1 second), and in the </span><span class="f_Text" style="font-style: italic;">OnTimer</span><span class="f_Text"> handler independently track larger periods. We'll look at an example of this approach in the next section.</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 also allows to create timers with a period of less than 1 second: there is a function for this, </span><span class="f_Text" style="font-style: italic;"><a href="5_6_3_timer_event_set_millisecond.htm" class="topiclink">EventSetMillisecondTimer</a></span><span class="f_Text">.</span></p>
+
+</div>
+
+</body>
+</html>

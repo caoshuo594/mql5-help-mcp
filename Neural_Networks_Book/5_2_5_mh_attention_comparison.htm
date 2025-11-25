@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>Comparative testing of models using attention mechanisms</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="5_transformer.htm"> 5. Attention mechanisms </a> / <a class="h_m" href="5_2_mh_attention.htm"> 5.2 Multi-Head attention </a>/ 5.2.5 Comparative testing of Attention models
+          </td>
+          <td width="70" align="right">
+          <a href="5_2_4_2_mh_attention_py_script.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_3_gpt.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.2.5 Comparative testing of Attention models</span></p>
+<p class="p_Text"><span class="f_Text">We have done a lot of work while studying and implementing the </span><span class="f_Text" style="font-style: italic;">Multi-Head Self-Attention</span><span class="f_Text"> algorithm. We even managed to implement it on several platforms. Earlier we created new classes only for our library in MQL5. This time we got acquainted with the possibility of creating custom neural layers in Python using the </span><span class="f_Text" style="font-style: italic;">TensorFlow library. </span><span class="f_Text">Now it's time to look at the results of our labor and evaluate the opportunities offered to us by the new technology.</span></p>
+<p class="p_Text"><span class="f_Text">As usual, we start testing with models created using standard MQL5 tools. We have already started this work when testing the operation of the </span><span class="f_Text" style="font-style: italic;">Self-Attention</span><span class="f_Text"> algorithm. To run the new test, we will take </span><span class="f_Text" style="font-style: italic;"><a href="5_1_4_tr_comparison.htm" class="topiclink">attention_test.mq5</a></span><span class="f_Text"> from the previous test and create a copy of it named </span><span class="f_Text" style="font-style: italic;">attention_test2.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">When creating a new class for multi-head attention, we largely inherited processes from the </span><span class="f_Text" style="font-style: italic;">Self-Attention</span><span class="f_Text"> algorithm. In some cases, methods were inherited entirely, while in others they used the </span><span class="f_Text" style="font-style: italic;">Self-Attention</span><span class="f_Text"> methods as a foundation and created new functionality through minor adjustments. So here, the testing script will not require major changes, and all changes will affect only the block for declaring a new layer.</span></p>
+<p class="p_Text"><span class="f_Text">Our first change is, of course, the type of neural layer we are creating. In the </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> parameter, we will specify the </span><span class="f_Text" style="font-style: italic;">defNeuronMHAttention</span><span class="f_Text"> constant, which corresponds to the multi-head attention class.</span></p>
+<p class="p_Text"><span class="f_Text">We also need to indicate the number of attention heads used. We will specify this value in the </span><span class="f_Text" style="font-style: italic;">step</span><span class="f_Text"> parameter. I agree that the name of the parameter is not at all consonant. However, I decided not to create an additional parameter but to use the available free fields instead.</span></p>
+<p class="p_Text"><span class="f_Text">After that, we will once again go through the script code and carefully examine the key checkpoints for executing operations.</span></p>
+<p class="p_Text"><span class="f_Text">That's it. Such changes are sufficient for the first test to evaluate the net impact of the solution architecture on the model results.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;Attention&nbsp;layer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!(</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">new</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">CLayerDescription</span><span class="f_CodeExample">()))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Functions">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Error&nbsp;creating&nbsp;CLayerDescription:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_Functions">GetLastError</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_Definition">defNeuronMHAttention</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">count</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #b22222;">BarsToLine</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">window</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #b22222;">NeuronsToBar</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">window_out</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">8</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">step</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">8</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Number&nbsp;of&nbsp;attention&nbsp;heads</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">optimization</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Adam</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">activation_params</span><span class="f_CodeExample">[</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">layers</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Add</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Functions">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Error&nbsp;adding&nbsp;layer:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_Functions">GetLastError</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">delete</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">descr</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We conducted the testing directly on the same training dataset, keeping all other model parameters unchanged. Their results are shown in the graph below.</span></p>
+<p class="p_Text"><span class="f_Text">We have seen that even the use of </span><span class="f_Text" style="font-style: italic;">Self-Attention </span><span class="f_Text">gives us superiority over the previously considered architectural solutions of convolutional and recurrent models. Increasing the attention heads also yields a positive result.</span></p>
+<p class="p_Text"><span class="f_Text">The presented graphs depicting the neural network error dynamics on the training dataset clearly show that models using the attention mechanism train much faster than other models. Increasing the number of parameters when adding attention heads requires slightly more training time. However, this increase is not critical. At the same time, additional attention heads can reduce the error in the model operation.</span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" alt="Comparative Testing of Attention Models" title="Comparative Testing of Attention Models" width="600" height="400" style="width:600px;height:400px;border:none" src="conv_lstm_mhattention1.png"/><p style="text-align:center"><span class="f_ImageCaption">Comparative Testing of Attention Models</span></p></div></div>
+<p class="p_Text"><span class="f_Text">If we zoom in we can clearly see that the error of models using the attention mechanism remains lower throughout the entire training. At the same time, the use of additional attention heads further improves the performance.</span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" alt="Comparative Testing of Attention Models" title="Comparative Testing of Attention Models" width="600" height="400" style="width:600px;height:400px;border:none" src="conv_lstm_mhattention2.png"/><p style="text-align:center"><span class="f_ImageCaption">Comparative Testing of Attention Models</span></p></div></div>
+<p class="p_Text"><span class="f_Text">Note that the model using the convolutional layer has the highest number of trainable parameters. This provides an additional reason to reconsider the rationality of resource usage and start exploring new technologies that emerge every day.</span></p>
+<p class="p_Text"><span class="f_Text">When talking about the rational use of resources, I also want to caution against an inadequate increase in the number of attention heads being used. Each attention head means the consumption of additional resources. Find a balance between the amount of resources consumed, and the benefits that they give to the overall result. There is no universal answer. Such a decision should be made on a case-by-case basis.</span></p>
+<p class="p_Text"><span class="f_Text">The results of test training of models written in Python also confirm the above conclusions. Models that employ attention mechanisms train faster and are also less susceptible to model overfitting. This is confirmed by a smaller gap between the error graphs for training and validation. Increasing the number of used attention layers allows the reduction of the overall model error under otherwise equal conditions.</span></p>
+<p class="p_Text"><span class="f_Text">As you zoom in, you'll notice that models using attention mechanisms have straighter lines and fewer breaks. This indicates a clearer identification of dependencies and a progressive movement towards minimizing error. Partly, this can be explained by the normalization of results within the </span><span class="f_Text" style="font-style: italic;">Self-Attention</span><span class="f_Text"> block which allows you to have a result with the same statistical indicators at the output. </span></p>
+<p class="p_Text"><span class="f_Text">The graph of the test results for the </span><span class="f_Text" style="font-style: italic;">Accuracy</span><span class="f_Text"> metric also confirms our conclusions.</span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" alt="Results of test training of Python attention models" title="Results of test training of Python attention models" width="600" height="400" style="width:600px;height:400px;border:none" src="attention_py_mse.png"/><p style="text-align:center"><span class="f_ImageCaption">Results of test training of Python attention models</span></p></div></div>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" alt="Results of test training of Python attention models" title="Results of test training of Python attention models" width="600" height="400" style="width:600px;height:400px;border:none" src="attention_py_mse2.png"/><p style="text-align:center"><span class="f_ImageCaption">Results of test training of Python attention models</span></p></div></div>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" alt="Results of test training of Python attention models" title="Results of test training of Python attention models" width="600" height="400" style="width:600px;height:400px;border:none" src="attention_py_accur.png"/><p style="text-align:center"><span class="f_ImageCaption">Results of test training of Python attention models</span></p></div></div>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:600px"><img class="help" alt="Results of test training of Python attention models" title="Results of test training of Python attention models" width="600" height="400" style="width:600px;height:400px;border:none" src="attention_py_accur2.png"/><p style="text-align:center"><span class="f_ImageCaption">Results of test training of Python attention models</span></p></div></div>
+
+</div>
+
+</body>
+</html>

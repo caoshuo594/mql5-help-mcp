@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.4.17 Closing a position: full and partial </title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_4_experts.htm"> 6.4 Creating Expert Advisors </a>/ 6.4.17 Closing a position: full and partial 
+          </td>
+          <td width="70" align="right">
+          <a href="6_4_16_experts_trailing_stop.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_4_18_experts_closeby.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.4.17 Closing a position: full and partial </span></p>
+<p class="p_Text"><span class="f_Text">Technically, closing a position can be thought of as a trading operation that is opposite to the one used to open it. For example, to exit a buy, you need to make a sell operation (ORDER_TYPE_SELL in the </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> field) and to exit the sell one you need to buy (ORDER_TYPE_BUY in the </span><span class="f_Text" style="font-style: italic;">type</span><span class="f_Text"> field).</span></p>
+<p class="p_Text"><span class="f_Text">The trading operation type in the </span><span class="f_Text" style="font-style: italic;">action</span><span class="f_Text"> field of the </span><span class="f_Text" style="font-style: italic;">MqlTradeTransaction</span><span class="f_Text"> structure remains the same: TRADE_ACTION_DEAL.</span></p>
+<p class="p_Text"><span class="f_Text">On a hedging account, the position to be closed must be specified using a ticket in the </span><span class="f_Text" style="font-style: italic;">position</span><span class="f_Text"> field. For netting accounts, you can specify only the name of the symbol in the </span><span class="f_Text" style="font-style: italic;">symbol</span><span class="f_Text"> field since only one symbol position is possible on them. However, you can also close positions by ticket here.</span></p>
+<p class="p_Text"><span class="f_Text">In order to unify the code, it makes sense to fill in both </span><span class="f_Text" style="font-style: italic;">position</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">symbol</span><span class="f_Text"> fields regardless of account type.</span></p>
+<p class="p_Text"><span class="f_Text">Also, be sure to set the volume in the </span><span class="f_Text" style="font-style: italic;">volume</span><span class="f_Text"> field. If it is equal to the position volume, it will be closed completely. However, by specifying a lower value, it is possible to close only part of the position.</span></p>
+<p class="p_Text"><span class="f_Text">In the following table, all mandatory structure fields are marked with an asterisk and optional fields are marked with a plus.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Field</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables">Netting</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables">Hedging</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">action</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">symbol</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">position</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">type</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">type_filling</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">volume</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">price</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*'</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">*'</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">deviation</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">&plusmn;</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">&plusmn;</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">magic</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">comment</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center; margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">price</span><span class="f_Text"> field marked is with an asterisk with a tick because it is required only for symbols with the </span><span class="f_Text" style="font-style: italic;">Request</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Instant</span><span class="f_Text"> execution modes), while for the </span><span class="f_Text" style="font-style: italic;">Exchange</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Market</span><span class="f_Text"> execution, the price in the structure is not taken into account.</span></p>
+<p class="p_Text"><span class="f_Text">For a similar reason, the </span><span class="f_Text" style="font-style: italic;">deviation</span><span class="f_Text"> field is marked with '&plusmn;'. It has effect only for </span><span class="f_Text" style="font-style: italic;">Instant</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Request</span><span class="f_Text"> modes.</span></p>
+<p class="p_Text"><span class="f_Text">To simplify the programmatic implementation of closing a position, let's return to our extended structure </span><span class="f_Text" style="font-style: italic;">MqlTradeRequestSync</span><span class="f_Text"> in the file </span><span class="f_Text" style="font-style: italic;">MqlTradeSync.mqh</span><span class="f_Text">. The method for closing a position by ticket has the following code.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MqlTradeRequestSync</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlTradeRequest</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">partial</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;volume&nbsp;after&nbsp;partial&nbsp;closing</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ticket</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lot</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">PositionSelectByTicket</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ticket</span><span class="f_CodeExample">))&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ticket</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PositionGetString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_SYMBOL</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_ORDER_TYPE</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #0000ff;">PositionGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_TYPE</span><span class="f_CodeExample">)&nbsp;^&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">price</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here we first check for the existence of a position by calling the </span><span class="f_Text" style="font-style: italic;"><a href="6_4_26_experts_position_list.htm" class="topiclink">PositionSelectByTicket</a></span><span class="f_Text"> function. Additionally, this call makes the position selected in the trading environment of the terminal, which allows you to read its properties using the <a href="6_4_28_experts_positionget_funcs.htm" class="topiclink">subsequent functions</a>. In particular, we find out the symbol of a position from the POSITION_SYMBOL property and &quot;reverse&quot; its type from POSITION_TYPE to the opposite one in order to get the required order type.</span></p>
+<p class="p_Text"><span class="f_Text">The position types in the ENUM_POSITION_TYPE enum are POSITION_TYPE_BUY (value 0) and POSITION_TYPE_SELL (value 1). In the enumeration of order types ENUM_ORDER_TYPE, exactly the same values are occupied by market operations: ORDER_TYPE_BUY and ORDER_TYPE_SELL. That is why we can bring the first enumeration to the second one, and to get the opposite direction of trading, it is enough to switch the zero bit using the exclusive OR operation ('^'): we get 1 from 0, and 0 from 1.</span></p>
+<p class="p_Text"><span class="f_Text">Zeroing the </span><span class="f_Text" style="font-style: italic;">price</span><span class="f_Text"> field means automatic selection of the correct current price (</span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text">) before sending the request: this is done a little later, inside the helper method </span><span class="f_Text" style="font-style: italic;">setVolumePrices</span><span class="f_Text">, which is called further along the algorithm, from the </span><span class="f_Text" style="font-style: italic;">market</span><span class="f_Text"> method.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">_market</span><span class="f_Text"> method call occurs a couple of lines below. The </span><span class="f_Text" style="font-style: italic;">_market</span><span class="f_Text"> method generates a market order for the full volume or a part, taking into account all the completed fields of the structure.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">total</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lot</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PositionGetDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_VOLUME</span><span class="f_CodeExample">)&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lot</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">partial</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PositionGetDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_VOLUME</span><span class="f_CodeExample">)&nbsp;-&nbsp;</span><span class="f_CodeExample" style="color: #333333;">total</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;_</span><span class="f_CodeExample" style="color: #333333;">market</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">total</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This fragment is slightly simplified compared to the current source code. The full code contains the handling of a rare but possible situation when the position volume exceeds the maximum allowed volume in one order per symbol (SYMBOL_VOLUME_MAX property). In this case, the position has to be closed in parts, via several orders.</span></p>
+<p class="p_Text"><span class="f_Text">Also note that since the position can be closed partially, we had to add a field to the </span><span class="f_Text" style="font-style: italic;">partial</span><span class="f_Text"> structure, where the planned balance of the volume after the operation is placed. Of course, for a complete closure, this will be 0. This information will be required to further verify the completion of the operation.</span></p>
+<p class="p_Text"><span class="f_Text">For netting accounts, there is a version of the </span><span class="f_Text" style="font-style: italic;">close</span><span class="f_Text"> method that identifies the position by symbol name. It selects a position by symbol, gets its ticket, and then refers to the previous version of </span><span class="f_Text" style="font-style: italic;">close</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lot</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #0000ff;">PositionSelect</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">))&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">PositionGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_TICKET</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lot</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">MqlTradeRequestSync</span><span class="f_Text"> structure, we have the </span><span class="f_Text" style="font-style: italic;">completed</span><span class="f_Text"> method that provides a synchronous wait for the completion of the operation, if necessary. Now we need to supplement it to close positions, in the branch where </span><span class="f_Text" style="font-style: italic;">action</span><span class="f_Text"> equals TRADE_ACTION_DEAL. We will distinguish between opening a position and closing by a zero value in the </span><span class="f_Text" style="font-style: italic;">position</span><span class="f_Text"> field: it has no ticket when opening a position and has one when closing.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">completed</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">action</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">TRADE_ACTION_DEAL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">success</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">opened</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">timeout</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">success</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">success</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">partial</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">partial</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">closed</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">timeout</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To check the actual closing of a position, we have added the </span><span class="f_Text" style="font-style: italic;">closed</span><span class="f_Text"> method into the </span><span class="f_Text" style="font-style: italic;">MqlTradeResultSync</span><span class="f_Text"> structure. Before calling it, we write the position ticket in the </span><span class="f_Text" style="font-style: italic;">result.position</span><span class="f_Text"> field so that the result structure can track the moment when the corresponding ticket disappears from the trading environment of the terminal, or when the volume equals </span><span class="f_Text" style="font-style: italic;">result.partial</span><span class="f_Text"> in case of partial closure.</span></p>
+<p class="p_Text"><span class="f_Text">Here is the </span><span class="f_Text" style="font-style: italic;">closed</span><span class="f_Text"> method. It is built on a well-known principle: first checking the success of the server return code, and then waiting with the </span><span class="f_Text" style="font-style: italic;">wait</span><span class="f_Text"> method for some condition to fulfill.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MqlTradeResultSync</span><span class="f_CodeExample">:&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MqlTradeResult</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">closed</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">msc</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1000</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">retcode</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">TRADE_RETCODE_DONE</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">wait</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">positionRemoved</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">msc</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Position&nbsp;removal&nbsp;timeout:&nbsp;P=&quot;</span><span class="f_CodeExample">&nbsp;+&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In this case, to check the condition for the position to disappear, we had to implement a new function </span><span class="f_Text" style="font-style: italic;">positionRemoved</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">positionRemoved</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">MqlTradeResultSync</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">ref</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ref</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">partial</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PositionSelectByTicket</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ref</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TU</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">Equal</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">PositionGetDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_VOLUME</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ref</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">partial</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;!</span><span class="f_CodeExample" style="color: #0000ff;">PositionSelectByTicket</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ref</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We will test the operation of closing positions using the Expert Advisor </span><span class="f_Text" style="font-style: italic;">TradeClose.mq5</span><span class="f_Text">, which implements a simple trading strategy: enter the market if there are two consecutive bars in the same direction, and as soon as the next bar closes in the opposite direction to the previous trend, we exit the market. Repetitive signals during continuous trends will be ignored, that is, there will be a maximum of one position (minimum lot) or none in the market.</span></p>
+<p class="p_Text"><span class="f_Text">The Expert Advisor will not have any adjustable parameters: only the (</span><span class="f_Text" style="font-style: italic;">Deviation</span><span class="f_Text">) and a unique number (</span><span class="f_Text" style="font-style: italic;">Magic</span><span class="f_Text">). The implicit parameters are the timeframe and the working symbol of the chart.</span></p>
+<p class="p_Text"><span class="f_Text">To track the presence of an already open position, we use the </span><span class="f_Text" style="font-style: italic;">GetMyPosition</span><span class="f_Text"> function from the previous example </span><span class="f_Text" style="font-style: italic;">TradeTrailing.mq5</span><span class="f_Text">: it searches among positions by symbol and Expert Advisor number and returns a logical </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> if a suitable position is found.</span></p>
+<p class="p_Text"><span class="f_Text">We also take the almost unchanged function </span><span class="f_Text" style="font-style: italic;">OpenPosition</span><span class="f_Text">: it opens a position according to the market order type passed in the single parameter. Here, this parameter will come from the trend detection algorithm, and earlier (in </span><span class="f_Text" style="font-style: italic;">TrailingStop.mq5</span><span class="f_Text">) the order type was set by the user through an input variable.</span></p>
+<p class="p_Text"><span class="f_Text">A new function that implements closing a position is </span><span class="f_Text" style="font-style: italic;">ClosePosition</span><span class="f_Text">. Because the header file </span><span class="f_Text" style="font-style: italic;">MqlTradeSync.mqh</span><span class="f_Text"> took over the whole routine, we only need to call the </span><span class="f_Text" style="font-style: italic;">request.close(ticket)</span><span class="f_Text"> method for the submitted position ticket and wait for the deletion to complete by </span><span class="f_Text" style="font-style: italic;">request.completed()</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In theory, the latter can be avoided if the Expert Advisor analyzes the situation at each tick. In this case, a potential problem with deleting the position will promptly reveal itself on the next tick, and the Expert Advisor can try to delete it again. However, this Expert Advisor has trading logic based on bars, and therefore it makes no sense to analyze every tick. Next, we implement a special mechanism for bar-by-bar work, and in this regard, we synchronously control the removal, otherwise, the position would remain &quot;hanging&quot; for a whole bar.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">LastErrorCode</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ClosePosition</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ticket</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MqlTradeRequestSync</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">request</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;empty&nbsp;structure</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;optional&nbsp;fields&nbsp;are&nbsp;filled&nbsp;directly&nbsp;in&nbsp;the&nbsp;structure</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">request</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">magic</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Magic</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">request</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">deviation</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Deviation</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ResetLastError</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;perform&nbsp;close&nbsp;and&nbsp;wait&nbsp;for&nbsp;confirmation</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">request</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">close</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ticket</span><span class="f_CodeExample">)&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">request</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">completed</span><span class="f_CodeExample">())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;OK&nbsp;Close&nbsp;Order/Deal/Position&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;print&nbsp;diagnostics&nbsp;in&nbsp;case&nbsp;of&nbsp;problems</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">TU</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">StringOf</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">request</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">TU</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">StringOf</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">request</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">LastErrorCode</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">request</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">result</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">retcode</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error,&nbsp;code&nbsp;to&nbsp;parse&nbsp;in&nbsp;LastErrorCode</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">request</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">position</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;non-zero&nbsp;value&nbsp;-&nbsp;success</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We could force the </span><span class="f_Text" style="font-style: italic;">ClosePosition</span><span class="f_Text"> functions to return 0 in case of successful deletion of the position and an error code otherwise. This seemingly efficient approach would make the behavior of the two functions </span><span class="f_Text" style="font-style: italic;">OpenPosition</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ClosePosition</span><span class="f_Text"> different: in the calling code, it would be necessary to nest the calls of these functions in logical expressions that are opposite in meaning, and this would introduce confusion. In addition, we would require the global variable </span><span class="f_Text" style="font-style: italic;">LastErrorCode</span><span class="f_Text"> in any case, in order to add information about the error inside the </span><span class="f_Text" style="font-style: italic;">OpenPosition</span><span class="f_Text"> function. Also, the </span><span class="f_Text" style="font-style: italic;">if(condition)</span><span class="f_Text"> check is more organically interpreted as success than </span><span class="f_Text" style="font-style: italic;">if(!condition)</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The function that generates trading signals according to the above strategy is called </span><span class="f_Text" style="font-style: italic;">GetTradeDirection</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">ENUM_ORDER_TYPE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetTradeDirection</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">iClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">)&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_BUY</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;open&nbsp;a&nbsp;long&nbsp;position</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">iClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">)&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">)&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_SELL</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;open&nbsp;a&nbsp;short&nbsp;position</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_ORDER_TYPE</span><span class="f_CodeExample">)-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;close</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The function returns a value of the ENUM_ORDER_TYPE type with two standard elements (ORDER_TYPE_BUY and ORDER_TYPE_SELL) triggering buys and sells, respectively. The special value -1 (not in the enumeration) will be used as a close signal.</span></p>
+<p class="p_Text"><span class="f_Text">To activate the Expert Advisor based on the trading algorithm, we use the </span><span class="f_Text" style="font-style: italic;">OnTick</span><span class="f_Text"> handler. As we remember, other options are suitable for other strategies, for example, a timer for trading on the news or Depth of Market events for volume trading.</span></p>
+<p class="p_Text"><span class="f_Text">First, let's analyze the function in a simplified form, without handling potential errors. At the very beginning, there is a block that ensures that the further algorithm is triggered only when a new bar is opened.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTick</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastBar</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">iTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastBar</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastBar</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, we get the current signal from the </span><span class="f_Text" style="font-style: italic;">GetTradeDirection</span><span class="f_Text"> function.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_ORDER_TYPE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetTradeDirection</span><span class="f_CodeExample">();</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If there is a position, we check whether a signal to close it has been received and call </span><span class="f_Text" style="font-style: italic;">ClosePosition</span><span class="f_Text"> if necessary. If there is no position yet and there is a signal to enter the market, we call </span><span class="f_Text" style="font-style: italic;">OpenPosition</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">GetMyPosition</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Magic</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_BUY</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_SELL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ClosePosition</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">PositionGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_TICKET</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_BUY</span><span class="f_CodeExample">&nbsp;||&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_SELL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">OpenPosition</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To analyze errors, you will need to enclose </span><span class="f_Text" style="font-style: italic;">OpenPosition</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ClosePosition</span><span class="f_Text"> calls into conditional statements and take some action to restore the working state of the program. In the simplest case, it is enough to repeat the request at the next tick, but it is desirable to do this a limited number of times. Therefore, we will create static variables with a counter and an error limit.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTick</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">maxtrials</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;no&nbsp;more&nbsp;than&nbsp;10&nbsp;attempts&nbsp;per&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;expect&nbsp;a&nbsp;new&nbsp;bar&nbsp;to&nbsp;appear&nbsp;if&nbsp;there&nbsp;were&nbsp;no&nbsp;errors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastBar</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">iTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastBar</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">lastBar</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">iTime</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">_Period</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The bar-by-bar mechanism is temporarily disabled if errors appear since it is desirable to overcome them as soon as possible.</span></p>
+<p class="p_Text"><span class="f_Text">Errors are counted in conditional statements around </span><span class="f_Text" style="font-style: italic;">ClosePosition</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">OpenPosition</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_ORDER_TYPE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">GetTradeDirection</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">GetMyPosition</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">_Symbol</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Magic</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_BUY</span><span class="f_CodeExample">&nbsp;&amp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_SELL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">ClosePosition</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">PositionGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">POSITION_TICKET</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_BUY</span><span class="f_CodeExample">&nbsp;||&nbsp;</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ORDER_TYPE_SELL</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(!</span><span class="f_CodeExample" style="color: #333333;">OpenPosition</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">type</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;too&nbsp;many&nbsp;errors&nbsp;per&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">&nbsp;&gt;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">maxtrials</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error&nbsp;serious&nbsp;enough&nbsp;to&nbsp;pause</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">IS_TANGIBLE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">LastErrorCode</span><span class="f_CodeExample">))&nbsp;</span><span class="f_CodeExample" style="color: #333333;">errors</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Setting the </span><span class="f_Text" style="font-style: italic;">errors</span><span class="f_Text"> variable to 0 turns on the bar-by-bar mechanism again and stops attempts to repeat the request until the next bar.</span></p>
+<p class="p_Text"><span class="f_Text">The macro IS_TANGIBLE is defined in </span><span class="f_Text" style="font-style: italic;">TradeRetcode.mqh</span><span class="f_Text"> as:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#define</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">IS_TANGIBLE</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">)&nbsp;((</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">)&nbsp;&gt;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">TRADE_RETCODE_ERROR</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Errors with smaller codes are operational, that is, normal in a sense. Large codes require analysis and different actions, depending on the cause of the problem: incorrect request parameters, permanent or temporary bans in the trading environment, lack of funds, and so on. We will present an improved error classifier in the section <a href="6_4_20_experts_modify_order.htm" class="topiclink">Pending order modification</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Let's run the Expert Advisor in the tester on XAUUSD, H1 from the beginning of 2022, simulating real ticks. The next collage shows a fragment of a chart with deals, as well as the balance curve.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="TradeClose testing results on XAUUSD,H1" title="TradeClose testing results on XAUUSD,H1" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="xauusdh1_tradeclose_test.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">TradeClose testing results on XAUUSD, H1</span></p>
+<p class="p_Text"><span class="f_Text">Based on the report and the log, we can see that the combination of our simple trading logic and the two operations of opening and closing positions is working properly.</span></p>
+<p class="p_Text"><span class="f_Text">In addition to simply closing a position, the platform supports the possibility of mutual <a href="6_4_18_experts_closeby.htm" class="topiclink">closing of two opposite positions</a> on hedging accounts.</span></p>
+
+</div>
+
+</body>
+</html>

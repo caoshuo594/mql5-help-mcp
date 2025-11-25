@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.5 Using ready-made indicators from MQL programs</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a>/ 5.5 Using ready-made indicators from MQL programs
+          </td>
+          <td width="70" align="right">
+          <a href="5_4_20_indicators_wizard.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_5_1_indicators_descriptors.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">5.5 Using ready-made indicators from MQL programs</span></p>
+<p class="p_Text"><span class="f_Text">In the previous chapter, we learned how to develop custom indicators. Users can place them on charts and perform manual technical analysis with them. But this is not the only way to use indicators. MQL5 allows you to create instances of indicators and request their calculated data programmatically. This can be done both from other indicators, combining several simple ones into more complex ones, and from Expert Advisors that implement automatic or semi-automatic trading on indicator signals.</span></p>
+<p class="p_Text"><span class="f_Text">It is enough to know the indicator parameters, as well as the location and meaning of the calculated data in its public buffers, in order to organize the construction of these newly applied timeseries and gain access to them.</span></p>
+<p class="p_Text"><span class="f_Text">In this chapter, we will study the functions for creating and deleting indicators, as well as reading their buffers. This applies not only to custom indicators written in MQL5 but also to a large set of built-in indicators.</span></p>
+<p class="p_Text"><span class="f_Text">The general principles of programmatic interaction with indicators include several steps:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Creating the indicator </span><span class="f_li" style="font-weight: bold;">descriptor</span><span class="f_li"> which is a unique identification number issued by the system in response to a certain function call (</span><span class="f_li" style="font-style: italic;"><a href="5_5_2_indicators_icustom.htm" class="topiclink">iCustom</a></span><span class="f_li"> or </span><span class="f_li" style="font-style: italic;"><a href="5_5_8_indicators_indicatorcreate.htm" class="topiclink">IndicatorCreate</a></span><span class="f_li">) and through which the MQL code reports the name and parameters of the required indicator</span></li>
+<li class="p_li"><span class="f_li">Reading data from the indicator buffers specified by the descriptor using the </span><span class="f_li" style="font-style: italic;"><a href="5_5_4_indicators_copybuffer.htm" class="topiclink">CopyBuffer</a></span><span class="f_li"> function</span></li>
+<li class="p_li"><span class="f_li">Freeing the handle (</span><span class="f_li" style="font-style: italic;"><a href="5_5_13_indicators_indicatorrelease.htm" class="topiclink">IndicatorRelease</a></span><span class="f_li">) if the indicator is no longer needed</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Creating and freeing the descriptor are usually performed during program initialization and deinitialization, respectively, and buffers are read and analyzed repeatedly, as needed, for example, when ticks arrive.</span></p>
+<p class="p_Text"><span class="f_Text">In all cases, except for exotic ones, when it is required to dynamically change indicator settings during program execution, it is recommended to obtain indicator descriptors once in </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> or in the constructor of the global object class.</span></p>
+<p class="p_Text"><span class="f_Text">All indicator creation functions have at least 2 parameters: symbol and timeframe. Instead of a symbol, you can pass NULL, which means the current instrument. Also, the value 0 corresponds to the current timeframe. Optionally, you can use built-in variables </span><span class="f_Text" style="font-style: italic;">_Symbol</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">_Period</span><span class="f_Text">. If necessary, you can set an arbitrary symbol and timeframe that are not related to the chart. Thus, in particular, it is possible to implement multi-asset and multi-timeframe indicators.</span></p>
+<p class="p_Text"><span class="f_Text">You can't access the indicator data immediately after creating its instance because the calculation of buffers takes some time. Before reading the data, you should check their readiness using the </span><span class="f_Text" style="font-style: italic;"><a href="5_5_3_indicators_barscalculated.htm" class="topiclink">BarsCalculated</a></span><span class="f_Text"> function (it also takes a descriptor argument and returns the number of calculated bars). Otherwise, an error will be received instead of data. Although it is not critical as it does not cause the program to stop and unload, the absence of data will make the program useless.</span></p>
+<p class="p_Text"><span class="f_Text">Further in this chapter, for brevity, we will refer to the creation of instances of indicators and obtaining their descriptors simply as &quot;creating indicators&quot;. It should be distinguished from the similar term &quot;creating custom indicators&quot;, by which we meant writing the source code of indicators in the previous chapter.</span></p>
+
+</div>
+
+</body>
+</html>

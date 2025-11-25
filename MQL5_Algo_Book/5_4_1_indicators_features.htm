@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.4.1 Main characteristics of indicators</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_4_indicators_make.htm"> 5.4 Creating custom indicators </a>/ 5.4.1 Main characteristics of indicators
+          </td>
+          <td width="70" align="right">
+          <a href="5_4_indicators_make.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_4_2_indicators_oncalculate.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.4.1 Main characteristics of indicators</span></p>
+<p class="p_Text"><span class="f_Text">The indicator implements a certain calculation algorithm applied by bars to a given initial timeseries or several timeseries. All such timeseries are the </span><span class="f_Text" style="font-style: italic;">terminal's own</span><span class="f_Text"> arrays (see the function </span><span class="f_Text" style="font-style: italic;"><a href="4_3_8_arrays_as_series.htm" class="topiclink">ArrayIsSeries</a></span><span class="f_Text">): the terminal allocates memory for them and adds new elements whenever new bars are formed. Naturally, among such arrays, arrays with symbol quotes on different timeframes play a fundamental role as they are filled in by the terminal. However, the launched indicators can significantly expand the set of timeseries available for analysis.</span></p>
+<p class="p_Text"><span class="f_Text">The indicator usually saves its operation results in dynamic arrays, which are registered as indicator buffers using a special function (</span><span class="f_Text" style="font-style: italic;"><a href="5_4_5_indicators_setindexbuffer.htm" class="topiclink">SetIndexBuffer</a></span><span class="f_Text">) and also become the terminal's own arrays. In addition to allocating memory for them, the terminal provides public access to these arrays as to new timeseries, on which other indicators can be calculated.</span></p>
+<p class="p_Text"><span class="f_Text">The entry point to the calculated part of the indicator is the </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> function – an event handler of the same name. In <a href="5_1_3_runtime_events_overview.htm" class="topiclink">Overview of event handling functions</a>, we have already mentioned this function: its presence in the source code alone is enough for the MQL program to be perceived by the terminal as an indicator. The </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> function will be described in detail in the <a href="5_4_2_indicators_oncalculate.htm" class="topiclink">next section</a>. In particular, the main feature of </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> is the presence of two different forms. The programmer should select the option at the very beginning of the indicator design, because this determines the purpose and possible use cases.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text"> function is not the only distinguishing feature of the indicator. In addition to it, a group of special preprocessor directives </span><span class="f_Text" style="font-style: italic;">#property</span><span class="f_Text"> is intended exclusively for indicators – we will consider them step by step in several relevant sections of this chapter. Earlier we have already seen some <a href="2_9_9_preprocessor_properties.htm" class="topiclink">General program properties</a>, and such directives, of course, also apply to indicators.</span></p>
+<p class="p_Text"><span class="f_Text">As MetaTrader 5 users know, each indicator has a way to display its graphical constructions (timeseries): either in the main window which displays symbol prices or in a separate subwindow. Such a subwindow is created in the lower part of the window when a specific indicator (or group of indicators) is added to the chart if it is designed to work in a subwindow. For example, the standard Moving Average (MA) indicator is drawn on the price chart, while the Williams Percent Range (WPR) is drawn in a separate subwindow.</span></p>
+<p class="p_Text"><span class="f_Text">From the developer's point of view, this means that you should initially determine whether the indicator will be displayed in the main window or in a subwindow because these two modes cannot be combined. Moreover, this characteristic, as well as the number of indicator buffers, can be set only once using the </span><span class="f_Text" style="font-style: italic;">#property</span><span class="f_Text"> directives (see <a href="5_4_3_indicators_window_chart_separate.htm" class="topiclink">Two types of indicators</a> and <a href="5_4_4_indicators_buffers_plots.htm" class="topiclink">Setting the number of buffers and graphic plots</a>), and then it will not be possible to change them using MQL5 API function calls as such functions are simply not provided. Unlike these immutable attributes, most other indicator properties can be dynamically adjusted by special functions. Thus, as we study the technical aspects of indicator programming, we will be able to establish correspondences between the </span><span class="f_Text" style="font-style: italic;">#property</span><span class="f_Text"> properties and MQL5 functions.</span></p>
+<p class="p_Text"><span class="f_Text">Also, indicators usually implement </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> handlers (see <a href="5_1_5_runtime_oninit_ondeinit.htm" class="topiclink">Reference events of indicators and Expert Advisors</a>). </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> is especially important for assigning arrays that will act as indicator buffers, i.e., to accumulate the results of intermediate and final calculations, visible to the user and available to other programs, such as Expert Advisors.</span></p>
+<p class="p_Text"><span class="f_Text">The indicator is one of the interactive MQL programs that can, if necessary, work with timer events (</span><span class="f_Text" style="font-style: italic;"><a href="5_6_2_timer_ontimer.htm" class="topiclink">OnTimer</a></span><span class="f_Text">) and chart changes (</span><span class="f_Text" style="font-style: italic;"><a href="5_9_1_events_onchartevent.htm" class="topiclink">OnChartEvent</a></span><span class="f_Text">) produced by the user or other programs. These technical features are optional for indicators and are based on the <a href="5_1_3_runtime_events_overview.htm" class="topiclink">chart event queue</a>. We will discuss them separately in the chapter on <a href="5_7_charts.htm" class="topiclink">charts</a>.</span></p>
+
+</div>
+
+</body>
+</html>

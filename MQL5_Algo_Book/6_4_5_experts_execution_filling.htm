@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.4.5 Order execution modes by price and volume</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_4_experts.htm"> 6.4 Creating Expert Advisors </a>/ 6.4.5 Order execution modes by price and volume
+          </td>
+          <td width="70" align="right">
+          <a href="6_4_4_experts_order_type.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_4_6_experts_pending_expiration.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.4.5 Order execution modes by price and volume</span></p>
+<p class="p_Text"><span class="f_Text">When sending trade requests, we will need to specify the buying/selling price and volume in the algorithm in a special way. At the same time, it should be taken into account that in the financial markets there is no guarantee that at the moment the entire requested volume is available for the financial instrument at the desired price. Therefore, trading operations are regulated by price and volume execution modes (or policies). They define the rules for cases when the price has changed during the process of sending the request, or it cannot be fully satisfied.</span></p>
+<p class="p_Text"><span class="f_Text">In the chapter on symbols, in the section <a href="6_1_15_symbols_execution_filling.htm" class="topiclink">Trading conditions and order execution modes</a>, we have already discussed the settings for order execution by price (SYMBOL_TRADE_EXEMODE) and order filling by volume (SYMBOL_FILLING_MODE), which are set by the broker. In accordance with the available SYMBOL_FILLING_MODE modes, the MQL program must select the fill mode for the newly formed order in a special structure </span><span class="f_Text" style="font-style: italic;"><a href="6_4_9_experts_mqltraderequest.htm" class="topiclink">MqlTradeRequest</a></span><span class="f_Text"> (soon we will see this in practice).</span></p>
+<p class="p_Text"><span class="f_Text">Versions are provided in the ENUM_ORDER_TYPE_FILLING enumeration: their identifiers echo those of SYMBOL_FILLING_MODE.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Execution&nbsp;policy&nbsp;(Values)</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_FILLING_FOK (0)</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Fill or Kill</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_FILLING_IOC (1)</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Immediate or Cancel</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">ORDER_FILLING_RETURN (2)</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Return</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">With the ORDER_FILLING_FOK policy, an order can only be filled in the specified volume. If there is not enough volume of the financial instrument on the market at the moment, the order will not be executed. The required volume can be made up of several offers currently available on the market. The ability to use FOK orders is determined by the presence of the SYMBOL_FILLING_FOK permission.</span></p>
+<p class="p_Text"><span class="f_Text">With the ORDER_FILLING_IOC policy, the trader agrees to make a deal on the maximum volume available on the market within the limits specified in the order. If full coverage is not possible, the order will be executed on the available volume, and the missing volume will be canceled. The ability to use IOC orders is determined by the presence of the SYMBOL_FILLING_IOC permission.</span></p>
+<p class="p_Text"><span class="f_Text">With the ORDER_FILLING_RETURN policy, in case of partial execution, the order with the remaining volume is not canceled but continues to operate. This is the default mode and is always available. However, there is one exception: Return orders are not allowed in market execution mode (SYMBOL_TRADE_EXECUTION_MARKET in the SYMBOL_TRADE_EXEMODE symbol property).</span></p>
+<p class="p_Text"><span class="f_Text">Thus, before sending a market (not pending) order, the MQL program should correctly set one of the ORDER_TYPE_FILLING policies based on the SYMBOL_FILLING_MODE property of the corresponding financial instrument: this property contains a combination of bit flags of allowed modes.</span></p>
+<p class="p_Text"><span class="f_Text">For pending orders, regardless of the SYMBOL_TRADE_EXEMODE execution mode, you must use the ORDER_FILLING_RETURN policy, since such orders will be filled with volume later and according to the rules that the broker sets at that time.</span></p>
+<p class="p_Quote"><span class="f_Quote">Unlike the volume fill policy, the order execution mode at a price cannot be selected as it is predetermined by the broker for each symbol. This affects which fields of the </span><span class="f_Quote" style="font-style: italic;"><a href="6_4_9_experts_mqltraderequest.htm" class="topiclink">MqlTradeRequest</a></span><span class="f_Quote"> structure should be filled in before submitting a trade request.</span></p>
+<p class="p_Text"><span class="f_Text">The application of fill policies depending on the execution modes can be represented as a table ('+' – allowed, '-' – disabled, '&plusmn;' – depends on the symbol settings):</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables" style="text-align: right;"><span class="f_BoldTitlesInTables">Fill&nbsp;policy</span></p>
+<p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Execution&nbsp;mode</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables" style="letter-spacing: -1px;">ORDER_FILLING</span></p>
+<p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables" style="letter-spacing: -1px;">_FOK</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables" style="letter-spacing: -1px;">ORDER_FILLING</span></p>
+<p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables" style="letter-spacing: -1px;">_IOC</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables" style="letter-spacing: -1px;">ORDER_FILLING</span></p>
+<p class="p_BoldTitlesInTables" style="text-align: center;"><span class="f_BoldTitlesInTables" style="letter-spacing: -1px;">_RETURN</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_TRADE_EXECUTION_INSTANT</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_TRADE_EXECUTION_REQUEST</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_TRADE_EXECUTION_MARKET</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">&plusmn;</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">&plusmn;</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">-</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_TRADE_EXECUTION_EXCHANGE</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">&plusmn;</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">&plusmn;</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">Pending</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">-</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">-</span></p>
+</td>
+<td class="table"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the SYMBOL_TRADE_EXECUTION_INSTANT and SYMBOL_TRADE_EXECUTION_REQUEST execution modes, all volume filling policies are allowed.</span></p>
+
+</div>
+
+</body>
+</html>

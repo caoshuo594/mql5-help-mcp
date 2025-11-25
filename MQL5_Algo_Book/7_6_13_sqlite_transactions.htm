@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.6.13 Transactions</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_6_sqlite.htm"> 7.6 SQLite database </a>/ 7.6.13 Transactions
+          </td>
+          <td width="70" align="right">
+          <a href="7_6_12_sqlite_crud_examples.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_6_14_sqlite_export_import.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.6.13 Transactions</span></p>
+<p class="p_Text"><span class="f_Text">SQLite supports </span><span class="f_Text" style="font-style: italic;">transactions</span><span class="f_Text"> – logically related sets of actions that can be performed either entirely or not performed at all, which ensures the consistency of data in the database.</span></p>
+<p class="p_Quote"><span class="f_Quote">The concept of a </span><span class="f_Quote" style="font-style: italic;">transaction</span><span class="f_Quote"> has a new meaning in the context of databases, different from what we used to describe in <a href="6_4_33_experts_transaction_type.htm" class="topiclink">trade transactions</a>. A trade transaction means a separate operation on the entities of a trading account, including orders, deals, and positions.</span></p>
+<p class="p_Text"><span class="f_Text">Transactions provide 4 main characteristics of database changes:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">Atomic (indivisible) – upon successful completion of the transaction, all the changes included in it will get into the database, and in case of an error, nothing will get into it.</span></li>
+<li class="p_li"><span class="f_li">Consistent – the current correct state of the base can only change to another correct state (intermediate, according to application logic, states are excluded).</span></li>
+<li class="p_li"><span class="f_li">Isolated – changes in the transaction of the current connection are not visible until the end of this transaction in other connections to the same database and vice versa, changes from other connections are not visible in the current connection while there is an incomplete transaction.</span></li>
+<li class="p_li"><span class="f_li">Durable – changes from a successful transaction are guaranteed to be stored in the database.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The terms for these characteristics – Atomic, Consistent, Isolated, and Durable – form the acronym ACID, well-known in database theory.</span></p>
+<p class="p_Text"><span class="f_Text">Even if the normal course of the program is interrupted due to a system failure, the database will retain its working state.</span></p>
+<p class="p_Text"><span class="f_Text">Most often, the use of transactions is illustrated by the example of a banking system, in which funds are transferred from the account of one client to the account of another. It should affect two records with customer balances: in one, the balance is reduced by the amount of the transfer, and in the other, it is increased. A situation where only one of these changes applies would upset the balance of bank accounts: depending on which operation failed, the transferred amount could disappear or, conversely, come from nowhere.</span></p>
+<p class="p_Text"><span class="f_Text">It is possible to give an example that is closer to trading practice but on the basis of the &quot;opposite&quot; principle. The fact is that the system for accounting for orders, deals, and positions in MetaTrader 5 is not transactional.</span></p>
+<p class="p_Text"><span class="f_Text">In particular, as we know from the chapter on <a href="6_4_experts.htm" class="topiclink">Creating Expert Advisors</a>, a triggered order (market or pending), missing from the list of active ones, may not immediately be displayed in the list of positions. Therefore, in order to analyze the actual result, it is necessary to implement in the MQL program the expectation of updating (actualization) the trading environment. If the accounting system was based on transactions, then the execution of an order, the registration of a transaction in history, and the appearance of a position would be enclosed in a transaction and coordinated with each other. The terminal developers have chosen a different approach: to return any modifications of the trading environment as quickly and asynchronously as possible, and their integrity must be monitored by an MQL program.</span></p>
+<p class="p_Text"><span class="f_Text">Any SQL command that changes the base (that is, in fact, everything except SELECT) will automatically be wrapped in a transaction if this was not done explicitly beforehand.</span></p>
+<p class="p_Text"><span class="f_Text">The MQL5 API provides 3 functions for managing transactions: </span><span class="f_Text" style="font-style: italic;">DatabaseTransactionBegin</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">DatabaseTransactionCommit</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">DatabaseTransactionRollback</span><span class="f_Text">. All functions return </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> if successful or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> in case of an error.</span></p>
+<p class="p_H4"><span class="f_H4">bool DatabaseTransactionBegin(int database)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabaseTransactionBegin</span><span class="f_Text"> function starts executing a transaction in the database with the specified descriptor obtained from </span><span class="f_Text" style="font-style: italic;"><a href="7_6_4_sqlite_db_create_open_close.htm" class="topiclink">DatabaseOpen</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">All subsequent changes made to the database are accumulated in the internal transaction cache and do not get into the database until the </span><span class="f_Text" style="font-style: italic;">DatabaseTransactionCommit</span><span class="f_Text"> function is called.</span></p>
+<p class="p_Text"><span class="f_Text">Transactions in MQL5 cannot be nested: if a transaction has already been started, then re-calling </span><span class="f_Text" style="font-style: italic;">DatabaseTransactionBegin</span><span class="f_Text"> will return an error flag and output a message to the log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">database&nbsp;error,&nbsp;cannot&nbsp;start&nbsp;a&nbsp;transaction&nbsp;within&nbsp;a&nbsp;transaction</span>
+<br><span class="f_CodeExample">DatabaseTransactionBegin(db)=false&nbsp;/&nbsp;DATABASE_ERROR(5601)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Respectively, you cannot try and complete the transaction multiple times.</span></p>
+<p class="p_H4"><span class="f_H4">bool DatabaseTransactionCommit(int database)</span></p>
+<p class="p_Text"><span class="f_Text">The function </span><span class="f_Text" style="font-style: italic;">DatabaseTransactionCommit</span><span class="f_Text"> ends a transaction previously started in the database with the specified handle and applies all accumulated changes (saves them). If an MQL program starts a transaction but does not apply it before closing the database, all changes will be lost.</span></p>
+<p class="p_Text"><span class="f_Text">If necessary, the program can undo the transaction, and thus all changes since the beginning of the transaction.</span></p>
+<p class="p_H4"><span class="f_H4">bool DatabaseTransactionRollback(int database)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">DatabaseTransactionRollback</span><span class="f_Text"> function performs a &quot;rollback&quot; of all actions included in the previously started transaction for the database with the </span><span class="f_Text" style="font-style: italic;">database</span><span class="f_Text"> handle.</span></p>
+<p class="p_Text"><span class="f_Text">Let's complete the </span><span class="f_Text" style="font-style: italic;">DBSQLite</span><span class="f_Text"> class methods for working with transactions, taking into account the restriction on their nesting, which we will calculate in the </span><span class="f_Text" style="font-style: italic;">transaction</span><span class="f_Text"> variable. If it is 0, the </span><span class="f_Text" style="font-style: italic;">begin</span><span class="f_Text"> method starts a transaction by calling </span><span class="f_Text" style="font-style: italic;">DatabaseTransactionBegin</span><span class="f_Text">. All subsequent attempts to start a transaction simply increase the counter. In the </span><span class="f_Text" style="font-style: italic;">commit</span><span class="f_Text"> method, we decrement the counter, and when it reaches 0 we call </span><span class="f_Text" style="font-style: italic;">DatabaseTransactionCommit</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBSQLite</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">protected</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">transaction</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">begin</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">transaction</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;already&nbsp;in&nbsp;transaction</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">transaction</span><span class="f_CodeExample">++;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;keep&nbsp;track&nbsp;of&nbsp;the&nbsp;nesting&nbsp;level</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">)(</span><span class="f_CodeExample" style="color: #333333;">transaction</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">DatabaseTransactionBegin</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">)));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">commit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">transaction</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(--</span><span class="f_CodeExample" style="color: #333333;">transaction</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;outermost&nbsp;transaction</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">DatabaseTransactionCommit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">rollback</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">transaction</span><span class="f_CodeExample">&nbsp;&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(--</span><span class="f_CodeExample" style="color: #333333;">transaction</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">DatabaseTransactionRollback</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Also, let's create the </span><span class="f_Text" style="font-style: italic;">DBTransaction</span><span class="f_Text"> class, which will allow describing objects inside blocks (for example, functions) that ensure the automatic start of a transaction with its subsequent application (or cancellation) when the program exits the block.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBTransaction</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBSQLite</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">autocommit</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBTransaction</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">DBSQLite</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">owner</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">):&nbsp;</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">(&amp;</span><span class="f_CodeExample" style="color: #333333;">owner</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #333333;">autocommit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">c</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CheckPointer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">)&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">POINTER_INVALID</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">begin</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;~</span><span class="f_CodeExample" style="color: #333333;">DBTransaction</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CheckPointer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">)&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">POINTER_INVALID</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">autocommit</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">commit</span><span class="f_CodeExample">()&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">rollback</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">commit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">CheckPointer</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">)&nbsp;!=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">POINTER_INVALID</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">done</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">commit</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">NULL</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">done</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The policy of using such objects eliminates the need to process various options for exiting a block (function).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DataFunction</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">DBSQLite</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBTransaction</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">tr</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBQuery</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">query</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">prepare</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;UPDATE...&quot;</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;batch&nbsp;changes</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;base&nbsp;modification</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(...&nbsp;/*&nbsp;error</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;*/)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;automatic&nbsp;rollback</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;base&nbsp;modification</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(...&nbsp;/*&nbsp;error</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">&nbsp;*/)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;automatic&nbsp;rollback</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">tr</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">commit</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For an object to automatically apply changes at any stage, pass </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> in the second parameter of its constructor.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DataFunction</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">DBSQLite</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBTransaction</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">tr</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">DBQuery</span><span class="f_CodeExample">&nbsp;*</span><span class="f_CodeExample" style="color: #333333;">query</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">db</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">prepare</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;UPDATE...&quot;</span><span class="f_CodeExample">);&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;batch&nbsp;changes</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;base&nbsp;modification</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(...&nbsp;/*&nbsp;condition</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;*/)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;automatic&nbsp;commit</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;base&nbsp;modification</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(...&nbsp;/*&nbsp;condition</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">&nbsp;*/)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;automatic&nbsp;commit</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;automatic&nbsp;commit</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">You can describe the </span><span class="f_Text" style="font-style: italic;">DBTransaction</span><span class="f_Text"> object inside the loop and then, at each iteration, a separate transaction will start and close.</span></p>
+<p class="p_Text"><span class="f_Text">A demonstration of transactions will be given in the section <a href="7_6_16_sqlite_example_ts.htm" class="topiclink">An example of searching for a trading strategy using SQLite</a>.</span></p>
+
+</div>
+
+</body>
+</html>

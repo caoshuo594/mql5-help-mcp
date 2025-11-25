@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>2.8.4 Value parameters and reference parameters</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part2.htm"> Part 2. Programming fundamentals </a> / <a class="h_m" href="2_8_functions.htm"> 2.8 Functions </a>/ 2.8.4 Value parameters and reference parameters
+          </td>
+          <td width="70" align="right">
+          <a href="2_8_3_functions_parameters.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="2_8_5_functions_parameters_default.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">2.8.4 Value parameters and reference parameters</span></p>
+<p class="p_Text"><span class="f_Text">Arguments can be passed to a function in two ways: by value and by reference.</span></p>
+<p class="p_Text"><span class="f_Text">All the cases we've looked at so far are passing by value. This option means that the value of the argument prepared by the calling code snippet is copied into a new variable, the corresponding input variable of the function. Otherwise, the argument and input variable are unrelated. All subsequent manipulations with the variable inside the function do not affect the argument in any way.</span></p>
+<p class="p_Text"><span class="f_Text">To describe a reference parameter, add an ampersand sign '&amp;' on the right of the type. Many programmers prefer to append an ampersand to a parameter name, thus emphasizing that the parameter is a reference to the given type. For example, the following entries are equivalent:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">func</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">parameter</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">func</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">parameter</span><span class="f_CodeExample">);&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">func</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&amp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">parameter</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">When a function is called, a corresponding local variable is not created for a reference parameter. Instead, the argument specified for this parameter becomes available inside the function under the name (alias) of the input parameter. Thus, the value is not copied, but used at the same address in memory. Therefore, modifications to a parameter within a function are reflected in the state of its associated argument. An important feature follows from this.</span></p>
+<p class="p_Text"><span class="f_Text">You can only specify a variable (LValue, see <a href="2_5_2_operator_assignment.htm" class="topiclink">Assignment operator</a>) as an argument for a reference parameter. Otherwise, we'll get the &quot;parameter passed as reference, variable expected&quot; error.</span></p>
+<p class="p_Text"><span class="f_Text">Passing by reference is used in several cases:</span></p>
+<ul>
+<li class="p_li"><span class="f_li">to improve the efficiency of the program by eliminating the copying of the value;</span></li>
+<li class="p_li"><span class="f_li">to pass modified data from a function to the calling code when returning a single value with </span><span class="f_li" style="font-style: italic;">return</span><span class="f_li"> is not enough;</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The first point is especially relevant for potentially large variables such as strings or arrays.</span></p>
+<p class="p_Text"><span class="f_Text">To distinguish between the first and second purposes of a reference parameter, the authors of the function are encouraged to add the const modifier when the parameter inside the function is not expected to change. This will remind you and make it clear to other developers that passing a variable inside a function will not lead to side effects.</span></p>
+<p class="p_Text"><span class="f_Text">Not applying the </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> modifier to reference parameters where possible can lead to problems throughout the entire function call hierarchy. The fact is that calling such functions will require non-constant arguments. Otherwise, the error &quot;constant variable cannot be passed as reference&quot; will occur. As a result, it may gradually turn out that all parameters in all functions should be stripped of the </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> modifier for the sake of the code compilability. In fact, this actually expands the scope for potential bugs with unintentional corruption of variables. The situation should be corrected in the opposite way: put </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> wherever return and modification of values are not required.</span></p>
+<p class="p_Text"><span class="f_Text">To compare the ways of passing parameters in the </span><span class="f_Text" style="font-style: italic;">FuncDeclaration.mq5</span><span class="f_Text"> script, several functions are implemented: </span><span class="f_Text" style="font-style: italic;">FuncByValue</span><span class="f_Text"> — passing by value, </span><span class="f_Text" style="font-style: italic;">FuncByReference</span><span class="f_Text"> — passing by reference, </span><span class="f_Text" style="font-style: italic;"> FuncByConstReference</span><span class="f_Text"> — passing by constant reference. </span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FuncByValue</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;we&nbsp;are&nbsp;doing&nbsp;something&nbsp;else&nbsp;with&nbsp;v</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FuncByReference</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FuncByConstReference</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;++v;&nbsp;//&nbsp;'v'&nbsp;-&nbsp;constant&nbsp;cannot&nbsp;be&nbsp;modified</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">);&nbsp;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> function, we call all these functions and observe their effect on </span><span class="f_Text" style="font-style: italic;">i</span><span class="f_Text"> variable used as an argument. Note that passing a parameter by reference does not change the function call syntax.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FuncByValue</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;i&nbsp;cannot&nbsp;change</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;0</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FuncByReference</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;i&nbsp;is&nbsp;changing</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FuncByConstReference</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;i&nbsp;cannot&nbsp;change,&nbsp;1</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">j</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;'j'&nbsp;-&nbsp;constant&nbsp;variable&nbsp;cannot&nbsp;be&nbsp;passed&nbsp;as&nbsp;a&nbsp;reference</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;FuncByReference(j);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FuncByValue</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;ok</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;error:&nbsp;'10'&nbsp;-&nbsp;parameter&nbsp;passed&nbsp;as&nbsp;reference,&nbsp;variable&nbsp;expected</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;FuncByReference(10);</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The literal can only be passed to </span><span class="f_Text" style="font-style: italic;">FuncByValue</span><span class="f_Text"> function, since other functions require a reference, i.e. a variable, as an argument.</span></p>
+<p class="p_Text"><span class="f_Text">Function </span><span class="f_Text" style="font-style: italic;">FuncByReference</span><span class="f_Text"> cannot be called with the variable </span><span class="f_Text" style="font-style: italic;">j</span><span class="f_Text">, since the latter is declared as a constant, and this function declares the ability (or intention) to change its parameter since it is not equipped with the </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> modifier. This generates the &quot;constant variable cannot be passed as reference&quot; error.</span></p>
+<p class="p_Text"><span class="f_Text">The script also describes the </span><span class="f_Text" style="font-style: italic;">Transpose</span><span class="f_Text"> function: it transposes a 2x2 matrix passed as a two-dimensional array by reference.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Transpose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">[][</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">])</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">temp</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">m</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">temp</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Its call from </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> demonstrates the expected change in the contents of the local array </span><span class="f_Text" style="font-weight: bold;">a</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">]&nbsp;=&nbsp;{{-</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">},&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">}};</span>
+<br><span class="f_CodeExample" style="color: #333333;">Transpose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">a</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In MQL5, array parameters are always passed as an internal structure of a dynamic array (see the <a href="2_4_1_arrays_overview.htm" class="topiclink">Characteristics of arrays</a> section). As a consequence, the description of such a parameter must necessarily have an open size in the first dimension, that is, it is empty inside the first pair of square brackets.</span></p>
+<p class="p_Text"><span class="f_Text">This does not prevent, if necessary, passing to the function the actual argument, which is an array with a fixed size (as in our example). However, functions like </span><span class="f_Text" style="font-style: italic;"><a href="4_3_2_arrays_dynamic.htm" class="topiclink">ArrayResize</a></span><span class="f_Text"> will not be able to resize or otherwise reorganize such a masked fixed array.</span></p>
+<p class="p_Text"><span class="f_Text">The sizes of the array in all dimensions except the first must match for both, the parameter and argument. Otherwise, we will get a &quot;parameter conversion not allowed&quot; error. In particular, the </span><span class="f_Text" style="font-style: italic;">TransposeVector</span><span class="f_Text">function is defined in the example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">TransposeVector</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">[])</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">An attempt to call it on a two-dimensional array </span><span class="f_Text" style="font-style: italic; font-weight: bold;">a</span><span class="f_Text"> is commented out in </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> because it generates the above error: array dimensions do not match.</span></p>
+<p class="p_Text"><span class="f_Text">In addition to passing parameters by value or by reference, there is another option: passing a pointer. Unlike C++, MQL5 only supports <a href="3_2_13_classes_pointers.htm" class="topiclink">pointers</a> for object types (<a href="3_2_classes_and_interfaces.htm" class="topiclink">classes</a>). We will look at this feature in the third Part.</span></p>
+
+</div>
+
+</body>
+</html>

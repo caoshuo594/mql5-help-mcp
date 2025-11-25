@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.5.5 Establishing and breaking a network socket connection</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_5_network.htm"> 7.5 Network functions </a>/ 7.5.5 Establishing and breaking a network socket connection
+          </td>
+          <td width="70" align="right">
+          <a href="7_5_4_network_http.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_5_6_network_socket_state.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.5.5 Establishing and breaking a network socket connection</span></p>
+<p class="p_Text"><span class="f_Text">In the previous sections, we got acquainted with the high-level MQL5 network functions: each of them provides support for a specific application protocol. For example, SMTP is used to send emails (</span><span class="f_Text" style="font-style: italic;">SendMail</span><span class="f_Text">), FTP is used for file transfer (</span><span class="f_Text" style="font-style: italic;">SendFTP</span><span class="f_Text">), and HTTP allows receiving web documents (</span><span class="f_Text" style="font-style: italic;">WebRequest</span><span class="f_Text">). All the mentioned standards are based on a lower, transport layer TCP (Transmission Control Protocol). It is not the last in the hierarchy as there are also lower ones, but we will not discuss them here.</span></p>
+<p class="p_Text"><span class="f_Text">The standard implementation of application protocols hides many technical nuances inside and eliminates the need for the programmer to routinely following specifications for hours. However, it does not have flexibility and does not take into account the advanced features embedded in the standards. Therefore, sometimes it is required to program network communication at the TCP level, that is, at the socket level.</span></p>
+<p class="p_Text"><span class="f_Text">A socket can be viewed as analogous to a file on a disk: a socket is also described by an integer descriptor by which data can be read or written, but this happens in a distributed network infrastructure. Unlike files, the number of sockets on a computer is limited, and therefore the socket descriptor must be requested from the system in advance before being associated with a network resource (address, URL). Let's also say in advance that access to information via a socket is streaming, that is, it is impossible to &quot;rewind&quot; a certain &quot;pointer&quot; to the beginning, as in a file.</span></p>
+<p class="p_Text"><span class="f_Text">Write and read threads do not intersect but can affect future read or write data since the transmitted information is often interpreted by servers and client programs as control commands. Protocol standards define if a stream contains commands or data.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">SocketCreate</span><span class="f_Text"> function allows the creation of an &quot;empty&quot; socket descriptor in MQL5.</span></p>
+<p class="p_H4"><span class="f_H4">int SocketCreate(uint flags = 0)</span></p>
+<p class="p_Text"><span class="f_Text">Its only parameter is reserved for the future to specify the bit pattern of the flags that determine the mode of the socket, but at the moment only one stub flag is supported: SOCKET_DEFAULT corresponds to the current mode and can be omitted. At the system level, this is equivalent to a socket in blocking mode (this may be of interest to network programmers).</span></p>
+<p class="p_Text"><span class="f_Text">If successful, the function returns the socket handle. Otherwise, it returns INVALID_HANDLE.</span></p>
+<p class="p_Text"><span class="f_Text">A maximum of 128 sockets can be created from one MQL program. When the limit is exceeded, error 5271 (ERR_NETSOCKET_TOO_MANY_OPENED) is logged into </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">After we have opened the socket, it should be associated with a network address.</span></p>
+<p class="p_H4"><span class="f_H4">bool SocketConnect(int socket, const string server, uint port, uint timeout)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">SocketConnect</span><span class="f_Text"> function makes a socket connection to the server at the specified address and port (for example, web servers typically run on ports 80 or 443 for HTTP and HTTPS, respectively, and SMTP on port 25). The address can be either a domain name or an IP address.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">timeout</span><span class="f_Text"> parameter allows you to set a timeout in milliseconds to wait for a server response.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns a sign of a successful connection (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or error (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">). The error code is written to </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">, for example, 5272 (ERR_NETSOCKET_CANNOT_CONNECT).</span></p>
+<p class="p_Quote"><span class="f_Quote">Please note that the connection address must be added to the list of allowed addresses in the terminal settings (dialog </span><span class="f_Quote" style="font-style: italic;">Service</span><span class="f_Quote"> -&gt; </span><span class="f_Quote" style="font-style: italic;">Settings</span><span class="f_Quote"> -&gt; </span><span class="f_Quote" style="font-style: italic;">Advisors</span><span class="f_Quote">).</span></p>
+<p class="p_Text"><span class="f_Text">After you have finished working with the network, you should release the socket with </span><span class="f_Text" style="font-style: italic;">SocketClose</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">bool SocketClose(const int &nbsp;socket)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">SocketClose</span><span class="f_Text"> function closes the socket by its handle, opened earlier using the </span><span class="f_Text" style="font-style: italic;">SocketCreate</span><span class="f_Text"> function. If the socket was previously connected via </span><span class="f_Text" style="font-style: italic;">SocketConnect</span><span class="f_Text">, the connection will be broken.</span></p>
+<p class="p_Text"><span class="f_Text">The function also returns an indicator of success (</span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">) or error (</span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">). In particular, when passing an invalid handle to </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">, error 5270 (ERR_NETSOCKET_INVALIDHANDLE) is logged.</span></p>
+<p class="p_Text"><span class="f_Text">Let's remind you that all functions of this and subsequent sections are prohibited in indicators: there, an attempt to work with sockets will result in error 4014 (ERR_FUNCTION_NOT_ALLOWED, &quot;The system function is not allowed to be called&quot;).</span></p>
+<p class="p_Text"><span class="f_Text">Consider an introductory example, the </span><span class="f_Text" style="font-style: italic;">SocketConnect.mq5</span><span class="f_Text"> script. In the input parameters, you can specify the address and port of the server. We are supposed to start testing with regular web servers like mql5.com.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Server</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;www.mql5.com&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Port</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">443</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the function </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> we just create a socket and bind it to a network resource.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Server</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Port</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SocketCreate</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SocketConnect</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Server</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Port</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5000</span><span class="f_CodeExample">)))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">SocketClose</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">socket</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If all the settings in the terminal are correct and it is connected to the Internet, we will get the following &quot;report&quot;.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">Server=www.mql5.com&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">Port=443&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">SocketCreate()=1&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">SocketConnect(socket,Server,Port,5000)=true&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">SocketClose(socket)=true&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.7.21 Switching symbol and timeframe</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_7_charts.htm"> 5.7 Working with charts </a>/ 5.7.21 Switching symbol and timeframe
+          </td>
+          <td width="70" align="right">
+          <a href="5_7_20_charts_redraw.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_7_22_charts_indicators.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.7.21 Switching symbol and timeframe</span></p>
+<p class="p_Text"><span class="f_Text">Sometimes an MQL program needs to switch the current symbol or timeframe of a chart. In particular, this is a familiar functionality for many multicurrency, multitimeframe trading panels or trading history analyzing utilities. For this purpose, the MQL5 API provides the </span><span class="f_Text" style="font-style: italic;">ChartSetSymbolPeriod</span><span class="f_Text"> function.</span></p>
+<p class="p_Text"><span class="f_Text">You can also use this function to initiate the recalculation of the entire chart, including the indicators located on it. You can simply specify the current symbol and timeframe as parameters. This technique can be useful for indicators that could not be fully calculated on the first call of </span><span class="f_Text" style="font-style: italic;">OnCalculate</span><span class="f_Text">, and wait for the loading of third-party data (other symbols, ticks, or indicators). Also, changing the symbol/timeframe leads to the reinitialization of the Expert Advisors attached to the chart. The script (if it is executed periodically in a cycle) will completely disappear from the chart during this procedure (it will be unloaded from the old symbol/timeframe combination but will not be loaded automatically for the new combination).</span></p>
+<p class="p_H4"><span class="f_H4">bool ChartSetSymbolPeriod(long chartId, string symbol, ENUM_TIMEFRAMES timeframe)</span></p>
+<p class="p_Text"><span class="f_Text">The function changes the symbol and timeframe of the specified chart with the </span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text"> identifier to the values of the corresponding parameters: </span><span class="f_Text" style="font-style: italic;">symbol</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">timeframe</span><span class="f_Text">. 0 in the </span><span class="f_Text" style="font-style: italic;">chartId</span><span class="f_Text"> parameter means the current chart, NULL in the </span><span class="f_Text" style="font-style: italic;">symbol</span><span class="f_Text"> parameter is the current character, and 0 in the </span><span class="f_Text" style="font-style: italic;">timeframe</span><span class="f_Text"> parameter is the current timeframe.</span></p>
+<p class="p_Text"><span class="f_Text">Changes take effect asynchronously, that is, the function only sends a command to the terminal and does not wait for its execution. The command is added to the chart's message queue and is executed only after all previous commands have been processed.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> in case of successful placement of the command in the chart queue or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> in case of problems. Information about the error can be found in </span><span class="f_Text" style="font-style: italic;">_LastError</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">We have seen examples of using the function to update several indicators, in particular:</span></p>
+<ul>
+<li class="p_li"><span class="f_li" style="font-style: italic;">IndDeltaVolume.mq5</span><span class="f_li"> (see <a href="5_4_15_indicators_wait_none.htm" class="topiclink">Waiting for data and managing visibility</a>)</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">IndUnityPercent.mq5</span><span class="f_li"> (see <a href="5_4_16_indicators_multisymbol.htm" class="topiclink">Multicurrency and multitimeframe indicators</a>)</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">UseWPRMTF.mq5</span><span class="f_li"> (see <a href="5_5_5_indicators_multitimeframe.htm" class="topiclink">Support for multiple symbols and timeframes</a>)</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">UseM1MA.mq5</span><span class="f_li"> (see <a href="5_5_7_indicators_standard_use.htm" class="topiclink">Using built-in indicators</a>)</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">UseDemoAllLoop.mq5</span><span class="f_li"> (see <a href="5_5_13_indicators_indicatorrelease.htm" class="topiclink">Deleting indicator instances</a>)</span></li>
+<li class="p_li"><span class="f_li" style="font-style: italic;">IndSubChart.mq5</span><span class="f_li"> (see <a href="5_7_9_charts_mode.htm" class="topiclink">Chart display modes</a>)</span></li>
+</ul>
+
+</div>
+
+</body>
+</html>

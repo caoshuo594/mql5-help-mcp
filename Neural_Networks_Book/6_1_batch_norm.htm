@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1 Batch normalization</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="6_improvement_realization.htm"> 6. Architectural solutions for improving model convergence </a>/ 6.1 Batch normalization
+          </td>
+          <td width="70" align="right">
+          <a href="6_improvement_realization.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_1_batch_norm_description.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H2"><span class="f_H2">6.1 Batch normalization</span></p>
+<p class="p_Text"><span class="f_Text">One such practice is <a href="1_5_3_normalization.htm" class="topiclink">batch normalization</a>. It's worth noting that data normalization is quite common in neural network models in various forms. Remember when we created our first fully connected perceptron model, one of the tests involved comparing the model performance on the training dataset with normalized and non-normalized data. Testing showed the advantage of using normalized data.</span></p>
+<p class="p_Text"><span class="f_Text">We also encountered data normalization when studying attention models. The </span><span class="f_Text" style="font-style: italic;">Self-Attention </span><span class="f_Text">mechanism uses data normalization at the output of the Attention block and at the output of the </span><span class="f_Text" style="font-style: italic;">Feed Forward</span><span class="f_Text"> block. The difference from the previous normalization is in the area of data normalization. In the first case, we took each individual parameter and normalized its values with respect to historical data, while in the second case, we didn't look at the history of values for a single indicator; on the contrary, we took all the indicators at the current moment and normalized their values within the context of the current state. We can say that the data was normalized along the time interval and across it. The first option refers to batch data normalization, and the second is called </span><span class="f_Text" style="font-style: italic;">Layer Normalization</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">However, there are other possible uses for data normalization. Let me remind you of the main problem solved by data normalization. Consider a fully connected perceptron with two hidden layers. With a forward pass, each layer generates a set of data that serves as a training sample for the next layer. The output layer result is compared with reference data, and during the backpropagation pass, the error gradient is propagated from the output layer through the hidden layers to the input data. Having obtained the error gradient on each neuron, we update the weights, adjusting our neural network to the training samples from the last forward pass. Here lies a conflict: we are adapting the second hidden layer to the data output of the first hidden layer, while by changing the parameters of the first hidden layer, we have already altered the data array. That is, we adjust the second hidden layer to the dataset that no longer exists. A similar situation arises with the output layer, which adapts to the already altered output of the second hidden layer. If you also consider the distortion between the first and second hidden layers, the error scales increase. Furthermore, the deeper the neural network, the stronger the manifestation of this effect. This phenomenon is called the internal covariance shift.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="norm_2hlpercp" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="norm_2hlpercp.png"/></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">In classical neural networks, the mentioned problem was partially addressed by reducing the learning rate. Small changes in the weights do not significantly change the distribution of the dataset at the output of the neural layer. However, this approach does not solve the problem of scaling with an increase in the number of layers in the neural network as it reduces the learning rate. Another problem with a low learning rate is the risk of getting stuck in local minima.</span></p>
+<p class="p_Text"><span class="f_Text">In February 2015, Sergey Ioffe and Christian Szegedy proposed a </span><span class="f_Text" style="font-style: italic;">Batch Normalization</span><span class="f_Text"> method to solve the problem of internal covariance shift. The idea of the method was to normalize each individual neuron on a certain time interval with the median of the sample shifting to zero and scaling the dataset variance to one.</span></p>
+<p class="p_Text"><span class="f_Text">Experiments conducted by the method authors demonstrate that the use of the </span><span class="f_Text" style="font-style: italic;">Batch Normalization</span><span class="f_Text"> method also acts as a regularizer. With this, there is no need to use other regularization methods, in particular </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text">. Moreover, there are more recent studies that show that the combined use of </span><span class="f_Text" style="font-style: italic;">Dropout</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Batch Normalization</span><span class="f_Text"> adversely affects the training results of a neural network.</span></p>
+<p class="p_Text"><span class="f_Text">In modern neural network architectures, variations of the proposed normalization algorithm can be found in various forms. The authors suggest using </span><span class="f_Text" style="font-style: italic;">Batch Normalization</span><span class="f_Text"> immediately before non-linearity (activation formula).</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+
+</div>
+
+</body>
+</html>

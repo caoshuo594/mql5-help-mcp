@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.4.4 Setting the number of buffers and graphic plots</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_4_indicators_make.htm"> 5.4 Creating custom indicators </a>/ 5.4.4 Setting the number of buffers and graphic plots
+          </td>
+          <td width="70" align="right">
+          <a href="5_4_3_indicators_window_chart_separate.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_4_5_indicators_setindexbuffer.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.4.4 Setting the number of buffers and graphic plots</span></p>
+<p class="p_Text"><span class="f_Text">For the indicator to display the results of its calculations on the chart, it must define one or more arrays and declare them as indicator buffers. The number of buffers is set using the directive:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_buffers</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">N</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here N is an integer from 1 to 512. This directive sets the number of buffers that will be available in the code for calculating the indicator.</span></p>
+<p class="p_Text"><span class="f_Text">N must be an integer constant (literal) or equivalent macro definition. Since this is a preprocessor directive, no variables (even with the </span><span class="f_Text" style="font-style: italic;">const</span><span class="f_Text"> modifier) exist yet at the source code preprocessing stage.</span></p>
+<p class="p_Text"><span class="f_Text">However, buffers are not enough to visualize the calculated data. In MQL5, the visualization system is two-level. The first level is formed by indicator buffers, which are dynamic arrays that store data for display. The second level is for managing how this data will be displayed. It is built on the basis of new entities called graphical constructions (or diagrams, or plots). The point is that different ways of displaying data may require different numbers of indicator buffers. For example, the moving average has exactly one value per bar, and therefore one indicator buffer is sufficient for such a line chart. However, to display a candlestick chart, 4 values per bar (OHLC prices) are required. Thus, one such graphic plot requires 4 indicator buffers.</span></p>
+<p class="p_Text"><span class="f_Text">The number of charts (P) must also be defined in the source code using a special directive.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_plots</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">P</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the simplest case, the number of buffers and diagrams is the same. But we will soon analyze examples when you need more buffers than graphical constructions. In addition to situations in which the graphical construction of a particular type requires a predetermined number of buffers, we sometimes have to deal with the need to allocate one or more arrays for intermediate calculations. Such arrays are not directly involved in rendering but contain data for building rendered buffers. Of course, you can use simple dynamic arrays for such purposes without declaring them as buffers. But then we would have to independently control and resize them. It is much more convenient to make them buffers and thus instruct the terminal to allocate memory.</span></p>
+<p class="p_Quote"><span class="f_Quote">The number of buffers and graphical plots can only be set using preprocessor directives; these properties cannot be changed dynamically using MQL5 functions.</span></p>
+<p class="p_Text"><span class="f_Text">After the number of buffers and charts is determined, the arrays themselves, which will become indicator buffers, should be described in the source code.</span></p>
+<p class="p_Text"><span class="f_Text">Let's start developing a new indicator example </span><span class="f_Text" style="font-style: italic;">IndReplica1.mq5</span><span class="f_Text"> to demonstrate the necessary parts in the source code. The essence of the indicator will be simple: in its only buffer, we will display the values of the received </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> parameter array. As we said earlier, a specific timeseries to transfer to the </span><span class="f_Text" style="font-style: italic;">data</span><span class="f_Text"> array is selected by the user at the moment the indicator is applied to the chart; a timeseries with bar close prices will be offered by default.</span></p>
+<p class="p_Text"><span class="f_Text">Let's add directives describing one buffer and one chart.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_chart_window</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_buffers</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">indicator_plots</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The directives do not allocate the buffer itself, but only set the properties of the indicator and prepare the runtime system for the program to further determine and configure the specified number of arrays. Next, let's see how to register an array as a buffer.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.8.3 Nodejs based web server</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_8_project.htm"> 7.8 Projects </a>/ 7.8.3 Nodejs based web server
+          </td>
+          <td width="70" align="right">
+          <a href="7_8_2_project_web_service_plan.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_8_4_project_websockets.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.8.3 Nodejs based web server</span></p>
+<p class="p_Text"><span class="f_Text">To organize the server part of our projects, we need a web server. We will use the lightest and most technologically advanced nodejs. Server-side scripts for it can be written in JavaScript, which is the same language used in browsers for interactive web pages. This is convenient from the point of view of unified writing of the client and server parts of the system; the client part of any web service, as a rule, is required sooner or later, for example, for administration, registration, and displaying beautiful statistics on the use of the service.</span></p>
+<p class="p_Text"><span class="f_Text">Anyone who knows MQL5 virtually knows JavaScript, so believe in yourselves. The main differences are discussed in the sidebar.</span></p>
+<p class="p_Quote"><span class="f_Quote" style="font-weight: bold;">MQL5 vs JavaScript</span><br>
+<span class="f_Quote" style="font-weight: bold;">&nbsp;</span><br>
+<span class="f_Quote">JavaScript is an interpreted language, unlike the compiled MQL5. For us as developers, this makes life easier because we don't need a separate compilation phase to get a working program. Don't worry about the efficiency of JavaScript: all JavaScript runtimes use JIT (just-in-time) compilation of JavaScript on demand, i.e., the first time a module is accessed. This process occurs automatically, implicitly, once per session, after which the script is executed in compiled form. </span><br>
+<span class="f_Quote" style="font-weight: bold;">&nbsp;</span><br>
+<span class="f_Quote">MQL5 refers to languages with static typing, that is, when describing variables, we must explicitly specify their type, and the compiler monitors type compatibility. In contrast, JavaScript is a dynamically typed language: the type of a variable is determined by what value we put in it and can change during the life of the variable. This provides flexibility but requires caution in order to avoid unforeseen errors.</span><br>
+<span class="f_Quote" style="font-weight: bold;">&nbsp;</span><br>
+<span class="f_Quote">JavaScript is, in a sense, a more object-oriented language than MQL5, because almost all entities in it are objects. For example, a function is also an object, and a class, as a descriptor of the properties of objects, is also an object (of a prototype).</span><br>
+<span class="f_Quote" style="font-weight: bold;">&nbsp;</span><br>
+<span class="f_Quote">JavaScript itself &quot;collects garbage&quot;, i.e., frees the memory allocated by the application program for objects. In MQL5 we have to provide the timely call of </span><span class="f_Quote" style="font-style: italic;">delete</span><span class="f_Quote"> for dynamic objects. </span><br>
+<span class="f_Quote" style="font-style: italic;">&nbsp;</span><br>
+<span class="f_Quote">The JavaScript syntax contains many convenient &quot;abbreviations&quot; for writing constructions that in MQL5 have to be implemented in a longer way. For example, in order to pass a parameter pointing to another function to a certain function in MQL5, we need to describe the type of such a pointer using <a href="2_8_10_functions_typedef.htm" class="topiclink">typedef</a>, separately define a function that matches this prototype, and only then pass its identifier as a parameter. In JavaScript, you can define the function you're pointing to (in its entirety!) directly in the argument list instead of a pointer parameter.</span></p>
+<p class="p_Text"><span class="f_Text">If you are a web developer or already familiar with nodejs, you can skip the installation and configuration steps.</span></p>
+<p class="p_Text"><span class="f_Text">You can download nodejs from the official site <a href="https://nodejs.org" target="_blank" class="weblink" title="nodejs.org">nodejs.org</a>. Installation is available in different versions, for example, using an installer or unpacking an archive. As a result of the installation, you will receive an executable file in the specified directory </span><span class="f_Text" style="font-style: italic;">node.exe</span><span class="f_Text"> and several supporting files and folders.</span></p>
+<p class="p_Text"><span class="f_Text">If nodejs was not added to the system path by the installer, this can be done for the current Windows user by running the following command in the folder where nodejs is installed (where the file </span><span class="f_Text" style="font-style: italic;">node.exe</span><span class="f_Text"> is located):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">setx&nbsp;PATH&nbsp;&quot;%CD%&quot;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Alternatively, you can edit the Windows environment variables from the system properties dialog (</span><span class="f_Text" style="font-style: italic;">Computer</span><span class="f_Text"> -&gt; </span><span class="f_Text" style="font-style: italic;">Properties</span><span class="f_Text"> -&gt; </span><span class="f_Text" style="font-style: italic;">Extra options</span><span class="f_Text"> -&gt; </span><span class="f_Text" style="font-style: italic;">Environment Variables</span><span class="f_Text">; the specific dialog type depends on the version of the operating system). In any case, in this way, we will ensure the ability to run nodejs from any folder on the computer, which will be useful to us in the future.</span></p>
+<p class="p_Text"><span class="f_Text">You can check the health of nodejs by running the following commands (in the Windows command line):</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">node&nbsp;-v</span>
+<br><span class="f_CodeExample">npm&nbsp;version</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The first command outputs the version of nodejs, and the second one outputs the version of an important built-in nodejs service, the </span><span class="f_Text" style="font-style: italic;">npm</span><span class="f_Text"> package manager.</span></p>
+<p class="p_Text"><span class="f_Text">A package is a ready-to-use module that adds specific functionality to nodejs. By itself, nodejs is very small, and without packages, it would require a lot of routine coding.</span></p>
+<p class="p_Text"><span class="f_Text">The most requested packages are stored in a centralized repository on the web and can be downloaded and installed on a specific copy of nodejs or globally (for all copies of nodejs if there are several on the machine). Installing a package to a specific copy is done with the following command:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">npm&nbsp;install&nbsp;&lt;package&nbsp;name&gt;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Run it in the folder where nodejs was installed. This command will place the package locally and will not affect other copies of nodejs that already exist or may appear on the computer later on, with unexpected edits.</span></p>
+<p class="p_Text"><span class="f_Text">We, in particular, need the ws package, which implements the WebSocket protocol. That is, you need to run the command:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">npm&nbsp;install&nbsp;ws</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">and wait for the process to complete. As a result, the folder </span><span class="f_Text" style="font-style: italic;">&lt;nodejs_install_path&gt;/node_modules/</span><span class="f_Text"> should contain a new subfolder </span><span class="f_Text" style="font-style: italic;">ws</span><span class="f_Text"> with the necessary content (you can look in the README.md file with the description of the package to make sure it's a WebSocket protocol library).</span></p>
+<p class="p_Text"><span class="f_Text">The package contains implementations of both the server and the client. But instead of the latter, we will write our own in MQL5.</span></p>
+<p class="p_Text"><span class="f_Text">All the functionality of the nodejs server is concentrated in the folder </span><span class="f_Text" style="font-style: italic;">/node_modules</span><span class="f_Text">. It can be compared in purpose with a standard folder </span><span class="f_Text" style="font-style: italic;">MQL5/Include</span><span class="f_Text"> in MetaTrader 5. When writing application programs in JavaScript, we will include or &quot;import&quot; the necessary modules in a special way, by analogy with including mqh header files using the directive </span><span class="f_Text" style="font-style: italic;">#include</span><span class="f_Text"> in MQL5.</span></p>
+
+</div>
+
+</body>
+</html>

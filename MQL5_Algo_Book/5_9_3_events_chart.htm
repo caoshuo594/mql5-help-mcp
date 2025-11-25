@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.9.3 Chart change event</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_9_events.htm"> 5.9 Interactive events on charts </a>/ 5.9.3 Chart change event
+          </td>
+          <td width="70" align="right">
+          <a href="5_9_2_events_properties.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_9_4_events_keyboard.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.9.3 Chart change event</span></p>
+<p class="p_Text"><span class="f_Text">When changing the chart size, price display modes, scale, or other parameters, the terminal sends the CHARTEVENT_CHART_CHANGE event, which has no parameters. The MQL program must find out the changes on its own using </span><span class="f_Text" style="font-style: italic;">ChartGet</span><span class="f_Text"> function calls.</span></p>
+<p class="p_Text"><span class="f_Text">We have already used this event in the </span><span class="f_Text" style="font-style: italic;">ChartModeMonitor.mq5</span><span class="f_Text"> example in the section on <a href="5_7_9_charts_mode.htm" class="topiclink">Chart display modes</a>. Now let's take another example.</span></p>
+<p class="p_Text"><span class="f_Text">As you know, MetaTrader 5 allows the saving of the screenshot of the current chart to a file of a specified size (the </span><span class="f_Text" style="font-style: italic;">Save as Picture</span><span class="f_Text"> command of the context menu). However, this method of obtaining a screenshot is not suitable for all cases. In particular, if you need an image with a tooltip or when an object of the input field type is active (when text is selected inside the field and the text cursor is visible), the standard command will not help, since it re-forms the chart image without taking into account these and some other nuances of the current state of the window.</span></p>
+<p class="p_Text"><span class="f_Text">The only alternative to get an exact copy of the window is to use means that are external to the terminal (for example, the </span><span class="f_Text" style="font-style: italic;">PrtSc</span><span class="f_Text"> key via the Windows clipboard), but this method does not guarantee the required window size. In order not to select the size by trial and error, or some additional programs, we will create an indicator </span><span class="f_Text" style="font-style: italic;">EventWindowSizer.mq5</span><span class="f_Text">, which will track the user's size setting on the go and output the current value in a comment.</span></p>
+<p class="p_Text"><span class="f_Text">All work is done in the </span><span class="f_Text" style="font-style: italic;">OnChartEvent</span><span class="f_Text"> handler, starting with checking the event ID for CHARTEVENT_CHART_CHANGE. The dimensions of the window in pixels can be obtained using the <a href="5_7_12_charts_scale_time.htm" class="topiclink">CHART_WIDTH_IN_PIXELS</a> and <a href="5_7_13_charts_scale_price.htm" class="topiclink">CHART_HEIGHT_IN_PIXELS</a> properties. However, they return dimensions without taking into account borders, and the borders are usually wanted for a screenshot. Therefore, we will display in the comment not only the property values (marked with the word &quot;Screen&quot;), but also the corrected values (marked with the word &quot;Picture&quot;): 2 pixels should be added in width, and 1 pixel in vertical (these are the features of window rendering in the terminal).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnChartEvent</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">lparam</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">dparam</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">sparam</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">id</span><span class="f_CodeExample">&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHARTEVENT_CHART_CHANGE</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_WIDTH_IN_PIXELS</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">ChartGetInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">CHART_HEIGHT_IN_PIXELS</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&quot;Raw&quot;&nbsp;sizes&nbsp;&quot;as&nbsp;is&quot;&nbsp;are&nbsp;displayed&nbsp;with&nbsp;the&nbsp;&quot;Screen&quot;&nbsp;mark,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;correction&nbsp;for&nbsp;(-2,-1)&nbsp;is&nbsp;needed&nbsp;to&nbsp;include&nbsp;frames&nbsp;-&nbsp;it&nbsp;is&nbsp;displayed&nbsp;with&nbsp;the&nbsp;&quot;Picture&quot;&nbsp;mark,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;correction&nbsp;for&nbsp;(-54,-22)&nbsp;is&nbsp;needed&nbsp;to&nbsp;include&nbsp;scales&nbsp;-&nbsp;it&nbsp;is&nbsp;displayed&nbsp;with&nbsp;&quot;Including&nbsp;scales&quot;&nbsp;flag.</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Comment</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">StringFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Screen:&nbsp;%d&nbsp;x&nbsp;%d\nPicture:&nbsp;%d&nbsp;x&nbsp;%d\nIncluding&nbsp;scales:&nbsp;%d&nbsp;x&nbsp;%d&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">w</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">54</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">h</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">&nbsp;+&nbsp;</span><span class="f_CodeExample" style="color: #333333;">22</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Moreover, the obtained values do not take into account time and price scales. If they should also be taken into account in the size of the screenshot, then an adjustment should be made for their size as well. Unfortunately, the MQL5 API does not provide a way to find out these sizes, so we can only determine them empirically: for standard Windows font settings, the price scale width is 54 pixels, and the time scale height is 22 pixels. These constants may differ for your version of Windows, so you should edit them, or set them using input parameters.</span></p>
+<p class="p_Text"><span class="f_Text">After running the indicator on a chart, try resizing the window and see how the numbers in the comment will change.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Screenshot of window with tooltip and current dimensions in the comment" title="Screenshot of window with tooltip and current dimensions in the comment" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="event_sizer_screenshot.png"/><br>
+<span class="f_ImageCaption">Window s</span></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Window screenshot with a tooltip and current sizes in the comment</span></p>
+
+</div>
+
+</body>
+</html>

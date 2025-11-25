@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Orthogonal Factorizations</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="matrix.htm"> Matrix and Vector Methods </a> / <a class="h_m" href="openblas.htm"> OpenBLAS </a>/ Orthogonal Factorizations
+          </td>
+          <td width="70" align="right">
+          <a href="leastsquaressolutionqrts.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="factorizationqr.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Orthogonal Factorizations</span></p>
+<p class="p_Normal"><span class="f_Normal">&nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">OpenBLAS &#1087;&#1088;&#1077;&#1076;&#1086;&#1089;&#1090;&#1072;&#1074;&#1083;&#1103;&#1077;&#1090; &#1088;&#1103;&#1076; &#1087;&#1088;&#1086;&#1094;&#1077;&#1076;&#1091;&#1088; &#1076;&#1083;&#1103; &#1088;&#1072;&#1079;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1103; &#1086;&#1073;&#1097;&#1077;&#1081; &#1087;&#1088;&#1103;&#1084;&#1086;&#1091;&#1075;&#1086;&#1083;&#1100;&#1085;&#1086;&#1081; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1099; A &#1088;&#1072;&#1079;&#1084;&#1077;&#1088;&#1072; m &#1085;&#1072; n &#1074; &#1087;&#1088;&#1086;&#1080;&#1079;&#1074;&#1077;&#1076;&#1077;&#1085;&#1080;&#1077; &#1086;&#1088;&#1090;&#1086;&#1075;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1086;&#1081; (&#1074; &#1082;&#1086;&#1084;&#1087;&#1083;&#1077;&#1082;&#1089;&#1085;&#1086;&#1084; &#1089;&#1083;&#1091;&#1095;&#1072;&#1077; — &#1091;&#1085;&#1080;&#1090;&#1072;&#1088;&#1085;&#1086;&#1081;) &#1080; &#1090;&#1088;&#1077;&#1091;&#1075;&#1086;&#1083;&#1100;&#1085;&#1086;&#1081; (&#1080;&#1083;&#1080;, &#1074;&#1086;&#1079;&#1084;&#1086;&#1078;&#1085;&#1086;, &#1090;&#1088;&#1072;&#1087;&#1077;&#1094;&#1080;&#1077;&#1074;&#1080;&#1076;&#1085;&#1086;&#1081;) &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;. &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">&#1056;&#1077;&#1072;&#1083;&#1100;&#1085;&#1072;&#1103; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1072; Q &#1085;&#1072;&#1079;&#1099;&#1074;&#1072;&#1077;&#1090;&#1089;&#1103; &#1086;&#1088;&#1090;&#1086;&#1075;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1086;&#1081;, &#1077;&#1089;&#1083;&#1080; Q</span><span class="f_Text" style="font-size: 7pt; vertical-align: super;">T</span><span class="f_Text"> Q = I ; &#1082;&#1086;&#1084;&#1087;&#1083;&#1077;&#1082;&#1089;&#1085;&#1072;&#1103; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1072; Q &#1085;&#1072;&#1079;&#1099;&#1074;&#1072;&#1077;&#1090;&#1089;&#1103; &#1091;&#1085;&#1080;&#1090;&#1072;&#1088;&#1085;&#1086;&#1081;, &#1077;&#1089;&#1083;&#1080; Q</span><span class="f_Text" style="font-size: 7pt; vertical-align: super;">H</span><span class="f_Text"> Q = I . &#1054;&#1088;&#1090;&#1086;&#1075;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1099;&#1077; &#1080; &#1091;&#1085;&#1080;&#1090;&#1072;&#1088;&#1085;&#1099;&#1077; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1099; &#1086;&#1073;&#1083;&#1072;&#1076;&#1072;&#1102;&#1090; &#1074;&#1072;&#1078;&#1085;&#1099;&#1084; &#1089;&#1074;&#1086;&#1081;&#1089;&#1090;&#1074;&#1086;&#1084; — &#1086;&#1085;&#1080; &#1089;&#1086;&#1093;&#1088;&#1072;&#1085;&#1103;&#1102;&#1090; &#1077;&#1074;&#1082;&#1083;&#1080;&#1076;&#1086;&#1074;&#1091; &#1085;&#1086;&#1088;&#1084;&#1091; &#1074;&#1077;&#1082;&#1090;&#1086;&#1088;&#1072;:</span></p>
+<p class="p_Text" style="margin: 8px 17px 7px 43px;"><span class="f_Text">||x||</span><span class="f_Text" style="font-size: 7pt; vertical-align: sub;">2</span><span class="f_Text"> = ||Qx||</span><span class="f_Text" style="font-size: 7pt; vertical-align: sub;">2</span><span class="f_Text">, &#1077;&#1089;&#1083;&#1080; Q &#1086;&#1088;&#1090;&#1086;&#1075;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1072; &#1080;&#1083;&#1080; &#1091;&#1085;&#1080;&#1090;&#1072;&#1088;&#1085;&#1072;</span></p>
+<p class="p_Text"><span class="f_Text">&#1041;&#1083;&#1072;&#1075;&#1086;&#1076;&#1072;&#1088;&#1103; &#1101;&#1090;&#1086;&#1084;&#1091; &#1090;&#1072;&#1082;&#1080;&#1077; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1099; &#1089;&#1087;&#1086;&#1089;&#1086;&#1073;&#1089;&#1090;&#1074;&#1091;&#1102;&#1090; &#1095;&#1080;&#1089;&#1083;&#1077;&#1085;&#1085;&#1086;&#1081; &#1091;&#1089;&#1090;&#1086;&#1081;&#1095;&#1080;&#1074;&#1086;&#1089;&#1090;&#1080;, &#1087;&#1086;&#1089;&#1082;&#1086;&#1083;&#1100;&#1082;&#1091; &#1085;&#1077; &#1091;&#1089;&#1080;&#1083;&#1080;&#1074;&#1072;&#1102;&#1090; &#1086;&#1096;&#1080;&#1073;&#1082;&#1080; &#1086;&#1082;&#1088;&#1091;&#1075;&#1083;&#1077;&#1085;&#1080;&#1103;.</span></p>
+<p class="p_Text"><span class="f_Text">&#1054;&#1088;&#1090;&#1086;&#1075;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1099;&#1077; &#1088;&#1072;&#1079;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1103; &#1096;&#1080;&#1088;&#1086;&#1082;&#1086; &#1087;&#1088;&#1080;&#1084;&#1077;&#1085;&#1103;&#1102;&#1090;&#1089;&#1103; &#1087;&#1088;&#1080; &#1088;&#1077;&#1096;&#1077;&#1085;&#1080;&#1080; &#1079;&#1072;&#1076;&#1072;&#1095; &#1085;&#1072;&#1080;&#1084;&#1077;&#1085;&#1100;&#1096;&#1080;&#1093; &#1082;&#1074;&#1072;&#1076;&#1088;&#1072;&#1090;&#1086;&#1074;. &#1048;&#1093; &#1090;&#1072;&#1082;&#1078;&#1077; &#1084;&#1086;&#1078;&#1085;&#1086; &#1080;&#1089;&#1087;&#1086;&#1083;&#1100;&#1079;&#1086;&#1074;&#1072;&#1090;&#1100; &#1076;&#1083;&#1103; &#1074;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1080;&#1103; &#1087;&#1088;&#1077;&#1076;&#1074;&#1072;&#1088;&#1080;&#1090;&#1077;&#1083;&#1100;&#1085;&#1099;&#1093; &#1096;&#1072;&#1075;&#1086;&#1074; &#1087;&#1088;&#1080; &#1088;&#1077;&#1096;&#1077;&#1085;&#1080;&#1080; &#1079;&#1072;&#1076;&#1072;&#1095; &#1085;&#1072; &#1089;&#1086;&#1073;&#1089;&#1090;&#1074;&#1077;&#1085;&#1085;&#1099;&#1077; &#1079;&#1085;&#1072;&#1095;&#1077;&#1085;&#1080;&#1103; &#1080;&#1083;&#1080; &#1089;&#1080;&#1085;&#1075;&#1091;&#1083;&#1103;&#1088;&#1085;&#1099;&#1077; &#1079;&#1085;&#1072;&#1095;&#1077;&#1085;&#1080;&#1103;.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">&#1060;&#1091;&#1085;&#1082;&#1094;&#1080;&#1103;</span></p>
+</th>
+<th class="EnumTable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">&#1042;&#1099;&#1087;&#1086;&#1083;&#1085;&#1103;&#1077;&#1084;&#1086;&#1077; &#1076;&#1077;&#1081;&#1089;&#1090;&#1074;&#1080;&#1077;</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="factorizationqr.htm" class="topiclink">FactorizationQR</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">&#1042;&#1099;&#1095;&#1080;&#1089;&#1083;&#1103;&#1077;&#1090; QR-&#1088;&#1072;&#1079;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1077; &#1086;&#1073;&#1097;&#1077;&#1081; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1099; &#1088;&#1072;&#1079;&#1084;&#1077;&#1088;&#1072; m &#1085;&#1072; n: A = Q * R. LAPACK-&#1092;&#1091;&#1085;&#1082;&#1094;&#1080;&#1103; <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/geqrf.html" target="_blank" class="weblink">GEQRF</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="factorizationqrnonneg.htm" class="topiclink">FactorizationQRNonNeg</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">&#1042;&#1099;&#1095;&#1080;&#1089;&#1083;&#1103;&#1077;&#1090; QR-&#1088;&#1072;&#1079;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1077; &#1086;&#1073;&#1097;&#1077;&#1081; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1099; &#1088;&#1072;&#1079;&#1084;&#1077;&#1088;&#1072; m &#1085;&#1072; n: A = Q * R, &#1075;&#1076;&#1077; R — &#1074;&#1077;&#1088;&#1093;&#1085;&#1077;&#1090;&#1088;&#1077;&#1091;&#1075;&#1086;&#1083;&#1100;&#1085;&#1072;&#1103; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1072; &#1089; &#1085;&#1077;&#1086;&#1090;&#1088;&#1080;&#1094;&#1072;&#1090;&#1077;&#1083;&#1100;&#1085;&#1099;&#1084;&#1080; &#1101;&#1083;&#1077;&#1084;&#1077;&#1085;&#1090;&#1072;&#1084;&#1080; &#1085;&#1072; &#1076;&#1080;&#1072;&#1075;&#1086;&#1085;&#1072;&#1083;&#1080;. LATPACK-&#1092;&#1091;&#1085;&#1082;&#1094;&#1080;&#1103; <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/geqrfp.html" target="_blank" class="weblink">GEQRFP</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="factorizationqrpivot.htm" class="topiclink">FactorizationQRPivot</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">&#1042;&#1099;&#1095;&#1080;&#1089;&#1083;&#1103;&#1077;&#1090; QR-&#1088;&#1072;&#1079;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1077; &#1086;&#1073;&#1097;&#1077;&#1081; &#1084;&#1072;&#1090;&#1088;&#1080;&#1094;&#1099; &#1088;&#1072;&#1079;&#1084;&#1077;&#1088;&#1072; m &#1085;&#1072; n &#1089; &#1087;&#1077;&#1088;&#1077;&#1089;&#1090;&#1072;&#1085;&#1086;&#1074;&#1082;&#1086;&#1081; &#1089;&#1090;&#1086;&#1083;&#1073;&#1094;&#1086;&#1074;: A * P = Q * R. LAPACK-&#1092;&#1091;&#1085;&#1082;&#1094;&#1080;&#1103; <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/geqp3.html" target="_blank" class="weblink">GEQP3</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="factorizationlq.htm" class="topiclink">FactorizationLQ</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Computes the LQ factorization of a general m-by-n matrix: A = L * Q. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/gelqf.html" target="_blank" class="weblink">GELQF</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="factorizationql.htm" class="topiclink">FactorizationQL</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Computes the QL factorization of a general m-by-n matrix: A = Q * L. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/geqlf.html" target="_blank" class="weblink">GEQLF</a>.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:260px;"><p class="p_fortable"><span class="f_fortable"><a href="factorizationrq.htm" class="topiclink">FactorizationRQ</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Computes the RQ factorization of a general m-by-n matrix: A = R * Q. LAPACK function <a href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/gerqf.html" target="_blank" class="weblink">GERQF</a>.</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

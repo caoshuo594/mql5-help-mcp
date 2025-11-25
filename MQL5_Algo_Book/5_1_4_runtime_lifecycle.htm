@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>5.1.4 Features of starting and stopping programs of various types</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part5.htm"> Part 5. Creating application programs </a> / <a class="h_m" href="5_1_runtime.htm"> 5.1 General principles for executing MQL programs </a>/ 5.1.4 Features of starting and stopping programs of various types
+          </td>
+          <td width="70" align="right">
+          <a href="5_1_3_runtime_events_overview.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="5_1_5_runtime_oninit_ondeinit.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">5.1.4 Features of starting and stopping programs of various types</span></p>
+<p class="p_Text"><span class="f_Text">In programming, the term initialization is used in many different contexts. In MQL5, there is also some ambiguity. In the <a href="2_3_3_initialization.htm" class="topiclink">Initialization</a> section, we have already used this word to mean setting the initial values of variables. Then we discussed the initialization event </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> in indicators and Expert Advisors. Although the meaning of both initializations is similar (bring the program to a working state), they actually mean different stages of preparing an MQL program for launch: system and application.</span></p>
+<p class="p_Text"><span class="f_Text">The life cycle of a finished MQL program can be represented by the following major steps:</span></p>
+<ol style="list-style-type:decimal">
+<li value="1" class="p_li"><span class="f_li">Loading – reading a program from a file into the terminal's memory: this includes instructions, predefined data (literals), <a href="7_1_resources.htm" class="topiclink">resources</a>, and <a href="7_7_libraries.htm" class="topiclink">libraries</a>. This is where </span><span class="f_li" style="font-style: italic;">#property</span><span class="f_li"> directives come into play.</span></li>
+<li value="2" class="p_li"><span class="f_li">Allocating memory for global variables and setting their initial values – it is system initialization performed by the runtime. Recall that in the section <a href="2_3_3_initialization.htm" class="topiclink">Initialization</a>, while studying the start of the program under the debugger step by step, we saw that the @global_initializations entry was on the stack. This was the code block for this item, which was created implicitly by the compiler. If the program uses global objects of classes/structures, their <a href="3_2_8_classes_ctors.htm" class="topiclink">constructors</a> will be called at this stage.</span></li>
+<li value="3" class="p_li"><span class="f_li">Calling the </span><span class="f_li" style="font-style: italic;">OnInit</span><span class="f_li"> event handler (if it exists): it carries out a higher-level, applied initialization, and thus each program performs it independently, as necessary. For example, it can be dynamic memory allocation for arrays of objects, for which, for one reason or another, you need to use parametric constructors instead of default constructors. As we know, automatic memory allocation for arrays uses only default constructors, and therefore they cannot be initialized within the previous step (2). It can also be opening files, calling built-in API functions to enable the necessary chart modes, etc.</span></li>
+<li value="4" class="p_li"><span class="f_li">A loop until the user closes the program or terminal or performs any other action that requires reinitialization (see further):</span><ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">calling other handlers as appropriate events occur.</span></li>
+</ul>
+
+<li value="5" class="p_li"><span class="f_li">Calling the </span><span class="f_li" style="font-style: italic;">OnDeinit</span><span class="f_li"> event handler (if it exists) upon detection of an attempt to close the program by the user or programmatically (the corresponding function <a href="5_1_7_runtime_remove.htm" class="topiclink">ExpertRemove</a> is available only in Expert Advisors and scripts).</span></li>
+<li value="6" class="p_li"><span class="f_li">Finalization: freeing allocated memory and other resources that the programmer did not consider as necessary to free in </span><span class="f_li" style="font-style: italic;">OnDeinit</span><span class="f_li">. If the program uses OOP, the destructors of global and static objects are called here.</span></li>
+<li value="7" class="p_li"><span class="f_li">Downloading the program.</span></li>
+</ol>
+<p class="p_Text"><span class="f_Text">Scripts and services a priori do not have </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> handlers, and therefore steps 3 and 5 are absent for them, and step 4 degenerates into a single </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> call.</span></p>
+<p class="p_Text"><span class="f_Text">System initialization (step 2) is inseparable from loading, that is, it always follows it. Finalization always precedes unloading. However, indicators and Expert Advisors go through the stages of loading and unloading differently in different situations. Therefore, </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">OnDeinit </span><span class="f_Text">calls (steps 3 and 5) are the reference points at which it is possible to provide consistent applied initialization and deinitialization of Expert Advisors and indicators.</span></p>
+<p class="p_Text"><span class="f_Text">Loading of indicators and Expert Advisors is performed in the following cases:</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:90%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Case</span></p>
+</th>
+<th class="table" style="width:5%;"><p class="p_BoldTitlesInTables" style="text-align: center;"><img class="help" alt="Indicator" title="Indicator" width="23" height="23" style="margin:0 auto 0 auto;width:23px;height:23px;border:none" src="indicator_small.png"/></p>
+</th>
+<th class="table" style="width:5%;"><p class="p_BoldTitlesInTables" style="text-align: center;"><img class="help" alt="Expert" title="Expert" width="23" height="23" style="margin:0 auto 0 auto;width:23px;height:23px;border:none" src="expert_small.png"/></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">The user launches the program on the chart</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Launching the terminal (if the program was running on the chart before the previous closing of the terminal)</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Loading a template (if the template contains a program attached to the chart)</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Profile change (if the program is attached to one of the profile charts)</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">After successful recompilation, if the program was attached to the chart</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Changing the active account</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%; border:solid thin #b1c2d6; border-right:none;"><p class="p_fortable" style="margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 2pt;">-</span></p>
+</td>
+<td class="table" style="width:5%; border:solid thin #b1c2d6; border-right:none; border-left:none;"><p class="p_fortable" style="margin: 1px 17px 1px 17px;"><span class="f_fortable" style="font-size: 2pt;">-</span></p>
+</td>
+<td class="table" style="width:5%; border:solid thin #b1c2d6; border-left:none;"><p class="p_fortable" style="margin: 1px 17px 1px 17px;"><span class="f_fortable" style="font-size: 2pt;">-</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Change the symbol or period of the chart to which the indicator is attached</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">-</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Changing the input parameters of the indicator</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">-</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%; border:solid thin #b1c2d6; border-right:none;"><p class="p_fortable" style="margin: 0 17px 0 17px;"><span class="f_fortable" style="font-size: 2pt;">-</span></p>
+</td>
+<td class="table" style="width:5%; border:solid thin #b1c2d6; border-right:none; border-left:none;"><p class="p_fortable" style="margin: 1px 17px 1px 17px;"><span class="f_fortable" style="font-size: 2pt;">-</span></p>
+</td>
+<td class="table" style="width:5%; border:solid thin #b1c2d6; border-left:none;"><p class="p_fortable" style="margin: 1px 17px 1px 17px;"><span class="f_fortable" style="font-size: 2pt;">-</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Connecting to the account (authorization), even if the account number has not changed</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">-</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In a more compact form, the following rule can be formulated: Expert Advisors do not go through the full life cycle, that is, they do not reload when the symbol/timeframe of the chart changes, as well as when the input parameters change.</span></p>
+<p class="p_Text"><span class="f_Text">Therefore, a similar asymmetry can be observed when unloading programs. The reasons for unloading indicators and Expert Advisors are:</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:90%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Case</span></p>
+</th>
+<th class="table" style="width:5%;"><p class="p_BoldTitlesInTables" style="text-align: center;"><img class="help" alt="Indicator" title="Indicator" width="23" height="23" style="margin:0 auto 0 auto;width:23px;height:23px;border:none" src="indicator_small.png"/></p>
+</th>
+<th class="table" style="width:5%;"><p class="p_BoldTitlesInTables" style="text-align: center;"><img class="help" alt="Expert" title="Expert" width="23" height="23" style="margin:0 auto 0 auto;width:23px;height:23px;border:none" src="expert_small.png"/></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Removing the program from the chart</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Closing the terminal (when the program is attached to the chart)</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Loading a template on the chart on which the program is running</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Closing the chart on which the program is running</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Changing the profile if the program is attached to one of the charts of the profile</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Changing the account to which the terminal is connected</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%; border:solid thin #b1c2d6; border-right:none;"><p class="p_fortable" style="text-align: center;"><span class="f_fortable" style="font-size: 2pt;">-</span></p>
+</td>
+<td class="table" style="width:5%; border:solid thin #b1c2d6; border-right:none; border-left:none;"><p class="p_Normal"><span class="f_Normal" style="font-size: 2pt;">-</span></p>
+</td>
+<td class="table" style="width:5%; border:solid thin #b1c2d6; border-left:none;"><p class="p_Normal"><span class="f_Normal" style="font-size: 2pt;">-</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Changing the symbol and/or period of the chart to which the indicator is attached</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">-</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Changing the input parameters of the indicator</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">-</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%; border:solid thin #b1c2d6; border-right:none;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 2pt;">-</span></p>
+</td>
+<td class="table" style="width:5%; border:solid thin #b1c2d6; border-right:none; border-left:none;"><p class="p_Normal"><span class="f_Normal" style="font-size: 2pt;">-</span></p>
+</td>
+<td class="table" style="width:5%; border:solid thin #b1c2d6; border-left:none;"><p class="p_Normal"><span class="f_Normal" style="font-size: 2pt;">-</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Attaching another or the same EA to the chart where the current EA is already running</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">-</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:90%;"><p class="p_fortable"><span class="f_fortable">Calling the <a href="5_1_7_runtime_remove.htm" class="topiclink">ExpertRemove</a> function</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">-</span></p>
+</td>
+<td class="table" style="width:5%;"><p class="p_fortable" style="text-align: center; margin: 0 0 0 0;"><span class="f_fortable" style="font-size: 16pt;">+</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The reason for deinitialization can be found in the program using the function </span><span class="f_Text" style="font-style: italic;">UninitializeReason</span><span class="f_Text"> or flag </span><span class="f_Text" style="font-style: italic;">_UninitReason</span><span class="f_Text"> (cm. section <a href="4_9_13_env_stop.htm" class="topiclink">Checking the status and reason for stopping an MQL program</a>).</span></p>
+<p class="p_Text"><span class="f_Text">Please note that when you change the symbol or timeframe of the chart, as well as when you change the input parameters, the Expert Advisor remains in memory, that is, steps 6-7 (finalization and unloading) and steps 1-2 (loading and primary memory allocation) are not executed, therefore values of global and static variables are not reset. In this case, the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> handlers are called sequentially on the old and on the new symbol/timeframe respectively (or at the old and new settings).</span></p>
+<p class="p_Text"><span class="f_Text">A consequence of global variables not being cleared in Expert Advisors is that the deinitialization code </span><span class="f_Text" style="font-style: italic;">_UninitReason</span><span class="f_Text"> remains unchanged for analysis in the </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> handler. The new code will be written to the variable only in case of the next event, just before the </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text"> call.</span></p>
+<p class="p_Text"><span class="f_Text">All events received for the Expert Advisor before the end of the </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text"> function, are skipped.</span></p>
+<p class="p_Quote"><span class="f_Quote">When the MQL program is launched for the first time, the settings dialog is displayed between steps 1 and 2. When changing the input parameters, the settings dialog is wedged into the general loop in different ways depending on the type of program: for indicators, it still appears before step 2, and for Expert Advisors — before step 3.</span><br>
+<span class="f_Quote">&nbsp;</span><br>
+<span class="f_Quote">The book is accompanied by an indicator and Expert Advisor template entitled </span><span class="f_Quote" style="font-style: italic;">LifeCycle.mq5</span><span class="f_Quote">. It logs global initialization/finalization steps in </span><span class="f_Quote" style="font-style: italic;">OnInit/OnDeinit</span><span class="f_Quote"> handlers. Place programs on the chart and see what events occur in response to various user actions: loading/unloading, changing parameters, switching symbols/timeframes.</span></p>
+<p class="p_Text"><span class="f_Text">The script is loaded only when it is added to the chart. If a script is running in a loop, recompiling it does not result in a restart.</span></p>
+<p class="p_Text"><span class="f_Text">The service is loaded and unloaded using the context menu commands in the terminal interface. When a service that is already running is recompiled, it is restarted. Recall that active instances of services are automatically loaded when the terminal starts and unloaded when closes.</span></p>
+<p class="p_Text"><span class="f_Text">In the next two sections, we will consider the features of launching different MQL programs at the level of event handlers.</span></p>
+
+</div>
+
+</body>
+</html>

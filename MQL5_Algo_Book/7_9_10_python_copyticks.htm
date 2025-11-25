@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.9.10 Reading tick history</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_9_python.htm"> 7.9 Native python support </a>/ 7.9.10 Reading tick history
+          </td>
+          <td width="70" align="right">
+          <a href="7_9_9_python_copyrates.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_9_11_python_margin_profit.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.9.10 Reading tick history</span></p>
+<p class="p_Text"><span class="f_Text">The Python API includes two functions for reading the real tick history: </span><span class="f_Text" style="font-style: italic;">copy_ticks_from</span><span class="f_Text"> with an indication of the number of ticks starting from the specified date, and </span><span class="f_Text" style="font-style: italic;">copy_ticks_range</span><span class="f_Text"> for all ticks for the specified period.</span></p>
+<p class="p_Text"><span class="f_Text">Both functions have four required unnamed parameters, the first of which specifies the symbol. The second parameter specifies the initial time of the requested ticks. The third parameter indicates either the required number of ticks is passed (in the </span><span class="f_Text" style="font-style: italic;">copy_ticks_from</span><span class="f_Text"> function) or the end time of ticks (in the </span><span class="f_Text" style="font-style: italic;">copy_ticks_range</span><span class="f_Text"> function).</span></p>
+<p class="p_Text"><span class="f_Text">The last parameter determines what kind of ticks will be returned. It can contain one of the following flags (COPY_TICKS):</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:33%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_ALL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">All ticks</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_INFO</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Ticks containing Bid and/or Ask price changes</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_TRADE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Ticks containing changes in the Last price and/or volume (Volume)</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Both functions return ticks as an array </span><span class="f_Text" style="font-style: italic;">numpy.ndarray</span><span class="f_Text"> (from the package </span><span class="f_Text" style="font-style: italic;">numpy</span><span class="f_Text">) with named columns </span><span class="f_Text" style="font-style: italic;">time</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">bid</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">ask</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">last</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text">. The value of the field </span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text"> is a combination of bit flags from the TICK_FLAG enumeration: each bit means a change in the corresponding field with the tick property.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:33%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Changed&nbsp;tick&nbsp;property</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">TICK_FLAG_BID</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Bid price</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">TICK_FLAG_ASK</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Ask price</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">TICK_FLAG_LAST</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Last price</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">TICK_FLAG_VOLUME</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Volume</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">TICK_FLAG_BUY</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Last Buy price</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:33%;"><p class="p_fortable"><span class="f_fortable">TICK_FLAG_SELL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Last Sell price</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_H4"><span class="f_H4">numpy.ndarray copy_ticks_from(symbol, date_from, count, flags)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">copy_ticks_from</span><span class="f_Text"> function requests ticks starting from the specified time (</span><span class="f_Text" style="font-style: italic;">date_from</span><span class="f_Text">) in the given quantity (</span><span class="f_Text" style="font-style: italic;">count</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">The function is an analog of </span><span class="f_Text" style="font-style: italic;"><a href="5_3_11_timeseries_ticks_mqltick.htm" class="topiclink">CopyTicks</a></span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">numpy.array copy_ticks_range(symbol, date_from, date_to, flags)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">copy_ticks_range</span><span class="f_Text"> function allows you to get ticks for the specified time range.</span></p>
+<p class="p_Text"><span class="f_Text">The function is an analog of </span><span class="f_Text" style="font-style: italic;"><a href="5_3_11_timeseries_ticks_mqltick.htm" class="topiclink">CopyTicksRange</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In the following example (</span><span class="f_Text" style="font-style: italic;">MQL5/Scripts/MQL5Book/Python/copyticks.py</span><span class="f_Text">), we generate an interactive web page with a tick chart (note: the </span><span class="f_Text" style="font-style: italic;">plotly</span><span class="f_Text"> package is used here; to install it in Python, run the command </span><span class="f_Text" style="font-style: italic;">pip install plotly</span><span class="f_Text">).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;MetaTrader5&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;mt5</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;pandas&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;pd</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;pytz</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">from</span><span class="f_CodeExample">&nbsp;datetime&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;datetime</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;connect&nbsp;to&nbsp;terminal</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">if</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">not</span><span class="f_CodeExample">&nbsp;mt5.initialize():</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;initialize()&nbsp;failed,&nbsp;error&nbsp;code&nbsp;=&quot;</span><span class="f_CodeExample">,&nbsp;mt5.last_error())</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;quit()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;set&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;file&nbsp;to&nbsp;save&nbsp;to&nbsp;the&nbsp;sandbox</span>
+<br><span class="f_CodeExample">path&nbsp;=&nbsp;mt5.terminal_info().data_path&nbsp;+&nbsp;r</span><span class="f_CodeExample" style="color: #0000ff;">'\MQL5\Files\MQL5Book\copyticks.html'</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;copy&nbsp;1000&nbsp;EURUSD&nbsp;ticks&nbsp;from&nbsp;a&nbsp;specific&nbsp;moment&nbsp;in&nbsp;history</span>
+<br><span class="f_CodeExample">utc&nbsp;=&nbsp;pytz.timezone(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;Etc/UTC&quot;</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">rates&nbsp;=&nbsp;mt5.copy_ticks_from(</span><span class="f_CodeExample" style="color: #0000ff;">&quot;EURUSD&quot;</span><span class="f_CodeExample">,&nbsp;\</span>
+<br><span class="f_CodeExample">datetime(</span><span class="f_CodeExample" style="color: #0000ff;">2022</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">25</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">15</span><span class="f_CodeExample">,&nbsp;tzinfo&nbsp;=&nbsp;utc),&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">1000</span><span class="f_CodeExample">,&nbsp;mt5.COPY_TICKS_ALL)</span>
+<br><span class="f_CodeExample">bid&nbsp;=&nbsp;[x[</span><span class="f_CodeExample" style="color: #0000ff;">'bid'</span><span class="f_CodeExample">]&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;x&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;rates]</span>
+<br><span class="f_CodeExample">ask&nbsp;=&nbsp;[x[</span><span class="f_CodeExample" style="color: #0000ff;">'ask'</span><span class="f_CodeExample">]&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;x&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;rates]</span>
+<br><span class="f_CodeExample">time&nbsp;=&nbsp;[x[</span><span class="f_CodeExample" style="color: #0000ff;">'time'</span><span class="f_CodeExample">]&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">for</span><span class="f_CodeExample">&nbsp;x&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">in</span><span class="f_CodeExample">&nbsp;rates]</span>
+<br><span class="f_CodeExample">time&nbsp;=&nbsp;pd.to_datetime(time,&nbsp;unit&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">'s'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;terminate&nbsp;the&nbsp;connection&nbsp;to&nbsp;the&nbsp;terminal</span>
+<br><span class="f_CodeExample">mt5.shutdown()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="font-style: italic; color: #808080;">#&nbsp;connect&nbsp;the&nbsp;graphics&nbsp;package&nbsp;and&nbsp;draw&nbsp;2&nbsp;rows&nbsp;of&nbsp;ask&nbsp;and&nbsp;bid&nbsp;prices&nbsp;on&nbsp;the&nbsp;web&nbsp;page</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;plotly.graph_objs&nbsp;</span><span class="f_CodeExample" style="font-weight: bold; color: #000080;">as</span><span class="f_CodeExample">&nbsp;go</span>
+<br><span class="f_CodeExample" style="font-weight: bold;">from</span><span class="f_CodeExample">&nbsp;plotly.offline&nbsp;</span><span class="f_CodeExample" style="font-weight: bold;">import</span><span class="f_CodeExample">&nbsp;download_plotlyjs,&nbsp;init_notebook_mode,&nbsp;plot,&nbsp;iplot</span>
+<br><span class="f_CodeExample">data&nbsp;=&nbsp;[go.Scatter(x&nbsp;=&nbsp;time,&nbsp;y&nbsp;=&nbsp;bid),&nbsp;go.Scatter(x&nbsp;=&nbsp;time,&nbsp;y&nbsp;=&nbsp;ask)]</span>
+<br><span class="f_CodeExample">plot(data,&nbsp;filename&nbsp;=&nbsp;path)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here's what the result might look like.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Chart with ticks received in a Python script" title="Chart with ticks received in a Python script" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="python_ticks.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Chart with ticks received in a Python script</span></p>
+<p class="p_Text"><span class="f_Text">Webpage </span><span class="f_Text" style="font-style: italic;">copyticks.html</span><span class="f_Text"> is generated in the subdirectory </span><span class="f_Text" style="font-style: italic;">MQL5/Files/MQL5Book</span><span class="f_Text">.</span></p>
+
+</div>
+
+</body>
+</html>

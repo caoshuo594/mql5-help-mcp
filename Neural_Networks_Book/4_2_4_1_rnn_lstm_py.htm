@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.2.4.1 Building a test recurrent model in Python</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          Neural Networks for Algorithmic Trading with MQL5 </a> / <a class="h_m" href="4_main_layer_types.htm"> 4. Basic types of neural layers </a> / <a class="h_m" href="4_2_rnn.htm"> 4.2 Recurrent neural networks </a> / <a class="h_m" href="4_2_4_rnn_py.htm"> 4.2.4 Implementing recurrent models in Python </a>/ 4.2.4.1 Building a test recurrent model in Python
+          </td>
+          <td width="70" align="right">
+          <a href="4_2_4_rnn_py.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_2_5_rnn_comparison.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.2.4.1 Building a test recurrent model in Python</span></p>
+<p class="p_Text"><span class="f_Text">To build test recurrent models in </span><span class="f_Text" style="font-style: italic;">Python</span><span class="f_Text">, we will use the previously developed template. Moreover, we will take the script file </span><span class="f_Text" style="font-style: italic;"><a href="4_1_4_cnn_py.htm" class="topiclink">convolution.py</a></span><span class="f_Text">, which we used when testing convolutional models. Let's make a copy of it with the file name </span><span class="f_Text" style="font-style: italic;">lstm.py</span><span class="f_Text">. In the created copy, we leave the perceptron model and the best convolutional model, deleting the rest. This approach will allow us to compare the performance of the new models with the architectural solutions discussed earlier.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Creating&nbsp;a&nbsp;perceptron&nbsp;model&nbsp;with&nbsp;three&nbsp;hidden&nbsp;layers&nbsp;and&nbsp;regularization</span>
+<br><span class="f_CodeExample">model1&nbsp;=&nbsp;keras.Sequential([keras.Input(shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targerts,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Model&nbsp;with&nbsp;2-dimensional&nbsp;convolutional&nbsp;layer</span>
+<br><span class="f_CodeExample">model3&nbsp;=&nbsp;keras.Sequential([keras.Input(shape=inputs),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;to&nbsp;4-dimensional.</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Specify&nbsp;3&nbsp;dimensions,&nbsp;because&nbsp;the&nbsp;4th&nbsp;dimension&nbsp;is&nbsp;determined&nbsp;by&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;packet</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Reshape((-</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">4</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Convolutional&nbsp;layer&nbsp;with&nbsp;8&nbsp;filters</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Conv2D(</span><span class="f_CodeExample" style="color: #008100;">8</span><span class="f_CodeExample">,(</span><span class="f_CodeExample" style="color: #008100;">3</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">),</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Pooling&nbsp;layer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.MaxPooling2D((</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">),strides=</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">),&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;to&nbsp;2-dimensional&nbsp;for&nbsp;fully&nbsp;connected&nbsp;layers</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Flatten(),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targerts,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">After that, we will create three new models using the recurrent </span><span class="f_Text" style="font-style: italic;">LSTM</span><span class="f_Text"> block. Initially, we will take the convolutional neural network model and replace the convolutional and pooling layers with a single recurrent layer with 40 neurons at the output. Note that the input to the recurrent </span><span class="f_Text" style="font-style: italic;">LSTM</span><span class="f_Text"> block should be a three-dimensional tensor of the format [</span><span class="f_Text" style="font-style: italic;">batch</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">timesteps</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">feature</span><span class="f_Text">]. Just like in the case of a convolutional layer, when specifying the dimensionality of a layer in the model, we don't explicitly mention the batch dimension, as its value is determined by the batch size of the input data.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Add&nbsp;an&nbsp;LSTM&nbsp;block&nbsp;to&nbsp;the&nbsp;model</span>
+<br><span class="f_CodeExample">model2&nbsp;=&nbsp;keras.Sequential([keras.Input(shape=inputs),</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;to&nbsp;3-dimensional.</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;Specify&nbsp;2&nbsp;dimensions,&nbsp;because.&nbsp;The&nbsp;3rd&nbsp;dimension&nbsp;is&nbsp;determined&nbsp;by&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;packet</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Reshape((-</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">4</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;The&nbsp;LSTM&nbsp;block&nbsp;contains&nbsp;40&nbsp;elements&nbsp;and&nbsp;returns&nbsp;the&nbsp;result&nbsp;at&nbsp;each&nbsp;step&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.LSTM(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;return_sequences=</span><span class="f_CodeExample" style="color: #ff0000;">False</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In this model, we specified parameter </span><span class="f_Text" style="font-style: italic;">return_sequences=False</span><span class="f_Text"> which instructs the recurrent layer to produce the result only after processing the full batch. In this version, our </span><span class="f_Text" style="font-style: italic;">LSTM </span><span class="f_Text">layer returns a two-dimensional tensor in the format [</span><span class="f_Text" style="font-style: italic;">batch</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">feature</span><span class="f_Text">]. In this case, the dimension of the </span><span class="f_Text" style="font-style: italic;">feature</span><span class="f_Text"> measurement will be equal to the number of neurons that we specified during the creation of the recurrent layer. A tensor of the same dimension is required for the input of a fully connected neural layer. Therefore, we do not need additional reformatting of the data, and we can use a fully connected neural layer.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;activation=tf.nn.swish,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Dense(targerts,&nbsp;activation=tf.nn.tanh)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:463px"><img class="help" alt="Structure of a recurrent model with four fully connected layers" title="Structure of a recurrent model with four fully connected layers" width="463" height="321" style="width:463px;height:321px;border:none" src="lstm1_summary.png"/><p style="text-align:center"><span class="f_ImageCaption">Structure of a recurrent model with four fully connected layers</span></p></div></div>
+<p class="p_Text"><span class="f_Text">In this implementation, we use the recurrent layer for preliminary data processing, while decision-making in the model is carried out by several fully connected perceptron layers that follow the recurrent layer. As a result, we got a model with 12,202 parameters.</span></p>
+<p class="p_Text"><span class="f_Text">We will compile all neural models with the same parameters. We use the </span><span class="f_Text" style="font-style: italic;">Adam</span><span class="f_Text"> method for optimization and the standard deviation for the network error. We also add an additional metric </span><span class="f_Text" style="font-style: italic;">accuracy</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">model2.</span><span class="f_CodeExample" style="color: #ff0000;">compile</span><span class="f_CodeExample">(optimizer=</span><span class="f_CodeExample" style="color: #008080;">'Adam'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss=</span><span class="f_CodeExample" style="color: #008080;">'mean_squared_error'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metrics=[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We compiled earlier neural network models with the same parameters.</span></p>
+<p class="p_Text"><span class="f_Text">One more point should be noted. Recurrent models are sensitive to the sequence of the input signal being fed. Therefore, when training a neural network, unlike the previously discussed models, we cannot shuffle the input data. For this purpose, when we start training the model, we will specify the </span><span class="f_Text" style="font-style: italic;">False</span><span class="f_Text"> for the </span><span class="f_Text" style="font-style: italic;">shuffle</span><span class="f_Text"> parameter. The rest of the training parameters of the model remain unchanged.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">history2&nbsp;=&nbsp;model2.fit(train_data,&nbsp;train_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0.01</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">False</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the first model, we used a recurrent layer for preliminary data processing before using a fully connected perceptron for decision-making. However, it is also possible to use recurrent neural layers in their pure form, without subsequent utilization of fully connected layers. It is this implementation that I propose to consider as the second model. In this case, we simply replace all the fully connected layers with a single recurrent layer, and we set the size of the layer to match the desired output size of the neural network.</span></p>
+<p class="p_Text"><span class="f_Text">It's important to note that the recurrent neural layer requires a three-dimensional tensor as input, whereas we obtained a two-dimensional tensor at the output of the previous recurrent layer. Therefore, before passing information to the input of the next recurrent layer, we need to reshape the data. In this implementation, we set the last adjustment to be equal to two, while leaving the size of the temporal labels dimension for the model's calculation. We don't expect any data distortion from such reshaping, as we're grouping sequential data, essentially just enlarging the time interval. At the same time, the time interval between any two subsequent elements in the new time series remains constant.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;LSTM&nbsp;block&nbsp;model&nbsp;without&nbsp;fully&nbsp;connected&nbsp;layers</span>
+<br><span class="f_CodeExample">model4&nbsp;=&nbsp;keras.Sequential([keras.Input(shape=inputs),</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;to&nbsp;3-dimensional.</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;Specify&nbsp;2&nbsp;dimensions,&nbsp;because.&nbsp;The&nbsp;3rd&nbsp;dimension&nbsp;is&nbsp;determined&nbsp;by&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;packet</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Reshape((-</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">4</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">#2&nbsp;Serial&nbsp;LSTM&nbsp;Units</span>
+<br><span class="f_CodeExample" style="color: #808080;">#1st&nbsp;contains&nbsp;40&nbsp;elements&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.LSTM(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return_sequences=</span><span class="f_CodeExample" style="color: #ff0000;">False</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;2nd&nbsp;produces&nbsp;the&nbsp;result&nbsp;instead&nbsp;of&nbsp;a&nbsp;fully&nbsp;connected&nbsp;layer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Reshape((-</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.LSTM(targerts)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now we have a neural network where the first recurrent layer performs preliminary data processing, and the second recurrent layer generates the output of the neural network. By eliminating the use of a perceptron, we've reduced the number of neural layers in the network and, consequently, the total number of parameters, which in the new model amounts to 7,240 parameters.</span></p>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:463px"><img class="help" alt="The structure of a recurrent neural network without the use of fully connected layers" title="The structure of a recurrent neural network without the use of fully connected layers" width="463" height="241" style="width:463px;height:241px;border:none" src="lstm2_summary.png"/><p style="text-align:center"><span class="f_ImageCaption">The structure of a recurrent neural network without the use of fully connected layers</span></p></div></div>
+<p class="p_Text"><span class="f_Text">We compile and train the model with the same parameters as all previous models.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">model4.</span><span class="f_CodeExample" style="color: #ff0000;">compile</span><span class="f_CodeExample">(optimizer=</span><span class="f_CodeExample" style="color: #008080;">'Adam'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss=</span><span class="f_CodeExample" style="color: #008080;">'mean_squared_error'</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metrics=[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">history4&nbsp;=&nbsp;model4.fit(train_data,&nbsp;train_target,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epochs=</span><span class="f_CodeExample" style="color: #008100;">500</span><span class="f_CodeExample">,&nbsp;batch_size=</span><span class="f_CodeExample" style="color: #008100;">1000</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callbacks=[callback],</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validation_split=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">0.01</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shuffle=</span><span class="f_CodeExample" style="color: #ff0000;">False</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the second recurrent model, to create the input tensor for the second LSTM layer, we reshaped the tensor of results from the previous layer. The </span><span class="f_Text" style="font-style: italic;">Keras</span><span class="f_Text"> library gives us another option. In the first </span><span class="f_Text" style="font-style: italic;">LSTM</span><span class="f_Text"> layer, we can specify the parameter </span><span class="f_Text" style="font-style: italic;">return_sequences=True</span><span class="f_Text">, which switches the recurrent layer to a mode that outputs results at each iteration. As a result of this action, at the output of the recurrent layer, we immediately obtain a three-dimensional tensor of the format [</span><span class="f_Text" style="font-style: italic;">batch</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">timesteps</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">feature</span><span class="f_Text">]. This will allow us to avoid reformatting the data before the second recurrent layer.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;LSTM&nbsp;model&nbsp;block&nbsp;without&nbsp;fully&nbsp;connected&nbsp;layers</span>
+<br><span class="f_CodeExample">model5&nbsp;=&nbsp;keras.Sequential([keras.Input(shape=inputs),</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;Reformat&nbsp;the&nbsp;tensor&nbsp;to&nbsp;3-dimensional.</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;Specify&nbsp;2&nbsp;dimensions,&nbsp;because.&nbsp;The&nbsp;3rd&nbsp;dimension&nbsp;is&nbsp;determined&nbsp;by&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;packet</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.Reshape((-</span><span class="f_CodeExample" style="color: #008100;">1</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #008100;">4</span><span class="f_CodeExample">)),&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;2&nbsp;Serial&nbsp;LSTM&nbsp;Units</span>
+<br><span class="f_CodeExample" style="color: #808080;">#1st&nbsp;contains&nbsp;40&nbsp;items&nbsp;and&nbsp;returns&nbsp;the&nbsp;result&nbsp;at&nbsp;each&nbsp;step&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.LSTM(</span><span class="f_CodeExample" style="color: #008100;">40</span><span class="f_CodeExample">,&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel_regularizer=keras.regularizers.l1_l2(l1=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-7</span><span class="f_CodeExample">,&nbsp;l2=</span><span class="f_Normal" style="font-family: Arial,Helvetica,sans-serif; color: #000000; background-color: transparent;">1e-5</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return_sequences=</span><span class="f_CodeExample" style="color: #ff0000;">True</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample" style="color: #808080;">#&nbsp;2nd&nbsp;produces&nbsp;the&nbsp;result&nbsp;instead&nbsp;of&nbsp;a&nbsp;fully&nbsp;connected&nbsp;layer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keras.layers.LSTM(targerts)&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;])</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="p_Text" style="text-align: center;"><div style="margin:0 auto 0 auto;width:463px"><img class="help" alt="The structure of a recurrent neural network without the use of fully connected layers" title="The structure of a recurrent neural network without the use of fully connected layers" width="463" height="201" style="width:463px;height:201px;border:none" src="lstm3_summary.png"/><p style="text-align:center"><span class="f_ImageCaption">The structure of a recurrent neural network without the use of fully connected layers</span></p></div></div>
+<p class="p_Text"><span class="f_Text">As you can see, with this model construction, the dimensionality of the tensor at the output of the first recurrent layer has changed. As a result, the number of parameters in the second recurrent layer has slightly increased. This resulted in a total increase in parameters throughout the model, reaching 7,544 parameters. Nevertheless, this is still fewer parameters than the total number of parameters in the first recurrent model that used a perceptron for decision-making.</span></p>
+<p class="p_Text"><span class="f_Text">Let's supplement the plotting block with new models.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Rendering&nbsp;model&nbsp;training&nbsp;results</span>
+<br><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Perceptron&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Perceptron&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history3.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Conv2D&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history3.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Conv2D&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history4.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;only&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history4.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;only&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history5.history[</span><span class="f_CodeExample" style="color: #008080;">'loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;sequences&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history5.history[</span><span class="f_CodeExample" style="color: #008080;">'val_loss'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;sequences&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$MSE$&nbsp;$loss$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'upper&nbsp;right'</span><span class="f_CodeExample">,&nbsp;ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">plt.figure()</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Perceptron&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history1.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Perceptron&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history3.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Conv2D&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history3.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'Conv2D&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history2.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history4.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;only&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history4.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;only&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history5.history[</span><span class="f_CodeExample" style="color: #008080;">'accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;sequences&nbsp;train'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.plot(history5.history[</span><span class="f_CodeExample" style="color: #008080;">'val_accuracy'</span><span class="f_CodeExample">],&nbsp;label=</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;sequences&nbsp;validation'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.ylabel(</span><span class="f_CodeExample" style="color: #008080;">'$Accuracy$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.xlabel(</span><span class="f_CodeExample" style="color: #008080;">'$Epochs$'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.title(</span><span class="f_CodeExample" style="color: #008080;">'Model&nbsp;training&nbsp;dynamics'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">plt.legend(loc=</span><span class="f_CodeExample" style="color: #008080;">'lower&nbsp;right'</span><span class="f_CodeExample">,&nbsp;ncol=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Additionally, let's add the new models to the testing block to evaluate their performance on the test dataset and display the results.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">#&nbsp;Check&nbsp;the&nbsp;results&nbsp;of&nbsp;models&nbsp;on&nbsp;a&nbsp;test&nbsp;sample</span>
+<br><span class="f_CodeExample">test_loss1,&nbsp;test_acc1&nbsp;=&nbsp;model1.evaluate(test_data,&nbsp;test_target,&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss2,&nbsp;test_acc2&nbsp;=&nbsp;model2.evaluate(test_data,&nbsp;test_target,&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss3,&nbsp;test_acc3&nbsp;=&nbsp;model3.evaluate(test_data,&nbsp;test_target,&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss4,&nbsp;test_acc4&nbsp;=&nbsp;model4.evaluate(test_data,&nbsp;test_target,&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span>
+<br><span class="f_CodeExample">test_loss5,&nbsp;test_acc5&nbsp;=&nbsp;model5.evaluate(test_data,&nbsp;test_target,&nbsp;verbose=</span><span class="f_CodeExample" style="color: #008100;">2</span><span class="f_CodeExample">)&nbsp;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;model'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;accuracy:'</span><span class="f_CodeExample">,&nbsp;test_acc2)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;loss:'</span><span class="f_CodeExample">,&nbsp;test_loss2)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;only&nbsp;model'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;accuracy:'</span><span class="f_CodeExample">,&nbsp;test_acc4)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;loss:'</span><span class="f_CodeExample">,&nbsp;test_loss4)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'LSTM&nbsp;sequences&nbsp;model'</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;accuracy:'</span><span class="f_CodeExample">,&nbsp;test_acc5)</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">'Test&nbsp;loss:'</span><span class="f_CodeExample">,&nbsp;test_loss5)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In this section, we have prepared a Python script that creates a total of 5 neural network models:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Fully connected perceptron</span></li>
+<li class="p_li"><span class="f_li">Convolutional model</span></li>
+<li class="p_li"><span class="f_li">3 models of recurrent neural networks</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Upon executing the script, we will conduct a brief training of all five models using a single dataset and then compare the performance of the trained models on a shared set of test data. This will give us the opportunity to compare the performance of various architectural solutions on real data. The test results will be provided in the next chapter.</span></p>
+
+</div>
+
+</body>
+</html>

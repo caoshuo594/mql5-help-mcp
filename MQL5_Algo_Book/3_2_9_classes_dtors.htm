@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>3.2.9 Destructors</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part3.htm"> Part 3. Object Oriented Programming </a> / <a class="h_m" href="3_2_classes_and_interfaces.htm"> 3.2 Classes and interfaces </a>/ 3.2.9 Destructors
+          </td>
+          <td width="70" align="right">
+          <a href="3_2_8_classes_ctors.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="3_2_10_classes_this.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">3.2.9 Destructors</span></p>
+<p class="p_Text"><span class="f_Text">In the chapter on structures, we learned about destructors (see the section about <a href="3_1_4_structs_ctor_dtor.htm" class="topiclink">Constructors and destructors</a>). Let's briefly recap: a destructor is a method that is called when an object is destroyed. The destructor shares the same name as the class but is prefixed with a tilde character (~). Destructors do not return values and do not have any parameters. A class can only have one destructor.</span></p>
+<p class="p_Text"><span class="f_Text">Even if the class has no destructor or the destructor is empty, the compiler will implicitly perform &quot;garbage collection&quot; of the following types of fields: strings, dynamic arrays, and automatic objects.</span></p>
+<p class="p_Text"><span class="f_Text">Usually, the destructor is placed in the public section of the class, however, in some specific cases, the developer can move it to a group of </span><span class="f_Text" style="font-style: italic;">private</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">protected</span><span class="f_Text"> members. A private or protected destructor will not allow you to declare an automatic variable of this class in the code. However, we will see <a href="3_2_12_classes_new_delete_pointers.htm" class="topiclink">dynamic object creation</a> a little later, and for them, such a restriction might make sense.</span></p>
+<p class="p_Text"><span class="f_Text">In particular, some objects can be implemented in such a way that they must delete themselves when they are no longer needed (the concept of determining demand may be different). In other words, while objects are used by any part of the program, they exist, and as soon as the task is completed, they are self-destructed (a private destructor leaves the possibility to delete the object from class methods).</span></p>
+<p class="p_Text"><span class="f_Text">For experienced C++ programmers, it is worth noting that destructors are always virtual in MQL5 (more on virtual methods will be covered in the section about <a href="3_2_14_classes_virtual_override.htm" class="topiclink">Virtual methods (virtual and override)</a>). This factor does not affect the syntax of the description.</span></p>
+<p class="p_Text"><span class="f_Text">In the example of the drawing program, technically, a destructor may not be necessary for shapes. However, for the purpose of tracing the sequence of calls to constructors and destructors, we will include one. Let's start with a simplified outline that &quot;prints&quot; the full name of the method:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;~</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">__FUNCSIG__</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We will soon add to this and other methods so that we can distinguish one instance of an object from another.</span></p>
+<p class="p_Text"><span class="f_Text">Consider the following example. A pair of objects </span><span class="f_Text" style="font-style: italic;">Shape</span><span class="f_Text"> are described in two different contexts: global (outside functions) and local (inside </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">). The global object constructor will be called after the script is loaded and before </span><span class="f_Text" style="font-style: italic;">OnStart </span><span class="f_Text">is called, and the destructor will be called before the script is unloaded. The local object's constructor will be called in the line with the variable definition, and the destructor will be called when the code block containing the variable definition exits, in this case the function </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #808080;">//&nbsp;the&nbsp;global&nbsp;constructor&nbsp;and&nbsp;destructor&nbsp;are&nbsp;related&nbsp;to&nbsp;script&nbsp;loading&nbsp;and&nbsp;unloading</span>
+<br><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">global</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;object&nbsp;reference&nbsp;does&nbsp;not&nbsp;create&nbsp;a&nbsp;copy&nbsp;and&nbsp;does&nbsp;not&nbsp;affect&nbsp;lifetime</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ProcessShape</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">shape</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...</span>
+<br><span class="f_CodeExample">}</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Shape</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">local</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&lt;-&nbsp;local&nbsp;constructor&nbsp;call</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ProcessShape</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">local</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...</span>
+<br><span class="f_CodeExample">}&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&lt;-&nbsp;local&nbsp;destructor&nbsp;call</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Passing an object by reference to other functions does not create copies of it and does not call the constructor and destructor.</span></p>
+
+</div>
+
+</body>
+</html>

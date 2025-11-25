@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>GeMM</title>
+  <meta name="keywords" content="GeMM" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="matrix.htm"> Matrix and Vector Methods </a> / <a class="h_m" href="matrix_products.htm"> Products </a>/ GeMM
+          </td>
+          <td width="70" align="right">
+          <a href="matrix_matmul.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="matrix_power.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">GeMM</span></p>
+<p class="p_Function"><span class="f_Function">The GeMM (General Matrix Multiply) method implements the general multiplication of two matrices. The operation is defined as C &#8592; &#945; A B + &#946; C , where A and B matrices can be optionally transposed. With a normal multiplication of matrices AB (<a href="matrix_matmul.htm" class="topiclink">MatMul</a>), the </span><span class="f_Function" style="font-style: italic;">alpha</span><span class="f_Function"> scalar is assumed to be equal to 1 and </span><span class="f_Function" style="font-style: italic;">beta</span><span class="f_Function"> equal to zero.</span></p>
+<p class="p_Function"><span class="f_Function">The main difference between GeMM and MatMul in terms of efficiency is that MatMul always creates a new matrix/vector object, while GeMM works with an existing matrix object and does not re-create it. Therefore, when you use GeMM and pre-allocate memory for the corresponding matrix, then, while working with the same matrix sizes, there will be no memory reallocations. This can be an important advantage of GeMM for bulk computing, for example, when running optimizations in a strategy tester or when training a neural network.</span></p>
+<p class="p_Function"><span class="f_Function">Similar to MatMul, GeMM also has 4 overloads. However, the semantics of the fourth overload has been modified in order to enable the multiplication of a vertical vector with a and horizontal one.</span></p>
+<p class="p_Function"><span class="f_Function">In an existing matrix/vector object, it is not necessary to pre-allocate memory. The memory will be allocated and filled with zeros at the first GeMM call.</span></p>
+<p class="p_Function"><span class="f_Function" style="font-weight: bold;">Multiplying a matrix by a matrix</span><span class="f_Function">: </span><span class="f_CodeExample"> &nbsp; </span><span class="f_CodeExample" style="color: #0000ff;">matrix C</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">M</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">] = </span><span class="f_Function">&#945; * ( </span><span class="f_CodeExample" style="color: #0000ff;">matrix A</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">M</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">K</span><span class="f_CodeExample">] * </span><span class="f_CodeExample" style="color: #0000ff;">matrix B</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">K</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">]) + </span><span class="f_Function">&#946; * </span><span class="f_CodeExample"> </span><span class="f_CodeExample" style="color: #0000ff;">matrix C</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">M</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">]</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_Keywords">bool</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Functions">matrix::GeMM</span><span class="f_CodeExample">(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">const&nbsp;matrix&nbsp;</span><span class="f_Param">&amp;A</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;first&nbsp;matrix</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">const&nbsp;matrix&nbsp;</span><span class="f_Param">&amp;B</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;second&nbsp;matrix</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_Param">alpha</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;alpha&nbsp;multiplier&nbsp;for&nbsp;product&nbsp;AB</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_Param">beta</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;beta&nbsp;multiplier&nbsp;for&nbsp;matrix&nbsp;C</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">uint</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Param">flags</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;a&nbsp;combination&nbsp;of&nbsp;ENUM_GEMM&nbsp;values&nbsp;(bitwise&nbsp;OR),&nbsp;which&nbsp;determines&nbsp;whether&nbsp;matrices&nbsp;A,&nbsp;B&nbsp;and&nbsp;C&nbsp;are&nbsp;transposed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Function"><span class="f_Function" style="font-weight: bold;">Multiplying a vector by a matrix</span><span class="f_Function">: </span><span class="f_CodeExample"> </span><span class="f_CodeExample" style="color: #0000ff;">vector C</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">] = </span><span class="f_Function">&#945; * ( </span><span class="f_CodeExample" style="color: #0000ff;">vector A</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">K</span><span class="f_CodeExample">] * </span><span class="f_CodeExample" style="color: #0000ff;">matrix B</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">K</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">]) + </span><span class="f_Function">&#946; * </span><span class="f_CodeExample"> </span><span class="f_CodeExample" style="color: #0000ff;">vector C</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">]</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_Keywords">bool</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Functions">vector::GeMM</span><span class="f_CodeExample">(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">const&nbsp;vector&nbsp;</span><span class="f_Param">&amp;A</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;horizontal&nbsp;vector</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">const&nbsp;matrix&nbsp;</span><span class="f_Param">&amp;B</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;matrix</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_Param">alpha</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;alpha&nbsp;multiplier&nbsp;for&nbsp;product&nbsp;AB</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_Param">beta</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;beta&nbsp;multiplier&nbsp;for&nbsp;vector&nbsp;C</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">uint</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Param">flags</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;ENUM_GEMM&nbsp;enumeration&nbsp;value&nbsp;that&nbsp;determines&nbsp;whether&nbsp;matrix&nbsp;A&nbsp;is&nbsp;transposed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Function"><span class="f_Function" style="font-weight: bold;">Multiplying a matrix by a vector</span><span class="f_Function">: </span><span class="f_CodeExample"> </span><span class="f_CodeExample" style="color: #0000ff;">vector C</span><span class="f_CodeExample">[M] = </span><span class="f_Function">&#945; * (  </span><span class="f_CodeExample" style="color: #0000ff;">matrix A</span><span class="f_CodeExample">[M][K]</span><span class="f_Function"> * </span><span class="f_CodeExample" style="color: #0000ff;">vector B</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">K</span><span class="f_CodeExample">] * ) + </span><span class="f_Function">&#946; * </span><span class="f_CodeExample"> </span><span class="f_CodeExample" style="color: #0000ff;">vector C</span><span class="f_CodeExample">[M]</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_Keywords">bool</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Functions">vector::GeMM</span><span class="f_CodeExample">(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">const&nbsp;matrix&nbsp;</span><span class="f_Param">&amp;A</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;matrix</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">const&nbsp;vector&nbsp;</span><span class="f_Param">&amp;B</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;vertical&nbsp;vector</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_Param">alpha</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;alpha&nbsp;multiplier&nbsp;for&nbsp;product&nbsp;AB</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_Param">beta</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;beta&nbsp;multiplier&nbsp;for&nbsp;vector&nbsp;C</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">uint</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Param">flags</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;ENUM_GEMM&nbsp;enumeration&nbsp;value&nbsp;that&nbsp;determines&nbsp;whether&nbsp;matrix&nbsp;B&nbsp;is&nbsp;transposed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Function"><span class="f_Function" style="font-weight: bold;">Multiplying a vector by a vector:</span><span class="f_Function"> </span><span class="f_CodeExample"> </span><span class="f_CodeExample" style="color: #0000ff;">matrix C</span><span class="f_CodeExample">[M][</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">] = </span><span class="f_Function">&#945; * (  </span><span class="f_CodeExample" style="color: #0000ff;">vector A</span><span class="f_CodeExample">[M]</span><span class="f_Function"> * </span><span class="f_CodeExample" style="color: #0000ff;">vector B</span><span class="f_CodeExample">[N] * ) + </span><span class="f_Function">&#946; * </span><span class="f_CodeExample"> </span><span class="f_CodeExample" style="color: #0000ff;">matrix C</span><span class="f_CodeExample">[M][</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">]</span><span class="f_CodeExample" style="color: #0000ff;">. </span><span class="f_Function">This overload returns a matrix, unlike MatMul where it returns a scalar.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_Keywords">bool</span><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Functions">matrix::GeMM</span><span class="f_CodeExample">(</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">const&nbsp;vector&nbsp;</span><span class="f_Param">&amp;A</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;first&nbsp;vector</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">const&nbsp;vector&nbsp;</span><span class="f_Param">&amp;B</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;second&nbsp;vector</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_Param">alpha</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;alpha&nbsp;multiplier&nbsp;for&nbsp;product&nbsp;AB</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_Param">beta</span><span class="f_CodeExample">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;beta&nbsp;for&nbsp;matrix&nbsp;C</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_Keywords">uint</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_Param">flags</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_Comments">//&nbsp;ENUM_GEMM&nbsp;enumeration&nbsp;value&nbsp;that&nbsp;determines&nbsp;whether&nbsp;matrix&nbsp;C&nbsp;is&nbsp;transposed</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">Parameters</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">A</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[in] &nbsp;Matrix or vector.</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">B</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[in] &nbsp;Matrix or vector.</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">alpha</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[in] &nbsp;Alpha multiplier for the AB product.</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">beta</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[in] &nbsp;Beta multiplier for the resulting C matrix.</span></p>
+<p class="p_FunctionParameter"><span class="f_FunctionParameter">flags</span></p>
+<p class="p_ParameterDesrciption"><span class="f_ParameterDesrciption">[in] &nbsp;The ENUM_GEMM enumeration value that determines whether matrices A, B and C are transposed.</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">Return Value</span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">Returns </span><span class="f_FunctionRemark" style="color: #ff0000;">true</span><span class="f_FunctionRemark"> on success or </span><span class="f_FunctionRemark" style="color: #ff0000;">false</span><span class="f_FunctionRemark"> otherwise. </span></p>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">&nbsp;</span></p>
+<p class="p_Text"><a name="enum_gemm" class="hmanchor"></a><span class="f_Text" style="font-weight: bold;">ENUM_GEMM</span></p>
+<p class="p_Text"><span class="f_Text">Enumeration of flags for the GeMM method.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:200px;"><p class="p_EnumHeader"><span class="f_EnumHeader">ID</span></p>
+</th>
+<th class="EnumTable"><p class="p_EnumHeader"><span class="f_EnumHeader">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:200px;"><p class="p_fortable"><span class="f_fortable">TRANSP_A</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Use transposed matrix A</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:200px;"><p class="p_fortable"><span class="f_fortable">TRANSP_B</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Use transposed matrix B</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:200px;"><p class="p_fortable"><span class="f_fortable">TRANSP_C</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Use transposed matrix C</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">&nbsp;</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">Note</span></p>
+<p class="p_Function"><span class="f_Function">Matrices and vectors of float, double and complex types can be used as parameters A and B. The template variants of the GeMM method are as follows:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;::</span><span class="f_CodeExample" style="color: #333333;">GeMM</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">B</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">alpha</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">beta</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;::</span><span class="f_CodeExample" style="color: #333333;">GeMM</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">vector</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">vector</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">B</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">alpha</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">beta</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">vector</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;::</span><span class="f_CodeExample" style="color: #333333;">GeMM</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">vector</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">B</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">alpha</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">beta</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">vector</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;::</span><span class="f_CodeExample" style="color: #333333;">GeMM</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">vector</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;&nbsp;&amp;</span><span class="f_CodeExample" style="color: #333333;">B</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">alpha</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">beta</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">&nbsp;</span></p>
+<p class="p_Function"><span class="f_Function">Basically the general matrix multiplication function is described as:</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 4px 30px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #333333;">C</span><span class="f_CodeExample">[m,n]&nbsp;=&nbsp;</span><span class="f_Function">&#945;&nbsp;</span><span class="f_CodeExample">*</span><span class="f_CodeExample" style="color: #333333;">Sum</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">A</span><span class="f_CodeExample">[m,</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">]*</span><span class="f_CodeExample" style="color: #333333;">B</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">k</span><span class="f_CodeExample">,n])&nbsp;+&nbsp;</span><span class="f_Function">&#946;</span><span class="f_CodeExample">*</span><span class="f_CodeExample" style="color: #333333;">C</span><span class="f_CodeExample">[m,n]</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_FunctionRemark"><span class="f_FunctionRemark">with the following sizes: matrix A is M x K, matrix B is K x N and matrix C is M x N.</span></p>
+<p class="p_Function"><span class="f_Function">Thus, the matrices should be compatible for multiplication, i.e. the number of columns in the first matrix should be equal to the number of rows in the second matrix. Matrix multiplication is non-commutative: the result of multiplying the first matrix by the second one is not equal to the result of multiplying the second matrix by the first one in the general case.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">vector</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">vector_a</span><span class="f_CodeExample">=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">vector</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">vector_b</span><span class="f_CodeExample">=&nbsp;{</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_c</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;calculate&nbsp;GeMM&nbsp;for&nbsp;two&nbsp;vectors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_c</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">GeMM</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">vector_a</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">vector_b</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;matrix_c:\n&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_c</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;\n&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;/*</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_c</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[[</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">9</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">16</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">20</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">15</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">]]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;*/</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;create&nbsp;matrices&nbsp;as&nbsp;vectors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">matrix</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_b</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Col</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">vector_a</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_b</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">Row</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">vector_b</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;matrix_a:\n&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;matrix_b:\n&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_b</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;/*</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;[[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">]]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_b</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;[[</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;*/</span>
+<br><span class="f_CodeExample" style="color: #808080;">//--&nbsp;calculate&nbsp;GeMM&nbsp;for&nbsp;two&nbsp;matrices&nbsp;and&nbsp;get&nbsp;the&nbsp;same&nbsp;result</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_c</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">GeMM</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">matrix_a</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_b</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;matrix_c:\n&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_c</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;/*</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">matrix_c</span><span class="f_CodeExample">:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[[</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">9</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">6</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">16</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">12</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">8</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">4</span><span class="f_CodeExample">]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[</span><span class="f_CodeExample" style="color: #333333;">20</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">15</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">10</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #333333;">5</span><span class="f_CodeExample">]]</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;*/</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_BoldTitles"><span class="f_BoldTitles">See also</span></p>
+<p class="p_SeeAlso"><span class="f_SeeAlso"><a href="matrix_matmul.htm" class="topiclink">MatMul</a></span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+
+</div>
+
+</body>
+</html>

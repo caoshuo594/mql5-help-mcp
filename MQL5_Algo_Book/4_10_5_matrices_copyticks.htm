@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.10.5 Copying tick history to matrices and vectors</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_10_matrices.htm"> 4.10 Matrices and vectors </a>/ 4.10.5 Copying tick history to matrices and vectors
+          </td>
+          <td width="70" align="right">
+          <a href="4_10_4_matrices_copyrates.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_10_6_matrices_expressions.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.10.5 Copying tick history to matrices or vectors</span></p>
+<p class="p_Text"><span class="f_Text">As in the case with bars, you can copy ticks to a vector or matrix. This is done by </span><span class="f_Text" style="font-style: italic;">CopyTicks</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">CopyTicksRange</span><span class="f_Text"> method overloads. They work on a basis similar to the </span><span class="f_Text" style="font-style: italic;"><a href="5_3_11_timeseries_ticks_mqltick.htm" class="topiclink">CopyTicks</a></span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;"><a href="5_3_11_timeseries_ticks_mqltick.htm" class="topiclink">CopyTicksRange</a></span><span class="f_Text"> functions, but they receive data into the caller. These functions will be described in detail in Part 5, in the section about <a href="5_3_11_timeseries_ticks_mqltick.htm" class="topiclink">arrays of real ticks</a> in </span><span class="f_Text" style="font-style: italic;">MqlTick</span><span class="f_Text"> structures. Here we will only show the prototypes and mention the main points.</span></p>
+<p class="p_H4"><span class="f_H4">bool matrix&lt;T&gt;::CopyTicks(const string symbol, uint flags, ulong from_msc, uint count)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool vector&lt;T&gt;::CopyTicks(const string symbol, uint flags, ulong from_msc, uint count)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool matrix&lt;T&gt;::CopyTicksRange(const string symbol, uint flags, ulong from_msc, ulong to_msc)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">bool matrix&lt;T&gt;::CopyTicksRange(const string symbol, uint flags, ulong from_msc, ulong to_msc)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">symbol</span><span class="f_Text"> parameter sets the name of the financial instrument for which the ticks are requested. The tick range can be specified in different ways:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">In </span><span class="f_li" style="font-style: italic;">CopyTicks</span><span class="f_li">, it can be specified as a number of ticks (the </span><span class="f_li" style="font-style: italic;">count</span><span class="f_li"> parameter), starting from some moment (</span><span class="f_li" style="font-style: italic;">from_msc</span><span class="f_li">), in milliseconds</span></li>
+<li class="p_li"><span class="f_li">In </span><span class="f_li" style="font-style: italic;">CopyTicksRange</span><span class="f_li">, it can be a range of two points in time (from </span><span class="f_li" style="font-style: italic;">from_msc</span><span class="f_li"> to </span><span class="f_li" style="font-style: italic;">to_msc</span><span class="f_li">).</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The composition of the copied data about each tick is specified in the </span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text"> parameter as a bitmask of values from the ENUM_COPY_TICKS enumeration.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table" style="width:20%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Value</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_INFO</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">1</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Ticks generated by </span><span class="f_fortable" style="font-style: italic;">Bid</span><span class="f_fortable"> and/or </span><span class="f_fortable" style="font-style: italic;">Ask</span><span class="f_fortable"> changes</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_TRADE</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">2</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Ticks generated by </span><span class="f_fortable" style="font-style: italic;">Last</span><span class="f_fortable"> and </span><span class="f_fortable" style="font-style: italic;">Volume</span><span class="f_fortable"> changes</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_ALL</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">3</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">All ticks</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_TIME_MS</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">1 &lt;&lt; 8</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Time in milliseconds</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_BID</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">1 &lt;&lt; 9</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable" style="font-style: italic;">Bid</span><span class="f_fortable"> price</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_ASK</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">1 &lt;&lt; 10</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable" style="font-style: italic;">Ask</span><span class="f_fortable"> price</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_LAST</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">1 &lt;&lt; 11</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable" style="font-style: italic;">Last</span><span class="f_fortable"> price</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_VOLUME</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">1 &lt;&lt; 12</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Volume</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">COPY_TICKS_FLAGS</span></p>
+</td>
+<td class="table" style="width:20%;"><p class="p_fortable"><span class="f_fortable">1 &lt;&lt; 13</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable"><a href="5_3_11_timeseries_ticks_mqltick.htm" class="topiclink">Tick flags</a></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The first three bits (low byte) determine the set of requested ticks, and the remaining bits (high byte) determine the properties of these ticks.</span></p>
+<p class="p_Text"><span class="f_Text">High-byte flags can only be combined for matrices since only one row with the values of a particular field from all ticks is placed in the vector. Thus, only one bit of the most significant byte should be selected to fill the vector.</span></p>
+<p class="p_Text"><span class="f_Text">When selecting several properties of ticks in the process of filling the matrix, the order of rows in it will correspond to the order of elements in the enumeration. For example, the </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> price will always appear in the row higher (with a lower index) than the row with </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> prices.</span></p>
+<p class="p_Text"><span class="f_Text">An example of working with both, ticks and vectors, will be presented in the section on <a href="4_10_13_matrices_ml.htm" class="topiclink">machine learning</a>.</span></p>
+
+</div>
+
+</body>
+</html>

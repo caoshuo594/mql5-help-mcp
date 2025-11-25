@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Matrix and Vector Methods</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a>/ Matrix and Vector Methods
+          </td>
+          <td width="70" align="right">
+          <a href="arrayfromfp8.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="matrix_types.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Matrices and vectors</span></p>
+<p class="p_Text"><span class="f_Text">A matrix is a two-dimensional array of double, float, or complex numbers.</span></p>
+<p class="p_Text"><span class="f_Text">A vector is a one-dimensional array of double, float, or complex numbers. The vector has no indication of whether it is vertical or horizontal. It is determined from the use context. For example, the vector operation Dot assumes that the left vector is horizontal and the right one is vertical. If the type indication is required, one-row or one-column matrices can be used. However, this is generally not necessary.</span></p>
+<p class="p_Text"><span class="f_Text">Matrices and vectors allocate memory for data dynamically. In fact, matrices and vectors are objects that have certain properties, such as the type of data they contain and dimensions. Matrix and vector properties can be obtained using methods such as vector_a.Size(), matrix_b.Rows(), vector_c.Norm(), matrix_d.Cond() and others. Any dimension can be changed.</span></p>
+<p class="p_Text"><span class="f_Text">When creating and initializing matrices, so-called static methods are used (these are like static methods of a class). For example: matrix::Eye(), matrix::Identity(), matrix::Ones(), vector::Ones(), matrix: :Zeros(), vector::Zeros(), matrix::Full(), vector::Full(), matrix::Tri().</span></p>
+<p class="p_Text"><span class="f_Text">At the moment, matrix and vector operations do not imply the use of the complex data type, as this development direction has not yet been completed.</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 supports passing of matrices and vectors to DLLs. This enables the import of functions utilizing the relevant types, from external variables.</span></p>
+<p class="p_Text"><span class="f_Text">Matrices and vectors are passed to a DLL as a pointer to a buffer. For example, to pass a matrix of type float, the corresponding parameter of the function exported from the DLL must take a float-type buffer pointer.</span></p>
+<p class="p_Text"><span class="f_Text">MQL5</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#import</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;mmlib.dll&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">sgemm</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="background-color: #ffffd5;">matrix&lt;float&gt;&nbsp;&amp;C,&nbsp;const&nbsp;matrix&lt;float&gt;&nbsp;&amp;A,&nbsp;const&nbsp;matrix&lt;float&gt;&nbsp;&amp;B</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">M</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">K</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">alpha</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">beta</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#import</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">C++</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">extern</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;C&quot;</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">__declspec</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">dllexport</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">sgemm</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">UINT</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff; background-color: #ffffd5;">float</span><span class="f_CodeExample" style="background-color: #ffffd5;">&nbsp;*</span><span class="f_CodeExample" style="color: #333333; background-color: #ffffd5;">C</span><span class="f_CodeExample" style="background-color: #ffffd5;">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff; background-color: #ffffd5;">const</span><span class="f_CodeExample" style="background-color: #ffffd5;">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff; background-color: #ffffd5;">float</span><span class="f_CodeExample" style="background-color: #ffffd5;">&nbsp;*</span><span class="f_CodeExample" style="color: #333333; background-color: #ffffd5;">A</span><span class="f_CodeExample" style="background-color: #ffffd5;">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff; background-color: #ffffd5;">const</span><span class="f_CodeExample" style="background-color: #ffffd5;">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff; background-color: #ffffd5;">float</span><span class="f_CodeExample" style="background-color: #ffffd5;">&nbsp;*</span><span class="f_CodeExample" style="color: #333333; background-color: #ffffd5;">B</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UINT64</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">M</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UINT64</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">N</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UINT64</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">K</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">alpha</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">float</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">beta</span><span class="f_CodeExample">)</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In addition to buffers, you should pass matrix and vector sizes for correct processing.</span></p>
+<p class="p_Text"><span class="f_Text">All matrix and vector methods are listed below in alphabetical order.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Function</span></p>
+</th>
+<th class="EnumTable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Action</span></p>
+</th>
+<th class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Category</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_activation.htm" class="topiclink">Activation</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute activation function values and write them to the passed vector/matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_machine_learning.htm" class="topiclink">Machine learning</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_argmax.htm" class="topiclink">ArgMax</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the index of the maximum value</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_argmin.htm" class="topiclink">ArgMin</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the index of the minimum value</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_argsort.htm" class="topiclink">ArgSort</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the sorted index</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_assign.htm" class="topiclink">Assign</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Copies a matrix, vector or array with auto cast</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_average.htm" class="topiclink">Average</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the weighted average of matrix/vector values</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_cholesky.htm" class="topiclink">Cholesky</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the Cholesky decomposition</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_decompositions.htm" class="topiclink">Transformations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_clip.htm" class="topiclink">Clip</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Limits the elements of a matrix/vector to a given range of valid values</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_col.htm" class="topiclink">Col</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return a column vector. Write a vector to the specified column.</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_cols.htm" class="topiclink">Cols</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the number of columns in a matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_characteristics.htm" class="topiclink">Features</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_compare.htm" class="topiclink">Compare</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compare the elements of two matrices/vectors with the specified precision</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_comparebydigits.htm" class="topiclink">CompareByDigits</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compare the elements of two matrices/vectors with the significant figures precision</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_cond.htm" class="topiclink">Cond</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the condition number of a matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_characteristics.htm" class="topiclink">Features</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_convolve.htm" class="topiclink">Convolve</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the discrete, linear convolution of two vectors</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_products.htm" class="topiclink">Products</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_copy.htm" class="topiclink">Copy</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return a copy of the given matrix/vector</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_concat.htm" class="topiclink">Concat</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Concatenate 2 submatrices to one matrix. Concatenate 2 vectors to one vector</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_copyindicatorbuffer.htm" class="topiclink">CopyIndicatorBuffer</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Get the data of the specified <a href="indicators.htm" class="topiclink">indicator</a> buffer in the specified quantity to a <a href="matrix_vector.htm" class="topiclink">vector</a></span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_copyrates.htm" class="topiclink">CopyRates</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Gets the historical series of the <a href="mqlrates.htm" class="topiclink">MqlRates</a> structure of the specified symbol-period in the specified amount into a matrix or vector</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_copyticks.htm" class="topiclink">CopyTicks</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Get ticks from an <a href="mqltick.htm" class="topiclink">MqlTick</a> structure into a matrix or a vector</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_copyticksrange.htm" class="topiclink">CopyTicksRange</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Get ticks from an <a href="mqltick.htm" class="topiclink">MqlTick</a> structure into a matrix or a vector within the specified date range</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_corrcoef.htm" class="topiclink">CorrCoef</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the Pearson correlation coefficient (linear correlation coefficient)</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_products.htm" class="topiclink">Products</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_correlate.htm" class="topiclink">Correlate</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the cross-correlation of two vectors</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_products.htm" class="topiclink">Products</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_cov.htm" class="topiclink">Cov</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the covariance matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_products.htm" class="topiclink">Products</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_cumprod.htm" class="topiclink">CumProd</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the cumulative product of matrix/vector elements, including those along the given axis</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_cumsum.htm" class="topiclink">CumSum</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the cumulative sum of matrix/vector elements, including those along the given axis</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_derivative.htm" class="topiclink">Derivative</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute activation function derivative values and write them to the passed vector/matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_machine_learning.htm" class="topiclink">Machine learning</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_det.htm" class="topiclink">Det</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the determinant of a square invertible matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_characteristics.htm" class="topiclink">Features</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_diag.htm" class="topiclink">Diag</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Extract a diagonal or construct a diagonal matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_dot.htm" class="topiclink">Dot</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Dot product of two vectors</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_products.htm" class="topiclink">Products</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_eig.htm" class="topiclink">Eig</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Computes the eigenvalues and right eigenvectors of a square matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_decompositions.htm" class="topiclink">Transformations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_eigvals.htm" class="topiclink">EigVals</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Computes the eigenvalues of a general matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_decompositions.htm" class="topiclink">Transformations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_eye.htm" class="topiclink">Eye</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return a matrix with ones on the diagonal and zeros elsewhere</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_fill.htm" class="topiclink">Fill</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Fill an existing matrix or vector with the specified value</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_flat.htm" class="topiclink">Flat</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Access a matrix element through one index instead of two</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_full.htm" class="topiclink">Full</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Create and return a new matrix filled with the given value</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_gemm.htm" class="topiclink">GeMM</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">The GeMM (General Matrix Multiply) method implements the general multiplication of two matrices</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_products.htm" class="topiclink">Products</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_hasnan.htm" class="topiclink">HasNan</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the number of <a href="double.htm" class="topiclink">NaN</a> values in a matrix/vector</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_hsplit.htm" class="topiclink">Hsplit</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Split a matrix horizontally into multiple submatrices. Same as Split with axis=0</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_identity.htm" class="topiclink">Identity</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Create an identity matrix of the specified size</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_init.htm" class="topiclink">Init</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Matrix or vector initialization</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_inner.htm" class="topiclink">Inner</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Inner product of two matrices</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_products.htm" class="topiclink">Products</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_inv.htm" class="topiclink">Inv</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the multiplicative inverse of a square invertible matrix by the Jordan-Gauss method</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_solves.htm" class="topiclink">Solutions</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_kron.htm" class="topiclink">Kron</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return Kronecker product of two matrices, matrix and vector, vector and matrix or two vectors</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_products.htm" class="topiclink">Products</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_loss.htm" class="topiclink">Loss</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute loss function values and write them to the passed vector/matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_machine_learning.htm" class="topiclink">Machine learning</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_lstsq.htm" class="topiclink">LstSq</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the least-squares solution of linear algebraic equations (for non-square or degenerate matrices)</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_solves.htm" class="topiclink">Solutions</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_lu.htm" class="topiclink">LU</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Implement an LU decomposition of a matrix: the product of a lower triangular matrix and an upper triangular matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_decompositions.htm" class="topiclink">Transformations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_lup.htm" class="topiclink">LUP</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Implement an LUP factorization with partial permutation, which refers to LU decomposition with row permutations only: PA=LU</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_decompositions.htm" class="topiclink">Transformations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_matmul.htm" class="topiclink">MatMul</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Matrix product of two matrices</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_products.htm" class="topiclink">Products</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_max.htm" class="topiclink">Max</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the maximum value in a matrix/vector</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_mean.htm" class="topiclink">Mean</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the arithmetic mean of element values</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_median.htm" class="topiclink">Median</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the median of the matrix/vector elements</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_min.htm" class="topiclink">Min</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the minimum value in a matrix/vector</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_norm.htm" class="topiclink">Norm</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return matrix or vector norm</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_characteristics.htm" class="topiclink">Features</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_ones.htm" class="topiclink">Ones</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Create and return a new matrix filled with ones</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_outer.htm" class="topiclink">Outer</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the outer product of two matrices or two vectors</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_products.htm" class="topiclink">Products</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_percentile.htm" class="topiclink">Percentile</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the specified percentile of values of matrix/vector elements or elements along the specified axis</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_pinv.htm" class="topiclink">PInv</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the pseudo-inverse of a matrix by the Moore-Penrose method</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_solves.htm" class="topiclink">Solutions</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_power.htm" class="topiclink">Power</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Raise a square matrix to an integer power</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_products.htm" class="topiclink">Products</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_prod.htm" class="topiclink">Prod</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the product of matrix/vector elements, which can also be executed for the given axis</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_ptp.htm" class="topiclink">Ptp</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the range of values of a matrix/vector or of the given matrix axis</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_qr.htm" class="topiclink">QR</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the qr factorization of a matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_decompositions.htm" class="topiclink">Transformations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_quantile.htm" class="topiclink">Quantile</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the specified quantile of values of matrix/vector elements or elements along the specified axis</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_random.htm" class="topiclink">Random</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Static function. Create and return a new matrix or vector filled with random values. Random values are generated uniformly within the specified range</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_rank.htm" class="topiclink">Rank</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return matrix rank using the Gaussian method</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_characteristics.htm" class="topiclink">Features</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_regressionmetrics.htm" class="topiclink">RegressionMetric</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the regression metric as the deviation error from the regression line constructed on the specified data array</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_reshape.htm" class="topiclink">Reshape</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Change the shape of a matrix without changing its data</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_resize.htm" class="topiclink">Resize</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return a new matrix with a changed shape and size</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_row.htm" class="topiclink">Row</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return a row vector. Write the vector to the specified row</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_rows.htm" class="topiclink">Rows</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the number of rows in a matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_characteristics.htm" class="topiclink">Features</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_set.htm" class="topiclink">Set</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Sets the value for a vector element by the specified index</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_size.htm" class="topiclink">Size</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the size of vector</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_characteristics.htm" class="topiclink">Features</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_slogdet.htm" class="topiclink">SLogDet</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the sign and logarithm of the determinant of an matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_characteristics.htm" class="topiclink">Features</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_solve.htm" class="topiclink">Solve</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Solve a linear matrix equation or a system of linear algebraic equations</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_solves.htm" class="topiclink">Solutions</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_sort.htm" class="topiclink">Sort</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Sort by place</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_spectrum.htm" class="topiclink">Spectrum</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute spectrum of a matrix as the set of its eigenvalues from the product AT*A</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_characteristics.htm" class="topiclink">Features</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_split.htm" class="topiclink">Split</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Split a matrix into multiple submatrices</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_std.htm" class="topiclink">Std</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the standard deviation of values of matrix/vector elements or elements along the specified axis</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_sum.htm" class="topiclink">Sum</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the sum of matrix/vector elements, which can also be executed for the given axis (axes)</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_svd.htm" class="topiclink">SVD</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Singular value decomposition</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_decompositions.htm" class="topiclink">Transformations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_swapcols.htm" class="topiclink">SwapCols</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Swap columns in a matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_swaprows.htm" class="topiclink">SwapRows</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Swap rows in a matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_trace.htm" class="topiclink">Trace</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return the sum along diagonals of the matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_characteristics.htm" class="topiclink">Features</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_transpose.htm" class="topiclink">Transpose</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Transpose (swap the axes) and return the modified matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_tri.htm" class="topiclink">Tri</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Construct a matrix with ones on a specified diagonal and below, and zeros elsewhere</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_tril.htm" class="topiclink">TriL</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return a copy of a matrix with elements above the k-th diagonal zeroed. Lower triangular matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_triu.htm" class="topiclink">TriU</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Return a copy of a matrix with the elements below the k-th diagonal zeroed. Upper triangular matrix</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_var.htm" class="topiclink">Var</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Compute the variance of values of matrix/vector elements</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_statistics.htm" class="topiclink">Statistics</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_vsplit.htm" class="topiclink">Vsplit</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Split a matrix vertically into multiple submatrices. Same as Split with axis=1</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_manipulations.htm" class="topiclink">Manipulations</a></span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_zeros.htm" class="topiclink">Zeros</a></span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">Create and return a new matrix filled with zeros</span></p>
+</td>
+<td class="EnumTable" style="width:220px;"><p class="p_fortable"><span class="f_fortable"><a href="matrix_initialization.htm" class="topiclink">Initialization</a></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

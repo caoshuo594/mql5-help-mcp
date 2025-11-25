@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.7.3 Library file search order</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_7_libraries.htm"> 7.7 Development and connection of binary format libraries </a>/ 7.7.3 Library file search order
+          </td>
+          <td width="70" align="right">
+          <a href="7_7_2_libraries_import.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_7_4_libraries_dll.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.7.3 Library file search order</span></p>
+<p class="p_Text"><span class="f_Text">If the library name is specified without a path or with a relative path, the search is performed according to different rules depending on the type of library.</span></p>
+<p class="p_Text"><span class="f_Text">System libraries (DLL) are loaded according to the rules of the operating system. If the library is already loaded (for example, by another Expert Advisor, or even from another client terminal launched in parallel), then the call goes to the already loaded library. Otherwise, the search goes in the following sequence:</span></p>
+<ol style="list-style-type:decimal">
+<li value="1" class="p_li"><span class="f_li">The folder from which the compiled EX5 program that imported the DLL was launched.</span></li>
+<li value="2" class="p_li"><span class="f_li">The </span><span class="f_li" style="font-style: italic;">MQL5/Libraries</span><span class="f_li"> folder</span><span class="f_li" style="font-style: italic;">.</span></li>
+<li value="3" class="p_li"><span class="f_li">The folder where the running MetaTrader 5 terminal is located.</span></li>
+<li value="4" class="p_li"><span class="f_li">System folder (usually inside Windows).</span></li>
+<li value="5" class="p_li"><span class="f_li">Windows directory.</span></li>
+<li value="6" class="p_li"><span class="f_li">The current working folder of the terminal process (may be different from the terminal's location folder).</span></li>
+<li value="7" class="p_li"><span class="f_li">Folders listed in the PATH system variable.</span></li>
+</ol>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">#import</span><span class="f_Text"> directives, it is not recommended to use a fully qualified loadable module name of the form </span><span class="f_Text" style="font-style: italic;">Drive:/Directory/FileName.dll</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">If the DLL uses another DLL in its work, then in the absence of the second DLL, the first one will not be able to load.</span></p>
+<p class="p_Text"><span class="f_Text">The search for an imported EX5 library is performed in the following sequence:</span></p>
+<ol style="list-style-type:decimal">
+<li value="1" class="p_li"><span class="f_li">Folder for launching the importing EX5 program.</span></li>
+<li value="2" class="p_li"><span class="f_li">Folder </span><span class="f_li" style="font-style: italic;">MQL5/Libraries</span><span class="f_li"> of specific terminal instance.</span></li>
+<li value="3" class="p_li"><span class="f_li">Folder </span><span class="f_li" style="font-style: italic;">MQL5/Libraries</span><span class="f_li"> in the common folder of all MetaTrader 5 terminals (</span><span class="f_li" style="font-style: italic;">Common/MQL5/Libraries</span><span class="f_li">).</span></li>
+</ol>
+<p class="p_Text"><span class="f_Text">Before loading an MQL program, a general list of all EX5 library modules is formed, where the supported modules are to be used both from the program itself and from libraries from this list. It's called a dependency list and can become a very branched &quot;tree&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">For EX5 libraries, the terminal also provides a one-time download of reusable modules.</span></p>
+<p class="p_Text"><span class="f_Text">Regardless of the type of the library, each instance of it works with its own data related to the context of the calling Expert Advisor, script, service, or indicator. Libraries are not a tool for shared access to MQL5 variables or arrays.</span></p>
+<p class="p_Text"><span class="f_Text">EX5 libraries and DLLs run on the thread of the calling module.</span></p>
+<p class="p_Text"><span class="f_Text">There are no regular means to find in the library code where it was loaded from.</span></p>
+
+</div>
+
+</body>
+</html>

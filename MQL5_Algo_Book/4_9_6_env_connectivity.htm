@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.9.6 Checking network connections</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_9_environment.htm"> 4.9 MQL program execution environment </a>/ 4.9.6 Checking network connections
+          </td>
+          <td width="70" align="right">
+          <a href="4_9_5_env_permissions.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_9_7_env_resources.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.9.6 Checking network connections</span></p>
+<p class="p_Text"><span class="f_Text">As you know, the MetaTrader 5 platform is a distributed system that includes several links. In addition to the client terminal and broker server, it includes the MQL5 community, the Market, cloud services, and much more. In fact, the client part is also distributed, consisting of a terminal and testing agents which can be deployed on multiple computers on a local network. In this case, the connection between any links can potentially be broken for one reason or another. Although the MetaTrader 5 infrastructure tries to automatically restore its functionality, it is not always possible to do this quickly.</span></p>
+<p class="p_Text"><span class="f_Text">Therefore, in MQL programs, one should take into account the possibility of a connection loss. The MQL5 API allows you to control the most important connections: with the trade server and the MQL5 community. The following properties are available in </span><span class="f_Text" style="font-style: italic;">TerminalInfoInteger</span><span class="f_Text">.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table" style="width:60%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TERMINAL_CONNECTED</span></p>
+</td>
+<td class="table" style="width:60%;"><p class="p_fortable"><span class="f_fortable">Connection to the trading server</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TERMINAL_PING_LAST</span></p>
+</td>
+<td class="table" style="width:60%;"><p class="p_fortable"><span class="f_fortable">The last known ping to the trade server in microseconds</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable" style="letter-spacing: -1px;">TERMINAL_COMMUNITY_ACCOUNT</span></p>
+</td>
+<td class="table" style="width:60%;"><p class="p_fortable"><span class="f_fortable">Availability of MQL5.community authorization data in the terminal</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable" style="letter-spacing: -1px;">TERMINAL_COMMUNITY_CONNECTION</span></p>
+</td>
+<td class="table" style="width:60%;"><p class="p_fortable"><span class="f_fortable">Connection to MQL5.community</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table"><p class="p_fortable"><span class="f_fortable">TERMINAL_MQID</span></p>
+</td>
+<td class="table" style="width:60%;"><p class="p_fortable"><span class="f_fortable">Availability of MetaQuotes ID for sending push notifications</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">All properties except TERMINAL_PING_LAST are boolean flags. TERMINAL_PING_LAST contains a value of type </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">In addition to the connection, an MQL program often needs to make sure that the data it has is up to date. In particular, the checked TERMINAL_CONNECTED flag does not yet mean that the quotes you are interested in are synchronized with the server. To do this, you need to additionally check </span><span class="f_Text" style="font-style: italic;">SymbolIsSynchronized</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">SeriesInfoInteger(..., SERIES_SYNCHRONIZED)</span><span class="f_Text">. These features will be discussed in the chapter on <a href="5_3_timeseries.htm" class="topiclink">timeseries</a>.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">TerminalInfoDouble</span><span class="f_Text"> function supports another interesting property: TERMINAL_RETRANSMISSION. It denotes the percentage of network packets resent in TCP/IP protocol for all running applications and services on this computer. Even on the fastest and most properly configured network, packet loss sometimes occurs and, as a result, there will be no confirmation of packet delivery between the recipient and the sender. In such cases, the lost packet is resent. The terminal itself does not count the TERMINAL_RETRANSMISSION indicator but requests it once a minute in the operating system.</span></p>
+<p class="p_Text"><span class="f_Text">A high value of this metric may indicate external problems (Internet connection, your provider, local network, or computer issues), which can worsen the quality of the terminal connection.</span></p>
+<p class="p_Text"><span class="f_Text">If there is a confirmed connection to the community (TERMINAL_COMMUNITY_CONNECTION), an MQL program can query the user's current balance by calling </span><span class="f_Text" style="font-style: italic;">TerminalInfoDouble(TERMINAL_COMMUNITY_BALANCE)</span><span class="f_Text">. This allows you to use an automated subscription to paid trading signals (API documentation is available on the <a href="https://www.mql5.com/ru/docs/signals" target="_blank" class="weblink" title="API Help for Trading Signals ">mql5.com</a> website).</span></p>
+<p class="p_Text"><span class="f_Text">Let's check the listed properties using the script </span><span class="f_Text" style="font-style: italic;">EnvConnection.mq5</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_CONNECTED</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_PING_LAST</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_COMMUNITY_ACCOUNT</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_COMMUNITY_CONNECTION</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_MQID</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_RETRANSMISSION</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">PRTF</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoDouble</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">TERMINAL_COMMUNITY_BALANCE</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here is a log example (the values will match your settings).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">TerminalInfoInteger(TERMINAL_CONNECTED)=1&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TerminalInfoInteger(TERMINAL_PING_LAST)=49082&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TerminalInfoInteger(TERMINAL_COMMUNITY_ACCOUNT)=0&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TerminalInfoInteger(TERMINAL_COMMUNITY_CONNECTION)=0&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TerminalInfoInteger(TERMINAL_MQID)=0&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TerminalInfoDouble(TERMINAL_RETRANSMISSION)=0.0&nbsp;/&nbsp;ok</span>
+<br><span class="f_CodeExample">TerminalInfoDouble(TERMINAL_COMMUNITY_BALANCE)=0.0&nbsp;/&nbsp;ok</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

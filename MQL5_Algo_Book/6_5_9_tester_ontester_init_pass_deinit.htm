@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.5.9 Group of OnTester events for optimization control</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_5_tester.htm"> 6.5 Testing and optimization of Expert Advisors </a>/ 6.5.9 Group of OnTester events for optimization control
+          </td>
+          <td width="70" align="right">
+          <a href="6_5_8_tester_parameterrange.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_5_10_tester_frameadd.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.5.9 Group of OnTester events for optimization control</span></p>
+<p class="p_Text"><span class="f_Text">There are three special events in MQL5 to manage the optimization process and transfer arbitrary applied results (in addition to trading indicators) from agents to the terminal: </span><span class="f_Text" style="font-style: italic;">OnTesterInit</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">OnTesterDeinit</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">OnTesterPass</span><span class="f_Text">. Having described the handlers for them in the code, the programmer will be able to perform the actions they need before starting the optimization, after the optimization is completed, and at the end of each of the individual optimization passes (if application data has been received from the agent, more on that below).</span></p>
+<p class="p_Text"><span class="f_Text">All handlers are optional. As we have seen, optimization works without them. It should also be understood that all three events work only during optimization, but not in a single test.</span></p>
+<p class="p_Text"><span class="f_Text">The Expert Advisor with these handlers is automatically loaded on a separate chart of the terminal with the symbol and period specified in the tester. This Expert instance Advisor does not trade, but only performs service actions. All other event handlers, such as </span><span class="f_Text" style="font-style: italic;">OnInit</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">OnDeinit</span><span class="f_Text">, and </span><span class="f_Text" style="font-style: italic;">OnTick</span><span class="f_Text"> do not work in it.</span></p>
+<p class="p_Text"><span class="f_Text">To find out whether an Expert Advisor is executed in the regular trading mode on the agent or in the service mode in the terminal, call the function </span><span class="f_Text" style="font-style: italic;">MQLInfoInteger(MQL_FRAME_MODE)</span><span class="f_Text"> in its code and get </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">. This service mode is also referred to as the &quot;frames&quot; mode which applies to data packets that can be sent to the terminal from Expert Advisor instances on agents. We will see a little later how it is done.</span></p>
+<p class="p_Text"><span class="f_Text">During optimization, only one Expert Advisor instance works in the terminal and, if necessary, receives incoming frames. Don't forget that such an instance is launched only if the Expert Advisor code contains one of the three described event handlers.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OnTesterInit</span><span class="f_Text"> event is generated when optimization is launched in the strategy tester before the very first pass. The handler has two versions: with return type </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">void</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">int OnTesterInit(void)</span></p>
+<p class="p_H4" style="margin: 0 23px 1px 17px;"><span class="f_H4">void OnTesterInit(void)</span></p>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> return version, a zero value (INIT_SUCCEEDED) means successful initialization of the Expert Advisor launched on the chart in the terminal, which allows starting optimization. Any other value means an error code, and optimization will not start.</span></p>
+<p class="p_Text"><span class="f_Text">The second version of the function always implies successful preparation of the Expert Advisor for optimization.</span></p>
+<p class="p_Text"><span class="f_Text">A limited time is provided for the execution of </span><span class="f_Text" style="font-style: italic;">OnTesterInit</span><span class="f_Text">, after which the Expert Advisor will be forced to terminate, and the optimization itself will be canceled. In this case, a corresponding message will be displayed in the tester's log.</span></p>
+<p class="p_Text"><span class="f_Text">In the previous section, we saw an example of how the </span><span class="f_Text" style="font-style: italic;">OnTesterInit</span><span class="f_Text"> handler was used to modify the optimization parameters using the </span><span class="f_Text" style="font-style: italic;">ParameterGetRange/ParameterSetRange</span><span class="f_Text"> functions.</span></p>
+<p class="p_H4"><span class="f_H4">void OnTesterDeinit(void)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OnTesterDeinit</span><span class="f_Text"> function is called upon completion of the Expert Advisor optimization.</span></p>
+<p class="p_Text"><span class="f_Text">The function is intended for the final processing of applied optimization results. For example, if a file was opened in </span><span class="f_Text" style="font-style: italic;">OnTesterInit</span><span class="f_Text"> to write the contents of frames, then it needs to be closed in </span><span class="f_Text" style="font-style: italic;">OnTesterDeinit</span><span class="f_Text">.</span></p>
+<p class="p_H4"><span class="f_H4">void OnTesterPass(void)</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">OnTesterPass</span><span class="f_Text"> event is automatically generated when a data frame arrives during optimization. The function allows the processing of application data received from Expert Advisor instances running on agents during optimization. A frame from the testing agent must be sent from the </span><span class="f_Text" style="font-style: italic;"><a href="6_5_7_tester_ontester.htm" class="topiclink">OnTester</a></span><span class="f_Text"> handler using the </span><span class="f_Text" style="font-style: italic;"><a href="6_5_10_tester_frameadd.htm" class="topiclink">FrameAdd</a></span><span class="f_Text"> function.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Sequence of events diagram for optimizing experts" title="Sequence of events diagram for optimizing experts" width="600" height="400" style="margin:0 auto 0 auto;width:600px;height:400px;border:none" src="frames.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">The diagram shows the sequence of events when optimizing Expert Advisors</span></p>
+<p class="p_Quote"><span class="f_Quote">A standard set of financial statistics about each test pass is sent from the agents to the terminal automatically. The Expert Advisor is not required to send anything using </span><span class="f_Quote" style="font-style: italic;">FrameAdd</span><span class="f_Quote"> if it doesn't need it. If frames are not used, the </span><span class="f_Quote" style="font-style: italic;">OnTesterPass</span><span class="f_Quote"> handler will not be called.</span></p>
+<p class="p_Text"><span class="f_Text">By using </span><span class="f_Text" style="font-style: italic;">OnTesterPass</span><span class="f_Text">, you can dynamically process the optimization results &quot;on the go&quot;, for example, display them on a chart in the terminal or add them to a file for subsequent batch processing.</span></p>
+<p class="p_Text"><span class="f_Text">To demonstrate the capabilities of </span><span class="f_Text" style="font-style: italic;">OnTester </span><span class="f_Text">event handlers, we first need to learn the functions for working with frames. They are presented in the following sections.</span></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>2.3.4 Static variables</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part2.htm"> Part 2. Programming fundamentals </a> / <a class="h_m" href="2_3_variables.htm"> 2.3 Variables </a>/ 2.3.4 Static variables
+          </td>
+          <td width="70" align="right">
+          <a href="2_3_3_initialization.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="2_3_5_const_variables.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">2.3.4 Static variables</span></p>
+<p class="p_Text"><span class="f_Text">It is sometimes necessary to describe a variable inside a function, ensuring its existence for the entire duration of the program execution. For example, we want to count how many times this function has been called.</span></p>
+<p class="p_Text"><span class="f_Text">Such a variable cannot be local, because then it will lose its &quot;long memory,&quot; since it will be created every time at calling the function and removed at exiting it. Technically, it could be described globally; however, if the variable is only used in this function, this approach is wrong in terms of program design.</span></p>
+<p class="p_Text"><span class="f_Text">First, a global variable can accidentally be changed from any place in the program.</span></p>
+<p class="p_Text"><span class="f_Text">Second, imagine what &quot;zoo&quot; of variables would be made in the global region of the program if we declare a global variable at the slightest pretext. Instead, it is recommended to declare variables in the smallest block (if there are several nested ones), in which they are used.</span></p>
+<p class="p_Text"><span class="f_Text">Therefore, the counter of function executions should be described inside the function. This is where the new attribute of variables helps, their static nature.</span></p>
+<p class="p_Text"><span class="f_Text">A special keyword (modifier), </span><span class="f_Text" style="font-style: italic;">static</span><span class="f_Text">, placed before the variable type in its declaration allows prolonging its lifetime up to the entire duration of program execution, that is, makes it similar to global ones. As a rule, a static variable is only defined locally, in one of the functions. Therefore, its visibility is limited by the relevant code block, as in a normal local variable.</span></p>
+<p class="p_Text"><span class="f_Text">Static variables can also be described at a global level, but do not differ from the normal global ones in any way (at least, as of writing this book). It varies from their behavior in C++: There, their visibility is limited by the file they are described in. In MQL5, a program is assembled based on one main mq5 file and, perhaps, some header files (see <a href="2_9_1_preprocessor_include.htm" class="topiclink">directive </a></span><span class="f_Text" style="font-style: italic;"><a href="2_9_1_preprocessor_include.htm" class="topiclink">#include</a></span><span class="f_Text">); therefore, both static and normal global variables are available from all source files of the program.</span></p>
+<p class="p_Text"><span class="f_Text">A local static variable is created only once – at the moment when the program first steps into the function where this variable is described. Such a variable will only be removed at unloading the program. If a function has never been called, the local static variables described in it, if any, will never be created.</span></p>
+<p class="p_Text"><span class="f_Text">As an example, let's modify the </span><span class="f_Text" style="font-style: italic;">Greeting</span><span class="f_Text"> function from Part 1 so that it gives different greetings at each call. Let's name the new script </span><span class="f_Text" style="font-style: italic;">GoodTimes.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">We will remove the input of the script </span><span class="f_Text" style="font-style: italic;">GreetingHour</span><span class="f_Text"> and the parameter of the </span><span class="f_Text" style="font-style: italic;">Greeting</span><span class="f_Text"> function. Inside the </span><span class="f_Text" style="font-style: italic;">Greeting</span><span class="f_Text"> function, we will describe a new static variable, </span><span class="f_Text" style="font-style: italic;">counter</span><span class="f_Text">, of integer type, with the initial value of 0. It should be reminded that it is exactly initialization, and it will be executed only once because the variable is static.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Greeting</span><span class="f_CodeExample">()</span><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">messages</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">]&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Good&nbsp;morning&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Good&nbsp;day&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Good&nbsp;evening&quot;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">messages</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">++&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Since we know modifier </span><span class="f_Text" style="font-style: italic;">static</span><span class="f_Text"> now, it is reasonable to also use it for array </span><span class="f_Text" style="font-style: italic;">messages</span><span class="f_Text">. The matter is that it was declared as local before, and it would be re-created every time at multiple calls of function </span><span class="f_Text" style="font-style: italic;">Greeting</span><span class="f_Text"> (and removed at exit). This is not efficient.</span></p>
+<p class="p_Text"><span class="f_Text">It should be reminded that an array is a named set of several values of the same type, available by index specified in square brackets after the name. Much of what has been said about variables applies directly to arrays. Further nuances of working with arrays will be covered in section <a href="2_4_arrays.htm" class="topiclink">Arrays</a>.</span></p>
+<p class="p_Text"><span class="f_Text">But let's get back to our current problem. An option is chosen from the array based on the value of the </span><span class="f_Text" style="font-style: italic;">counter</span><span class="f_Text"> variable in the </span><span class="f_Text" style="font-style: italic;">return</span><span class="f_Text"> statement and so far appears quite cabbalistically:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">messages</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">counter</span><span class="f_CodeExample">++&nbsp;%&nbsp;</span><span class="f_CodeExample" style="color: #333333;">3</span><span class="f_CodeExample">];</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">We have already mentioned casually the modulus operation performed using character '%' in Part 1. With it, we guarantee that the element index will not be able to exceed the array size: Whatever be counter, its division modulo by 3 will either be 0 or 1, or 2.</span></p>
+<p class="p_Text"><span class="f_Text">The same applies to structure </span><span class="f_Text" style="font-style: italic;">counter++</span><span class="f_Text">, it means adding 1 to the variable value (single increment).</span></p>
+<p class="p_Text"><span class="f_Text">It is important to note that, in this notation, incrementation will take place upon having computed the entire expression, in this case, upon division </span><span class="f_Text" style="font-style: italic;">counter % 3</span><span class="f_Text">. This means that counting will start from zero, i.e., initial value. There is a possibility to make an increment before computing the expression, having written: </span><span class="f_Text" style="font-style: italic;">++counter % 3</span><span class="f_Text">. Then counting would start from 1. We will consider the operations of this type in section <a href="2_5_4_increment_decrement.htm" class="topiclink">Increment and Decrement</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Let's call the </span><span class="f_Text" style="font-style: italic;">Greeting</span><span class="f_Text"> function from </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> 3 consecutive times.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Greeting</span><span class="f_CodeExample">(),&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Symbol</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Greeting</span><span class="f_CodeExample">(),&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Symbol</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">Greeting</span><span class="f_CodeExample">(),&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;,&nbsp;&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Symbol</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Print(counter);&nbsp;//&nbsp;error:&nbsp;'counter'&nbsp;-&nbsp;undeclared&nbsp;identifier</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">As a result, we will see the anticipated three strings with all greetings one after another in the log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">GoodTimes&nbsp;(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Good&nbsp;morning,&nbsp;EURUSD</span>
+<br><span class="f_CodeExample">GoodTimes&nbsp;(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Good&nbsp;afternoon,&nbsp;EURUSD</span>
+<br><span class="f_CodeExample">GoodTimes&nbsp;(EURUSD,H1) &nbsp; &nbsp; &nbsp; &nbsp;Good&nbsp;evening,&nbsp;EURUSD</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If we continue calling the function, the counter will increase, and the messages will rotate.</span></p>
+<p class="p_Text"><span class="f_Text">An attempt to refer to the </span><span class="f_Text" style="font-style: italic;">counter</span><span class="f_Text"> variable at the end of </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> (commented) will not allow the code to be compiled, since the static variable, although it continues to exist, is only available inside function </span><span class="f_Text" style="font-style: italic;">Greeting</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Please note that braces are used for both forming the code blocks and initializing arrays. You should distinguish among their applications. Arrays will be considered in detail in the relevant section. However, these are not all applications of braces: Using them, we will later learn how to define custom types, structures, and classes. Static variables can also be defined inside structures and classes.</span></p>
+
+</div>
+
+</body>
+</html>

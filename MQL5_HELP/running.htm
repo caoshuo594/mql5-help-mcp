@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Programs running</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="runtime.htm"> MQL5 programs </a>/ Program Running
+          </td>
+          <td width="70" align="right">
+          <a href="runtime.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="tradepermission.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Program Running</span></p>
+<p class="p_Text"><span class="f_Text">Each script, each service and each Expert Advisor runs in its own separate thread. All indicators calculated on one symbol, even if they are attached to different charts, work in the same thread. Thus, all indicators on one symbol share the resources of one thread.</span></p>
+<p class="p_Text"><span class="f_Text">All other actions associated with a symbol, like processing of ticks and history synchronization, are also consistently performed in the same thread with indicators. This means that if an infinite action is performed in an indicator, all other events associated with its symbol will never be performed.</span></p>
+<p class="p_Text"><span class="f_Text">When running an Expert Advisor, make sure that it has an actual <a href="marketinformation.htm" class="topiclink">trading environment</a> and can <a href="timeseries_access.htm" class="topiclink">access the history</a> of the required symbol and period, and <a href="timeseries_access.htm#synchronized" class="topiclink">synchronize</a> data between the terminal and the server. For all these procedures, the terminal provides a start delay of no more than 5 seconds, after which the Expert Advisor will be started with available data. Therefore, in case there is no connection to the server, this may lead to a delay in the start of an Expert Advisor.</span></p>
+<p class="p_Text"><span class="f_Text">The below table contains a brief summary of MQL5 programs:</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:150px;"><p class="p_EnumTitle"><span class="f_EnumTitle">Program</span></p>
+</th>
+<th class="EnumTable"><p class="p_EnumTitle"><span class="f_EnumTitle">Running</span></p>
+</th>
+<th class="EnumTable"><p class="p_EnumTitle"><span class="f_EnumTitle">Note</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable">Service</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">A separate thread, the number of threads for services is equal to the number of services</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">A looped service cannot break running of other programs</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable">Script</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">A separate thread, the number of threads for scripts is equal to the number of scripts</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">A looped script cannot break running of other programs</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable">Expert Advisor</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">A separate thread, the number of threads for Expert Advisors is equal to the number of Expert Advisors</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">A looped Expert Advisor cannot break running of other programs</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:150px;"><p class="p_fortable"><span class="f_fortable">Indicator</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">One thread for all indicators on a symbol. The number of threads is equal to the number of symbols with indicators</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable">An infinite loop in one indicator will stop all other indicators on this symbol</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Right after a program is attached to a chart, it is uploaded to the client terminal memory, as well as global variable are <a href="initialization.htm" class="topiclink">initialized</a>. If some global variable of the class type has a <a href="classes.htm#constructor" class="topiclink">constructor</a>, this constructor will be called during initialization of <a href="global.htm" class="topiclink">global variables</a>.</span></p>
+<p class="p_Text"><span class="f_Text">After that the program is waiting for an <a href="event_fire.htm" class="topiclink">event</a> from the client terminal. Each mql5-program should have at least one <a href="events.htm" class="topiclink">event-handler</a>, otherwise the loaded program will not be executed. Event handlers have &nbsp;predefined names, parameters and return types.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="EnumTable" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="EnumTable">
+<th class="EnumTable" style="width:50px;"><p class="p_EnumHeader"><span class="f_EnumHeader">Type</span></p>
+</th>
+<th class="EnumTable" style="width:97px;"><p class="p_EnumHeader"><span class="f_EnumHeader">Function name</span></p>
+</th>
+<th class="EnumTable" style="width:155px;"><p class="p_EnumHeader"><span class="f_EnumHeader">Parameters</span></p>
+</th>
+<th class="EnumTable" style="width:110px;"><p class="p_EnumHeader"><span class="f_EnumHeader">Application</span></p>
+</th>
+<th class="EnumTable"><p class="p_EnumHeader"><span class="f_EnumHeader">Comment</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:50px;"><p class="p_fortable"><span class="f_fortable">int</span></p>
+</td>
+<td class="EnumTable" style="width:97px;"><p class="p_fortable"><span class="f_fortable"><a href="oninit.htm" class="topiclink">OnInit</a></span></p>
+</td>
+<td class="EnumTable" style="width:155px;"><p class="p_fortable"><span class="f_fortable">none</span></p>
+</td>
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">Expert Advisors and indicators</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="event_fire.htm#init" class="topiclink">Init</a> event handler. It allows to use the void return type.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:50px;"><p class="p_fortable"><span class="f_fortable">void</span></p>
+</td>
+<td class="EnumTable" style="width:97px;"><p class="p_fortable"><span class="f_fortable"><a href="ondeinit.htm" class="topiclink">OnDeinit</a></span></p>
+</td>
+<td class="EnumTable" style="width:155px;"><p class="p_fortable"><span class="f_fortable">const int reason</span></p>
+</td>
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">Expert Advisors and indicators</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="event_fire.htm#deinit" class="topiclink">Deinit</a> event handler.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:50px;"><p class="p_fortable"><span class="f_fortable">void</span></p>
+</td>
+<td class="EnumTable" style="width:97px;"><p class="p_fortable"><span class="f_fortable"><a href="onstart.htm" class="topiclink">OnStart</a></span></p>
+</td>
+<td class="EnumTable" style="width:155px;"><p class="p_fortable"><span class="f_fortable">none</span></p>
+</td>
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">scripts and services</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="event_fire.htm#start" class="topiclink">Start</a> event handler.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:50px;"><p class="p_fortable"><span class="f_fortable">int</span></p>
+</td>
+<td class="EnumTable" style="width:97px;"><p class="p_fortable"><span class="f_fortable"><a href="events.htm#oncalculate2" class="topiclink">OnCalculate</a></span></p>
+</td>
+<td class="EnumTable" style="width:155px;"><p class="p_fortable"><span class="f_fortable">const int rates_total,</span></p>
+<p class="p_fortable"><span class="f_fortable">const int prev_calculated,</span></p>
+<p class="p_fortable"><span class="f_fortable">const datetime &amp;Time[],</span></p>
+<p class="p_fortable"><span class="f_fortable">const double &amp;Open[],</span></p>
+<p class="p_fortable"><span class="f_fortable">const double &amp;High[],</span></p>
+<p class="p_fortable"><span class="f_fortable">const double &amp;Low[],</span></p>
+<p class="p_fortable"><span class="f_fortable">const double &amp;Close[],</span></p>
+<p class="p_fortable"><span class="f_fortable">const long &amp;TickVolume[],</span></p>
+<p class="p_fortable"><span class="f_fortable">const long &amp;Volume[],</span></p>
+<p class="p_fortable"><span class="f_fortable">const int &amp;Spread[]</span></p>
+</td>
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">indicators</span></p>
+</td>
+<td class="EnumTable"><p class="p_Normal"><span class="f_fortable">Calculate event handler for all prices.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:50px;"><p class="p_fortable"><span class="f_fortable">int</span></p>
+</td>
+<td class="EnumTable" style="width:97px;"><p class="p_fortable"><span class="f_fortable"><a href="oncalculate.htm" class="topiclink">OnCalculate</a></span></p>
+</td>
+<td class="EnumTable" style="width:155px;"><p class="p_fortable"><span class="f_fortable">const int rates_total,</span></p>
+<p class="p_fortable"><span class="f_fortable">const int prev_calculated,</span></p>
+<p class="p_fortable"><span class="f_fortable">const int begin,</span></p>
+<p class="p_fortable"><span class="f_fortable">const double &amp;price[]</span></p>
+</td>
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">indicators</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="event_fire.htm#calculate" class="topiclink">Calculate</a> event handler on the single data array. </span></p>
+<p class="p_fortable"><span class="f_fortable">Indicator cannot have two event handlers simultaneously.</span></p>
+<p class="p_fortable"><span class="f_fortable">In this case the only one event handler will work on the data array.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:50px;"><p class="p_fortable"><span class="f_fortable">void</span></p>
+</td>
+<td class="EnumTable" style="width:97px;"><p class="p_fortable"><span class="f_fortable"><a href="ontick.htm" class="topiclink">OnTick</a></span></p>
+</td>
+<td class="EnumTable" style="width:155px;"><p class="p_fortable"><span class="f_fortable">none</span></p>
+</td>
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">Expert Advisors</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="event_fire.htm#newtick" class="topiclink">NewTick</a> event handler. While the event of a new tick receipt is being processed, no other events of this type are received.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:50px;"><p class="p_fortable"><span class="f_fortable">void</span></p>
+</td>
+<td class="EnumTable" style="width:97px;"><p class="p_fortable"><span class="f_fortable"><a href="ontimer.htm" class="topiclink">OnTimer</a></span></p>
+</td>
+<td class="EnumTable" style="width:155px;"><p class="p_fortable"><span class="f_fortable">none</span></p>
+</td>
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">Expert Advisors and indicators</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="event_fire.htm#timer" class="topiclink">Timer</a> event handler.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:50px;"><p class="p_fortable"><span class="f_fortable">void</span></p>
+</td>
+<td class="EnumTable" style="width:97px;"><p class="p_fortable"><span class="f_fortable"><a href="ontrade.htm" class="topiclink">OnTrade</a></span></p>
+</td>
+<td class="EnumTable" style="width:155px;"><p class="p_fortable"><span class="f_fortable">none</span></p>
+</td>
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">Expert Advisors</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="event_fire.htm#trade" class="topiclink">Trade</a> event handler.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:50px;"><p class="p_fortable"><span class="f_fortable">double</span></p>
+</td>
+<td class="EnumTable" style="width:97px;"><p class="p_fortable"><span class="f_fortable"><a href="ontester.htm" class="topiclink">OnTester</a></span></p>
+</td>
+<td class="EnumTable" style="width:155px;"><p class="p_fortable"><span class="f_fortable">none</span></p>
+</td>
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">Expert Advisors</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="event_fire.htm#tester" class="topiclink">Tester</a> event handler.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:50px;"><p class="p_fortable"><span class="f_fortable">void</span></p>
+</td>
+<td class="EnumTable" style="width:97px;"><p class="p_fortable"><span class="f_fortable"><a href="onchartevent.htm" class="topiclink">OnChartEvent</a></span></p>
+</td>
+<td class="EnumTable" style="width:155px;"><p class="p_fortable"><span class="f_fortable">const int id,</span></p>
+<p class="p_fortable"><span class="f_fortable">const long &amp;lparam,</span></p>
+<p class="p_fortable"><span class="f_fortable">const double &amp;dparam,</span></p>
+<p class="p_fortable"><span class="f_fortable">const string &amp;sparam</span></p>
+</td>
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">Expert Advisors and indicators</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="event_fire.htm#chartevent" class="topiclink">ChartEvent</a> event handler.</span></p>
+</td>
+</tr>
+<tr class="EnumTable">
+<td class="EnumTable" style="width:50px;"><p class="p_fortable"><span class="f_fortable">void</span></p>
+</td>
+<td class="EnumTable" style="width:97px;"><p class="p_fortable"><span class="f_fortable"><a href="onbookevent.htm" class="topiclink">OnBookEvent</a></span></p>
+</td>
+<td class="EnumTable" style="width:155px;"><p class="p_fortable"><span class="f_fortable">const string &amp;symbol_name</span></p>
+</td>
+<td class="EnumTable" style="width:110px;"><p class="p_fortable"><span class="f_fortable">Expert Advisors and indicators</span></p>
+</td>
+<td class="EnumTable"><p class="p_fortable"><span class="f_fortable"><a href="event_fire.htm#bookevent" class="topiclink">BookEvent</a> event handler.</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">A client terminal sends new events to the corresponding open charts. Events can also be generated by charts (<a href="onchartevent.htm" class="topiclink">chart events</a>) or mql5-programs (<a href="eventchartcustom.htm" class="topiclink">custom events</a>). Generation of events of creation or deletion of graphical objects on a chart can be enabled or disabled by setting <a href="enum_chart_property.htm#enum_chart_property_integer" class="topiclink">CHART_EVENT_OBJECT_CREATE</a> and <a href="enum_chart_property.htm#enum_chart_property_integer" class="topiclink">CHART_EVENT_OBJECT_DELETE</a> chart properties. Each MQL5 program and each chart has its own queue of events, where all new incoming events are added.</span></p>
+<p class="p_Text"><span class="f_Text">A program receives only events from the chart it runs on. All events are processed one after another in the order they are received. If a queue already has a <a href="event_fire.htm#newtick" class="topiclink">NewTick</a> event, or this event is currently being processed, then the new NewTick event is not placed in the queue of the MQL5 program. Similarly, if <a href="event_fire.htm#chartevent" class="topiclink">ChartEvent</a> is already enqueued, or this event is being processed, no new event of this kind is enqueued. The timer events are handled the same way – if the <a href="event_fire.htm#timer" class="topiclink">Timer</a> event is in the queue or being handled, the new timer event is not enqueued.</span></p>
+<p class="p_Text"><span class="f_Text">Event queues have a limited but sufficient size, so that the queue overflow for well written programs is unlikely. In case of queue overflow, new events are discarded without queuing.</span></p>
+<p class="p_Text"><span class="f_Text">It is strongly recommended not to use infinite loops to handle events. Possible exceptions are scripts and services handling a single <a href="event_fire.htm#start" class="topiclink">Start</a> event.</span></p>
+<p class="p_Text"><span class="f_Text"><a href="index.htm#library" class="topiclink">Libraries</a> do not handle any events.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H3"><span class="f_H3">Functions prohibited in Indicators and Expert Advisors</span></p>
+<p class="p_Text"><span class="f_Text">Indicators, scripts and Expert Advisors are executable programs written in MQL5. They are designed for different types of tasks. Therefore there are some restrictions on the use of certain functions, depending on the <a href="mql5_programm_info.htm#enum_program_type" class="topiclink">type of program</a>. The following functions are prohibited in indicators:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li"><a href="ordercalcmargin.htm" class="topiclink">OrderCalcMargin()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="ordercalcprofit.htm" class="topiclink">OrderCalcProfit()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="ordercheck.htm" class="topiclink">OrderCheck()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="ordersend.htm" class="topiclink">OrderSend()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="sendftp.htm" class="topiclink">SendFTP()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="sleep.htm" class="topiclink">Sleep()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="expertremove.htm" class="topiclink">ExpertRemove()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="messagebox.htm" class="topiclink">MessageBox()</a>.</span></li>
+</ul>
+<p class="p_li"><span class="f_li">&nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">All functions designed for indicators are prohibited in Expert Advisors and scripts:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li"><a href="setindexbuffer.htm" class="topiclink">SetIndexBuffer()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="indicatorsetdouble.htm" class="topiclink">IndicatorSetDouble()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="indicatorsetinteger.htm" class="topiclink">IndicatorSetInteger()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="indicatorsetstring.htm" class="topiclink">IndicatorSetString()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="plotindexsetdouble.htm" class="topiclink">PlotIndexSetDouble()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="plotindexsetinteger.htm" class="topiclink">PlotIndexSetInteger()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="plotindexsetstring.htm" class="topiclink">PlotIndexSetString()</a>;</span></li>
+<li class="p_li"><span class="f_li"><a href="plotindexgetinteger.htm" class="topiclink">PlotIndexGetInteger</a>.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The library is not an independent program and is executed in the context of the MQL5 program that has called it: script, indicator or Expert Advisor. Accordingly, the above restrictions apply to the called library.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H3"><span class="f_H3">Functions prohibited in services</span></p>
+<p class="p_Text"><span class="f_Text">Services do not accept any events, as they are not bound to a chart. &nbsp;The following functions are prohibited in services:</span></p>
+<p class="p_li"><span class="f_li"><a href="expertremove.htm" class="topiclink">ExpertRemove()</a>;</span></p>
+<p class="p_li"><span class="f_li"><a href="eventsetmillisecondtimer.htm" class="topiclink">EventSetMillisecondTimer()</a>;</span></p>
+<p class="p_li"><span class="f_li"><a href="eventsettimer.htm" class="topiclink">EventSetTimer()</a>;</span></p>
+<p class="p_li"><span class="f_li"><a href="eventkilltimer.htm" class="topiclink">EventKillTimer()</a>;</span></p>
+<p class="p_li"><span class="f_li"><a href="setindexbuffer.htm" class="topiclink">SetIndexBuffer()</a>;</span></p>
+<p class="p_li"><span class="f_li"><a href="indicatorsetdouble.htm" class="topiclink">IndicatorSetDouble()</a>;</span></p>
+<p class="p_li"><span class="f_li"><a href="indicatorsetinteger.htm" class="topiclink">IndicatorSetInteger()</a>;</span></p>
+<p class="p_li"><span class="f_li"><a href="indicatorsetstring.htm" class="topiclink">IndicatorSetString()</a>;</span></p>
+<p class="p_li"><span class="f_li"><a href="plotindexsetdouble.htm" class="topiclink">PlotIndexSetDouble()</a>;</span></p>
+<p class="p_li"><span class="f_li"><a href="plotindexsetinteger.htm" class="topiclink">PlotIndexSetInteger()</a>;</span></p>
+<p class="p_li"><span class="f_li"><a href="plotindexsetstring.htm" class="topiclink">PlotIndexSetString()</a>;</span></p>
+<p class="p_li"><span class="f_li"><a href="plotindexgetinteger.htm" class="topiclink">PlotIndexGetInteger()</a>;</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H3"><span class="f_H3">Loading and Unloading of Indicators</span></p>
+<p class="p_Text"><span class="f_Text">Indicators are loaded in the following cases:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">an indicator is attached to a chart;</span></li>
+<li class="p_li"><span class="f_li">terminal start (if the indicator was attached to the chart prior to the shutdown of the terminal); </span></li>
+<li class="p_li"><span class="f_li">loading of a template (if the indicator attached to a chart is specified in the template); </span></li>
+<li class="p_li"><span class="f_li">change of a profile (if the indicator is attached to one of the profile charts); </span></li>
+<li class="p_li"><span class="f_li">change of a symbol and/or timeframe of a chart, to which the indicator is attached; </span></li>
+</ul>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">change of the account to which the terminal is connected;</span></li>
+</ul>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">after the successful recompilation of an indicator (if the indicator was attached to a chart);</span></li>
+<li class="p_li"><span class="f_li">change of <a href="inputvariables.htm" class="topiclink">input parameters</a> of the indicator.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">Indicators are unloaded in the following cases: </span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">when detaching an indicator from a chart; </span></li>
+<li class="p_li"><span class="f_li">terminal shutdown (if the indicator was attached to a chart); </span></li>
+<li class="p_li"><span class="f_li">loading of a template (if an indicator is attached to a chart); </span></li>
+<li class="p_li"><span class="f_li">closing of a chart, to which the indicator was attached; </span></li>
+<li class="p_li"><span class="f_li">change of a profile (if the indicator is attached to one of charts of the changed profile); </span></li>
+<li class="p_li"><span class="f_li">change of a symbol and/or timeframe of a chart, to which the indicator is attached; </span></li>
+<li class="p_li"><span class="f_li">change of the account to which the terminal is connected;</span></li>
+</ul>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">change of <a href="inputvariables.htm" class="topiclink">input parameters</a> of the indicator.</span></li>
+</ul>
+<p class="p_Normal"><span class="f_Normal">&nbsp;</span></p>
+<p class="p_H3"><span class="f_H3">Loading and Unloading of Expert Advisors</span></p>
+<p class="p_Text"><span class="f_Text">Expert Advisors are loaded in the following cases:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">when attaching an Expert Advisor to a chart;</span></li>
+<li class="p_li"><span class="f_li">terminal start (if the Expert Advisor was attached to the chart prior to the shutdown of the terminal);</span></li>
+<li class="p_li"><span class="f_li">loading of a template (if the Expert Advisor attached to the chart is specified in the template);</span></li>
+<li class="p_li"><span class="f_li">change of a profile (if the Expert Advisor is attached to the one of the profile charts);</span></li>
+<li class="p_li"><span class="f_li">connection to an account, even if the account number is the same (if the Expert Advisor was attached to the chart before the authorization of the terminal on the server).</span><br>
+<span class="f_li">&nbsp;</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Expert Advisors are unloaded in the following cases:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">when detaching an Expert Advisor from a chart;</span></li>
+<li class="p_li"><span class="f_li">if a new Expert Advisor is attached to a chart, if another Expert Advisor has been attached already, this Expert Advisor is unloaded.</span></li>
+<li class="p_li"><span class="f_li">terminal shutdown (if the Expert Advisor was attached to a chart);</span></li>
+<li class="p_li"><span class="f_li">loading of a template (if an Expert Advisor is attached to the chart);</span></li>
+<li class="p_li"><span class="f_li">close of a chart, to which the Expert Advisor is attached.</span></li>
+<li class="p_li"><span class="f_li">change of a profile (if the Expert Advisor is attached to one of charts of the changed profile);</span></li>
+</ul>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">change of the account to which the terminal is connected (if the Expert Advisor was attached to the chart before the authorization of the terminal on the server);</span></li>
+</ul>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">calling the <a href="expertremove.htm" class="topiclink">ExpertRemove()</a> function.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">In case the symbol or timeframe of a chart, to which the Expert Advisor is attached, changes, Expert Advisors are not loaded or unloaded.</span><span class="f_Text"> In this case client terminal subsequently calls <a href="ondeinit.htm" class="topiclink">OnDeinit()</a> handlers on the old symbol/timeframe and <a href="oninit.htm" class="topiclink">OnInit()</a> on the new symbol/timeframe (if they are such), values of global variables and <a href="static.htm" class="topiclink">static variables</a> are not reset. All events, which have been received for the Expert Advisor before the initialization is completed (<a href="oninit.htm" class="topiclink">OnInit()</a> function) are skipped.</span></p>
+<p class="p_li"><span class="f_li">&nbsp;</span></p>
+<p class="p_H3"><span class="f_H3">Loading and Unloading of Scripts </span></p>
+<p class="p_Text"><span class="f_Text">Scripts are loaded immediately after they are attached to a chart and unloaded immediately after they complete their operation. OnInit() and OnDeinit() are not called for scripts.</span></p>
+<p class="p_Text"><span class="f_Text">When a program is unloaded (deleted from a chart) the client terminal performs deinitialization of <a href="global.htm" class="topiclink">global</a> variables and deletes the events queue. In this case deinitialization means reset of all the <a href="stringconst.htm" class="topiclink">string-</a>type variables, deallocation of <a href="dynamic_array.htm" class="topiclink">dynamical array objects</a> and call of their <a href="classes.htm#destructor" class="topiclink">destructors</a> if they are available.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H3"><span class="f_H3">Loading and Unloading services</span></p>
+<p class="p_Text"><span class="f_Text">Services are loaded right after starting the terminal if they were launched at the moment of the terminal shutdown. Services are unloaded immediately after completing their work.</span></p>
+<p class="p_Text"><span class="f_Text">Services have a single OnStart() handler, in which you can implement an endless data receiving and handling loop, for example creating and updating custom symbols using the network functions.</span></p>
+<p class="p_Text"><span class="f_Text">Unlike Expert Advisors, indicators and scripts, services are not bound to a specific chart, therefore a separate mechanism is provided to launch them. &nbsp;A new service instance is created in the Navigator using the &quot;Add Service&quot; command. A service instance can be launched, stopped and removed using the appropriate instance menu. To manage all instances, use the service menu.</span></p>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">For a better understanding of the Expert Advisor operation we recommend to compile the code of the following Expert Advisor and perform actions of load/unload, template change, symbol change, timeframe change etc:</span></p>
+<p class="p_Text"><span class="f_Text" style="font-weight: bold;">Example:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TestExpert.mq5&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copyright&nbsp;2009,&nbsp;MetaQuotes&nbsp;Software&nbsp;Corp.&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://www.mql5.com&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">copyright</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;2009,&nbsp;MetaQuotes&nbsp;Software&nbsp;Corp.&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">link</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;https://www.mql5.com&quot;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">#property</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">version</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;1.00&quot;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">class</span><span class="f_CodeExample">&nbsp;CTestClass</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">public</span><span class="f_CodeExample">:&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;CTestClass()&nbsp;{&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;CTestClass&nbsp;constructor&quot;</span><span class="f_CodeExample">);&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;~CTestClass()&nbsp;{&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;CTestClass&nbsp;destructor&quot;</span><span class="f_CodeExample">);&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;};</span>
+<br><span class="f_CodeExample">CTestClass&nbsp;global;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;initialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Initialization&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">INIT_SUCCEEDED</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;deinitialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnDeinit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;reason)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Deinitialization&nbsp;with&nbsp;reason&quot;</span><span class="f_CodeExample">,reason);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;tick&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTick</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_BoldTitles"><span class="f_BoldTitles">See also</span></p>
+<p class="p_SeeAlso"><span class="f_SeeAlso"><a href="event_fire.htm" class="topiclink">Client terminal events</a>, <a href="events.htm" class="topiclink">Event handlers</a></span></p>
+
+</div>
+
+</body>
+</html>

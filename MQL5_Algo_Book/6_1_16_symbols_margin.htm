@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1.16 Margin requirements</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_1_symbols.htm"> 6.1 Financial instruments and Market Watch </a>/ 6.1.16 Margin requirements
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_15_symbols_execution_filling.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_17_symbols_expiration.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.1.16 Margin requirements</span></p>
+<p class="p_Text"><span class="f_Text">Among the most important information about a financial instrument for a trader is the amount of funds required to open a position. Without knowing how much money is needed to buy or sell a given number of lots, it is impossible to implement a money management system within an Expert Advisor and control the account balance.</span></p>
+<p class="p_Text"><span class="f_Text">Since MetaTrader 5 is used to trade various instruments (currencies, commodities, stocks, bonds, options, and futures), the margin calculation principles differ significantly. The documentation provides details, in particular for <a href="https://www.metatrader5.com/en/terminal/help/trading_advanced/margin_forex" target="_blank" class="weblink" title="Terminal documentation">Forex and futures</a>, as well as <a href="https://www.metatrader5.com/en/terminal/help/trading_advanced/margin_exchange" target="_blank" class="weblink" title="Terminal documentation">exchanges</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Several properties of the MQL5 API allow you to define the type of market and the method of calculating the margin for a specific instrument.</span></p>
+<p class="p_Text"><span class="f_Text">Looking ahead, let's say that for a given combination of parameters such as the trading operation type, instrument, volume, and price, MQL5 allows you to calculate the margin using the </span><span class="f_Text" style="font-style: italic;"><a href="6_4_7_experts_ordercalcmargin.htm" class="topiclink">OrderCalcMargin</a></span><span class="f_Text"> function. This is the simplest method, but it has a significant limitation: the function does not take into account current open positions and pending orders. This, in particular, ignores possible adjustments for overlapping volumes when opposite positions are allowed on the account.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, in order to obtain a breakdown of the account funds currently used as a margin for open positions and orders, an MQL program may need to analyze the following properties and calculations using formulas. Furthermore, the </span><span class="f_Text" style="font-style: italic;">OrderCalcMargin</span><span class="f_Text"> function is prohibited for use in indicators. You can estimate the free margin in advance after the proposed transaction is completed using </span><span class="f_Text" style="font-style: italic;"><a href="6_4_11_experts_ordercheck.htm" class="topiclink">OrderCheck</a></span><span class="f_Text">.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_TRADE_CALC_MODE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">The method for calculating margin and profit (see ENUM_SYMBOL_CALC_MODE)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_MARGIN_HEDGED_USE_LEG</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Boolean flag to enable (true) or disable (false) the hedged margin calculation mode for the largest of the overlapped positions (buy and sell)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%; height:17px;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_MARGIN_INITIAL</span></p>
+</td>
+<td class="table" style="height:17px;"><p class="p_fortable"><span class="f_fortable">Initial margin for an exchange instrument</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_MARGIN_MAINTENANCE</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Maintenance margin for an exchange instrument</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_MARGIN_HEDGED</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Contract size or margin for one lot of covered positions (opposite positions for one symbol)</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The first two properties are included in the ENUM_SYMBOL_INFO_INTEGER enumeration, and the last three are in ENUM_SYMBOL_INFO_DOUBLE, and they can be read, respectively, by functions </span><span class="f_Text" style="font-style: italic;"><a href="6_1_8_symbols_info.htm" class="topiclink">SymbolInfoInteger</a></span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;"><a href="6_1_8_symbols_info.htm" class="topiclink">SymbolInfoDouble</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Specific margin calculation formulas depend on the SYMBOL_TRADE_CALC_MODE property and are shown in the table below. More complete information can be found in <a href="https://www.mql5.com/en/docs/constants/environment_state/marketinfoconstants#enum_symbol_calc_mode" target="_blank" class="weblink" title="MQL5 documentation">MQL5 documentation</a>.</span></p>
+<p class="p_Text"><span class="f_Text">Please note that initial and maintenance margins are not used for Forex instruments, and these properties are always 0 for them.</span></p>
+<p class="p_Text"><span class="f_Text">The initial margin indicates the amount of required security deposit in <a href="6_1_11_symbols_currencies.htm" class="topiclink">margin currency</a> to open a position with a volume of one <a href="6_1_13_symbols_volume.htm" class="topiclink">lot</a>. It is used when checking the sufficiency of the client's funds before entering the market. To get the final amount of margin charged depending on the type and direction of the order, check the margin ratios using the </span><span class="f_Text" style="font-style: italic;"><a href="6_1_7_symbols_margin_rates.htm" class="topiclink">SymbolInfoMarginRate</a></span><span class="f_Text"> function. Thus, the broker can set an individual leverage or discount for each instrument.</span></p>
+<p class="p_Text"><span class="f_Text">The maintenance margin indicates the minimum value of funds in the instrument's margin currency to maintain an open position of one lot. It is used when checking the sufficiency of the client's funds when the account status (trading conditions) changes. If the level of funds falls below the amount of the maintenance margin of all positions, the broker will start to close them forcibly.</span></p>
+<p class="p_Text"><span class="f_Text">If the maintenance margin property is 0, then the initial margin is used. As in the case of the initial margin, to obtain the final amount of margin charged depending on the type and direction, you should check the margin ratios using the </span><span class="f_Text" style="font-style: italic;">SymbolInfoMarginRate</span><span class="f_Text"> function. </span></p>
+<p class="p_Text"><span class="f_Text">Hedged positions, that is, multidirectional positions for the same symbol, can only exist on <a href="6_3_5_account_netting_hedge.htm" class="topiclink">hedging</a> trading accounts. Obviously, the calculation of the hedged margin together with the properties SYMBOL_MARGIN_HEDGED_USE_LEG, SYMBOL_MARGIN_HEDGED make sense only on such accounts. The hedged margin is applied for the covered volume.</span></p>
+<p class="p_Text"><span class="f_Text">The broker can choose for each instrument one of the two existing methods for calculating the margin for covered positions:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">The base calculation is applied when the longest side calculation mode is disabled, i.e. the SYMBOL_MARGIN_HEDGED_USE_LEG property is equal to </span><span class="f_li" style="font-style: italic;">false</span><span class="f_li">. In this case, the margin consists of three components: the margin for the uncovered volume of the existing position, the margin for the covered volume (if there are opposite positions and the SYMBOL_MARGIN_HEDGED property is non-zero), the margin for pending orders. If the initial margin is set for the instrument (the SYMBOL_MARGIN_INITIAL property is non-zero), then the hedged margin is specified as an absolute value (in money). If the initial margin is not set (equal to 0), then SYMBOL_MARGIN_HEDGED specifies the contract size that will be used when calculating the margin according to the formula corresponding to the type of trading instrument (SYMBOL_TRADE_CALC_MODE).</span></li>
+<li class="p_li"><span class="f_li">The highest position calculation is applied when the SYMBOL_MARGIN_HEDGED_USE_LEG property is equal to </span><span class="f_li" style="font-style: italic;">true</span><span class="f_li">. The value of SYMBOL_MARGIN_HEDGED is ignored in this case. Instead, the volume of all short and long positions on the instrument is calculated, and the weighted average opening price is calculated for each side. Further, using the formulas corresponding to the instrument type (SYMBOL_TRADE_CALC_MODE), the margin for the short side and the long side is calculated. The largest value is used as the final value.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The following table lists the ENUM_SYMBOL_CALC_MODE elements and their respective margin calculation methods. The same property (SYMBOL_TRADE_CALC_MODE) is also responsible for calculating the profit/loss of a position, but we will consider this aspect later, in the chapter on MQL5 trading functions.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:45%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Formula</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_FOREX</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">Forex</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * ContractSize * MarginRate / Leverage</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_FOREX_NO_LEVERAGE</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">Forex without leverage</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * ContractSize * MarginRate</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_CFD</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">CFD</span></p>
+</td>
+<td class="table"><p class="p_fortableCondensed"><span class="f_fortableCondensed">Lots * ContractSize * MarketPrice * MarginRate</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_CFDLEVERAGE</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">CFD with leverage</span></p>
+</td>
+<td class="table"><p class="p_fortableCondensed"><span class="f_fortableCondensed">Lots * ContractSize * MarketPrice * MarginRate / Leverage</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_CFDINDEX</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">CFDs on indices</span></p>
+</td>
+<td class="table"><p class="p_fortableCondensed" style="text-align: left;"><span class="f_fortableCondensed">Lots * ContractSize * MarketPrice * TickPrice / TickSize * MarginRate</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_STOCKS</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">Securities on the stock exchange</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * ContractSize * LastPrice * MarginRate</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_STOCKS_MOEX</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">Securities on MOEX</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * ContractSize * LastPrice * MarginRate</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_FUTURES</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">Futures</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * InitialMargin * MarginRate</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_FUTURES</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">Futures on the stock exchange</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * InitialMargin * MarginRate &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  </span><span class="f_fortable" style="font-style: italic;"> or </span><br>
+<span class="f_fortable">Lots * MaintenanceMargin * MarginRate</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_FUTURES_FORTS</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">Futures on FORTS</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * InitialMargin * MarginRate &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  </span><span class="f_fortable" style="font-style: italic;"> or </span><br>
+<span class="f_fortable">Lots * MaintenanceMargin * MarginRate</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_BONDS</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">Bonds on the stock exchange</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * ContractSize * FaceValue * OpenPrice / 100</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_EXCH_BONDS_MOEX</span></p>
+<p class="p_fortableCondensed" style="text-align: right;"><span class="f_fortableCondensed" style="font-style: italic;">Bonds on MOEX</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Lots * ContractSize * FaceValue * OpenPrice / 100</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:45%;"><p class="p_fortableCondensed"><span class="f_fortableCondensed">SYMBOL_CALC_MODE_SERV_COLLATERAL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Non-tradable asset (margin not applicable)</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The following notation is used in the formulas:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Lots – position or order volume in lots (shares of the contract)</span></li>
+<li class="p_li"><span class="f_li">ContractSize – contract size (one lot, <a href="6_1_13_symbols_volume.htm" class="topiclink">SYMBOL_TRADE_CONTRACT_SIZE</a>)</span></li>
+<li class="p_li"><span class="f_li">Leverage – trading account leverage (<a href="6_3_7_account_margin.htm" class="topiclink">ACCOUNT_LEVERAGE</a>)</span></li>
+<li class="p_li"><span class="f_li">InitialMargin – initial margin (SYMBOL_MARGIN_INITIAL)</span></li>
+<li class="p_li"><span class="f_li">MaintenanceMargin – maintenance margin (SYMBOL_MARGIN_MAINTENANCE)</span></li>
+<li class="p_li"><span class="f_li">TickPrice – tick price (<a href="6_1_12_symbols_point_tick.htm" class="topiclink">SYMBOL_TRADE_TICK_VALUE</a>)</span></li>
+<li class="p_li"><span class="f_li">TickSize – &nbsp;tick size (<a href="6_1_12_symbols_point_tick.htm" class="topiclink">SYMBOL_TRADE_TICK_SIZE</a>)</span></li>
+<li class="p_li"><span class="f_li">MarketPrice – last known </span><span class="f_li" style="font-style: italic;"><a href="6_1_20_symbols_tick_parts.htm" class="topiclink">Bid/Ask</a></span><span class="f_li"> price depending on the type of transaction</span></li>
+<li class="p_li"><span class="f_li">LastPrice – last known </span><span class="f_li" style="font-style: italic;"><a href="6_1_20_symbols_tick_parts.htm" class="topiclink">Last</a></span><span class="f_li"> price</span></li>
+<li class="p_li"><span class="f_li">OpenPrice – weighted average price of a position or order opening</span></li>
+<li class="p_li"><span class="f_li">FaceValue – face value of the bond</span></li>
+<li class="p_li"><span class="f_li">MarginRate – margin ratio according to the </span><span class="f_li" style="font-style: italic;"><a href="6_1_7_symbols_margin_rates.htm" class="topiclink">SymbolInfoMarginRate</a></span><span class="f_li"> function, can also have 2 different values: for initial and maintenance margin</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">An alternative implementation of formula calculations for most types of symbols is given in the file </span><span class="f_Text" style="font-style: italic;">MarginProfitMeter.mqh</span><span class="f_Text"> (see section <a href="6_4_8_experts_ordercalcprofit.htm" class="topiclink">Estimating the profit of a trading operation</a>). It can also be used in indicators.</span></p>
+<p class="p_Text"><span class="f_Text">Let's make a couple of comments on some modes.</span></p>
+<p class="p_Text"><span class="f_Text">In the table above, only three of the futures formulas use the initial margin (SYMBOL_MARGIN_INITIAL). However, if this property has a non-zero value in the specification of any other symbol, then it determines the margin.</span></p>
+<p class="p_Text"><span class="f_li">Some exchanges may impose their own specifics on margin adjustment, such as the discount system for FORTS (SYMBOL_CALC_MODE_EXCH_FUTURES_FORTS). See the MQL5 documentation and your broker for details.</span></p>
+<p class="p_Text"><span class="f_Text">In the SYMBOL_CALC_MODE_SERV_COLLATERAL mode, the value of an instrument is taken into account in Assets, which are added to Equity. Thus, open positions on such an instrument increase the amount of Free Margin and serve as an additional collateral for open positions on traded instruments. The market value of an open position is calculated based on the volume, contract size, current market price, and liquidity ratio: </span><span class="f_Text" style="font-style: italic;">Lots * ContractSize * MarketPrice * LiquidityRate</span><span class="f_Text"> (the latter value can be obtained as the SYMBOL_TRADE_LIQUIDITY_RATE property).</span></p>
+<p class="p_Text"><span class="f_Text">As an example of working with margin-related properties, consider the script </span><span class="f_Text" style="font-style: italic;">SymbolFilterMarginStats.mq5</span><span class="f_Text">. Its purpose will be to calculate statistics on margin calculation methods in the list of selected symbols, as well as optionally log these properties for each symbol. We will select symbols for analysis using the already known filter class </span><span class="f_Text" style="font-style: italic;">SymbolFilter</span><span class="f_Text"> and conditions for it supplied from the input variables.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">#include</span><span class="f_CodeExample">&nbsp;&lt;</span><span class="f_CodeExample" style="color: #333333;">MQL5Book</span><span class="f_CodeExample">/</span><span class="f_CodeExample" style="color: #333333;">SymbolFilter</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">mqh</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UseMarketWatch</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ShowPerSymbolDetails</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ExcludeZeroInitMargin</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ExcludeZeroMainMargin</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ExcludeZeroHedgeMargin</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">false</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">By default, information is requested for all available symbols. To limit the context to the market overview only, we should set </span><span class="f_Text" style="font-style: italic;">UseMarketWatch</span><span class="f_Text"> to </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Parameter </span><span class="f_Text" style="font-style: italic;">ShowPerSymbolDetails</span><span class="f_Text"> allows you to enable the output of detailed information about each symbol (by default, the parameter is </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">, and only statistics are displayed).</span></p>
+<p class="p_Text"><span class="f_Text">The last three parameters are intended for filtering symbols according to the conditions of zero margin values (initial, maintenance, and hedging, respectively).</span></p>
+<p class="p_Text"><span class="f_Text">To collect and conveniently display in the log a complete set of properties for each symbol (when the </span><span class="f_Text" style="font-style: italic;">ShowPerSymbolDetails</span><span class="f_Text"> is on), the structure </span><span class="f_Text" style="font-style: italic;">MarginSettings</span><span class="f_Text"> is defined in the code.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MarginSettings</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_CALC_MODE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">calcMode</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hedgeLeg</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">initial</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">maintenance</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hedged</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Since some of the properties are integer (SYMBOL_TRADE_CALC_MODE, SYMBOL_MARGIN_HEDGED_USE_LEG), and some are real (SYMBOL_MARGIN_INITIAL, SYMBOL_MARGIN_MAINTENANCE, SYMBOL_MARGIN_HEDGED), they will have to be requested by the filter object separately.</span></p>
+<p class="p_Text"><span class="f_Text">Now let's go directly to the working code in </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">. Here, as usual, we define the filter object (</span><span class="f_Text" style="font-style: italic;">f</span><span class="f_Text">), output arrays for character names (</span><span class="f_Text" style="font-style: italic;">symbols</span><span class="f_Text">), and values of requested properties (</span><span class="f_Text" style="font-style: italic;">flags</span><span class="f_Text">,</span><span class="f_Text" style="font-style: italic;">values</span><span class="f_Text">). In addition to them, we add an array of structures </span><span class="f_Text" style="font-style: italic;">MarginSettings</span><span class="f_Text">.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolFilter</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;filter&nbsp;object</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;array&nbsp;for&nbsp;names</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">[][2];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;array&nbsp;for&nbsp;integer&nbsp;vectors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[][3];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;array&nbsp;for&nbsp;real&nbsp;vectors</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MarginSettings</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">margins</span><span class="f_CodeExample">[];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;composite&nbsp;output&nbsp;array</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">stats</span><span class="f_Text"> array map has been introduced to calculate statistics with a key like ENUM_SYMBOL_CALC_MODE and the </span><span class="f_Text" style="font-style: italic;">int</span><span class="f_Text"> integer value for the number of times each method was encountered. Also, all cases of zero margin and the enabled calculation mode on the longer leg should be recorded in the corresponding counter variables.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MapArray</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_CALC_MODE</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;counters&nbsp;for&nbsp;each&nbsp;method/mode</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hedgeLeg</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;and&nbsp;other&nbsp;counters</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">zeroInit</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">zeroMaintenance</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">zeroHedged</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Next, we specify the properties of interest to us which are related to the margin, which will be read from the symbol settings. First, integers in the </span><span class="f_Text" style="font-style: italic;">ints</span><span class="f_Text"> array and then the real ones in the </span><span class="f_Text" style="font-style: italic;">doubles</span><span class="f_Text"> array.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_INFO_INTEGER</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ints</span><span class="f_CodeExample">[]&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_TRADE_CALC_MODE</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_MARGIN_HEDGED_USE_LEG</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_INFO_DOUBLE</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">doubles</span><span class="f_CodeExample">[]&nbsp;=</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_MARGIN_INITIAL</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_MARGIN_MAINTENANCE</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_MARGIN_HEDGED</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;};</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Depending on the input parameters, we will set the filtering conditions.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ExcludeZeroInitMargin</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">let</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_MARGIN_INITIAL</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolFilter</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">IS</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">GREATER</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ExcludeZeroMainMargin</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">let</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_MARGIN_MAINTENANCE</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolFilter</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">IS</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">GREATER</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ExcludeZeroHedgeMargin</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">let</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_MARGIN_HEDGED</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolFilter</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">IS</span><span class="f_CodeExample">::</span><span class="f_CodeExample" style="color: #333333;">GREATER</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now everything is ready for selecting symbols by conditions and getting their properties into arrays. We do this twice, separately for integer and real properties.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">select</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">UseMarketWatch</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ints</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">select</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">UseMarketWatch</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">doubles</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">An array with symbols has to be zeroed out after the first application of the filter so that the names do not double up. Despite two separate queries, the order of elements in all output arrays (</span><span class="f_Text" style="font-style: italic;">ints</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">doubles</span><span class="f_Text">) is the same, since the filtering conditions do not change.</span></p>
+<p class="p_Text"><span class="f_Text">If a detailed log is enabled by the user, we allocate memory for the </span><span class="f_Text" style="font-style: italic;">margins</span><span class="f_Text"> array of structures.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ShowPerSymbolDetails</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">margins</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, we calculate the statistics by iterating over all the elements of the resulting arrays and optionally populate the array of structures.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">inc</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_CALC_MODE</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hedgeLeg</span><span class="f_CodeExample">&nbsp;+=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">]&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">zeroInit</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">]&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">zeroMaintenance</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">]&nbsp;==&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #333333;">zeroHedged</span><span class="f_CodeExample">++;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ShowPerSymbolDetails</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">margins</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">margins</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">calcMode</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_CALC_MODE</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">margins</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">hedgeLeg</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">flags</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">margins</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">initial</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">margins</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">maintenance</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">1</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">margins</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">hedged</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">][</span><span class="f_CodeExample" style="color: #333333;">2</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Now we display the statistics in the log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;=====&nbsp;Margin&nbsp;calculation&nbsp;modes&nbsp;for&nbsp;%s&nbsp;symbols&nbsp;%s=====&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">UseMarketWatch</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Market&nbsp;Watch&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;all&nbsp;available&quot;</span><span class="f_CodeExample">),</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">ExcludeZeroInitMargin</span><span class="f_CodeExample">&nbsp;||&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ExcludeZeroMainMargin</span><span class="f_CodeExample">&nbsp;||&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ExcludeZeroHedgeMargin</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;(with&nbsp;conditions)&nbsp;&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Total&nbsp;symbols:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Hedge&nbsp;leg&nbsp;used&nbsp;in:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">hedgeLeg</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Zero&nbsp;margin&nbsp;counts:&nbsp;initial=%d,&nbsp;maintenance=%d,&nbsp;hedged=%d&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">zeroInit</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">zeroMaintenance</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">zeroHedged</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Stats&nbsp;per&nbsp;calculation&nbsp;mode:&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Since the members of the ENUM_SYMBOL_CALC_MODE enumeration are displayed as integers (which is not very informative), we also display a text where each value has a name (from </span><span class="f_Text" style="font-style: italic;">EnumToString</span><span class="f_Text">).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Legend:&nbsp;key=calculation&nbsp;mode,&nbsp;value=count&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getSize</span><span class="f_CodeExample">();&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%d&nbsp;-&gt;&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getKey</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">),&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">getKey</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">If detailed information on the selected characters is required, we output the </span><span class="f_Text" style="font-style: italic;">margins</span><span class="f_Text"> array of structures.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ShowPerSymbolDetails</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Settings&nbsp;per&nbsp;symbol:&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">margins</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's run the script a couple of times with different settings. Let's start with the default settings.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">=====&nbsp;Margin&nbsp;calculation&nbsp;modes&nbsp;for&nbsp;all&nbsp;available&nbsp;symbols&nbsp;=====</span>
+<br><span class="f_CodeExample">Total&nbsp;symbols:&nbsp;131</span>
+<br><span class="f_CodeExample">Hedge&nbsp;leg&nbsp;used&nbsp;in:&nbsp;14</span>
+<br><span class="f_CodeExample">Zero&nbsp;margin&nbsp;counts:&nbsp;initial=123,&nbsp;maintenance=130,&nbsp;hedged=32</span>
+<br><span class="f_CodeExample">Stats&nbsp;per&nbsp;calculation&nbsp;mode:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[key]&nbsp;[value]</span>
+<br><span class="f_CodeExample">[0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;101</span>
+<br><span class="f_CodeExample">[1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;16</span>
+<br><span class="f_CodeExample">[2]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample">[3]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11</span>
+<br><span class="f_CodeExample">[4]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2</span>
+<br><span class="f_CodeExample">Legend:&nbsp;key=calculation&nbsp;mode,&nbsp;value=count</span>
+<br><span class="f_CodeExample">0&nbsp;-&gt;&nbsp;SYMBOL_CALC_MODE_FOREX</span>
+<br><span class="f_CodeExample">4&nbsp;-&gt;&nbsp;SYMBOL_CALC_MODE_CFDLEVERAGE</span>
+<br><span class="f_CodeExample">1&nbsp;-&gt;&nbsp;SYMBOL_CALC_MODE_FUTURES</span>
+<br><span class="f_CodeExample">2&nbsp;-&gt;&nbsp;SYMBOL_CALC_MODE_CFD</span>
+<br><span class="f_CodeExample">5&nbsp;-&gt;&nbsp;SYMBOL_CALC_MODE_FOREX_NO_LEVERAGE</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For the second run, let's set </span><span class="f_Text" style="font-style: italic;">ShowPerSymbolDetails</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ExcludeZeroInitMargin</span><span class="f_Text"> to </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">. This requests detailed information about all symbols that have a non-zero value of the initial margin.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">=====&nbsp;Margin&nbsp;calculation&nbsp;modes&nbsp;for&nbsp;all&nbsp;available&nbsp;symbols&nbsp;(with&nbsp;conditions)&nbsp;=====</span>
+<br><span class="f_CodeExample">Total&nbsp;symbols:&nbsp;8</span>
+<br><span class="f_CodeExample">Hedge&nbsp;leg&nbsp;used&nbsp;in:&nbsp;0</span>
+<br><span class="f_CodeExample">Zero&nbsp;margin&nbsp;counts:&nbsp;initial=0,&nbsp;maintenance=7,&nbsp;hedged=0</span>
+<br><span class="f_CodeExample">Stats&nbsp;per&nbsp;calculation&nbsp;mode:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[key]&nbsp;[value]</span>
+<br><span class="f_CodeExample">[0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5</span>
+<br><span class="f_CodeExample">[1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample">[2]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2</span>
+<br><span class="f_CodeExample">Legend:&nbsp;key=calculation&nbsp;mode,&nbsp;value=count</span>
+<br><span class="f_CodeExample">0&nbsp;-&gt;&nbsp;SYMBOL_CALC_MODE_FOREX</span>
+<br><span class="f_CodeExample">1&nbsp;-&gt;&nbsp;SYMBOL_CALC_MODE_FUTURES</span>
+<br><span class="f_CodeExample">5&nbsp;-&gt;&nbsp;SYMBOL_CALC_MODE_FOREX_NO_LEVERAGE</span>
+<br><span class="f_CodeExample">Settings&nbsp;per&nbsp;symbol:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[name]&nbsp;[calcMode]&nbsp;[hedgeLeg]&nbsp;&nbsp;&nbsp;&nbsp;[initial]&nbsp;[maintenance]&nbsp;&nbsp;&nbsp;&nbsp;[hedged]</span>
+<br><span class="f_CodeExample">[0]&nbsp;&quot;XAUEUR&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;false&nbsp;&nbsp;&nbsp;&nbsp;100.00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00000&nbsp;&nbsp;&nbsp;&nbsp;50.00000</span>
+<br><span class="f_CodeExample">[1]&nbsp;&quot;XAUAUD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;false&nbsp;&nbsp;&nbsp;&nbsp;100.00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00000&nbsp;&nbsp;&nbsp;100.00000</span>
+<br><span class="f_CodeExample">[2]&nbsp;&quot;XAGEUR&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;false&nbsp;&nbsp;&nbsp;1000.00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00000&nbsp;&nbsp;1000.00000</span>
+<br><span class="f_CodeExample">[3]&nbsp;&quot;USDGEL&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;false&nbsp;100000.00000&nbsp;&nbsp;100000.00000&nbsp;50000.00000</span>
+<br><span class="f_CodeExample">[4]&nbsp;&quot;SP500m&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;false&nbsp;&nbsp;&nbsp;6600.00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00000&nbsp;&nbsp;6600.00000</span>
+<br><span class="f_CodeExample">[5]&nbsp;&quot;XBRUSD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;false&nbsp;&nbsp;&nbsp;&nbsp;100.00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00000&nbsp;&nbsp;&nbsp;&nbsp;50.00000</span>
+<br><span class="f_CodeExample">[6]&nbsp;&quot;XNGUSD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;false&nbsp;&nbsp;10000.00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00000&nbsp;10000.00000</span>
+<br><span class="f_CodeExample">[7]&nbsp;&quot;XTIUSD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;false&nbsp;&nbsp;&nbsp;&nbsp;100.00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00000&nbsp;&nbsp;&nbsp;&nbsp;50.00000</span></p>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

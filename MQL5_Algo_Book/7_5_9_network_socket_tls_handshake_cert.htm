@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.5.9 Preparing a secure socket connection</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_5_network.htm"> 7.5 Network functions </a>/ 7.5.9 Preparing a secure socket connection
+          </td>
+          <td width="70" align="right">
+          <a href="7_5_8_network_socket_send_read.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_5_10_network_socket_tls_send_read.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.5.9 Preparing a secure socket connection</span></p>
+<p class="p_Text"><span class="f_Text">To transfer a socket connection to a protected state and check it, MQL6 provides the following functions: </span><span class="f_Text" style="font-style: italic;">SocketTlsHandshake</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">SocketTlsCertificate</span><span class="f_Text">, respectively. As a rule, we do not need to &quot;manually&quot; enable protection by calling </span><span class="f_Text" style="font-style: italic;">SocketTlsHandshake</span><span class="f_Text"> if the connection is established on port 443. The fact is that it is standard for HTTPS (TLS).</span></p>
+<p class="p_Text"><span class="f_Text">Protection is based on encryption of the data flow between the client and the server, for which a pair of asymmetric keys is initially used: public and private. We have already touched on this topic in the section <a href="7_4_1_crypt_overview.htm" class="topiclink">Overview of available information transformation methods</a>. Every decent site acquires a digital certificate from one of the certification authorities (CAs) trusted by the network community. The certificate contains the site's public key and is digitally signed by the center. Browsers and other client applications store (or can import) the public keys of CAs and therefore can verify the quality of a particular certificate.</span></p>
+<p class="p_ImageCaption"><img class="help" alt="Establishing a secure TLS connection" title="Establishing a secure TLS connection" width="600" height="492" style="margin:0 auto 0 auto;width:600px;height:492px;border:none" src="tls_sequence.png"/></p>
+<p class="p_ImageCaption"><span class="f_ImageCaption">Establishing a secure TLS connection </span><br>
+<span class="f_ImageCaption">(picture from the internet)</span></p>
+<p class="p_Text"><span class="f_Text">Further, when preparing a secure connection, the browser or application generates a certain &quot;secret&quot;, encrypts it with the site's public key and sends the key to it, and the site decrypts it with the private key which only the site knows. This stage looks more complicated in practice, but as a result, both the client and the server have the encryption key for the current session (connection). This key is used by both participants in the communication to encrypt subsequent requests and responses at one end and decrypt them at the other.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">SocketTlsHandshake</span><span class="f_Text"> function initiates a secure TLS connection with the specified host using the TLS handshake protocol. In this case, the client and the server agree on the connection parameters: the version of the protocol used and the method of data encryption.</span></p>
+<p class="p_H4"><span class="f_H4">bool SocketTlsHandshake(int socket, const string host)</span></p>
+<p class="p_Text"><span class="f_Text">The socket handle and the address of the server with which the connection is established are passed in the function parameters (in fact, this is the same name that was specified in </span><span class="f_Text" style="font-style: italic;">SocketConnect</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">Before a secure connection, the program must first establish a regular TCP connection with the host using </span><span class="f_Text" style="font-style: italic;"><a href="7_5_5_network_socket_create_connect.htm" class="topiclink">SocketConnect</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> if successful; otherwise, it returns </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">. In case of an error, code 5274 (ERR_NETSOCKET_HANDSHAKE_FAILED) is written in </span><span class="f_Text" style="font-style: italic;"> _LastError</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">SocketTlsCertificate</span><span class="f_Text"> function gets information about the certificate used to secure the network connection.</span></p>
+<p class="p_H4"><span class="f_H4">int SocketTlsCertificate(int socket, string &amp;subject, string &amp;issuer, string &amp;serial, string &amp;thumbprint, datetime &amp;expiration)</span></p>
+<p class="p_Text"><span class="f_Text">If a secure connection is established for the socket (either after an explicit and successful </span><span class="f_Text" style="font-style: italic;">SocketTlsHandshake</span><span class="f_Text"> call or after connecting via port 443), this function fills in all other reference variables by the socket descriptor with the corresponding information: the name of the certificate owner (</span><span class="f_Text" style="font-style: italic;">subject</span><span class="f_Text">), certificate issuer name (</span><span class="f_Text" style="font-style: italic;">issuer</span><span class="f_Text">), serial number (</span><span class="f_Text" style="font-style: italic;">serial</span><span class="f_Text">), digital fingerprint (</span><span class="f_Text" style="font-style: italic;">thumbprint</span><span class="f_Text">), and certificate validity period (</span><span class="f_Text" style="font-style: italic;">expiration</span><span class="f_Text">).</span></p>
+<p class="p_Text"><span class="f_Text">The function returns </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> in case of successful receipt of information about the certificate or </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text"> as a result of an error. The error code is 5275 (ERR_NETSOCKET_NO_CERTIFICATE). This can be used to determine whether the connection opened by the </span><span class="f_Text" style="font-style: italic;">SocketConnect</span><span class="f_Text"> is immediately in protected mode. We will use this in an example in the next section.</span></p>
+
+</div>
+
+</body>
+</html>

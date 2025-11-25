@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>6.1.18 Spreads and order distance from the current price</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part6.htm"> Part 6. Trading automation </a> / <a class="h_m" href="6_1_symbols.htm"> 6.1 Financial instruments and Market Watch </a>/ 6.1.18 Spreads and order distance from the current price
+          </td>
+          <td width="70" align="right">
+          <a href="6_1_17_symbols_expiration.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="6_1_19_symbols_swaps.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">6.1.18 Spreads and order distance from the current price</span></p>
+<p class="p_Text"><span class="f_Text">For many trading strategies, especially those based on short-term trades, information about the spread and the distance from the current price, allowing the installation or modification of orders, is important. All of these properties are part of the ENUM_SYMBOL_INFO_INTEGER enumeration and are available through the </span><span class="f_Text" style="font-style: italic;"><a href="6_1_8_symbols_info.htm" class="topiclink">SymbolInfoInteger</a></span><span class="f_Text"> function.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 7px 17px 6px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:40%;"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Identifier</span></p>
+</th>
+<th class="table"><p class="p_BoldTitlesInTables"><span class="f_BoldTitlesInTables">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">SYMBOL_SPREAD</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Spread size (in points)</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">SYMBOL_SPREAD_FLOAT</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Boolean sign of a floating spread</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">SYMBOL_TRADE_STOPS_LEVEL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Minimum allowed distance from the current price (in points) for setting Stop Loss, Take Profit, and pending orders</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:40%;"><p class="p_fortable"><span class="f_fortable">SYMBOL_TRADE_FREEZE_LEVEL</span></p>
+</td>
+<td class="table"><p class="p_fortable"><span class="f_fortable">Distance from the current price (in points) to freeze orders and positions</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the table above, the current price refers to the </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> price, depending on the nature of the operation being performed.</span></p>
+<p class="p_Text"><span class="f_Text">Protective </span><span class="f_Text" style="font-style: italic;">Stop Loss</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Take Profit</span><span class="f_Text"> levels indicate that a position should be closed. This is performed by an operation opposite to the opening. Therefore, for buy orders opened at the </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> price, protective levels indicate </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text">, and for sell orders opened at </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text">, protective levels indicate </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text">. When placing pending orders, the open price type is selected in the standard way: buy orders (</span><span class="f_Text" style="font-style: italic;">Buy Stop</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Buy Limit</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Buy Stop Limit</span><span class="f_Text">) are based on </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> and sell orders (</span><span class="f_Text" style="font-style: italic;">Sell Stop</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Sell Limit</span><span class="f_Text">, </span><span class="f_Text" style="font-style: italic;">Sell Stop Limit</span><span class="f_Text">) are based on </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text">. Taking into account such types of prices in the context of the mentioned trading operations, the distance in points is calculated for the SYMBOL_TRADE_STOPS_LEVEL and SYMBOL_TRADE_FREEZE_LEVEL properties.</span></p>
+<p class="p_Text"><span class="f_Text">The SYMBOL_TRADE_STOPS_LEVEL property, if it is non-zero, disables modification of </span><span class="f_Text" style="font-style: italic;">Stop Loss</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Take Profit</span><span class="f_Text"> levels for an open position if the new level would be closer to the current price than the specified distance. Similarly, it is impossible to move the opening price of a pending order closer than SYMBOL_TRADE_STOPS_LEVEL points from the current price.</span></p>
+<p class="p_Text"><span class="f_Text">The SYMBOL_TRADE_FREEZE_LEVEL property, if it is non-zero, restricts any trading operations for a pending order or an open position within the specified distance from the current price. For a pending order, freezing occurs when the specified open price is at a distance less than SYMBOL_TRADE_FREEZE_LEVEL points from the current price (again, the type of the current price is </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> or </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text">, depending on whether it is buying or selling). For a position, freezing occurs for </span><span class="f_Text" style="font-style: italic;">Stop Loss</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Take Profit</span><span class="f_Text"> levels, which happened to be near the current price, and therefore the measurement for them is performed for &quot;opposite&quot; price types.</span></p>
+<p class="p_Text"><span class="f_Text">If the SYMBOL_SPREAD_FLOAT property is </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">, the SYMBOL_SPREAD property is not part of the symbol specification but contains the actual spread, dynamically changing with each call according to market conditions. It can also be found as the difference between </span><span class="f_Text" style="font-style: italic;">Ask</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">Bid</span><span class="f_Text"> prices in the </span><span class="f_Text" style="font-style: italic;">MqlTick</span><span class="f_Text"> structure by calling </span><span class="f_Text" style="font-style: italic;"><a href="6_1_5_symbols_tick.htm" class="topiclink">SymbolInfoTick</a></span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">The script </span><span class="f_Text" style="font-style: italic;">SymbolFilterSpread.mq5</span><span class="f_Text"> will allow you to analyze the specified properties. It defines a custom enumeration ENUM_SYMBOL_INFO_INTEGER_PART, which includes only the properties of interest to us in this context from ENUM_SYMBOL_INFO_INTEGER.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">enum</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ENUM_SYMBOL_INFO_INTEGER_PART</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SPREAD_FIXED</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_SPREAD</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SPREAD_FLOAT</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_SPREAD_FLOAT</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">STOPS_LEVEL</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_TRADE_STOPS_LEVEL</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">FREEZE_LEVEL</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #ff0000;">SYMBOL_TRADE_FREEZE_LEVEL</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The new enumeration defines the </span><span class="f_Text" style="font-style: italic;">Property</span><span class="f_Text"> input parameter, which specifies which of the four properties will be analyzed. Parameters </span><span class="f_Text" style="font-style: italic;">UseMarketWatch</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">ShowPerSymbolDetails</span><span class="f_Text"> control the process in the already known way, as in the previous test scripts.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">UseMarketWatch</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ENUM_SYMBOL_INFO_INTEGER_PART</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">Property</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SPREAD_FIXED</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ShowPerSymbolDetails</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">;</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For the convenient display of information for each symbol (property name and value in each line) using the </span><span class="f_Text" style="font-style: italic;">ArrayPrint</span><span class="f_Text"> function, an auxiliary structure </span><span class="f_Text" style="font-style: italic;">SymbolDistance</span><span class="f_Text"> is defined (used only when </span><span class="f_Text" style="font-style: italic;">ShowPerSymbolDetails</span><span class="f_Text"> equals </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text">).</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolDistance</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In the </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text"> handler, we describe the necessary objects and arrays.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolFilter</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;filter&nbsp;object</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;receiving&nbsp;array&nbsp;for&nbsp;names</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;receiving&nbsp;array&nbsp;for&nbsp;values</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">SymbolDistance</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">distances</span><span class="f_CodeExample">[];&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;array&nbsp;to&nbsp;print</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">MapArray</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;counters&nbsp;of&nbsp;specific&nbsp;values&nbsp;of&nbsp;the&nbsp;selected&nbsp;property</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Then we apply the filter and fill the receiving arrays with the values of the specified </span><span class="f_Text" style="font-style: italic;">Property</span><span class="f_Text"> while also applying sorting.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">f</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">select</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">UseMarketWatch</span><span class="f_CodeExample">,&nbsp;(</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_INFO_INTEGER</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">Property</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">true</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArraySize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ShowPerSymbolDetails</span><span class="f_CodeExample">)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayResize</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">distances</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In a loop, we count the statistics and fill in the </span><span class="f_Text" style="font-style: italic;">SymbolDistance</span><span class="f_Text"> structures, if it is needed.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">for</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0</span><span class="f_CodeExample">;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">&nbsp;&lt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">;&nbsp;++</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">inc</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">]);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ShowPerSymbolDetails</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">distances</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">name</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">symbols</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">distances</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">].</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">&nbsp;=&nbsp;(</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">values</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #333333;">i</span><span class="f_CodeExample">];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Finally, we output the results to the log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;=====&nbsp;Distances&nbsp;for&nbsp;%s&nbsp;symbols&nbsp;=====&quot;</span><span class="f_CodeExample">,</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(</span><span class="f_CodeExample" style="color: #333333;">UseMarketWatch</span><span class="f_CodeExample">&nbsp;?&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Market&nbsp;Watch&quot;</span><span class="f_CodeExample">&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;all&nbsp;available&quot;</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Total&nbsp;symbols:&nbsp;%d&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">n</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Stats&nbsp;per&nbsp;%s:&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EnumToString</span><span class="f_CodeExample">((</span><span class="f_CodeExample" style="color: #ff0000;">ENUM_SYMBOL_INFO_INTEGER</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #333333;">Property</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">stats</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #0000ff;">print</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ShowPerSymbolDetails</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Details&nbsp;per&nbsp;symbol:&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">distances</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here's what you get when you run the script with default settings, which is consistent with spread analysis.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">=====&nbsp;Distances&nbsp;for&nbsp;Market&nbsp;Watch&nbsp;symbols&nbsp;=====</span>
+<br><span class="f_CodeExample">Total&nbsp;symbols:&nbsp;13</span>
+<br><span class="f_CodeExample">Stats&nbsp;per&nbsp;SYMBOL_SPREAD:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[key]&nbsp;[value]</span>
+<br><span class="f_CodeExample">[0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2</span>
+<br><span class="f_CodeExample">[1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3</span>
+<br><span class="f_CodeExample">[2]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample">[3]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample">[4]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample">[5]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample">[6]&nbsp;&nbsp;&nbsp;151&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample">[7]&nbsp;&nbsp;&nbsp;319&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample">[8]&nbsp;&nbsp;3356&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample">[9]&nbsp;&nbsp;3400&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
+<br><span class="f_CodeExample">Details&nbsp;per&nbsp;symbol:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[name]&nbsp;[value]</span>
+<br><span class="f_CodeExample">[&nbsp;0]&nbsp;&quot;USDJPY&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[&nbsp;1]&nbsp;&quot;EURUSD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span>
+<br><span class="f_CodeExample">[&nbsp;2]&nbsp;&quot;USDCHF&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2</span>
+<br><span class="f_CodeExample">[&nbsp;3]&nbsp;&quot;USDCAD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2</span>
+<br><span class="f_CodeExample">[&nbsp;4]&nbsp;&quot;GBPUSD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2</span>
+<br><span class="f_CodeExample">[&nbsp;5]&nbsp;&quot;AUDUSD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3</span>
+<br><span class="f_CodeExample">[&nbsp;6]&nbsp;&quot;XAUUSD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6</span>
+<br><span class="f_CodeExample">[&nbsp;7]&nbsp;&quot;SP500m&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7</span>
+<br><span class="f_CodeExample">[&nbsp;8]&nbsp;&quot;NZDUSD&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9</span>
+<br><span class="f_CodeExample">[&nbsp;9]&nbsp;&quot;USDCNH&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;151</span>
+<br><span class="f_CodeExample">[10]&nbsp;&quot;USDSEK&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;319</span>
+<br><span class="f_CodeExample">[11]&nbsp;&quot;BTCUSD&quot;&nbsp;&nbsp;&nbsp;&nbsp;3356</span>
+<br><span class="f_CodeExample">[12]&nbsp;&quot;USDRUB&quot;&nbsp;&nbsp;&nbsp;&nbsp;3400</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To understand whether the spreads are floating (changing dynamically) or fixed, let's run the script with different settings: Property = SPREAD_FLOAT, ShowPerSymbolDetails = false.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">=====&nbsp;Distances&nbsp;for&nbsp;Market&nbsp;Watch&nbsp;symbols&nbsp;=====</span>
+<br><span class="f_CodeExample">Total&nbsp;symbols:&nbsp;13</span>
+<br><span class="f_CodeExample">Stats&nbsp;per&nbsp;SYMBOL_SPREAD_FLOAT:</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;[key]&nbsp;[value]</span>
+<br><span class="f_CodeExample">[0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;13</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">According to this data, all symbols in the market watch have a floating spread (value 1 in the </span><span class="f_Text" style="font-style: italic;">key</span><span class="f_Text"> &nbsp;key is </span><span class="f_Text" style="font-style: italic;">true</span><span class="f_Text"> in SYMBOL_SPREAD_FLOAT). Therefore, if we run the script again and again with the default settings, we will receive new values (with an open market).</span></p>
+
+</div>
+
+</body>
+</html>

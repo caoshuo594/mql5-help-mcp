@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>4.4.11 Endianness control in integers</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part4.htm"> Part 4. Common APIs </a> / <a class="h_m" href="4_4_maths.htm"> 4.4 Mathematical functions </a>/ 4.4.11 Endianness control in integers
+          </td>
+          <td width="70" align="right">
+          <a href="4_4_10_maths_rand.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="4_5_files.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">4.4.11 Endianness control in integers</span></p>
+<p class="p_Text"><span class="f_Text">Various information systems, at the hardware level, use different byte orders when representing numbers in memory. Therefore, when integrating MQL programs with the &quot;outside world&quot;, in particular, when implementing network communication protocols or reading/writing files of common formats, it may be necessary to change the byte order.</span></p>
+<p class="p_Text"><span class="f_Text">Windows computers apply little-endian (starting with the least significant byte), i.e., the lowest byte comes first in the memory cell allocated for the variable, then follows the byte with higher bits, and so on. The alternative big-endian (starting with the highest digit, the most significant byte) is widely used on the Internet. In this case, the first byte in the memory cell is the byte with the high bits, and the last byte is the low bit. It is this order that is similar to how we write numbers &quot;from left to right&quot; in ordinary life. For example, the value 1234 starts with 1 and stands for thousands, followed by a 2 for hundreds, a 3 for tens, and the last 4 is just four (low order).</span></p>
+<p class="p_Text"><span class="f_Text">Let's see the default byte order in MQL5. To do this, we will use the script </span><span class="f_Text" style="font-style: italic;">MathSwap.mq5</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">It describes a concatenation pattern that allows you to convert an integer to an array of bytes:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">template</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">typename</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&gt;</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">union</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ByteOverlay</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uchar</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bytes</span><span class="f_CodeExample">[</span><span class="f_CodeExample" style="color: #0000ff;">sizeof</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">)];</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ByteOverlay</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)&nbsp;:&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)&nbsp;{&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">operator</span><span class="f_CodeExample">=(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">T</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">)&nbsp;{&nbsp;</span><span class="f_CodeExample" style="color: #333333;">value</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">v</span><span class="f_CodeExample">;&nbsp;}</span>
+<br><span class="f_CodeExample">};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This code allows you to visually divide the number into bytes and enumerate them with indices from the array.</span></p>
+<p class="p_Text"><span class="f_Text">In </span><span class="f_Text" style="font-style: italic;">OnStart</span><span class="f_Text">, we describe the </span><span class="f_Text" style="font-style: italic;">uint</span><span class="f_Text"> variable with the value 0x12345678 (note that the digits are hexadecimal; in such a notation they exactly correspond to byte boundaries: every 2 digits is a separate byte). Let's convert the number to an array and output it to the log.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnStart</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ui</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0x12345678</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ByteOverlay</span><span class="f_CodeExample">&lt;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&gt;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bo</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ui</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bo</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">bytes</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;120&nbsp;&nbsp;86&nbsp;&nbsp;52&nbsp;&nbsp;18&nbsp;&lt;==&gt;&nbsp;0x78&nbsp;0x56&nbsp;0x34&nbsp;0x12</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">The </span><span class="f_Text" style="font-style: italic;">ArrayPrint</span><span class="f_Text"> function can't print numbers in hexadecimal, so we see their decimal representation, but it's easy to convert them to base 16 and make sure they match the original bytes. Visually, they go in reverse order: i.e., under the 0th index in the array is 0x78, and then 0x56, 0x34 and 0x12. Obviously, this order starts with the least-significant byte (indeed, we are in the Windows environment).</span></p>
+<p class="p_Text"><span class="f_Text">Now let's get familiar with the function </span><span class="f_Text" style="font-style: italic;">MathSwap</span><span class="f_Text">, which MQL5 provides to change the byte order.</span></p>
+<p class="p_H4"><span class="f_H4">integer MathSwap(integer value)</span></p>
+<p class="p_Text"><span class="f_Text">The function returns an integer in which the byte order of the passed argument is reversed. The function takes parameters of type </span><span class="f_Text" style="font-style: italic;">ushort/uint/ulong</span><span class="f_Text"> (i.e. 2, 4, 8 bytes in size).</span></p>
+<p class="p_Text"><span class="f_Text">Let's try the function in action:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">uint</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ui</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0x12345678</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%I32X&nbsp;-&gt;&nbsp;%I32X&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ui</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MathSwap</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ui</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ulong</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ul</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #333333;">0x0123456789ABCDEF</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;%I64X&nbsp;-&gt;&nbsp;%I64X&quot;</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #333333;">ul</span><span class="f_CodeExample">,&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MathSwap</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ul</span><span class="f_CodeExample">));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Here is the result:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;12345678&nbsp;-&gt;&nbsp;78563412</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;123456789ABCDEF&nbsp;-&gt;&nbsp;EFCDAB8967452301</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Let's try to log an array of bytes after converting the value 0x12345678 with </span><span class="f_Text" style="font-style: italic;">MathSwap</span><span class="f_Text">:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; page-break-after: avoid; border-color: #d8dfea; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid; page-break-after: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">bo</span><span class="f_CodeExample">&nbsp;=&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MathSwap</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">ui</span><span class="f_CodeExample">);&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;put&nbsp;the&nbsp;result&nbsp;of&nbsp;MathSwap&nbsp;into&nbsp;ByteOverlay</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">ArrayPrint</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">bo</span><span class="f_CodeExample">.</span><span class="f_CodeExample" style="color: #333333;">bytes</span><span class="f_CodeExample">);&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;&nbsp;18&nbsp;&nbsp;52&nbsp;&nbsp;86&nbsp;120&nbsp;&lt;==&gt;&nbsp;0x12&nbsp;0x34&nbsp;0x56&nbsp;0x78</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In a byte with index 0, where it used to be 0x78, there is now 0x12, and in elements with other numbers, the values are also exchanged.</span></p>
+
+</div>
+
+</body>
+</html>

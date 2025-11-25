@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <title>7.2.4 Setting up quote and trading sessions</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Programming for Traders </a> / <a class="h_m" href="part7.htm"> Part 7. Advanced language tools </a> / <a class="h_m" href="7_2_custom_symbols.htm"> 7.2 Custom symbols </a>/ 7.2.4 Configuring quoting and trading sessions
+          </td>
+          <td width="70" align="right">
+          <a href="7_2_3_custom_symbols_margin.htm"><img style="vertical-align:middle;" src="previous.png" alt="?????" width="27" height="27" border=0></a>&nbsp;
+          <a href="7_2_5_custom_symbols_rates.htm"><img style="vertical-align:middle;" src="next.png" alt="??????" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H3"><span class="f_H3">7.2.4 Configuring quoting and trading sessions</span></p>
+<p class="p_Text"><span class="f_Text">Two API functions allow setting quoting and trading sessions of a custom instrument. These two concepts were discussed in the section <a href="6_1_6_symbols_sessions.htm" class="topiclink">Schedules of trading and quoting sessions</a>.</span></p>
+<p class="p_H4"><span class="f_H4">bool CustomSymbolSetSessionQuote(const string name, ENUM_DAY_OF_WEEK dayOfWeek,</span><br>
+<span class="f_H4"> &nbsp; uint sessionIndex, datetime from, datetime to)</span></p>
+<p class="p_H4"><span class="f_H4">bool CustomSymbolSetSessionTrade(const string name, ENUM_DAY_OF_WEEK dayOfWeek,</span><br>
+<span class="f_H4"> &nbsp; uint sessionIndex, datetime from, datetime to)</span></p>
+<p class="p_Text"><span class="f_Text" style="font-style: italic;">CustomSymbolSetSessionQuote</span><span class="f_Text"> sets the start and end time of the quoting session specified by number (</span><span class="f_Text" style="font-style: italic;">sessionIndex</span><span class="f_Text">) for a specific day of the week (</span><span class="f_Text" style="font-style: italic;">dayOfWeek</span><span class="f_Text">). </span><span class="f_Text" style="font-style: italic;">CustomSymbolSetSessionTrade</span><span class="f_Text"> does the same for trading sessions.</span></p>
+<p class="p_Text"><span class="f_Text">Session numbering starts from 0.</span></p>
+<p class="p_Text"><span class="f_Text">Sessions can only be added sequentially, that is, a session with index 1 can only be added if there already exists a session with index 0. If this rule is violated, a new session will not be created, and the function will return </span><span class="f_Text" style="font-style: italic;">false</span><span class="f_Text">.</span></p>
+<p class="p_Text"><span class="f_Text">Date values in the </span><span class="f_Text" style="font-style: italic;">from</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">to</span><span class="f_Text"> parameters are measured in seconds, and </span><span class="f_Text" style="font-style: italic;">from</span><span class="f_Text"> should be less than </span><span class="f_Text" style="font-style: italic;">to</span><span class="f_Text">. The range is limited to two days, from 0 (00 hours 00 minutes 00 seconds) to 172800 (23 hours 59 minutes 59 seconds the next day). The day change was required in order to be able to specify sessions that begin before midnight and end after midnight. This situation often occurs when the exchange is located on the other side of the world relative to the broker (dealer) servers. &nbsp;</span></p>
+<p class="p_Text"><span class="f_Text">If zero start and end parameters (</span><span class="f_Text" style="font-style: italic;">from = 0</span><span class="f_Text"> and </span><span class="f_Text" style="font-style: italic;">to = 0</span><span class="f_Text">) are passed for the </span><span class="f_Text" style="font-style: italic;">sessionIndex</span><span class="f_Text"> session, then it is deleted, and the numbering of the next sessions (if any) is shifted down.</span></p>
+<p class="p_Text"><span class="f_Text">Trading sessions cannot go beyond quoting ones.</span></p>
+<p class="p_Text"><span class="f_Text">For example, we can create a copy of an instrument for a different time zone by shifting the intraday quote time and session schedule for debugging the robot in different conditions, like with any exotic brokers.</span></p>
+
+</div>
+
+</body>
+</html>

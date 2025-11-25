@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+  <title>Testing Trading Strategies</title>
+  <meta name="keywords" content="" />
+  <link type="text/css" href="default.css" rel="stylesheet" />
+  <link type="text/css" href="screenshot.css" rel="stylesheet" />
+  
+
+   
+   
+   
+
+
+</head>
+
+<body style="background-color:#FFFFFF; font-family:'Trebuchet MS',Tahoma,Arial,Helvetica,sans-serif; margin:0px;">
+
+
+
+<table width="100%" height="49"  border="0" cellpadding="0" cellspacing="0" style="margin-top:0px; background-color:#1660af;">
+  <tr>
+    <td></td>
+    <td valign="middle">
+      <table style="margin-top:4px; margin-bottom:5px;" width="100%"  border="0" cellspacing="0" cellpadding="5">
+        <tr valign="middle">
+          <td class="nav">
+<a class="h_m" href="index.htm">          MQL5 Reference </a> / <a class="h_m" href="runtime.htm"> MQL5 programs </a>/ Testing Trading Strategies
+          </td>
+          <td width="70" align="right">
+          <a href="errors.htm"><img style="vertical-align:middle;" src="previous.png" alt="Previous" width="27" height="27" border=0></a>&nbsp;
+          <a href="predefined.htm"><img style="vertical-align:middle;" src="next.png" alt="Next" width="27" height="27" border="0"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5"></td>
+  </tr>
+</table>
+
+
+
+<div id="help">
+<p class="p_H1"><span class="f_H1">Testing Trading Strategies</span></p>
+<p class="p_Text"><span class="f_Text">The idea of automated trading is appealing by the fact that the trading robot can work non-stop for 24 hours a day, seven days a week. The robot does not get tired, doubtful or scared, it's is totally free from any psychological problems. It is sufficient enough to clearly formalize the trading rules and implement them in the algorithms, and the robot is ready to work tirelessly. But first, you must make sure that the following two important conditions are met:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">The Expert Advisor performs <a href="enum_trade_request_actions.htm" class="topiclink">trading operations</a> in accordance with the rules of the trading system;</span></li>
+<li class="p_li"><span class="f_li">The trading strategy, implemented in the EA, demonstrates a profit on the history.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">To get answers to these questions, we turn to the <a href="https://www.metatrader5.com/en/automated-trading/strategy-tester" target="_blank" class="weblink">Strategy Tester</a>, included in the MetaTrader 5 client terminal.</span></p>
+<p class="p_Text"><span class="f_Text">This section covers the features of program testing and optimization in the strategy tester:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li"><a href="testing.htm#function_limitations" class="topiclink">Function Limitations in the Strategy Tester</a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#ticks" class="topiclink">Tick Generation Modes</a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#spread" class="topiclink">Simulation of spread</a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#real_ticks" class="topiclink">Using real ticks during a test</a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#globals" class="topiclink">The Global Variables of the Client Terminal </a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#indicators" class="topiclink">The Calculation of Indicators During Testing </a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#history" class="topiclink">Loading History during Testing</a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#multicurrency" class="topiclink">Multi-Currency Testing </a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#time" class="topiclink">Simulation of Time in the Strategy Tester </a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#objects" class="topiclink">Graphical Objects in Testing</a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#ontimer" class="topiclink">The OnTimer() Function in the Strategy Tester </a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#sleep" class="topiclink">The Sleep() Function in the Strategy Tester </a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#math" class="topiclink">Using the Strategy Tester for Optimization Problems in Mathematical Calculations </a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#bar_synchro" class="topiclink">The Synchronization of Bars in the &quot;Open prices only&quot; mode</a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#indicatorrelease" class="topiclink">The IndicatorRelease() function in the Tester </a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#events" class="topiclink">Event Handling in the Tester </a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#agents" class="topiclink">Testing Agents </a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#data" class="topiclink">The Data Exchange between the Terminal and the Agent</a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#common_folder" class="topiclink">Using the Shared Folder of All of the Client Terminals </a></span></li>
+<li class="p_li"><span class="f_li"><a href="testing.htm#dll" class="topiclink">Using DLLs</a></span></li>
+</ul>
+<p class="p_H2"><span class="f_H2">&nbsp;</span></p>
+<p class="p_H2"><span class="f_H2">Memory and disk space limits in MQL5 Cloud Network</span></p>
+<p class="p_Text"><span class="f_Text">The following limitation applies to optimizations run in the <a href="https://www.metatrader5.com/en/terminal/help/algotrading/strategy_optimization#cloud_start" target="_blank" class="weblink">MQL5 Cloud Network</a>: the Expert Advisor must not write to disk more than 4GB of information or use more than 4GB of RAM. If the limit is exceeded, the network agent will not be able to complete the calculation correctly, and you will not receive the result. However, you will be charged for all the time spent on the calculations.</span></p>
+<p class="p_Text"><span class="f_Text">If you need to get information from each optimization pass, <a href="optimization_frames.htm" class="topiclink">send frames</a> without writing to disk. To avoid using <a href="files.htm" class="topiclink">file operations</a> in Expert Advisors during calculations in the MQL5 Cloud Network, you can use the following check:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #ff0000;">INVALID_HANDLE</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #333333;">file_operations_allowed</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #ff0000;">true</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">MQLInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">MQL_OPTIMIZATION</span><span class="f_CodeExample">)&nbsp;||&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">MQLInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #ff0000;">MQL_FORWARD</span><span class="f_CodeExample">))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">file_operations_allowed</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #ff0000;">false</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #333333;">file_operations_allowed</span><span class="f_CodeExample">)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #333333;">handle</span><span class="f_CodeExample">=</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(...);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">...</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+<p class="p_H2"><a name="function_limitations" class="hmanchor"></a><span class="f_H2">Function Limitations in the Strategy Tester</span></p>
+<p class="p_Text"><span class="f_Text">There are operation limitations for some functions in the client terminal's Strategy Tester. </span></p>
+<p class="p_H3"><a name="print" class="hmanchor"></a><span class="f_H3">The Comment(), Print() and PrintFormat() Functions</span></p>
+<p class="p_Text"><span class="f_Text">To increase performance <a href="comment.htm" class="topiclink">Comment()</a>, <a href="print.htm" class="topiclink">Print()</a> and <a href="printformat.htm" class="topiclink">PrintFormat()</a> functions are not executed when optimizing the trading robot's parameters. The exception is the use of these functions inside the <a href="oninit.htm" class="topiclink">OnInit()</a> handler. This allows you to easily find the cause of errors when they occur.</span></p>
+<p class="p_H3"><a name="alert_etc" class="hmanchor"></a><span class="f_H3">The Alert(), MessageBox(), PlaySound(), SendFTP, SendMail(), SendNotification(), WebRequest() Functions</span></p>
+<p class="p_Text"><span class="f_Text">The <a href="alert.htm" class="topiclink">Alert()</a>, <a href="messagebox.htm" class="topiclink">MessageBox()</a>, <a href="playsound.htm" class="topiclink">PlaySound()</a>, <a href="sendftp.htm" class="topiclink">SendFTP()</a>, <a href="sendmail.htm" class="topiclink">SendMail()</a>, <a href="sendnotification.htm" class="topiclink">SendNotification()</a> and <a href="webrequest.htm" class="topiclink">WebRequest()</a> functions designed for interaction with the &quot;outside world&quot; are not executed in the Strategy Tester.</span></p>
+<p class="p_H2"><span class="f_H2">&nbsp;</span></p>
+<p class="p_H2"><a name="ticks" class="hmanchor"></a><span class="f_H2">Tick Generation Modes</span></p>
+<p class="p_Text"><span class="f_Text">An Expert Advisor is a program, written in MQL5, that is run each time in response to some external <a href="event_fire.htm" class="topiclink">event</a>. The EA has a corresponding function (<a href="events.htm" class="topiclink">event handler</a>) for each pre-defined event.</span></p>
+<p class="p_Text"><span class="f_Text">The <a href="event_fire.htm#newtick" class="topiclink">NewTick</a> event (price change) is the main event for the EA and, therefore, &nbsp;we need to generate a tick sequence to test the EA. There are 3 modes of tick generation implemented in the Strategy Tester of MetaTrader 5 client terminal:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Every tick</span></li>
+<li class="p_li"><span class="f_li">1 Minute OHLC (OHLC prices with minute bars)</span></li>
+<li class="p_li"><span class="f_li">Open prices only</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The basic and the most detailed is the &quot;Every tick&quot; mode, the other two modes are the simplifications of the basic one, and will be described in comparison to the &quot;Every tick&quot; mode. Consider all three modes in order to understand the differences between them.</span></p>
+<p class="p_H3"><span class="f_H3">&quot;Every Tick&quot;</span></p>
+<p class="p_Text"><span class="f_Text">The historical quotes data for financial instruments is transferred from the trading server to the MetaTrader 5 client terminal in the form of packed minute bars. Detailed information on the occurrence of requests and the construction of the required time-frames can be obtained from the <a href="timeseries_access.htm" class="topiclink">Organizing Data Access</a> chapter of MQL5 Reference.</span></p>
+<p class="p_Text"><span class="f_Text">The minimal element of the price history is the minute bar, from which you can obtain information on the four values of the price:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Open - the price at which the minute bar was opened;</span></li>
+<li class="p_li"><span class="f_li">High - the maximum that was achieved during this minute bar;</span></li>
+<li class="p_li"><span class="f_li">Low - the minimum that was achieved during this minute bar;</span></li>
+<li class="p_li"><span class="f_li">Close - the closing price of the bar.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The new minute bar is not opened at the moment when the new minute begins (number of seconds becomes equal to 0), but when a tick occurs - a price change by at least one point. The figure shows the first minute bar of the new trading week, which has the opening time of 2011.01.10 00:00. The price gap between Friday and Monday, which we see on the chart, is common, since currency rates fluctuates even on weekends in response to incoming news.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="The price gap between Friday and Monday" title="The price gap between Friday and Monday" width="501" height="339" style="margin:0 auto 0 auto;width:501px;height:339px;border:none" src="new_bar_of_week.png"/></p>
+<p class="p_Text"><span class="f_Text">For this bar, we only know that the minute bar was opened on January 10th 2011 at 00 hours 00 minutes, but we know nothing about the seconds. It could have been opened at 00:00:12 or 00:00:36 (12 or 36 seconds after the start of a new day) or any other time within that minute. But we do know that the Open price of EURUSD was at 1.28940 at the opening time of the new minute bar.</span></p>
+<p class="p_Text"><span class="f_Text">We also don't know (accurate within a second) when we received the tick corresponding to the closing price of the considered minute bar. We known only one thing - the last Close price of the minute bar. For this minute, the price was 1.28958. The time of the appearance of High and Low prices is also unknown, but we know that the maximum and minimum prices were on the levels of 1.28958 and 1.28940, respectively.</span></p>
+<p class="p_Text"><span class="f_Text">To test the trading strategy, we need a sequence of ticks, on which the work of the Expert Advisor will be simulated. Thus, for every minute bar, we know the </span><span class="f_Text" style="font-weight: bold;">4 control points</span><span class="f_Text">, where the price has definitely been. If a bar has only 4 ticks, then this is enough information to perform a testing, but usually the tick volume is greater than 4.</span></p>
+<p class="p_Text"><span class="f_Text">Hence, there is a need to generate additional control points for ticks, which occurred between the Open, High, Low, and Close prices. The principle of the &quot;Every tick&quot; ticks generation mode is described in the <a href="https://www.mql5.com/en/articles/75" target="_blank" class="weblink">The Algorithm of Ticks’ Generation within the Strategy Tester of the MetaTrader 5 Terminal</a> a figure from which is presented below.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Ticks generation algorithm" title="Ticks generation algorithm" width="555" height="237" style="margin:0 auto 0 auto;width:555px;height:237px;border:none" src="ideal_white_mql5_2.png"/></p>
+<p class="p_Text"><span class="f_Text">When testing in the &quot;Every tick&quot; mode, the <a href="ontick.htm" class="topiclink">OnTick()</a> function of the EA will be called at every control point. Each control point is a tick from a generated sequence. The EA will receive the time and price of the simulated tick, just as it would when working online.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="attentable" cellspacing="0" cellpadding="8" border="1">
+<tr class="attentable">
+<td class="attentable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Important:</span><span class="f_fortable"> the &quot;Every tick&quot; testing mode is the most accurate, but at the same time, the most time consuming. For an initial testing of the majority of trading strategies, it is usually sufficient to use one of the other two testing modes.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_H3"><span class="f_H3">&quot;1 Minute OHLC&quot;</span></p>
+<p class="p_Text"><span class="f_Text">The &quot;Every tick&quot; mode is the most accurate of the three modes, but at the same time, is the slowest. The running of the OnTick() handler occurs at every tick, while tick volume can be quite large. For a strategy, in which the tick sequence of price movement throughout the bar, does not matter, there is a faster and rougher simulation mode - &quot;1 minute OHLC&quot;.</span></p>
+<p class="p_Text"><span class="f_Text">In the &quot;1 minute OHLC&quot; mode, the tick sequence is constructed only by the </span><span class="f_Text" style="font-weight: bold;">OHLC prices of the minute bars</span><span class="f_Text">, the number of the generated control points is significantly reduced - hence, so is the testing time. The launch of the OnTick () function is performed on all control points, which are constructed by the prices of OHLC minute bars.</span></p>
+<p class="p_Text"><span class="f_Text">The refusal to generate additional intermediate ticks between the Open, High, Low, and Close prices, leads to an appearance of rigid determinism in the development of prices, from the moment that the Open price is determined. This makes it possible to create a &quot;Testing Grail&quot;, which shows a nice upward graph of the testing balance.</span></p>
+<p class="p_Text"><span class="f_Text">An example of such Grail is presented in the CodeBase - <a href="https://www.mql5.com/en/code/244" target="_blank" class="weblink">Grr-al</a>.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="The Grr-al Expert Advisor, it uses the special features of OHLC prices" title="The Grr-al Expert Advisor, it uses the special features of OHLC prices" width="727" height="243" style="margin:0 auto 0 auto;width:727px;height:243px;border:none" src="graal_ohlc.png"/></p>
+<p class="p_Text"><span class="f_Text">The figure shows a very attractive graph of this EA testing. How was it obtained? We know 4 prices for a minute bar, and we also know that the first is the Open price, and the last is the Close price. We have the High and Low prices between them, and the sequence of their occurrence is unknown, but it is known, that the High price is greater than or equal to the Open price (and the Low price is less than or equal to the Open price).</span></p>
+<p class="p_Text"><span class="f_Text">It is sufficient enough to determine the moment of receiving the Open price, and then analyze the next tick in order to determine what price we have at the moment - either the High or the Low. If the price is below the Open price, then we have a Low price and buy at this tick, the next tick will correspond to the High price, at which we will close the buy and open for sell. The next tick is the last one, this is the Close price, and we close the sale on it. </span></p>
+<p class="p_Text"><span class="f_Text">If after the price, we receive a tick with a price greater than the opening price, then the sequence of deals is reversed. Process a minute bar in this &quot;cheat&quot; mode, and wait for the next one.</span></p>
+<p class="p_Text"><span class="f_Text">When testing such EA on the history, everything goes smoothly, but once we launch it online, the truth begins to get revealed - the balance line remains steady, but heads downwards. To expose this trick, we simply need to run the EA in the &quot;Every tick&quot; mode.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="attentable" cellspacing="0" cellpadding="8" border="1">
+<tr class="attentable">
+<td class="attentable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Note:</span><span class="f_fortable"> If the test results of the EA in the rough testing modes (&quot;1 minute OHLC&quot; and &quot;Open Prices only&quot;) seem too good, make sure to test it in the &quot;Every tick&quot; mode.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_H3"><span class="f_H3">&quot;Open Prices Only&quot;</span></p>
+<p class="p_Text"><span class="f_Text">In this mode ticks are generated based on the OHLC prices of the timeframe selected for testing. The OnTick() function of the Expert Advisor runs only at the beginning of the bar at the Open price. Due to this feature, stop levels and pending may trigger at a price that differs from the specified one (especially when testing on higher timeframes). Instead, we have an opportunity to quickly run an evaluation test of the Expert Advisor.</span></p>
+<p class="p_Text"><span class="f_Text">W1 and MN1 periods are the exceptions in the &quot;Open Price Only&quot; ticks generation mode: for these timeframes ticks are generated for the OHLC prices of each day, not OHLC prices of the week or month.</span></p>
+<p class="p_Text"><span class="f_Text">Suppose we test an Expert Advisor on EURUSD H1 in the &quot;Open Prices Only&quot; mode. In this case the total number of ticks (control points) will be no more than 4*number of one-hour bars within the tested interval. But the </span><span class="f_Text" style="font-weight: bold;">OnTick() handler is called only at the opening of the one-hour bar</span><span class="f_Text">. The checks required for a correct testing occur on the rest of the ticks (that are &quot;hidden&quot; from the EA).</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">The calculation of margin requirements;</span></li>
+<li class="p_li"><span class="f_li">The triggering of Stop Loss and Take Profit levels;</span></li>
+<li class="p_li"><span class="f_li">The triggering of pending orders;</span></li>
+<li class="p_li"><span class="f_li">The removal of expired pending orders.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">If there are no open positions or pending orders, we don't need to perform these checks on hidden ticks, and the increase of speed may be quite substantial. This &quot;Open prices only&quot; mode is well suited for testing strategies, which process deals only at the opening of the bar and do not use pending orders, as well as StopLoss and TakeProfit orders. For the class of such strategies, the necessary accuracy of testing is preserved.</span></p>
+<p class="p_Text"><span class="f_Text">Let's use the Moving Average Expert Advisor from the standard package as an example of an EA, which can be tested in any mode. The logic of this EA is built in such a way that all of the decisions are made at the opening of the bar, and deals are carried out immediately, without the use of pending orders.</span></p>
+<p class="p_Text"><span class="f_Text">Run a testing of the EA on EURUSD H1 on an interval from 2010.09.01 to 2010.12.31, and compare the graphs. The figure shows the balance graph from the test report for all of the three modes.</span></p>
+<p class="p_Normal" style="text-align: center; margin: 14px 0 0 0;"><img class="help" alt="The testing graph of the Moving Average.mq5 EA from the standard package does not depend on the testing mode" title="The testing graph of the Moving Average.mq5 EA from the standard package does not depend on the testing mode" width="497" height="339" style="margin:0 auto 0 auto;width:497px;height:339px;border:none" src="ill_prewu.png"/></p>
+<p class="p_Text"><span class="f_Text">As you can see, the graphs on different testing modes are exactly the same for the Moving Average EA from the standard package.</span></p>
+<p class="p_Text"><span class="f_Text">There are some limitations on the &quot;Open Prices Only&quot; mode:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">You cannot use <a href="https://www.metatrader5.com/en/terminal/help/algotrading/testing#trade_mode" target="_blank" class="weblink">the Random Delay execution mode</a>.</span></li>
+<li class="p_li"><span class="f_li">In the tested Expert Advisor, you cannot access data of the <a href="https://www.metatrader5.com/en/terminal/help/algotrading/testing#symbol" target="_blank" class="weblink">timeframe</a> lower than that used for testing/optimization. For example, if you run testing/optimization on the H1 period, you can access data of H2, H3, H4 etc., but not M30, M20, M10 etc. In addition, the higher timeframes that are accessed must be multiple of the testing timeframe. For example, if you run testing in M20, you cannot access data of M30, but it is possible to access H1. These limitations are connected with the impossibility to obtain data of lower or non-multiple timeframes out of the bars generated during testing/optimization.</span></li>
+<li class="p_li"><span class="f_li">Limitations on accessing data of other timeframes also apply to other symbols whose data are used by the Expert Advisor. In this case the limitation for each symbol depends on the first timeframe accessed during testing/optimization. Suppose, during testing on EURUSD H1, an Expert Advisor accesses data of GBPUSD M20. In this case the Expert Advisor will be able to further use data of EURUSD H1, H2, etc., as well as GBPUSD M20, H1, H2 etc.</span></li>
+</ul>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="attentable" cellspacing="0" cellpadding="8" border="1">
+<tr class="attentable">
+<td class="attentable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Note:</span><span class="f_fortable"> The &quot;Open prices only&quot; mode has the fastest testing time, but it is not suitable for all of the trading strategies. Select the desired test mode based on the characteristics of the trading system. </span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To conclude the section on the tick generation modes, let's consider a visual comparison of the different tick generation modes for EURUSD, for two M15 bars on an interval from 2011.01.11 21:00:00 - 2011.01.11 21:30:00.</span></p>
+<p class="p_Text"><span class="f_Text">The ticks were saved into different files using the WriteTicksFromTester.mq5 EA and the ending of these files names are specified in filenameEveryTick, filenameOHLC and filenameOpenPrice <a href="inputvariables.htm" class="topiclink">input-parameters</a>.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="We can specify the starting and the ending dates of the ticks (the variables start and end) for the WriteTicksFromTester Expert Advisor" title="We can specify the starting and the ending dates of the ticks (the variables start and end) for the WriteTicksFromTester Expert Advisor" width="535" height="214" style="margin:0 auto 0 auto;width:535px;height:214px;border:none" src="ea_inputs_in_tester.png"/></p>
+<p class="p_Text"><span class="f_Text">To obtain three files with three tick sequences (for each of the following modes &quot;Every tick&quot;, &quot;1 minute OHLC&quot; and &quot;Open prices only), the EA was launched three times in the corresponding modes, in single runs. Then, the data from these three files were displayed on the chart using the TicksFromTester.mq5 indicator. The indicator code is attached to this article.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="The tick sequence in the Strategy Tester of the MetaTrader 5 terminal in three different testing modes" title="The tick sequence in the Strategy Tester of the MetaTrader 5 terminal in three different testing modes" width="542" height="335" style="margin:0 auto 0 auto;width:542px;height:335px;border:none" src="three_tick_series.png"/></p>
+<p class="p_Text"><span class="f_Text">By default, all of the <a href="files.htm" class="topiclink">file operations</a> in the MQL5 language are made within the &quot;file sandbox&quot;, and during testing the EA has access only to its own &quot;file sandbox&quot;. In order for the indicator and the EA to work with files from one folder during testing, we used the <a href="fileflags.htm" class="topiclink">flag FILE_COMMON</a>. An example of code from the EA:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;open&nbsp;the&nbsp;file</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;file=</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(filename,FILE_WRITE|FILE_CSV|FILE_COMMON,</span><span class="f_CodeExample" style="color: #008080;">&quot;;&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;check&nbsp;file&nbsp;handle</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(file==INVALID_HANDLE)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Error&nbsp;in&nbsp;opening&nbsp;of&nbsp;file&nbsp;%s&nbsp;for&nbsp;writing.&nbsp;Error&nbsp;code=%d&quot;</span><span class="f_CodeExample">,filename,</span><span class="f_CodeExample" style="color: #0000ff;">GetLastError</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;The&nbsp;file&nbsp;will&nbsp;be&nbsp;created&nbsp;in&nbsp;%s&nbsp;folder&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TERMINAL_COMMONDATA_PATH</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For reading the data in the indicator, we also used the <a href="fileflags.htm" class="topiclink">flag FILE_COMMON</a>. This allowed us to avoid manually transferring the necessary files from one folder to another.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;open&nbsp;the&nbsp;file</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;file=</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(fname,FILE_READ|FILE_CSV|FILE_COMMON,</span><span class="f_CodeExample" style="color: #008080;">&quot;;&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;check&nbsp;file&nbsp;handle</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(file==INVALID_HANDLE)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Error&nbsp;in&nbsp;open&nbsp;of&nbsp;file&nbsp;%s&nbsp;for&nbsp;reading.&nbsp;Error&nbsp;code=%d&quot;</span><span class="f_CodeExample">,fname,</span><span class="f_CodeExample" style="color: #0000ff;">GetLastError</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;File&nbsp;will&nbsp;be&nbsp;opened&nbsp;from&nbsp;%s&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TERMINAL_COMMONDATA_PATH</span><span class="f_CodeExample">));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_H2"><a name="spread" class="hmanchor"></a><span class="f_H2">Simulation of spread</span></p>
+<p class="p_Text"><span class="f_Text">The price difference between the Bid and the Ask prices is called the spread. During testing, the spread is not modeled but is taken from historical data. If the spread is less than or equal to zero in the historical data, then the last known (at the moment of generation) spread is used by testing agent.</span></p>
+<p class="p_Text"><span class="f_Text">In the Strategy Tester, the spread is always considered floating. That is, <a href="symbolinfointeger.htm" class="topiclink">SymbolInfoInteger</a>(symbol, SYMBOL_SPREAD_FLOAT) always returns true.</span></p>
+<p class="p_Text"><span class="f_Text">In addition, the historical data contains tick values and trading volumes. For the storage and retrieval of data we use a special <a href="mqlrates.htm" class="topiclink">MqlRates</a> structure:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">struct</span><span class="f_CodeExample">&nbsp;MqlRates</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;time;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Period&nbsp;start&nbsp;time</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;open;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Open&nbsp;price</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;high;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;The&nbsp;highest&nbsp;price&nbsp;of&nbsp;the&nbsp;period</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;low;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;The&nbsp;lowest&nbsp;price&nbsp;of&nbsp;the&nbsp;period</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;close;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Close&nbsp;price</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tick_volume;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Tick&nbsp;volume</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;spread;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Spread</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">long</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;real_volume;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;Trade&nbsp;volume</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;};</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_H2"><a name="real_ticks" class="hmanchor"></a><span class="f_H2">Using real ticks during a test</span></p>
+<p class="p_Text"><span class="f_Text">Testing and optimization on real ticks are as close to real conditions as possible. Instead of generated ticks based on minute data, it is possible to use real ticks accumulated by a broker. These are ticks from exchanges and liquidity providers.</span></p>
+<p class="p_Text"><span class="f_Text">To ensure the greatest test accuracy, minute bars are also used in the real ticks mode. The bars are applied to check and correct tick data. This also allows you to avoid the divergence of charts in the tester and the client terminal.</span></p>
+<p class="p_Text"><span class="f_Text">The tester compares the tick data to the minute bar parameters: a tick should not exceed the bar's High/Low levels, also initial and final ticks should coincide with the bar's Open/Close prices. The volume is compared as well. If a mismatch is detected, all ticks corresponding to this minute bar are discarded. Generated ticks are used instead (like in the &quot;Every tick&quot; mode).</span></p>
+<p class="p_Text"><span class="f_Text">If a symbol history has a minute bar with no tick data for it, the tester generates ticks in the &quot;Every tick&quot; mode. This allows plotting a correct chart in the tester in case a broker's tick data is insufficient.</span></p>
+<p class="p_Text"><span class="f_Text">If a symbol history has no minute bar but the appropriate tick data for the minute is present, the data can be used in the tester. For example, exchange symbol pairs are formed using Last prices. If only ticks with Bid/Ask prices without the Last price arrive from the server, the bar is not generated. The tester uses these tick data since they do not contradict the minute ones.</span></p>
+<p class="p_Text"><span class="f_Text">Tick data may not coincide with minute bars for various reasons, for example because of connection losses or other failures when transmitting data from a source to the client terminal. The minute data is considered more reliable during tests.</span></p>
+<p class="p_Text"><span class="f_Text">Keep in mind the following features when testing on real ticks:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">When launching a test, the minute data on a symbol is synchronized along with the tick one.</span></li>
+<li class="p_li"><span class="f_li">Ticks are stored in the symbol cache of the strategy tester. The cache size does not exceed 128 000 ticks. When new ticks arrive, the oldest data is removed from the cache. However, the <a href="copyticks.htm" class="topiclink">CopyTicks</a> function allows receiving ticks outside the cache (only when testing on real ticks). In that case, the data is requested from the tester tick database that is completely similar to the corresponding client terminal database. No minute bar corrections are implemented to this base. Therefore, the ticks there may differ from the ones stored in the cache.</span></li>
+</ul>
+<p class="p_H2"><a name="globals" class="hmanchor"></a><span class="f_H2">The Global Variables of the Client Terminal</span></p>
+<p class="p_Text"><span class="f_Text">During testing, the <a href="globals.htm" class="topiclink">global variables of the client terminal</a> are also emulated, but they are not related to the current <a href="https://www.metatrader5.com/en/terminal/help/algotrading/service_global" target="_blank" class="weblink">global variables of the terminal</a>, which can be seen in the terminal using the F3 button. It means that all operations with the global variables of the terminal, during testing, take place outside of the client terminal (in the testing agent).</span></p>
+<p class="p_H2"><a name="indicators" class="hmanchor"></a><span class="f_H2">The Calculation of Indicators During Testing</span></p>
+<p class="p_Text"><span class="f_Text">In the real-time&nbsp;mode, the <a href="oncalculate.htm" class="topiclink">indicator values are calculated</a> at every tick.</span></p>
+<p class="p_Text"><span class="f_Text">In the Strategy Tester, indicators are calculated only when they are accessed for data, i.e. when indicator buffer values are requested. The only exceptions are <a href="customind.htm" class="topiclink">custom indicators</a> with the specified <a href="compilation.htm" class="topiclink">#property tester_everytick_calculate</a>. In this case, recalculation is done on each tick.</span></p>
+<p class="p_Text"><span class="f_Text">In the visual testing mode, all indicators are unconditionally recalculated when a new tick arrives in order to be correctly displayed on the visual testing chart.</span></p>
+<p class="p_Text"><span class="f_Text">The indicator is calculated once per tick. All subsequent requests for indicator data do not lead to recalculation until a new tick arrives. Therefore, if the timer is enabled in an EA via the <a href="eventsettimer.htm" class="topiclink">EventSetTimer()</a> function, the indicator data is requested from the last tick before each call of the <a href="ontimer.htm" class="topiclink">OnTimer()</a> handler. If the indicator has not been calculated on the last tick yet, the calculations of the indicator values are launched. If the data has already been prepared, it is provided without a new recalculation.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, all indicator calculations are performed in the most resource-saving manner — if the indicator has already been calculated at a given tick, its data is provided 'as is'. No recalculation is launched.</span></p>
+<p class="p_H2"><a name="history" class="hmanchor"></a><span class="f_H2">Loading History during Testing</span></p>
+<p class="p_Text"><span class="f_Text">The history of a symbol to be tested is synchronized and loaded by the terminal from the trade server before starting the testing process. During the first time, the terminal loads all available history of a symbol in order not to request it later. Further only the new data are loaded.</span></p>
+<p class="p_Text"><span class="f_Text">A testing agent receives the history of a symbol to be tested from the client terminal right after the start of testing. If data of other instruments are used in the process of testing (for example, it is a multicurrency Expert Advisor), the testing agent requests the required history from the client terminal during the first call to such data. If historical data are available in the terminal, they are immediately passed to the testing agent. If data are not available, the terminal requests and downloads them from the server, and then passes to the testing agent.</span></p>
+<p class="p_Text"><span class="f_Text">Data of additional instruments is also required for calculating cross-rates for trade operations. For example, when testing a strategy on EURCHF with the deposit currency in USD, prior to processing the first trading operation, the testing agent requests the history data of EURUSD and USDCHF from the client terminal, though the strategy does not contain direct use call of these symbols.</span></p>
+<p class="p_Text"><span class="f_Text">Before testing a multi-currency strategy, it is recommended to download all the necessary historical data to the client terminal. This will help to avoid delays in testing/optimization associated with download of the required data. You can download history, for example, by opening the appropriate charts and scrolling them to the history beginning. An example of forced loading of history into the terminal is available in the <a href="timeseries_access.htm" class="topiclink">Organizing Access to Data</a> section of the MQL5 Reference.</span></p>
+<p class="p_Text"><span class="f_Text">Testing agents, in turn, receive history from the terminal in the packed form. During the next testing, the tester does not load history from the terminal, because the required data is available since the previous run of the tester.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="attentable" cellspacing="0" cellpadding="8" border="1">
+<tr class="attentable">
+<td class="attentable"><ul style="list-style-type:disc">
+<li class="p_fortable"><span class="f_fortable">The terminal loads history from a trade server only once, the first time the agent requests the history of a symbol to be </span><span class="f_Text">tested </span><span class="f_fortable">from the terminal. The history is loaded in a packed form to reduce the traffic.</span></li>
+<li class="p_fortable"><span class="f_fortable">Ticks are not sent over the network, they are generated on testing agents.</span></li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_H2"><a name="multicurrency" class="hmanchor"></a><span class="f_H2">Multi-Currency Testing</span></p>
+<p class="p_Text"><span class="f_Text">The Strategy Tester allows us to perform a testing of strategies, trading on multiple symbols. Such EAs are conventionally referred to as multi-currency Expert Advisors, since originally, in the previous platforms, testing was performed only for a single symbol. In the Strategy Tester of the MetaTrader 5 terminal, we can model trading for all of the available symbols.</span></p>
+<p class="p_Text"><span class="f_Text">The tester loads the history of the used symbols from the </span><span class="f_Text" style="font-weight: bold;">client terminal</span><span class="f_Text"> (not from the trade server!) automatically during the first call of the symbol data.</span></p>
+<p class="p_Text"><span class="f_Text">The testing agent downloads only the missing history, with a small margin to provide the necessary data on the history, for the calculation of the indicators at the starting time of testing. For the time-frames D1 and less, the minimum volume of the downloaded history is one year.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, if we run a testing on an interval 2010.11.01-2010.12.01 (testing for an interval of one month) with a period of M15 (each bar is equal to 15 minutes), then the terminal will be requested the history for the instrument for the entire year of 2010. For the weekly time-frame, we will request a history of 100 bars, which is about two years (a year has 52 weeks). For testing on a monthly time-frame the agent will request the history of 8 years (12 months x 8 years = 96 months).</span></p>
+<p class="p_Text"><span class="f_Text">If there isn't necessary bars, the </span><span class="f_Text" style="font-weight: bold;">starting date of testing will be automatically shifted</span><span class="f_Text"> from past to present to provide the necessary reserve of bars before the testing.</span></p>
+<p class="p_Text"><span class="f_Text">During testing, the &quot;<a href="https://www.metatrader5.com/en/terminal/help/trading/market_watch" target="_blank" class="weblink">Market Watch</a>&quot; is emulated as well, from which one can obtain <a href="marketinformation.htm" class="topiclink">information on symbols</a>.</span></p>
+<p class="p_Text"><span class="f_Text">By default, at the beginning of testing, there is only one symbol in the &quot;Market Watch&quot; of the Strategy Tester - the symbol that the testing is running on. All of the necessary symbols are connected to the &quot;Market Watch&quot; of the Strategy Tester (not terminal!) automatically when referred to.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="attentable" cellspacing="0" cellpadding="8" border="1">
+<tr class="attentable">
+<td class="attentable"><p class="p_fortable"><span class="f_fortable">Prior to starting testing of a multi-currency Expert Advisor, it is necessary to select symbols required for testing in the &quot;Market Watch&quot; of the terminal and <a href="timeseries_access.htm" class="topiclink">load the required data</a>. During the first call of a &quot;foreign&quot; symbol, its history will be automatically synchronized between the testing agent and the client terminal. A &quot;foreign&quot; symbol is the symbol other than that on which testing is running.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Referral to the data of an &quot;other&quot; symbol occurs in the following cases:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">When using the <a href="indicators.htm" class="topiclink">technical indicators function</a> and <a href="indicatorcreate.htm" class="topiclink">IndicatorCreate()</a> on the symbol/timeframe;</span></li>
+<li class="p_li"><span class="f_li">The request to the &quot;Market Watch&quot; data for the other symbol:</span></li>
+</ul>
+<ul style="list-style-type:disc"><li style="list-style-type:none"><ol style="list-style-type:decimal">
+<li value="1" class="p_li"><span class="f_li"><a href="seriesinfointeger.htm" class="topiclink">SeriesInfoInteger</a></span></li>
+<li value="2" class="p_li"><span class="f_li"><a href="bars.htm" class="topiclink">Bars</a></span></li>
+<li value="3" class="p_li"><span class="f_li"><a href="symbolselect.htm" class="topiclink">SymbolSelect</a></span></li>
+<li value="4" class="p_li"><span class="f_li"><a href="symbolissynchronized.htm" class="topiclink">SymbolIsSynchronized</a></span></li>
+<li value="5" class="p_li"><span class="f_li"><a href="symbolinfodouble.htm" class="topiclink">SymbolInfoDouble</a></span></li>
+<li value="6" class="p_li"><span class="f_li"><a href="symbolinfointeger.htm" class="topiclink">SymbolInfoInteger</a></span></li>
+<li value="7" class="p_li"><span class="f_li"><a href="symbolinfostring.htm" class="topiclink">SymbolInfoString</a></span></li>
+<li value="8" class="p_li"><span class="f_li"><a href="symbolinfotick.htm" class="topiclink">SymbolInfoTick</a></span></li>
+<li value="9" class="p_li"><span class="f_li"><a href="symbolinfosessionquote.htm" class="topiclink">SymbolInfoSessionQuote</a></span></li>
+<li value="10" class="p_li"><span class="f_li"><a href="symbolinfosessiontrade.htm" class="topiclink">SymbolInfoSessionTrade</a></span></li>
+<li value="11" class="p_li"><span class="f_li"><a href="marketbookadd.htm" class="topiclink">MarketBookAdd</a></span></li>
+<li value="12" class="p_li"><span class="f_li"><a href="marketbookget.htm" class="topiclink">MarketBookGet</a></span></li>
+</ol>
+</li>
+</ul>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Request of the time-series for a symbol/timeframe by using the following functions:</span></li>
+</ul>
+<ul style="list-style-type:disc"><li style="list-style-type:none"><ol style="list-style-type:decimal">
+<li value="1" class="p_li"><span class="f_li"><a href="copybuffer.htm" class="topiclink">CopyBuffer</a></span></li>
+<li value="2" class="p_li"><span class="f_li"><a href="copyrates.htm" class="topiclink">CopyRates</a></span></li>
+<li value="3" class="p_li"><span class="f_li"><a href="copytime.htm" class="topiclink">CopyTime</a></span></li>
+<li value="4" class="p_li"><span class="f_li"><a href="copyopen.htm" class="topiclink">CopyOpen</a></span></li>
+<li value="5" class="p_li"><span class="f_li"><a href="copyhigh.htm" class="topiclink">CopyHigh</a></span></li>
+<li value="6" class="p_li"><span class="f_li"><a href="copylow.htm" class="topiclink">CopyLow</a></span></li>
+<li value="7" class="p_li"><span class="f_li"><a href="copyclose.htm" class="topiclink">CopyClose</a></span></li>
+<li value="8" class="p_li"><span class="f_li"><a href="copytickvolume.htm" class="topiclink">CopyTickVolume</a></span></li>
+<li value="9" class="p_li"><span class="f_li"><a href="copyrealvolume.htm" class="topiclink">CopyRealVolume</a></span></li>
+<li value="10" class="p_li"><span class="f_li"><a href="copyspread.htm" class="topiclink">CopySpread</a></span></li>
+</ol>
+</li>
+</ul>
+<p class="p_Text"><span class="f_Text">At the moment of the first call to an &quot;other&quot; symbol, the testing process is stopped and the history is downloaded for the symbol/timeframe, from the terminal to the testing agent. At the same time, the generation of tick sequence for this symbol is made.</span></p>
+<p class="p_Text"><span class="f_Text">An individual tick sequence is generated for each symbol, according to the selected tick generation mode. You can also request the history explicitly for the desired symbols by calling the <a href="symbolselect.htm" class="topiclink">SymbolSelect()</a> in the OnInit() handler - the downloading of the history will be made immediately prior to the testing of the Expert Advisor.</span></p>
+<p class="p_Text"><span class="f_Text">Thus, it does not require any extra effort to perform multi-currency testing in the MetaTrader 5 client terminal. Just open the charts of the appropriate symbols in the client terminal. The history will be automatically uploaded from the trading server for all the required symbols, provided that it contains this data.</span></p>
+<p class="p_H2"><a name="time" class="hmanchor"></a><span class="f_H2">Simulation of Time in the Strategy Tester</span></p>
+<p class="p_Text"><span class="f_Text">During testing, the local time <a href="timelocal.htm" class="topiclink">TimeLocal()</a> is always equal to the server time <a href="timetradeserver.htm" class="topiclink">TimeTradeServer()</a>. In turn, the server time is always equal to the time corresponding to the GMT time - <a href="timegmt.htm" class="topiclink">TimeGMT()</a>. This way, all of these functions display the same time during testing.</span></p>
+<p class="p_Text"><span class="f_Text">The lack of a difference between the GMT, the Local, and the server time in the Strategy Tester is done deliberately in case there is no connection to the server. The test results should always be the same, regardless of whether or not there is a connection. Information about the server time is not stored locally, and is taken from the server.</span></p>
+<p class="p_H2"><a name="objects" class="hmanchor"></a><span class="f_H2">Graphical Objects in Testing</span></p>
+<p class="p_Text"><span class="f_Text">During testing/optimization graphical objects are not plotted. Thus, when referring to the properties of a created object during testing/optimization, an Expert Advisor will receive zero values.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="attentable" cellspacing="0" cellpadding="8" border="1">
+<tr class="attentable">
+<td class="attentable"><p class="p_fortable"><span class="f_fortable">This limitation does not apply to testing in visual mode.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_H2"><a name="ontimer" class="hmanchor"></a><span class="f_H2">The OnTimer() Function in the Strategy Tester</span></p>
+<p class="p_Text"><span class="f_Text">MQL5 provides the opportunity for handling timer events. The call of the <a href="ontimer.htm" class="topiclink">OnTimer()</a> handler is done regardless of the test mode. This means that if a test is running in the &quot;Opening prices only&quot; mode for the period H4, and the EA has a timer set to a call per second, then at the opening of each H4 bar, the OnTick() handler will be called one time, and the OnTimer() handler will be called 14400 times (3600 seconds * 4 hours ). The amount by which the testing time of the EA will be increased depends on the logic of the EA.</span></p>
+<p class="p_Text"><span class="f_Text">To check the dependence of the testing time from the given frequency of the timer, we have created a simple EA without any trading operations.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//---&nbsp;input&nbsp;parameters</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;timer=1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;timer&nbsp;value,&nbsp;sec</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;timer_switch_on=true;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;timer&nbsp;on</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;initialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;run&nbsp;the&nbsp;timer&nbsp;if&nbsp;&nbsp;timer_switch_on==true</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(timer_switch_on)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EventSetTimer</span><span class="f_CodeExample">(timer);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">INIT_SUCCEEDED</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;deinitialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnDeinit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;reason)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;stop&nbsp;the&nbsp;timer</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">EventKillTimer</span><span class="f_CodeExample">();</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Timer&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTimer</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample" style="color: #808080;">//&nbsp;take&nbsp;no&nbsp;actions,&nbsp;the&nbsp;body&nbsp;of&nbsp;the&nbsp;handler&nbsp;is&nbsp;empty</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Testing time measurements were taken at different values of the timer parameter (periodicity of the Timer event). On the obtained data, we plot a testing time as function of Timer period.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Testing time as a function of Timer period" title="Testing time as a function of Timer period" width="412" height="286" style="margin:0 auto 0 auto;width:412px;height:286px;border:none" src="time_dependence.png"/></p>
+<p class="p_Text"><span class="f_Text">It can be clearly seen that the smaller is the parameter timer, during the initialization of the <a href="eventsettimer.htm" class="topiclink">EventSetTimer</a>(Timer) function, the smaller is the period (Period) between the calls of the OnTimer() handler, and the larger is the testing time T, under the same other conditions.</span></p>
+<p class="p_H2"><a name="sleep" class="hmanchor"></a><span class="f_H2">The Sleep() Function in the Strategy Tester</span></p>
+<p class="p_Text"><span class="f_Text">The <a href="sleep.htm" class="topiclink">Sleep()</a> function allows the EA or script to suspend the execution of the mql5-program for a while, when working on the graph. This can be useful when requesting data, which is not ready at the time of the request and you need to wait until it is ready. A detailed example of using the Sleep() function can be found in the section <a href="timeseries_access.htm" class="topiclink">Organizing Data Access</a>.</span></p>
+<p class="p_Text"><span class="f_Text">The testing process is not lingered by the Sleep() calls.When you call the Sleep(), the generated ticks are &quot;played&quot; within a specified delay, which may result in the triggering of pending orders, stops, etc. After a Sleep() call, the simulated time in the Strategy Tester increases by an interval, specified in the parameter of the Sleep function.</span></p>
+<p class="p_Text"><span class="f_Text">If as a result of the execution of the Sleep() function, the current time in the Strategy Tester went over the testing period, then you will receive an error &quot;Infinite Sleep loop detected while testing&quot;. If you receive this error, the test results are not rejected, all of the computations are performed in their full volume (the number of deals, subsidence, etc.), and the results of this testing are passed on to the terminal.</span></p>
+<p class="p_Text"><span class="f_Text">The Sleep() function will not work in OnDeinit(), since after it is called, the testing time will be guaranteed to surpass the range of the testing interval.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="The scheme of using the Sleep() function in the Strategy Tester of the MetaTrader 5 terminal" title="The scheme of using the Sleep() function in the Strategy Tester of the MetaTrader 5 terminal" width="727" height="398" style="margin:0 auto 0 auto;width:727px;height:398px;border:none" src="sleep.png"/></p>
+<p class="p_H2"><a name="math" class="hmanchor"></a><span class="f_H2">Using the Strategy Tester for Optimization Problems in Mathematical Calculations</span></p>
+<p class="p_Text"><span class="f_Text">The tester in the MetaTrader 5 terminal can be used, not only to testing trading strategies, but also for mathematical calculations. To use it, it's necessary to select the &quot;Math calculations&quot; mode:</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="math_calculations" width="750" height="286" style="margin:0 auto 0 auto;width:750px;height:286px;border:none" src="math_calculations.png"/></p>
+<p class="p_Text"><span class="f_Text">In this case, only three functions will be called: OnInit(), OnTester(), OnDeinit(). In &quot;Math calculations&quot; mode the Strategy Tester doesn't generate any ticks and download the history.</span></p>
+<p class="p_Text"><span class="f_Text">The Strategy Tester works in &quot;Math calculations&quot; mode also if you specify the starting date greater than ending date.</span></p>
+<p class="p_Text"><span class="f_Text">When using the tester to solve mathematical problems, the uploading of the history and the generation of ticks does not occur.</span></p>
+<p class="p_Text"><span class="f_Text">A typical mathematical problem for solving in the MetaTrader 5 Strategy Tester - searching for an extremum of a function with many variables.</span></p>
+<p class="p_Text"><span class="f_Text">To solve it we need to:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">The calculation of function value should be located in <a href="ontester.htm" class="topiclink">OnTester()</a> function;</span></li>
+<li class="p_li"><span class="f_li">The function parameters must be defined as <a href="inputvariables.htm" class="topiclink">input-variables</a> of the Expert Advisor;</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">Compile the EA, open the &quot;Strategy Tester&quot; window. In the &quot;Input parameters&quot; tab, select the required input variables, and define the set of parameter values by specifying the start, stop and step values for each of the function variables.</span></p>
+<p class="p_Text"><span class="f_Text">Select the optimization type - &quot;Slow complete algorithm&quot; (full search of parameters space) or &quot;Fast genetic based algorithm&quot;. For a simple search of the extremum of the function, it is better to choose a fast optimization, but if you want to calculate the values for the entire set of variables, then it is best to use the slow optimization.</span></p>
+<p class="p_Text"><span class="f_Text">Select &quot;Math calculation&quot; mode and using the &quot;Start&quot; button, run the optimization procedure. Note that during the optimization the Strategy Tester will search for the maximum values of the OnTester function. To find a local minimum, return the inverse of the computed function value from the OnTester function:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(1/function_value);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">It is necessary to check that the function_value is not equal to zero, since otherwise we can obtain a <a href="errors.htm" class="topiclink">critical error</a> of dividing by zero.</span></p>
+<p class="p_Text"><span class="f_Text">There is another way, it is more convenient and does not distort the results of optimization, it was suggested by the readers of this article:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(-function_value);</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">This option does not require the checking of the function_value for being equal to zero, and the surface of the optimization results in a 3D-representation has the same shape. The only difference is that it is mirrored comparing to the original.</span></p>
+<p class="p_Text"><span class="f_Text">As an example, we provide the sink() function:</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="sink_formula" width="172" height="30" style="margin:0 auto 0 auto;width:172px;height:30px;border:none" src="sink_formula.png"/></p>
+<p class="p_Text"><span class="f_Text">The code of the EA for finding the extremum of this function is placed into the OnTester():</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sink.mq5&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copyright&nbsp;2011,&nbsp;MetaQuotes&nbsp;Software&nbsp;Corp.&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://www.mql5.com&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #008080;">#</span><span class="f_CodeExample">property&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">copyright</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Copyright&nbsp;2000-2024,&nbsp;MetaQuotes&nbsp;Ltd.&quot;</span>
+<br><span class="f_CodeExample" style="color: #008080;">#</span><span class="f_CodeExample">property&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">link</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;https://www.mql5.com&quot;</span>
+<br><span class="f_CodeExample" style="color: #008080;">#</span><span class="f_CodeExample">property&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">version</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;1.00&quot;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;input&nbsp;parameters</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;x=-3.0;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;start=-3,&nbsp;step=0.05,&nbsp;stop=3</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;y=-3.0;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//&nbsp;start=-3,&nbsp;step=0.05,&nbsp;stop=3</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Tester&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTester</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">double</span><span class="f_CodeExample">&nbsp;sink=</span><span class="f_CodeExample" style="color: #0000ff;">MathSin</span><span class="f_CodeExample">(x*x+y*y);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(sink);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Perform an optimization and see the <a href="https://www.metatrader5.com/en/terminal/help/algotrading/testing" target="_blank" class="weblink">optimization results</a> in the form of a 2D graph.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="The results of the full optimization of the sink (x*x+y*y) function as 2D-graph" title="The results of the full optimization of the sink (x*x+y*y) function as 2D-graph" width="723" height="425" style="margin:0 auto 0 auto;width:723px;height:425px;border:none" src="sink_2d.png"/></p>
+<p class="p_Text"><span class="f_Text">The better the value is for a given pair of parameters (x, y), the more saturated the color is. As was expected from the view of the form of the sink() formula, its values forms concentric circles with a center at (0,0). One can see in the 3D-graph, that the sink() function has no single global extremum:</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="3D Graph of Sink function" title="3D Graph of Sink function" width="740" height="392" style="margin:0 auto 0 auto;width:740px;height:392px;border:none" src="3d.png"/></p>
+<p class="p_H2"><a name="bar_synchro" class="hmanchor"></a><span class="f_H2">The Synchronization of Bars in the &quot;Open prices only&quot; mode</span></p>
+<p class="p_Text"><span class="f_Text">The tester in the MetaTrader 5 client terminal allows us to check the so-called &quot;multi-currency&quot; EAs. A multi-currency EA - is an EA that trades on two or more symbols.</span></p>
+<p class="p_Text"><span class="f_Text">The testing of strategies, that are trading on multiple symbols, imposes a few additional technical requirements on the tester:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">The generation of ticks for these symbols;</span></li>
+<li class="p_li"><span class="f_li">The calculation of indicator values for these symbols;</span></li>
+<li class="p_li"><span class="f_li">The calculation of margin requirements for these symbols;</span></li>
+<li class="p_li"><span class="f_li">Synchronization of generated tick sequences for all trading symbols.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">The Strategy Tester generates and plays a tick sequence for each instrument in accordance with the selected trading mode. At the same time, a <a href="https://www.mql5.com/en/articles/159" target="_blank" class="weblink">new bar</a> for each symbol is opened, regardless of how the bar opened on another symbol. This means that when testing a multi-currency EA, a situation may occur (and often does), when for one instrument a new bar has already opened, and for the other it has not. Thus, in testing, everything happens just like in reality.</span></p>
+<p class="p_Text"><span class="f_Text">This authentic simulation of the history in the tester does not cause any problems as long as the &quot;Every tick&quot; and &quot;1 minute OHLC&quot; testing modes are used. For these modes, enough ticks are generated for one candlestick, to be able to wait until the synchronization of bars from different symbols takes place. But how do we test multi-currency strategies in the &quot;Open prices only&quot; mode, if the synchronization of bars on trading instruments is mandatory? In this mode, the EA is called only on one tick, which corresponds to the time of the opening of the bars.</span></p>
+<p class="p_Text"><span class="f_Text">We'll illustrate it on an example: we are testing an EA on the EURUSD, and a new H1 candlestick has been opened on EURUSD. We can easily recognize this fact - while testing in the &quot;Open prices only&quot; mode, the <a href="event_fire.htm#newtick" class="topiclink">NewTick</a> event corresponds to the moment of a bar opening on the tested period. But there is no guarantee that the new candlestick was opened on the USDJPY symbol, which is used in the EA.</span></p>
+<p class="p_Text"><span class="f_Text">Under normal circumstances, it is sufficient enough to complete the work of the <a href="ontick.htm" class="topiclink">OnTick()</a> function and to check for the emergence of a new bar on USDJPY at the next tick. But when testing in the &quot;Open prices only&quot; mode, there will be no other tick, and so it may seem that this mode is not fit for testing multi-currency EAs. But this is not so - do not forget that the tester in MetaTrader 5 behaves just as it would in real life. You can wait until a new bar is opened on another symbols using the function Sleep()!</span></p>
+<p class="p_Text"><span class="f_Text">The code of the EA Synchronize_Bars_Use_Sleep.mq5, which shows an example of the synchronization of bars in the &quot;Open prices only&quot; mode:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Synchronize_Bars_Use_Sleep.mq5&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copyright&nbsp;2011,&nbsp;MetaQuotes&nbsp;Software&nbsp;Corp.&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://www.mql5.com&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #008080;">#</span><span class="f_CodeExample">property&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">copyright</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;Copyright&nbsp;2000-2024,&nbsp;MetaQuotes&nbsp;Ltd.&quot;</span>
+<br><span class="f_CodeExample" style="color: #008080;">#</span><span class="f_CodeExample">property&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">link</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;https://www.mql5.com&quot;</span>
+<br><span class="f_CodeExample" style="color: #008080;">#</span><span class="f_CodeExample">property&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">version</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #008080;">&quot;1.00&quot;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;input&nbsp;parameters</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">input</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">string</span><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;other_symbol=</span><span class="f_CodeExample" style="color: #008080;">&quot;USDJPY&quot;</span><span class="f_CodeExample">;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;initialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;check&nbsp;symbol</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(_Symbol==other_symbol)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;You&nbsp;have&nbsp;to&nbsp;specify&nbsp;the&nbsp;other&nbsp;symbol&nbsp;in&nbsp;input&nbsp;parameters&nbsp;or&nbsp;select&nbsp;other&nbsp;symbol&nbsp;in&nbsp;Strategy&nbsp;Tester!&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;forced&nbsp;stop&nbsp;testing</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">INIT_PARAMETERS_INCORRECT</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">INIT_SUCCEEDED</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;tick&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnTick</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;static&nbsp;variable,&nbsp;used&nbsp;for&nbsp;storage&nbsp;of&nbsp;last&nbsp;bar&nbsp;time</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;last_bar_time=0;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;sync&nbsp;flag</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">static</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;synchonized=false;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;if&nbsp;static&nbsp;variable&nbsp;isn't&nbsp;initialized</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(last_bar_time==0)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;it's&nbsp;first&nbsp;call,&nbsp;save&nbsp;bar&nbsp;time&nbsp;and&nbsp;exit</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;last_bar_time=(</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">SeriesInfoInteger</span><span class="f_CodeExample">(_Symbol,</span><span class="f_CodeExample" style="color: #0000ff;">Period</span><span class="f_CodeExample">(),</span><span class="f_CodeExample" style="color: #0000ff;">SERIES_LASTBAR_DATE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;The&nbsp;last_bar_time&nbsp;variable&nbsp;is&nbsp;initialized&nbsp;with&nbsp;value&nbsp;%s&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(last_bar_time));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;get&nbsp;open&nbsp;time&nbsp;of&nbsp;the&nbsp;last&nbsp;bar&nbsp;of&nbsp;chart&nbsp;symbol</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;curr_time=(</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">SeriesInfoInteger</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">Symbol</span><span class="f_CodeExample">(),</span><span class="f_CodeExample" style="color: #0000ff;">Period</span><span class="f_CodeExample">(),</span><span class="f_CodeExample" style="color: #0000ff;">SERIES_LASTBAR_DATE</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;if&nbsp;times&nbsp;aren't&nbsp;equal</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(curr_time!=last_bar_time)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;save&nbsp;open&nbsp;bar&nbsp;time&nbsp;to&nbsp;the&nbsp;static&nbsp;variable</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;last_bar_time=curr_time;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;not&nbsp;synchronized</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;synchonized=false;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;print&nbsp;message</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;A&nbsp;new&nbsp;bar&nbsp;has&nbsp;appeared&nbsp;on&nbsp;symbol&nbsp;%s&nbsp;at&nbsp;%s&quot;</span><span class="f_CodeExample">,_Symbol,</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TimeCurrent</span><span class="f_CodeExample">()));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;open&nbsp;time&nbsp;of&nbsp;the&nbsp;other&nbsp;symbol's&nbsp;bar</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">&nbsp;other_time;</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;loop&nbsp;until&nbsp;the&nbsp;open&nbsp;time&nbsp;of&nbsp;other&nbsp;symbol&nbsp;become&nbsp;equal&nbsp;to&nbsp;curr_time</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">while</span><span class="f_CodeExample">(!(curr_time==(other_time=(</span><span class="f_CodeExample" style="color: #0000ff;">datetime</span><span class="f_CodeExample">)</span><span class="f_CodeExample" style="color: #0000ff;">SeriesInfoInteger</span><span class="f_CodeExample">(other_symbol,</span><span class="f_CodeExample" style="color: #0000ff;">Period</span><span class="f_CodeExample">(),</span><span class="f_CodeExample" style="color: #0000ff;">SERIES_LASTBAR_DATE</span><span class="f_CodeExample">))&nbsp;&amp;&amp;&nbsp;!synchonized))</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Waiting&nbsp;5&nbsp;seconds..&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #808080;">//---&nbsp;wait&nbsp;5&nbsp;seconds&nbsp;and&nbsp;call&nbsp;SeriesInfoInteger(other_symbol,Period(),SERIES_LASTBAR_DATE)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Sleep</span><span class="f_CodeExample">(5000);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;bars&nbsp;are&nbsp;synchronized</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;synchonized=true;</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Open&nbsp;bar&nbsp;time&nbsp;of&nbsp;the&nbsp;chart&nbsp;symbol&nbsp;%s:&nbsp;is&nbsp;%s&quot;</span><span class="f_CodeExample">,_Symbol,</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(last_bar_time));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Open&nbsp;bar&nbsp;time&nbsp;of&nbsp;the&nbsp;symbol&nbsp;%s:&nbsp;is&nbsp;%s&quot;</span><span class="f_CodeExample">,other_symbol,</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(other_time));</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;TimeCurrent()&nbsp;is&nbsp;not&nbsp;useful,&nbsp;use&nbsp;TimeTradeServer()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;The&nbsp;bars&nbsp;are&nbsp;synchronized&nbsp;at&nbsp;&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TimeTradeServer</span><span class="f_CodeExample">(),TIME_SECONDS));</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">Notice the last line in the EA, which displays the current time when the fact of synchronization was established:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;The&nbsp;bars&nbsp;synchronized&nbsp;at&nbsp;&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">TimeToString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TimeTradeServer</span><span class="f_CodeExample">(),TIME_SECONDS));</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">To display the current time we used the <a href="timetradeserver.htm" class="topiclink">TimeTradeServer()</a> function rather than <a href="timecurrent.htm" class="topiclink">TimeCurrent()</a>. The TimeCurrent() function returns the time of the last tick, which does not change after using Sleep(). Run the EA in the &quot;Open prices only&quot; mode, and you will see a message about the synchronization of the bars.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="Synchronize_Bars_Use_Sleep_EA" width="561" height="126" style="margin:0 auto 0 auto;width:561px;height:126px;border:none" src="synchronize_bars_use_sleep_ea.png"/></p>
+<p class="p_Text"><span class="f_Text">Use the TimeTradeServer() function instead of the TimeCurrent(), if you need to obtain the current server time, and not the time of the last tick arrival.</span></p>
+<p class="p_Text"><span class="f_Text">There is another way to synchronize bars - using a timer. An example of such an EA is Synchronize_Bars_Use_OnTimer.mq5, which is attached to this article.</span></p>
+<p class="p_H2"><a name="indicatorrelease" class="hmanchor"></a><span class="f_H2">The IndicatorRelease() function in the Tester</span></p>
+<p class="p_Text"><span class="f_Text">After completing a single testing, a chart of the instrument is automatically opened, which displays the completed deals and the indicators used in the EA. This helps to visually check the entry and exit points, and compare them with the values of the indicators. &nbsp;</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="attentable" cellspacing="0" cellpadding="8" border="1">
+<tr class="attentable">
+<td class="attentable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Note:</span><span class="f_fortable"> indicators, displayed on the chart, which automatically opens after the completion of the testing, are calculated anew after the completion of testing. Even if these indicators were used in the tested EA.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">But in some cases, the programmer may want to hide the information on which indicators were involved in the trading algorithms. For example, the code of the EA is rented or sold as an executable file, without the provision of the source code. For this purpose, the IndicatorRelease() function is suitable.</span></p>
+<p class="p_Text"><span class="f_Text">If the terminal sets a template with the name tester.tpl in the directory/profiles/templates of the client terminal, then it will be applied to the opened chart. In its absence, the default template is applied. (default.tpl).</span></p>
+<p class="p_Text"><span class="f_Text">The <a href="indicatorrelease.htm" class="topiclink">IndicatorRelease()</a> function is originally intended for releasing the calculating portion of the indicator, if it is no longer needed. This allows you to save both the memory and the CPU resources, because each tick calls for an indicator calculation. Its second purpose is to prohibit the showing of an indicator on the testing chart, after a single test run.</span></p>
+<p class="p_Text"><span class="f_Text">To prohibit the showing of the indicator on the chart after testing, call the <a href="indicatorrelease.htm" class="topiclink">IndicatorRelease()</a> with the handle of the indicator in the handler <a href="event_fire.htm#deinit" class="topiclink">OnDeinit()</a>. The OnDeinit() function is always called after the completion and before the showing of the testing chart.</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;deinitialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">void</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnDeinit</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">const</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;reason)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">bool</span><span class="f_CodeExample">&nbsp;hidden=</span><span class="f_CodeExample" style="color: #0000ff;">IndicatorRelease</span><span class="f_CodeExample">(handle_ind);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">if</span><span class="f_CodeExample">(hidden)&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;IndicatorRelease()&nbsp;successfully&nbsp;completed&quot;</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">else</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">Print</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;IndicatorRelease()&nbsp;returned&nbsp;false.&nbsp;Error&nbsp;code&nbsp;&quot;</span><span class="f_CodeExample">,</span><span class="f_CodeExample" style="color: #0000ff;">GetLastError</span><span class="f_CodeExample">());</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">In order to prohibit the showing of the indicator on the chart, after the completion of a single test, use the function IndicatorRelease() in the handler OnDeinit().</span></p>
+<p class="p_H2"><a name="events" class="hmanchor"></a><span class="f_H2">Event Handling in the Tester</span></p>
+<p class="p_Text"><span class="f_Text">The presence of the OnTick() handler in the EA is not mandatory in order for it to be subjected to testing on historical data in the MetaTrader 5 tester. It is sufficient enough for the EA ti contain at least one of the following function-handlers:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li"><a href="ontick.htm" class="topiclink">OnTick()</a> - Event handler of a new tick arrival;</span></li>
+<li class="p_li"><span class="f_li"><a href="ontrade.htm" class="topiclink">OnTrade()</a> - Trading event handler;</span></li>
+<li class="p_li"><span class="f_li"><a href="ontimer.htm" class="topiclink">OnTimer()</a> - Event handler of a signal arrival from the timer;</span></li>
+<li class="p_li"><span class="f_li"><a href="onchartevent.htm" class="topiclink">OnChartEvent()</a> - a handler for client events.</span></li>
+</ul>
+<p class="p_Text"><span class="f_Text">When testing in an EA, we can handle custom events using the <a href="onchartevent.htm" class="topiclink">OnChartEvent()</a> function, but in the indicators, this function can not be called in the tester. Even if the indicator has the <a href="onchartevent.htm" class="topiclink">OnChartEvent()</a> event handler and this indicator is used in the tested EA, the indicator itself will not receive any custom events.</span></p>
+<p class="p_Text"><span class="f_Text">During testing, an Indicator can generate custom events using the <a href="eventchartcustom.htm" class="topiclink">EventChartCustom()</a> function, and the EA can process this event in the OnChartEvent().</span></p>
+<p class="p_Text"><span class="f_Text">In addition to these events, special events associated with the process of testing and optimization are generated in the strategy tester:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Tester - this event is generated after completion of Expert Advisor testing on history data. The Tester event is handled using the <a href="ontester.htm" class="topiclink">OnTester()</a> function. This function can be used only when testing Expert Advisor and is intended primarily for the calculation of a value that is used as a Custom max criterion for genetic optimization of input parameters.</span></li>
+<li class="p_li"><span class="f_li">TesterInit - this event is generated during the start of optimization in the strategy tester before the very first pass. The TesterInit event is handled using the <a href="ontesterinit.htm" class="topiclink">OnTesterInit()</a> function. During the start of optimization, an Expert Advisor with this handler is automatically loaded on a separate terminal chart with the symbol and period specified in the tester, and receives the TesterInit event. The function is used to initiate an Expert Advisor before start of optimization for further <a href="optimization_frames.htm" class="topiclink">processing of optimization results</a>.</span></li>
+<li class="p_li"><span class="f_li">TesterPass - this event is generated when a new <a href="frameadd.htm" class="topiclink">data frame</a> is received. The TesterPass event is handled using the <a href="ontesterpass.htm" class="topiclink">OnTesterPass()</a> function. </span><span class="f_Text">An Expert Advisor with this handler is automatically loaded on a separate terminal chart with the symbol/period specified for testing, and receives the TesterPass event when a frame is received during optimization. The function is used for dynamic handling of <a href="optimization_frames.htm" class="topiclink">optimization results</a> &quot;on the spot&quot; without waiting for its completion. Frames are added using the <a href="frameadd.htm" class="topiclink">FrameAdd()</a> function, which can be called after the end of a single pass in the </span><span class="f_Text" style="color: #0000ff;"><a href="ontester.htm" class="topiclink">OnTester()</a> </span><span class="f_Text">handler</span><span class="f_Text" style="color: #0000ff;">.</span></li>
+<li class="p_li"><span class="f_li">TesterDeinit - this event is generated after the end of Expert Advisor optimization in the strategy tester. The TesterDeinit event is handles using the <a href="ontesterdeinit.htm" class="topiclink">OnTesterDeinit()</a> function. </span><span class="f_Text">An Expert Advisor with this handler is automatically loaded on a chart at the start of optimization, and receives TesterDeinit after its completion. The function is used for final processing of all <a href="optimization_frames.htm" class="topiclink">optimization results</a>. </span></li>
+</ul>
+<p class="p_H2"><a name="agents" class="hmanchor"></a><span class="f_H2">Testing Agents</span></p>
+<p class="p_Text"><span class="f_Text">Testing in the MetaTrader 5 client terminal is carried out using <a href="https://www.metatrader5.com/en/terminal/help/algotrading/testing" target="_blank" class="weblink">test agents</a>. Local agents are created and enabled automatically. The default number of local agents corresponds to the number of cores in a computer.</span></p>
+<p class="p_Text"><span class="f_Text">Each testing agent has its own copy of the <a href="global.htm" class="topiclink">global variables</a>, which is not related to the client terminal. The terminal itself is the dispatcher, which distributes the tasks to the local and remote agents. After executing a task on the testing of an EA, with the given parameters, the agent returns the results to the terminal. With a single test, only one agent is used.</span></p>
+<p class="p_Text"><span class="f_Text">The agent stores the history, received from the terminal, in separate folders, by the name of the instrument, so the history for EURUSD is stored in a folder named EURUSD. In addition, the history of the instruments is separated by their sources. The structure for storing the history looks the following way:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample">tester_catalog\Agent-IPaddress-Port\bases\name_source\history\symbol_name</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For example, the history for EURUSD from the server MetaQuotes-Demo can be stored in the folder tester_catalog\Agent-127.0.0.1-3000\bases\MetaQuotes-Demo\EURUSD.</span></p>
+<p class="p_Text"><span class="f_Text">A local agent, after the completion of testing, goes into a standby mode, awaiting for the next task for another 5 minutes, so as not to waste time on launching for the next call. Only after the waiting period is over, the local agent shuts down and unloads from the CPU memory.</span></p>
+<p class="p_Text"><span class="f_Text">In case of an early completion of the testing, from the user's side (the &quot;Cancel&quot; button), as well as with the closing of the client terminal, all local agents immediately stop their work and are unloaded from the memory.</span></p>
+<p class="p_H2"><a name="data" class="hmanchor"></a><span class="f_H2">The Data Exchange between the Terminal and the Agent</span></p>
+<p class="p_Text"><span class="f_Text">When you run a test, the client terminal prepares to send an agent a number of parameter blocks:</span></p>
+<ul style="list-style-type:disc">
+<li class="p_li"><span class="f_li">Input parameters for testing (simulation mode, the interval of testing, instruments, optimization criterion, etc.)</span></li>
+<li class="p_li"><span class="f_li">The list of the selected symbols in the &quot;Market Watch&quot;</span></li>
+<li class="p_li"><span class="f_li">The specification of the testing symbol (the contract size, the allowable margins from the market for setting a StopLoss and Takeprofit, etc)</span></li>
+<li class="p_li"><span class="f_li">The Expert Advisor to be tested and the values of its input parameters</span></li>
+<li class="p_li"><span class="f_li">Information about additional files (libraries, indicators, data files - <a href="compilation.htm" class="topiclink"># property tester_ ...</a>)</span></li>
+</ul>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="table" cellspacing="0" cellpadding="5" border="1">
+<thead>
+<tr class="table">
+<th class="table" style="width:176px;"><p class="p_fortable"><span class="f_fortable">tester_indicator</span></p>
+</th>
+<th class="table" style="width:80px;"><p class="p_fortable"><span class="f_fortable"><a href="stringconst.htm" class="topiclink">string</a></span></p>
+</th>
+<th class="table" style="width:623px;"><p class="p_fortable"><span class="f_fortable">Name of a custom indicator in the format of &quot;indicator_name.ex5&quot;. Indicators that require testing are defined automatically from the call of the <a href="icustom.htm" class="topiclink">iCustom()</a> function, if the corresponding parameter is set through a constant string. For all other cases (use of the <a href="indicatorcreate.htm" class="topiclink">IndicatorCreate()</a> function or use of a non-constant string in the parameter that sets the indicator name) this property is required</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table">
+<td class="table" style="width:176px;"><p class="p_fortable"><span class="f_fortable">tester_file</span></p>
+</td>
+<td class="table" style="width:80px;"><p class="p_fortable"><span class="f_fortable"><a href="stringconst.htm" class="topiclink">string</a></span></p>
+</td>
+<td class="table" style="width:623px;"><p class="p_fortable"><span class="f_fortable">File name for a tester with the indication of extension, in double quotes (as a constant string). The specified file will be passed to tester. Input files to be tested, if there are necessary ones, must always be specified.</span></p>
+</td>
+</tr>
+<tr class="table">
+<td class="table" style="width:176px;"><p class="p_fortable"><span class="f_fortable">tester_library</span></p>
+</td>
+<td class="table" style="width:80px;"><p class="p_fortable"><span class="f_fortable"><a href="stringconst.htm" class="topiclink">string</a></span></p>
+</td>
+<td class="table" style="width:623px;"><p class="p_fortable"><span class="f_fortable">Library name with the extension, in double quotes. A library can have extension dll or ex5. Libraries that require testing are defined automatically. However, if any of libraries is used by a <a href="customind.htm" class="topiclink">custom</a> indicator, this property is required</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">For each block of parameters, a digital fingerprint in the form of MD5-hash is created, which is sent to the agent. MD5-hash is unique for each set, its volume is many more times smaller than the amount of information on which it is calculated.</span></p>
+<p class="p_Text"><span class="f_Text">The agent receives a hash of blocks and compares them with those that it already has. If the fingerprint of the given parameter block is not present in the agent, or the received hash is different from the existing one, the agent requests this block of parameters. This reduces the traffic between the terminal and the agent.</span></p>
+<p class="p_Text"><span class="f_Text">After the testing, the agent returns to the terminal all of the results of the run, which are shown in the tabs &quot;Test Results&quot; and &quot;Optimization Results&quot;: the received profit, the number of deals, the Sharpe coefficient, the result of the OnTester() function, etc.</span></p>
+<p class="p_Text"><span class="f_Text">During optimizing, the terminal hands out testing tasks to the agents in small packages, each package contains several tasks (each task means single testing with a set of input parameters). This reduces the exchange time between the terminal and the agent.</span></p>
+<p class="p_Text"><span class="f_Text">The agents never record to the hard disk the EX5-files, obtained from the terminal (EA, indicators, libraries, etc.) for security reasons, so that a computer with a running agent could not use the sent data. All other files, including DLL, are recorded in the sandbox. In remote agents you can not test EAs using DLL.</span></p>
+<p class="p_Text"><span class="f_Text">The testing results are added up by the terminal into a special cache of results (the result cache), for a quick access to them when they are needed. For each set of parameters, the terminal searches the result cache for already available results from the previous runs, in order to avoid re-runs. If the result with such a set of parameters is not found, the agent is given the task to conduct the testing.</span></p>
+<p class="p_Text"><span class="f_Text">All traffic between the terminal and the agent is encrypted.</span></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="attentable" cellspacing="0" cellpadding="8" border="1">
+<tr class="attentable">
+<td class="attentable"><p class="p_fortable"><span class="f_fortable">Ticks are not sent over the network, they are generated on testing agents.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_H2"><a name="common_folder" class="hmanchor"></a><span class="f_H2">Using the Shared Folder of All of the Client Terminals</span></p>
+<p class="p_Text"><span class="f_Text">All testing agents are isolated from each other and from the client terminal: each agent has its own folder in which its logs are recorded. In addition, all file operations during the testing of the agent occur in the folder </span><span class="f_Text" style="font-weight: bold;">agent_name/MQL5/Files</span><span class="f_Text">. However, we can implement the interaction between the local agents and the client terminal through a shared folder for all of the client terminals, if during the file opening you specify the flag <a href="fileflags.htm" class="topiclink">FILE_COMMON</a>:</span></p>
+<div style="text-align: left; text-indent: 0; line-height: 1.0; page-break-inside: avoid; border-color: #b3b3b3; border-style: solid; border-width: thin; background: #fbf9f5; padding: 0 0 0 0; margin: 2px 17px 2px 17px;"><table cellspacing="0" cellpadding="3" border="0" style="text-align: justify;border:none; border-spacing:0;">
+<tr>
+<td style="vertical-align:top; padding:3px; border:none"><p class="p_CodeExample" style="page-break-inside: avoid;"><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #808080;">//|&nbsp;Expert&nbsp;initialization&nbsp;function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span>
+<br><span class="f_CodeExample" style="color: #808080;">//+------------------------------------------------------------------+</span>
+<br><span class="f_CodeExample" style="color: #0000ff;">int</span><span class="f_CodeExample">&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">OnInit</span><span class="f_CodeExample">()</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;{</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;the&nbsp;shared&nbsp;folder&nbsp;for&nbsp;all&nbsp;of&nbsp;the&nbsp;client&nbsp;terminals</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;common_folder=</span><span class="f_CodeExample" style="color: #0000ff;">TerminalInfoString</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">TERMINAL_COMMONDATA_PATH</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;draw&nbsp;out&nbsp;the&nbsp;name&nbsp;of&nbsp;this&nbsp;folder</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">PrintFormat</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #008080;">&quot;Open&nbsp;the&nbsp;file&nbsp;in&nbsp;the&nbsp;shared&nbsp;folder&nbsp;of&nbsp;the&nbsp;client&nbsp;terminals&nbsp;%s&quot;</span><span class="f_CodeExample">,&nbsp;common_folder);</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---&nbsp;open&nbsp;a&nbsp;file&nbsp;in&nbsp;the&nbsp;shared&nbsp;folder&nbsp;(indicated&nbsp;by&nbsp;FILE_COMMON&nbsp;flag)</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;handle=</span><span class="f_CodeExample" style="color: #0000ff;">FileOpen</span><span class="f_CodeExample">(filename,FILE_WRITE|FILE_READ|FILE_COMMON);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;...&nbsp;further&nbsp;actions</span>
+<br><span class="f_CodeExample" style="color: #808080;">//---</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;&nbsp;</span><span class="f_CodeExample" style="color: #0000ff;">return</span><span class="f_CodeExample">(</span><span class="f_CodeExample" style="color: #0000ff;">INIT_SUCCEEDED</span><span class="f_CodeExample">);</span>
+<br><span class="f_CodeExample">&nbsp;&nbsp;}</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_H2"><a name="dll" class="hmanchor"></a><span class="f_H2">Using DLLs</span></p>
+<p class="p_Text"><span class="f_Text">To speed up the optimization we can use not only local, but also <a href="https://www.metatrader5.com/en/terminal/help/algotrading/metatester" target="_blank" class="weblink">remote agents</a>. In this case, there are some limitations for remote agents. First of all, remote agents do not display in their logs the results of the execution of the <a href="print.htm" class="topiclink">Print()</a> function, messages about the opening and closing of positions. A minimum of information is displayed in the log to prevent incorrectly written EAs from trashing up the computer, on which the remote agent is working, with messages.</span></p>
+<p class="p_Text"><span class="f_Text">A second limitation - the prohibition on the use of DLL when testing EAs. DLL calls are absolutely forbidden on remote agents for security reasons. On local agent, DLL calls in tested EAs are allowed only with the appropriate permission &quot;Allow import DLL&quot;.</span></p>
+<p class="p_Text" style="text-align: center;"><img class="help" alt="The option &quot;Allow import DLL&quot; in mql5-programs" title="The option &quot;Allow import DLL&quot; in mql5-programs" width="577" height="369" style="margin:0 auto 0 auto;width:577px;height:369px;border:none" src="allow_dll.png"/></p>
+<div style="text-align: justify; text-indent: 0; padding: 0 0 0 0; margin: 8px 17px 7px 17px;"><table class="attentable" cellspacing="0" cellpadding="8" border="1">
+<tr class="attentable">
+<td class="attentable"><p class="p_fortable"><span class="f_fortable" style="font-weight: bold;">Note:</span><span class="f_fortable"> When using 3rd party EAs (scripts, indicators) that require allowed DLL calls, you should be aware of the risks which you assume when allowing this option in the settings of the terminal. Regardless of how the EA will be used - for testing or for running on a chart.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="p_Text"><span class="f_Text">&nbsp;</span></p>
+
+</div>
+
+</body>
+</html>
