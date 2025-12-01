@@ -39,6 +39,7 @@
   - 难度/用途/版本/主题等维度过滤；明确 MQL4 兼容信息
 
 > 优先级：
+> 
 > - 高：智能错误匹配、错误解决方案库、代码示例
 > - 中：上下文感知搜索、交互式帮助、学习路径
 > - 低：代码分析、标签系统、版本标注（细化）
@@ -70,92 +71,39 @@ claude mcp list
 
 ---
 
-### 安装方式 1：直接从 GitHub 安装（手动配置）
+### 方便管理 ：直接从 cc-switch 安装（手动配置）
 
-使用 `npx` 直接从 GitHub 运行，无需手动克隆或构建：
+**MCP 标题 (唯一)** 建议填写：`mql5-help` 或 `mql5-docs` *(这是给系统内部用的 ID，只要不和别的重复即可)*
 
-```json
+**显示名称** 建议填写：`MQL5 Documentation Server` *(这是显示给你看的名称，方便你识别)*
+
+**完整的 JSON 配置** 请将编辑器中原有的内容清空，并复制粘贴以下代码。
+
+由于这是一个 Node.js 项目，官方推荐使用 `npx` 直接运行：
+
+JSON
+
+```
 {
-  "mcpServers": {
-    "mql5-help": {
-      "command": "npx",
-      "args": ["-y", "github:caoshuo594/mql5-help-mcp"]
-    }
-  }
+  "type": "stdio",
+  "command": "npx",
+  "args": [
+    "-y",
+    "github:caoshuo594/mql5-help-mcp"
+  ]
 }
 ```
 
-> **提示**：使用 `github:caoshuo594/mql5-help-mcp` 可直接从 GitHub 获取最新版本。npm 会自动：
-> 1. 下载源代码
-> 2. 安装依赖
-> 3. 运行 `prepare` 脚本编译 TypeScript
-> 4. 启动服务器
+### 注意事项（重要）
 
-### 安装方式 2：从 npm 安装
+1. **必须安装 Node.js**：
+   因为配置中使用了 `npx` 命令，你的电脑上必须已经安装了 Node.js 环境。如果没有安装，这个 MCP 服务将无法启动。
 
-如果包已发布到 npm：
+2. **首次运行较慢**：
+   第一次添加并启用时，`npx` 需要从 GitHub 下载该包，可能会有一定的延迟，请耐心等待连接变绿（状态正常）。
 
-```json
-{
-  "mcpServers": {
-    "mql5-help": {
-      "command": "npx",
-      "args": ["-y", "mql5-help-mcp"]
-    }
-  }
-}
-```
-
-### 安装方式 3：本地开发模式
-
-适用于需要修改代码或贡献的开发者：
-
-```bash
-# 1. 克隆仓库
-git clone https://github.com/caoshuo594/mql5-help-mcp.git
-cd mql5-help-mcp
-
-# 2. 安装依赖
-npm install
-
-# 3. 编译 TypeScript 源码
-npm run build
-```
-
-然后在 MCP 配置中使用绝对路径：
-
-**Windows 示例：**
-```json
-{
-  "mcpServers": {
-    "mql5-help": {
-      "command": "node",
-      "args": ["D:/my-program/mql5-help-mcp/build/index.js"]
-    }
-  }
-}
-```
-
-**macOS/Linux 示例：**
-```json
-{
-  "mcpServers": {
-    "mql5-help": {
-      "command": "node",
-      "args": ["/home/user/projects/mql5-help-mcp/build/index.js"]
-    }
-  }
-}
-```
-
-> **Windows 路径注意**：使用正斜杠 `/` 或双反斜杠 `\\\\`（在 JSON 中）
-
-### Claude Code 配置位置
-
-配置文件位置：
-- **Windows**: `%USERPROFILE%\.claude\claude_desktop_config.json`
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Linux**: `~/.config/claude/claude_desktop_config.json`
+3. **Windows 用户**：
+   通常直接写 `"command": "npx"` 是可以的。如果报错找不到命令，你可能需要填写 `npx` 的完整路径（例如：`C:\\Program Files\\nodejs\\npx.cmd`），但大多数情况下直接写 `npx` 即可。
 
 ### 测试你的配置
 
@@ -192,6 +140,7 @@ AI 助手会调用 `browse` 工具，显示 trading 分类下的所有文档。
 ```
 
 AI 助手会自动调用 `smart_query`，直接返回解决方案：
+
 - 诊断: ResultCode → ResultRetcode (MQL5迁移)
 - 语法: ulong CTrade::ResultRetcode() const
 - 示例代码
@@ -226,19 +175,16 @@ AI 应该会显示七个工具：`smart_query`、`search`、`get`、`browse`、`
   - "error E512: undeclared identifier ResultCode"（优先从数据库查询）
   - "OrderSend 函数用法"
   - "如何使用 CTrade 类下单"
-
 2) `search` - 搜索文档
 - 参数：`query`（必填，关键词），`limit`（可选，默认 10）
 - 示例：
   - “搜索与订单发送相关的函数”
   - “查找 ONNX 模型相关的文档”
-
 2) `get` - 获取文档详情
 - 参数：`filename`（必填，如 `ordersend.htm` 或 `ordersend`）
 - 示例：
   - “获取 OrderSend 的完整文档”
   - “查看 CTrade 类的详细说明”
-
 4) `browse` - 浏览分类目录
 - 参数：`category`（可选，如 `trading`, `indicators`, `math` 等）
 - 常见分类：`trading`, `indicators`, `math`, `array`, `string`, `datetime`, `files`, `chart`, `objects`, `onnx`
@@ -247,38 +193,50 @@ AI 应该会显示七个工具：`smart_query`、`search`、`get`、`browse`、`
 
 5) **`log_error`** - 📝 记录编译错误
 - 参数：
+  
   - `error_code`（必填）：错误代码（如 `E512`、`E308`）
   - `error_message`（必填）：完整错误消息
   - `file_path`（可选）：发生错误的文件路径
   - `solution`（可选）：解决方案描述
   - `related_docs`（可选）：相关文档列表（JSON 数组格式）
+
 - 功能：记录错误到本地 SQLite 数据库（存储在 `~/.mql5-help-mcp/mql5_errors.db`）
+
 - 自动去重：相同错误会增加计数而不是重复记录
+
 - 示例：
+  
   ```
   记录错误：E512，消息是"undeclared identifier ResultCode"，解决方案是"改用 ResultRetcode()"
   ```
-
 6) **`list_common_errors`** - 📊 查看高频错误
 - 参数：`limit`（可选，默认 10）：返回错误数量
+
 - 功能：列出最常见的编译错误（按出现频率排序）
+
 - 显示每个错误的出现次数、最后遇到时间、解决方案摘要
+
 - 示例：
+  
   ```
   显示最常见的 10 个 MQL5 编译错误
   ```
-
 7) **`manage_error_db`** - 🔧 管理错误数据库
 - 参数：
+  
   - `action`（必填）：操作类型
     - `export`：导出错误数据库为 JSON
     - `import`：从 JSON 导入错误记录
     - `stats`：查看数据库统计信息
   - `data`（导入时必需）：JSON 格式的错误数据
   - `anonymize`（可选，默认 false）：导出时是否移除文件路径（保护隐私）
+
 - 功能：支持错误库的导出/导入，方便团队共享错误解决方案
+
 - 智能合并：导入时自动合并，保留更高的出现次数
+
 - 示例：
+  
   ```
   导出错误数据库（匿名模式）
   查看错误数据库统计信息
@@ -288,6 +246,7 @@ AI 应该会显示七个工具：`smart_query`、`search`、`get`、`browse`、`
 > **错误数据库位置**：`~/.mql5-help-mcp/mql5_errors.db`（用户主目录，跨项目共享）
 > 
 > **工作流程**：
+> 
 > 1. 遇到编译错误 → 使用 `smart_query` 查询（自动从数据库搜索）
 > 2. 解决后 → 使用 `log_error` 记录解决方案
 > 3. 定期查看 → 使用 `list_common_errors` 了解常见问题
@@ -426,22 +385,22 @@ mql5-help-mcp/
 
 ### 核心结论：查询本身不消耗 Token，返回给 AI 的内容才消耗 Token
 
-| 操作 | Token 消耗 | 说明 |
-|------|-----------|------|
-| **文档存储** | ❌ 0 | 电子书存在本地，不计入 Token |
-| **索引构建** | ❌ 0 | 启动时本地构建 Map，纯内存操作 |
-| **搜索匹配** | ❌ 0 | 本地 Map 查找，O(1) 复杂度 |
-| **文件读取** | ❌ 0 | `fs.readFile` 本地 IO |
-| **信息提取** | ❌ 0 | 正则表达式匹配，本地计算 |
+| 操作       | Token 消耗 | 说明                  |
+| -------- | -------- | ------------------- |
+| **文档存储** | ❌ 0      | 电子书存在本地，不计入 Token   |
+| **索引构建** | ❌ 0      | 启动时本地构建 Map，纯内存操作   |
+| **搜索匹配** | ❌ 0      | 本地 Map 查找，O(1) 复杂度  |
+| **文件读取** | ❌ 0      | `fs.readFile` 本地 IO |
+| **信息提取** | ❌ 0      | 正则表达式匹配，本地计算        |
 
 ### 消耗 Token 的环节：MCP 工具返回的内容
 
-| 工具 | 返回内容 | 估计 Token | 推荐场景 |
-|------|---------|-----------|---------|
-| `smart_query` (quick) | 提取的精华信息 | **~500** | ✅ 日常查询（推荐） |
-| `smart_query` (detailed) | 完整提取信息 | ~1500 | 需要详细说明 |
-| `search` | 文件列表 | ~200-500 | 浏览/确认文件 |
-| `get` | 完整文档内容 | **~3000-10000** | ❌ 高消耗，谨慎使用 |
+| 工具                       | 返回内容    | 估计 Token        | 推荐场景       |
+| ------------------------ | ------- | --------------- | ---------- |
+| `smart_query` (quick)    | 提取的精华信息 | **~500**        | ✅ 日常查询（推荐） |
+| `smart_query` (detailed) | 完整提取信息  | ~1500           | 需要详细说明     |
+| `search`                 | 文件列表    | ~200-500        | 浏览/确认文件    |
+| `get`                    | 完整文档内容  | **~3000-10000** | ❌ 高消耗，谨慎使用 |
 
 ### 传统方式 vs 本服务器
 
@@ -454,20 +413,20 @@ AI → "查 OrderSend" → 调用外部API → 返回完整文档 → 消耗大�
 AI → smart_query("OrderSend") 
    → 本地搜索 + 本地读取 + 本地提取 (0 Token)
    → 返回精华内容 (~500 tokens)
-   
+
 节省: 5000 - 500 = 4500 tokens (节省 90%)
 ```
 
 ### 总结
 
-| 问题 | 答案 |
-|------|------|
-| 电子书存储在哪？ | 本地 `MQL5_HELP/`, `MQL5_Algo_Book/`, `Neural_Networks_Book/` |
-| 内置资料占用空间？ | ~60MB (纯本地存储) |
-| 查询过程是否调用 API？ | ❌ 不调用，纯本地操作 |
-| 返回结果消耗 Token？ | ✅ 是，但已优化到 ~500 tokens |
-| 如何最省 Token？ | 用 `smart_query` 的 `quick` 模式 |
-| 最耗 Token 的操作？ | `get` 工具（返回完整文档，~3000-10000 tokens） |
+| 问题            | 答案                                                          |
+| ------------- | ----------------------------------------------------------- |
+| 电子书存储在哪？      | 本地 `MQL5_HELP/`, `MQL5_Algo_Book/`, `Neural_Networks_Book/` |
+| 内置资料占用空间？     | ~60MB (纯本地存储)                                               |
+| 查询过程是否调用 API？ | ❌ 不调用，纯本地操作                                                 |
+| 返回结果消耗 Token？ | ✅ 是，但已优化到 ~500 tokens                                       |
+| 如何最省 Token？   | 用 `smart_query` 的 `quick` 模式                                |
+| 最耗 Token 的操作？ | `get` 工具（返回完整文档，~3000-10000 tokens）                         |
 
 > **一句话总结**：电子书和索引存储在本地，搜索和提取完全在本地进行（零 API 调用）。唯一消耗 Token 的是 MCP 工具**返回给 AI 的内容**，而 `smart_query` 工具通过提取精华信息，将消耗从 ~5000 tokens 压缩到 ~500 tokens，**节省约 90% 的 Token**。
 
@@ -482,13 +441,19 @@ AI → smart_query("OrderSend")
 **原因**：首次从 GitHub 安装时，npx 需要下载、安装依赖并编译 TypeScript，这个过程需要时间。
 
 **解决方法**：
+
 1. 等待 10-30 秒
+
 2. 再次运行 `claude mcp list` 检查状态
+
 3. 如果仍然失败，手动测试服务器：
+   
    ```bash
    npx -y github:caoshuo594/mql5-help-mcp
    ```
+   
    你应该看到：
+   
    ```
    🚀 MQL5 Help MCP Server 启动中...
    📂 文档目录: MQL5_HELP:... | MQL5_Algo_Book:... | Neural_Networks_Book:...
@@ -513,6 +478,7 @@ claude mcp remove mql5-help
 ### 3. 手动配置 MCP（不使用 CLI）
 
 如果你想手动编辑配置文件，配置文件位置：
+
 - **Windows**: `%USERPROFILE%\.claude\claude_desktop_config.json`（Claude Desktop）或 `%USERPROFILE%\.claude.json`（Claude Code）
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Linux**: `~/.config/claude/claude_desktop_config.json`
@@ -568,6 +534,7 @@ npm run build
 ### v1.3.0 (2024-11-25) - 错误收集系统
 
 **🎉 新功能:**
+
 - 🗄️ 本地错误数据库（SQLite）- 无需网络服务器
 - 📝 `log_error` 工具 - 记录编译错误及解决方案
 - 📊 `list_common_errors` 工具 - 查看高频错误 TOP N
@@ -575,6 +542,7 @@ npm run build
 - 🔍 `smart_query` 增强 - 优先从错误数据库查询历史解决方案
 
 **💡 核心特性:**
+
 - 完全本地化存储（`~/.mql5-help-mcp/mql5_errors.db`）
 - 智能去重：相同错误自动合并并计数
 - 隐私保护：导出时可选移除文件路径
@@ -582,12 +550,14 @@ npm run build
 - 相似度搜索：模糊匹配历史错误关键词
 
 **🎯 使用场景:**
+
 1. 遇到错误 → `smart_query` 自动查询数据库
 2. 解决后 → `log_error` 记录方案供下次使用
 3. 学习 → `list_common_errors` 了解常见问题
 4. 协作 → `manage_error_db` 分享团队知识库
 
 **📊 性能优化:**
+
 - 数据库索引优化：错误代码、出现次数、时间戳
 - WAL 模式提升并发性能
 - 增量更新减少重复写入
@@ -595,6 +565,7 @@ npm run build
 ### v1.2.0 (2024-11-24) - Smart Query重大更新
 
 **🎉 新功能:**
+
 - ✨ 新增 `smart_query` 智能查询工具
 - 🎯 支持错误诊断、函数查询、类查询、概念查询
 - 📉 节省80%+ token消耗 (4000 → 500 tokens)
@@ -602,12 +573,14 @@ npm run build
 - 🆓 完全本地化，零API成本，无需外部服务
 
 **💡 核心特性:**
+
 - 智能识别5种查询类型 (error/function/class/howto/concept)
 - 基于正则表达式精准提取关键信息 (语法/参数/示例/注意事项)
 - 两种模式: quick(~500 tokens) 和 detailed(~1500 tokens)
 - 内置MQL4→MQL5迁移提示
 
 **📚 新增文档:**
+
 - `QUICK_START_SMART_QUERY.md` - 3分钟快速上手
 - `SMART_QUERY_GUIDE.md` - 完整使用指南  
 - `AI_USAGE_GUIDE.md` - 针对编译错误修复场景
@@ -623,16 +596,27 @@ npm run build
 ## 路线图（Roadmap）
 
 - ✅ [高] 智能错误匹配 - **v1.2.0已实现**
+
 - ✅ [高] 常见错误解决方案库 - **v1.2.0已实现**
+
 - ✅ [高] 错误收集与持久化 - **v1.3.0已实现**
+
 - ✅ [高] 团队错误库共享 - **v1.3.0已实现**
+
 - [ ] [高] 代码示例库扩展：更多EA模板与策略示例
+
 - [ ] [高] 错误自动诊断：分析编译输出并提供解决方案
+
 - [ ] [中] 上下文感知搜索增强：更多术语映射
+
 - [ ] [中] 交互式帮助：多轮对话支持
+
 - [ ] [中] 学习路径推荐：结构化教程
+
 - [ ] [中] 错误预测：基于代码模式预警潜在问题
+
 - [ ] [低] 统一索引两本电子书
+
 - [ ] [低] 标签系统与版本标注
 
 ---
