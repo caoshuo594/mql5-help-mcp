@@ -414,6 +414,19 @@ export class SmartQueryEngine {
       if (dbResults.length > 0) {
         // 找到历史错误记录,直接返回
         const topError = dbResults[0];
+        let relatedDocs: string[] = [];
+        if (topError.related_docs) {
+          try {
+            const parsed = JSON.parse(topError.related_docs);
+            if (Array.isArray(parsed)) {
+              relatedDocs = parsed.filter((item): item is string => typeof item === "string");
+            } else if (typeof parsed === "string") {
+              relatedDocs = [parsed];
+            }
+          } catch {
+            relatedDocs = [];
+          }
+        }
         const answer = `🔍 **从错误数据库找到解决方案** (出现${topError.occurrence_count}次)\n\n` +
           `**错误:** ${topError.error_code} - ${topError.error_message}\n\n` +
           (topError.solution ? `**解决方案:**\n${topError.solution}\n\n` : '') +
@@ -424,7 +437,7 @@ export class SmartQueryEngine {
           type: mode,
           answer,
           reference: "错误数据库",
-          relatedDocs: topError.related_docs ? JSON.parse(topError.related_docs) : [],
+          relatedDocs,
           estimatedTokens: answer.length / 4,
         };
       }
